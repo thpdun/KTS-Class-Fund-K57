@@ -22,9 +22,24 @@ contract ProjectCore {
         advisor = msg.sender;
     }
 
-    /// @notice Hàm cho phép bất kỳ sinh viên nào nạp ETH vào quỹ lớp (R2, R5)
+    /// @notice Hàm cho phép bất kỳ sinh viên nào nạp ETH vào quỹ lớp qua DApp (R2, R5)
     /// @dev Áp dụng mô hình Checks - Effects - Interactions (CEI)
     function deposit() external payable {
+        // 1. Checks: Kiểm tra giá trị nạp phải lớn hơn 0
+        if (msg.value == 0) {
+            revert ZeroAmount();
+        }
+
+        // 2. Effects: Ghi nhận số tiền đóng góp cá nhân và phát sự kiện lưu vết
+        studentContributions[msg.sender] += msg.value;
+        emit FundDeposited(msg.sender, msg.value);
+
+        // 3. Interactions: ETH đã được nhận trực tiếp vào hợp đồng qua từ khóa payable
+    }
+
+    /// @notice Tự động tiếp nhận và ghi nhận khi sinh viên chuyển ETH trực tiếp từ ví cá nhân
+    /// @dev Áp dụng mô hình Checks - Effects - Interactions (CEI)
+    receive() external payable {
         // 1. Checks: Kiểm tra giá trị nạp phải lớn hơn 0
         if (msg.value == 0) {
             revert ZeroAmount();
