@@ -75,4 +75,42 @@
 1. Thêm đoạn mã tự động cấu hình bảng mã UTF-8 `sys.stdout.reconfigure(encoding='utf-8')` trong file test Python.
 2. Xác minh biên dịch bằng `npx solc` (solc `0.8.37`) và chạy kiểm thử tự động toàn diện qua Python (`test/test_economic_rules.py` pass 5/5 ca), đồng thời tạo file test Solidity `test/ProjectCore_test.sol` để chạy trên Remix IDE.
 
-**Ai phát hiện:** AI và Sinh viên kiểm duyệt phát hiện và khắc phục ngay trong phiên làm việc.
+**Ai phát hiện:** AI và Sinh viên kiểm duyệt phát hiện và khắc phục ngay trong phiên làm việc.
+
+---
+
+## Lab 12 - Gate Review 1: Duyệt Codebase và Phạm vi
+
+**Prompt:** Bạn là Senior Smart Contract Reviewer, Technical Lead và trợ lý kỹ thuật cho dự án môn học ECO2432 – Tiền điện tử & Hợp đồng thông minh. Thực hiện LAB 12 — GATE REVIEW 1: DUYỆT CODEBASE VÀ PHẠM VI trong repo nhóm `KTS-Class-Fund`... [Rà soát sức khỏe repo từ Lab 8 đến 11, đối chiếu README, SPEC, ECONOMIC_RULES với ProjectCore.sol, kiểm tra ca hợp lệ/vi phạm, tạo `docs/GATE_REVIEW_1.md` và `docs/PROJECT_PLAN.md`, đề xuất kết luận và giữ trạng thái CHỜ GIẢNG VIÊN XÁC NHẬN].
+
+**AI trả về:**
+- Rà soát toàn bộ codebase và tài liệu hiện có, kiểm tra trạng thái Git sạch sẽ trên nhánh `main`.
+- Đánh giá sức khỏe repo theo 5 nhóm tiêu chí: README, Tính nhất quán tài liệu, Hợp đồng ProjectCore, Ca hợp lệ/vi phạm, Lịch sử Git.
+- Phát hiện khoảng cách lớn giữa đặc tả ban đầu (11 quy tắc R1–R11) và mã nguồn thực tế (mới triển khai duy nhất R2).
+- Tạo tài liệu `docs/GATE_REVIEW_1.md` với bảng kiểm tra chi tiết, phân tích rủi ro, 3 việc ưu tiên hàng đầu, đề xuất thu hẹp phạm vi hợp lý và đề xuất kỹ thuật nội bộ "Qua có điều kiện", để trống phần `CHỜ GIẢNG VIÊN XÁC NHẬN`.
+- Tạo mới `docs/PROJECT_PLAN.md` cập nhật tiến độ Lab 8–12 và lập kế hoạch chi tiết cho Lab 13–15 kèm tiêu chí hoàn thành (DoD) và ma trận RACI.
+
+**Đánh giá:** Dùng được, tính khách quan và chuẩn mực kỹ thuật cao. Không giả lập kết quả thành công ảo, phản ánh đúng tình trạng code và tài liệu.
+
+**Chỗ sai / Điểm phát hiện:**
+1. File `docs/PROJECT_PLAN.md` chưa từng được tạo trong repo từ các Lab trước; tồn tại 2 file mẫu khung rỗng ở thư mục gốc (`SPEC.md` và `AI_JOURNAL.md`) dễ gây nhầm lẫn nếu không truy xuất vào thư mục `docs/`.
+2. Nội dung `README.md` bị lệch pha với hiện trạng mã nguồn: mô tả các tính năng biểu quyết 51%, thời hạn 7 ngày, xử lý hoàn tiền như thể đã chạy, trong khi hợp đồng `ProjectCore.sol` mới chỉ có nạp tiền R2; chưa có hướng dẫn chạy test cụ thể.
+3. Hợp đồng `ProjectCore.sol` đã trích 1% vào `adminFeePool` nhưng chưa có hàm `withdrawAdminFee()` để Cố vấn học tập rút phí bù đắp gas, gây nguy cơ ứ đọng ETH phí.
+
+**Cách sửa / Biện pháp xử lý:**
+1. Tạo mới tài liệu kế hoạch chuẩn `docs/PROJECT_PLAN.md` và báo cáo cổng kiểm duyệt `docs/GATE_REVIEW_1.md`.
+2. Đã hoàn thiện cập nhật `README.md` khớp 100% với mã nguồn hiện tại, bổ sung hướng dẫn chạy test chi tiết từng bước cho cả Python (`test/test_economic_rules.py`) và Remix VM (`test/ProjectCore_test.sol`), bảng đối chiếu Expected vs Observed; cập nhật 2 tiêu chí README tương ứng trong `docs/GATE_REVIEW_1.md` sang trạng thái ĐẠT.
+3. **Rà soát lại đề xuất thu hẹp phạm vi theo chỉ đạo của nhóm:** 
+   - Không loại bỏ biểu quyết vì đây là chức năng cốt lõi của quỹ lớp. Giữ trọn vẹn quy tắc R4/R5: Ban cán sự bỏ phiếu với ngưỡng $\ge 51\%$ (5100 basis points) và thời hạn 7 ngày.
+   - Giữ lại trường hợp hoàn tiền an toàn (R7 tinh giản) cho trường hợp nộp nhầm với điều kiện an toàn kép (`refundAmount <= studentContributions` và `<= classFundBalance`).
+   - Tinh giản tải bằng cách hoãn các tính năng phụ trợ không bắt buộc: hoãn mã băm IPFS CID (`proofHash`), hoãn hàng đợi dọn dẹp đa trạng thái phức tạp, loại bỏ cơ chế ủy quyền biểu quyết (proxy voting) và token ERC-20.
+
+**Ai phát hiện:** 
+- AI ban đầu đề xuất cắt bỏ biểu quyết để giảm tải; Nhóm sinh viên phản biện và yêu cầu bảo toàn tính năng cốt lõi (biểu quyết 51%) cùng luồng hoàn tiền an toàn. AI và nhóm cùng rà soát lại và thống nhất tinh giản các tính năng phụ trợ thay thế.
+
+**Phần sinh viên cần tự xác minh:**
+- Trình tài liệu `docs/GATE_REVIEW_1.md` cho Giảng viên hướng dẫn tại buổi Gate Review 1 để nhận xét và xin chữ ký/kết luận chính thức.
+- Thảo luận nội bộ nhóm để chốt 2 câu hỏi nghiệp vụ trước Lab 13: (1) Tỷ lệ hoàn tiền nộp nhầm là 99% hay 100%, (2) Quyền phê duyệt hoàn tiền thuộc về ai (CVHT trực tiếp hay BCS biểu quyết).
+- Thống nhất phân công vai trò chính thức giữa các thành viên nhóm cho các mốc Lab 13, 14, 15 trong `docs/PROJECT_PLAN.md`.
+
+
