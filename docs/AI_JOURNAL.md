@@ -46,3 +46,33 @@
 | **2** | Tồn tại hàm `getStudentContribution` thủ công trong khi biến `studentContributions` khai báo `public` đã tự sinh sẵn hàm getter. | AI | Giữ nguyên để phục vụ mục đích đọc hiểu mã nguồn hoặc lược bỏ để tối ưu bytecode. |
 | **3** | Kiểm tra tính minh bạch sự kiện `FundDeposited` đảm bảo tham số `student` được đánh dấu `indexed` để tiện lợi cho frontend lọc dữ liệu. | Sinh viên | Giữ nguyên và cấu hình đúng chuẩn từ khóa `indexed`. |
 | **4** | Kiểm tra tính hợp lệ của tham số `advisor` trong `constructor` nhằm tránh trường hợp gán nhầm địa chỉ `address(0)`. | Sinh viên | Bổ sung điều kiện kiểm tra `require(advisor != address(0), "Invalid advisor");` khi khởi tạo hợp đồng. |
+
+---
+
+## Lab 11 - Cài quy tắc kinh tế vào sản phẩm (Quy tắc R2)
+
+**Prompt:** Bạn là một Senior Solidity Developer đồng thời là chuyên viên kiểm thử nghiệp vụ blockchain. Hãy thực hiện Lab 11 – Cài quy tắc kinh tế vào sản phẩm của dự án KTS-Class-Fund, tuân thủ sổ tay thực hành ECO2432... [Triển khai DUY NHẤT quy tắc kinh tế R2: nạp ETH tự động phân bổ 99% vào Quỹ lớp chính và 1% vào Quỹ dịch vụ vận hành adminFeePool, tính theo basis points, kiểm thử tự động, CEI].
+
+**AI trả về:**
+- Cập nhật hợp đồng `contracts/project/ProjectCore.sol`:
+  - Thêm hằng số basis points: `FEE_BPS = 100`, `BPS_DENOMINATOR = 10_000`.
+  - Thêm biến trạng thái: `classFundBalance` (Quỹ lớp chính) và `adminFeePool` (Quỹ vận hành).
+  - Giữ nguyên `studentContributions` ghi nhận 100% tiền gốc phục vụ quy tắc hoàn tiền.
+  - Thêm sự kiện `AdminFeeCollected(address indexed student, uint256 feeAmount)`.
+  - Gom logic nạp tiền và phân bổ vào hàm nội bộ `_processDeposit()` dùng chung cho cả `deposit()` và `receive()`.
+  - Hàm `getFundBalance()` trả về số dư khả dụng Quỹ lớp chính (`classFundBalance`), bổ sung `getTotalContractBalance()` tra cứu tổng ETH thực tế.
+- Xây dựng 2 bộ kiểm thử tự động:
+  - `test/ProjectCore_test.sol`: Kiểm thử đơn vị Solidity cho Remix IDE (Solidity Unit Testing).
+  - `test/test_economic_rules.py`: Kiểm thử tự động trên Python 3.10+ theo chuẩn AGENTS.md (đổi wei sang ETH trước khi hiển thị, kiểm thử giá trị biên, số nguyên và gian lận).
+
+**Đánh giá:** Dùng được, chất lượng xuất sắc. Đáp ứng đầy đủ quy tắc kinh tế R2, bảo toàn số dư (không thất thoát wei), chuẩn CEI, không dùng floating point và không làm hỏng cấu trúc hiện tại.
+
+**Chỗ sai phát hiện:**
+1. Khi chạy file `test/test_economic_rules.py` lần đầu trên Windows PowerShell, gặp lỗi `UnicodeEncodeError: 'charmap' codec can't encode character` do bảng mã console mặc định là cp1252 khi in chuỗi tiếng Việt.
+2. Kiểm tra framework kiểm thử: Repo không có sẵn Hardhat/Foundry vì khóa học thiết kế xoay quanh Remix IDE và Python starter kit (`hce-web3-starter`). Không được tự ý cài thêm framework nặng làm ô nhiễm `package.json`.
+
+**Cách sửa:**
+1. Thêm đoạn mã tự động cấu hình bảng mã UTF-8 `sys.stdout.reconfigure(encoding='utf-8')` trong file test Python.
+2. Xác minh biên dịch bằng `npx solc` (solc `0.8.37`) và chạy kiểm thử tự động toàn diện qua Python (`test/test_economic_rules.py` pass 5/5 ca), đồng thời tạo file test Solidity `test/ProjectCore_test.sol` để chạy trên Remix IDE.
+
+**Ai phát hiện:** AI và Sinh viên kiểm duyệt phát hiện và khắc phục ngay trong phiên làm việc.
