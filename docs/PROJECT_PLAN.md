@@ -52,9 +52,10 @@
    - **Lab 13:** Cài đặt Phân quyền CVHT (R1), Rút phí (R11), Đề xuất chi & Biểu quyết $\ge 51\%$ (R3, R4, R5, R6).
    - **Lab 14:** Cài đặt Hoàn tiền an toàn (R7 tinh giản) & Kiểm thử tích hợp toàn diện, Đo lường Gas.
    - **Lab 15:** Kết nối DApp Frontend, tương tác ví MetaMask trên Sepolia.
-3. **Nội dung đang chờ phê duyệt (Chưa quyết định chính thức):**
+3. **Nội dung quyết định nghiệp vụ đã chốt (Cập nhật sau Lab 14):**
    - Đang chờ Giảng viên hướng dẫn môn học ECO2432 đánh giá và xác nhận tại buổi Gate Review 1 (`CHỜ GIẢNG VIÊN XÁC NHẬN`).
-   - Đang chờ nhóm thảo luận chốt 2 câu hỏi nghiệp vụ về hoàn tiền: Tỷ lệ hoàn tiền (99% hay 100%) và Cơ chế phê duyệt hoàn tiền (CVHT duyệt trực tiếp hay BCS biểu quyết).
+   - **Cơ chế phê duyệt hoàn tiền:** Ban cán sự (BCS) biểu quyết dân chủ đạt $\ge 51\%$ trong thời hạn 7 ngày trước khi thực thi hoàn tiền.
+   - **Tỷ lệ hoàn tiền:** Sinh viên nộp nhầm tự chịu 1% phí vận hành đã trích vào `adminFeePool`. Hoàn tiền trích 100% từ Quỹ lớp chính (`classFundBalance`), không hoàn bù phí từ `adminFeePool`.
 
 ### 3.2. Chi tiết phạm vi giữ lại cho phiên bản v0.1 (Ưu tiên cốt lõi)
 - **Luồng nạp tiền & Trích phí (R2 - ĐÃ CÓ TRONG CODE):** 99% Quỹ lớp, 1% Quỹ vận hành.

@@ -1,31 +1,7 @@
-# SPEC - [Tên bài]
+# ĐẶC TẢ NGHIỆP VỤ KTS-CLASS-FUND (BẢN CHÍNH THỨC)
 
-## 1. Mục đích
+> [!NOTE]
+> Tài liệu đặc tả nghiệp vụ chính thức và đầy đủ của dự án KTS-Class-Fund được lưu trữ và duy trì tại:
+> [docs/SPEC.md](docs/SPEC.md)
 
-Một câu: hệ thống này giải quyết việc gì cho ai.
-
-## 2. Đầu vào
-
-- Dữ liệu hoặc tham số gì, kiểu gì, ai cung cấp.
-
-## 3. Quy tắc nghiệp vụ
-
-- R1: ...
-- R2: ...
-
-Mỗi quy tắc phải là một câu khẳng định kiểm tra được.
-
-## 4. Đầu ra
-
-- Kết quả gì, hiển thị ở đâu.
-
-## 5. Trường hợp ngoại lệ
-
-- Nếu [tình huống] thì hệ thống phải [hành vi].
-
-Tối thiểu ba trường hợp.
-
-## 6. Ngoài phạm vi
-
-- Những gì bài này không làm.
-
+Vui lòng tham khảo tệp `docs/SPEC.md` để xem toàn bộ 11 quy tắc nghiệp vụ (R1–R11), mô hình phân quyền Cố vấn học tập / Ban cán sự, luồng biểu quyết dân chủ $\ge 51\%$, và quy trình hoàn tiền có biểu quyết BCS (R7 nâng cấp sau Lab 14).

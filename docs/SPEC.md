@@ -93,3 +93,42 @@ Hệ thống KTS-Class-Fund là hợp đồng thông minh quản lý quỹ lớp
 * Hỗ trợ thanh toán hoặc quy đổi tiền pháp định (Fiat/VND) và các loại token ERC-20 khác.
 * Tích hợp hệ thống quản lý danh tính sinh viên tập trung (SSO/Portal trường học).
 * Cơ chế ủy quyền bỏ phiếu (proxy voting) hoặc phân bổ trọng số phiếu bầu khác nhau giữa các thành viên Ban cán sự.
+
+---
+
+## 7. Phụ lục Lab 14: Quy trình Hoàn tiền có Biểu quyết Ban Cán sự (Governance-Controlled Refund R7)
+
+Để ngăn chặn việc thành viên tự ý rút tiền trực tiếp khỏi quỹ lớp mà không có sự đồng thuận của tập thể, hệ thống chuẩn hóa quy trình hoàn tiền R7 theo cơ chế kiểm soát nghiêm ngặt 3 bước có biểu quyết Ban cán sự (BCS) tương tự quy trình đề xuất chi tiêu:
+
+**Sinh viên gửi yêu cầu hoàn tiền $\rightarrow$ BCS biểu quyết ($\ge 51\%$) $\rightarrow$ Thực thi hoàn tiền $\rightarrow$ Giải phóng giữ chỗ & Chuyển ETH.**
+
+1. **Bước 1 — Tạo yêu cầu hoàn tiền (`createRefundRequest`):**
+   - Người gọi (`msg.sender`) tự tạo yêu cầu hoàn tiền cho chính mình kèm lý do mô tả (`reason`).
+   - `amount > 0`: Chặn yêu cầu 0 wei bằng lỗi tùy biến `ZeroAmount()`.
+   - `amount <= getStudentAvailableContribution(msg.sender)`: Hạn mức hoàn tiền khả dụng của sinh viên được tính bằng tổng đóng góp trừ đi các khoản đang trong yêu cầu hoàn tiền chờ duyệt (`pendingStudentRefundAmount[msg.sender]`). Nếu vượt quá hoặc người chưa từng đóng góp, revert `InsufficientContribution(requested, available)`.
+   - `amount <= getAvailableClassFund()`: Số tiền hoàn không được vượt quá số dư khả dụng thực tế của Quỹ lớp chính (sau khi trừ cả `reservedSpendAmount` lẫn `reservedRefundAmount`). Nếu vượt quá, revert `InsufficientAvailableFund(requested, available)`.
+   - Cơ chế giữ chỗ kép an toàn (Dual-layer Reservation): Tăng đồng thời `reservedRefundAmount += amount` (giữ chỗ trên quỹ lớp) và `pendingStudentRefundAmount[msg.sender] += amount` (giữ chỗ trên hạn mức của chính sinh viên).
+   - Tuyệt đối không tự động chuyển ETH ra khỏi hợp đồng tại bước tạo yêu cầu.
+   - Phát sự kiện `RefundRequestCreated(requestId, applicant, amount, reason)`.
+
+2. **Bước 2 — Ban cán sự biểu quyết (`voteRefundRequest`):**
+   - Chỉ thành viên Ban cán sự hợp lệ và đang hoạt động mới có quyền bỏ phiếu (`onlyActiveBCS`).
+   - Mỗi thành viên BCS chỉ được bỏ phiếu một lần duy nhất cho mỗi yêu cầu (`AlreadyVotedRefund`).
+   - Thời hạn biểu quyết cố định 7 ngày (`VOTING_PERIOD = 7 days`). Sau thời hạn này, cấm bỏ phiếu (`RefundVotingPeriodEnded`).
+   - Ngưỡng thông qua: Khi số phiếu thuận đạt tối thiểu 51% (5,100 basis points) trên tổng số BCS hoạt động hiện hành (`activeBCSCount`), yêu cầu tự động chuyển sang trạng thái Sẵn sàng thực thi (`Ready`).
+   - Phát sự kiện `RefundRequestVoted` và `RefundRequestReady`.
+   - Dọn dẹp quá hạn (`expireRefundRequest`): Nếu sau 7 ngày không đạt đủ 51% phiếu thuận, bất kỳ ai cũng có thể gọi hàm dọn dẹp để chuyển sang trạng thái `Expired`, giải phóng toàn bộ số tiền giữ chỗ kép về quỹ khả dụng.
+
+3. **Bước 3 — Thực thi hoàn tiền (`executeRefundRequest`):**
+   - Chỉ yêu cầu đã đạt trạng thái `Ready` và chưa hết hạn mới được phép thực thi (`InvalidRefundStatus`).
+   - Xác minh lại hạn mức đóng góp và số dư quỹ lớp trước khi giải ngân.
+   - Tuân thủ nghiêm ngặt nguyên tắc Checks-Effects-Interactions (CEI): Cập nhật trạng thái `req.status = Executed`, trừ `studentContributions[applicant]`, trừ `classFundBalance`, giải phóng `reservedRefundAmount` và `pendingStudentRefundAmount[applicant]` TRƯỚC KHI thực hiện lệnh chuyển ETH.
+   - Tiền hoàn trả chuyển trực tiếp đến địa chỉ ví của chính sinh viên đã tạo yêu cầu (`req.applicant`) qua low-level call `.call{value: req.amount}("")`. Không ai có thể thay đổi địa chỉ nhận tiền.
+   - Nếu chuyển ETH thất bại, toàn bộ giao dịch revert `ETHTransferFailed()` và rollback 100% kế toán.
+   - Chặn Reentrancy và chống thực thi hai lần (`RefundAlreadyExecuted`).
+   - Phát sự kiện `RefundRequestExecuted(requestId, applicant, amount)`.
+
+4. **Bảo toàn quy tắc kinh tế 99%/1%:**
+   - Khoản tiền hoàn trả trích 100% từ Quỹ lớp chính (`classFundBalance`).
+   - Khoản phí dịch vụ vận hành 1% đã trích vào `adminFeePool` tại thời điểm nộp quỹ được giữ nguyên (sinh viên chịu khoản phí vận hành này để bù đắp chi phí Gas mạng lưới).
+   - Tuyệt đối không tồn tại bất kỳ hàm `refund()` công khai nào cho phép sinh viên rút tiền trực tiếp bỏ qua biểu quyết của BCS.

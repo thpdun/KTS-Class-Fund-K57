@@ -32,6 +32,18 @@ contract ProjectCore {
         RequestStatus status;       // Trạng thái hiện tại của đề xuất
     }
 
+    /// @notice Cấu trúc thông tin của một yêu cầu hoàn tiền nộp nhầm (R7)
+    struct RefundRequest {
+        uint256 id;                 // Mã định danh duy nhất của yêu cầu hoàn tiền
+        address payable applicant;  // Địa chỉ ví sinh viên nộp đơn yêu cầu hoàn tiền
+        uint256 amount;             // Số tiền yêu cầu hoàn lại (wei)
+        string reason;              // Lý do chi tiết nộp kèm yêu cầu hoàn tiền
+        uint256 createdAt;          // Thời điểm tạo yêu cầu (block.timestamp)
+        uint256 yesVotes;           // Số phiếu thuận từ Ban cán sự
+        uint256 noVotes;            // Số phiếu chống từ Ban cán sự
+        RequestStatus status;       // Trạng thái hiện tại của yêu cầu
+    }
+
     // ==========================================
     // HẰNG SỐ CẤU HÌNH KINH TẾ (BASIS POINTS)
     // ==========================================
@@ -82,6 +94,21 @@ contract ProjectCore {
     /// @notice Bảng ghi nhận trạng thái đã bỏ phiếu của thành viên BCS cho từng đề xuất (requestId => member => bool) (R4)
     mapping(uint256 => mapping(address => bool)) public hasVoted;
 
+    /// @notice Tổng số tiền đang được giữ chỗ cho các yêu cầu hoàn tiền đang chờ hoặc sẵn sàng thực thi
+    uint256 public reservedRefundAmount;
+
+    /// @notice Bảng theo dõi tổng số tiền đang nằm trong các yêu cầu hoàn tiền đang chờ/sẵn sàng của từng sinh viên
+    mapping(address => uint256) public pendingStudentRefundAmount;
+
+    /// @notice Tổng số yêu cầu hoàn tiền đã được tạo trong hợp đồng
+    uint256 public refundRequestCount;
+
+    /// @notice Bảng lưu trữ thông tin các yêu cầu hoàn tiền theo mã định danh (refundId => RefundRequest)
+    mapping(uint256 => RefundRequest) public refundRequests;
+
+    /// @notice Bảng ghi nhận trạng thái đã bỏ phiếu của thành viên BCS cho từng yêu cầu hoàn tiền (refundId => member => bool)
+    mapping(uint256 => mapping(address => bool)) public hasVotedRefund;
+
     // ==========================================
     // SỰ KIỆN (EVENTS)
     // ==========================================
@@ -126,6 +153,36 @@ contract ProjectCore {
     /// @notice Phát ra khi đề xuất chi bị đánh dấu hết hạn sau 7 ngày mà chưa đạt đủ 51% (R5, R9)
     event SpendRequestExpired(uint256 indexed requestId);
 
+    /// @notice Phát ra khi sinh viên tạo mới một yêu cầu hoàn tiền (R7)
+    event RefundRequestCreated(
+        uint256 indexed refundId,
+        address indexed applicant,
+        uint256 amount,
+        string reason,
+        uint256 createdAt
+    );
+
+    /// @notice Phát ra khi một thành viên BCS bỏ phiếu cho yêu cầu hoàn tiền (R7)
+    event RefundRequestVoted(
+        uint256 indexed refundId,
+        address indexed voter,
+        bool support,
+        uint256 yesVotes,
+        uint256 noVotes
+    );
+
+    /// @notice Phát ra khi yêu cầu hoàn tiền đạt đủ 51% phiếu thuận và chuyển sang trạng thái Sẵn sàng thực thi (R7)
+    event RefundRequestReady(uint256 indexed refundId);
+
+    /// @notice Phát ra khi yêu cầu hoàn tiền được thực thi chuyển ETH thành công cho sinh viên (R7)
+    event RefundRequestExecuted(uint256 indexed refundId, address indexed applicant, uint256 amount);
+
+    /// @notice Phát ra khi yêu cầu hoàn tiền bị đánh dấu hết hạn sau 7 ngày mà chưa đạt đủ 51% phiếu thuận (R7)
+    event RefundRequestExpired(uint256 indexed refundId);
+
+    /// @notice Phát ra khi hoàn tiền nộp nhầm thành công cho sinh viên (R7 - tương thích)
+    event RefundProcessed(address indexed student, uint256 amount);
+
     // ==========================================
     // LỖI TÙY BIẾN (CUSTOM ERRORS)
     // ==========================================
@@ -144,6 +201,9 @@ contract ProjectCore {
 
     /// @notice Số tiền rút phí vượt quá số dư Quỹ dịch vụ vận hành hiện có
     error InsufficientAdminFee(uint256 requested, uint256 available);
+
+    /// @notice Số tiền yêu cầu hoàn vượt quá số tiền sinh viên đã đóng góp còn lại
+    error InsufficientContribution(uint256 requested, uint256 available);
 
     /// @notice Số tiền đề xuất vượt quá số dư khả dụng thực tế của Quỹ lớp chính
     error InsufficientAvailableFund(uint256 requested, uint256 available);
@@ -177,6 +237,27 @@ contract ProjectCore {
 
     /// @notice Đề xuất chi chưa đạt ngưỡng đồng thuận tối thiểu 51% trên tổng số BCS
     error ThresholdNotMet(uint256 yesVotes, uint256 activeBCSCount);
+
+    /// @notice Không tìm thấy yêu cầu hoàn tiền với mã định danh được cung cấp
+    error RefundRequestNotFound(uint256 refundId);
+
+    /// @notice Yêu cầu hoàn tiền đã được thực thi giải ngân trước đó
+    error RefundAlreadyExecuted(uint256 refundId);
+
+    /// @notice Yêu cầu hoàn tiền đã hết hạn (quá 7 ngày và chưa đạt 51%)
+    error RefundExpired(uint256 refundId);
+
+    /// @notice Trạng thái của yêu cầu hoàn tiền không hợp lệ cho thao tác yêu cầu
+    error InvalidRefundStatus(uint256 refundId);
+
+    /// @notice Thành viên Ban cán sự đã bỏ phiếu cho yêu cầu hoàn tiền này trước đó
+    error AlreadyVotedRefund(uint256 refundId, address voter);
+
+    /// @notice Thời hạn bỏ phiếu yêu cầu hoàn tiền 7 ngày đã kết thúc
+    error RefundVotingPeriodEnded(uint256 refundId);
+
+    /// @notice Thời hạn bỏ phiếu yêu cầu hoàn tiền 7 ngày vẫn còn hiệu lực, chưa thể đánh dấu hết hạn
+    error RefundVotingStillActive(uint256 refundId);
 
     /// @notice Lệnh chuyển ETH bằng low-level call thất bại
     error ETHTransferFailed();
@@ -524,6 +605,205 @@ contract ProjectCore {
     }
 
     // ==========================================
+    // R7: QUY TRÌNH HOÀN TIỀN CÓ BIỂU QUYẾT BAN CÁN SỰ (R7 V0.1)
+    // ==========================================
+
+    /// @notice Sinh viên tạo yêu cầu xin hoàn lại tiền nộp nhầm/thừa vào Quỹ lớp (R7)
+    /// @dev Bước 1: Yêu cầu được ghi nhận và giữ chỗ ngân sách, KHÔNG tự động chuyển ETH ra khỏi hợp đồng
+    /// @param amount Số lượng ETH yêu cầu hoàn lại (wei)
+    /// @param reason Lý do chi tiết gửi kèm yêu cầu
+    /// @return refundId Mã định danh duy nhất của yêu cầu hoàn tiền vừa tạo
+    function createRefundRequest(uint256 amount, string calldata reason) external returns (uint256) {
+        // 1. Checks: Kiểm tra đầu vào hợp lệ
+        if (amount == 0) {
+            revert ZeroAmount();
+        }
+
+        // Kiểm tra hạn mức đóng góp khả dụng của chính sinh viên (trừ đi các yêu cầu đang chờ duyệt)
+        uint256 availableContrib = getStudentAvailableContribution(msg.sender);
+        if (amount > availableContrib) {
+            revert InsufficientContribution(amount, availableContrib);
+        }
+
+        // Kiểm tra số dư quỹ lớp khả dụng (đã trừ cả đề xuất chi và yêu cầu hoàn tiền đang giữ chỗ)
+        uint256 availableFund = getAvailableClassFund();
+        if (amount > availableFund) {
+            revert InsufficientAvailableFund(amount, availableFund);
+        }
+
+        // 2. Effects: Ghi nhận yêu cầu và giữ chỗ số dư
+        refundRequestCount++;
+        uint256 refundId = refundRequestCount;
+
+        pendingStudentRefundAmount[msg.sender] += amount;
+        reservedRefundAmount += amount;
+
+        refundRequests[refundId] = RefundRequest({
+            id: refundId,
+            applicant: payable(msg.sender),
+            amount: amount,
+            reason: reason,
+            createdAt: block.timestamp,
+            yesVotes: 0,
+            noVotes: 0,
+            status: RequestStatus.Pending
+        });
+
+        emit RefundRequestCreated(refundId, msg.sender, amount, reason, block.timestamp);
+        return refundId;
+    }
+
+    /// @notice Thành viên Ban cán sự bỏ phiếu cho một yêu cầu hoàn tiền (R7)
+    /// @dev Bước 2: Mỗi thành viên BCS chỉ bỏ phiếu 1 lần; tự động sang Ready khi đạt >= 51% trên tổng số BCS
+    /// @param refundId Mã định danh của yêu cầu hoàn tiền cần bỏ phiếu
+    /// @param support true nếu đồng ý duyệt hoàn tiền, false nếu từ chối/bác bỏ
+    function voteRefundRequest(uint256 refundId, bool support) external onlyActiveBCS {
+        // 1. Checks: Yêu cầu tồn tại
+        if (refundId == 0 || refundId > refundRequestCount) {
+            revert RefundRequestNotFound(refundId);
+        }
+
+        RefundRequest storage req = refundRequests[refundId];
+
+        // Kiểm tra trạng thái yêu cầu
+        if (req.status == RequestStatus.Executed) {
+            revert RefundAlreadyExecuted(refundId);
+        }
+        if (req.status == RequestStatus.Expired) {
+            revert RefundExpired(refundId);
+        }
+        if (req.status != RequestStatus.Pending && req.status != RequestStatus.Ready) {
+            revert InvalidRefundStatus(refundId);
+        }
+
+        // Kiểm tra thời hạn biểu quyết 7 ngày
+        if (block.timestamp > req.createdAt + VOTING_PERIOD) {
+            if (req.status == RequestStatus.Pending) {
+                req.status = RequestStatus.Expired;
+                reservedRefundAmount -= req.amount;
+                pendingStudentRefundAmount[req.applicant] -= req.amount;
+                emit RefundRequestExpired(refundId);
+            }
+            revert RefundVotingPeriodEnded(refundId);
+        }
+
+        // Chống bỏ phiếu trùng
+        if (hasVotedRefund[refundId][msg.sender]) {
+            revert AlreadyVotedRefund(refundId, msg.sender);
+        }
+
+        if (activeBCSCount == 0) {
+            revert NoActiveBCS();
+        }
+
+        // 2. Effects: Ghi nhận phiếu bầu
+        hasVotedRefund[refundId][msg.sender] = true;
+        if (support) {
+            req.yesVotes++;
+        } else {
+            req.noVotes++;
+        }
+
+        emit RefundRequestVoted(refundId, msg.sender, support, req.yesVotes, req.noVotes);
+
+        // Kiểm tra ngưỡng thông qua >= 51% trên tổng số BCS hoạt động
+        uint256 approvalBps = (req.yesVotes * BPS_DENOMINATOR) / activeBCSCount;
+        if (approvalBps >= PASSING_THRESHOLD_BPS && req.status == RequestStatus.Pending) {
+            req.status = RequestStatus.Ready;
+            emit RefundRequestReady(refundId);
+        }
+    }
+
+    /// @notice Thực thi hoàn trả ETH cho yêu cầu hoàn tiền đã được Ban cán sự thông qua >= 51% (R7)
+    /// @dev Bước 3: Áp dụng nghiêm ngặt Checks-Effects-Interactions (CEI), chuyển ETH trực tiếp cho applicant
+    /// @param refundId Mã định danh của yêu cầu hoàn tiền cần thực thi
+    function executeRefundRequest(uint256 refundId) external {
+        // 1. Checks: Yêu cầu tồn tại
+        if (refundId == 0 || refundId > refundRequestCount) {
+            revert RefundRequestNotFound(refundId);
+        }
+
+        RefundRequest storage req = refundRequests[refundId];
+
+        if (req.status == RequestStatus.Executed) {
+            revert RefundAlreadyExecuted(refundId);
+        }
+        if (req.status == RequestStatus.Expired) {
+            revert RefundExpired(refundId);
+        }
+        if (req.status == RequestStatus.Cancelled || req.status == RequestStatus.Rejected) {
+            revert InvalidRefundStatus(refundId);
+        }
+
+        if (activeBCSCount == 0) {
+            revert NoActiveBCS();
+        }
+
+        // Kiểm tra ngưỡng đồng thuận >= 51%
+        uint256 approvalBps = (req.yesVotes * BPS_DENOMINATOR) / activeBCSCount;
+        if (approvalBps < PASSING_THRESHOLD_BPS) {
+            revert ThresholdNotMet(req.yesVotes, activeBCSCount);
+        }
+
+        // Tự động chuyển Ready nếu trước đó là Pending
+        if (req.status == RequestStatus.Pending) {
+            req.status = RequestStatus.Ready;
+            emit RefundRequestReady(refundId);
+        }
+
+        // Xác minh lại hạn mức đóng góp và số dư quỹ lớp
+        if (req.amount > studentContributions[req.applicant]) {
+            revert InsufficientContribution(req.amount, studentContributions[req.applicant]);
+        }
+
+        if (req.amount > classFundBalance) {
+            revert InsufficientFund(req.amount, classFundBalance);
+        }
+
+        // 2. Effects (Cập nhật toàn bộ trạng thái trước khi tương tác ngoại vi - CEI)
+        req.status = RequestStatus.Executed;
+        reservedRefundAmount -= req.amount;
+        pendingStudentRefundAmount[req.applicant] -= req.amount;
+        studentContributions[req.applicant] -= req.amount;
+        classFundBalance -= req.amount;
+
+        emit RefundRequestExecuted(refundId, req.applicant, req.amount);
+        emit RefundProcessed(req.applicant, req.amount);
+
+        // 3. Interactions: Chuyển ETH về chính ví sinh viên đã tạo yêu cầu
+        (bool success, ) = req.applicant.call{value: req.amount}("");
+        if (!success) {
+            revert ETHTransferFailed();
+        }
+    }
+
+    /// @notice Đánh dấu hết hạn yêu cầu hoàn tiền quá hạn 7 ngày mà chưa đạt đủ 51% phiếu thuận (R7)
+    /// @dev Bất kỳ ai cũng có thể gọi sau 7 ngày để giải phóng hạn mức giữ chỗ cho sinh viên và quỹ lớp
+    /// @param refundId Mã định danh của yêu cầu hoàn tiền cần đánh dấu hết hạn
+    function expireRefundRequest(uint256 refundId) external {
+        if (refundId == 0 || refundId > refundRequestCount) {
+            revert RefundRequestNotFound(refundId);
+        }
+
+        RefundRequest storage req = refundRequests[refundId];
+
+        if (req.status != RequestStatus.Pending && req.status != RequestStatus.Ready) {
+            revert InvalidRefundStatus(refundId);
+        }
+
+        if (block.timestamp <= req.createdAt + VOTING_PERIOD) {
+            revert RefundVotingStillActive(refundId);
+        }
+
+        // Cập nhật trạng thái và giải phóng giữ chỗ cho cả sinh viên lẫn quỹ lớp
+        req.status = RequestStatus.Expired;
+        reservedRefundAmount -= req.amount;
+        pendingStudentRefundAmount[req.applicant] -= req.amount;
+
+        emit RefundRequestExpired(refundId);
+    }
+
+    // ==========================================
     // HÀM TRA CỨU (VIEW / GETTERS)
     // ==========================================
 
@@ -532,12 +812,14 @@ contract ProjectCore {
         return classFundBalance;
     }
 
-    /// @notice Tra cứu số dư Quỹ lớp chính khả dụng thực tế để tạo đề xuất chi mới
+    /// @notice Tra cứu số dư Quỹ lớp chính khả dụng thực tế để tạo đề xuất chi hoặc hoàn tiền mới
+    /// @dev Đã trừ đồng thời cả reservedSpendAmount và reservedRefundAmount để chống chiếm dụng ngân sách
     function getAvailableClassFund() public view returns (uint256) {
-        if (classFundBalance <= reservedSpendAmount) {
+        uint256 totalReserved = reservedSpendAmount + reservedRefundAmount;
+        if (classFundBalance <= totalReserved) {
             return 0;
         }
-        return classFundBalance - reservedSpendAmount;
+        return classFundBalance - totalReserved;
     }
 
     /// @notice Tra cứu tổng số dư ETH thực tế hiện có trong hợp đồng (bao gồm cả adminFeePool)
@@ -548,6 +830,16 @@ contract ProjectCore {
     /// @notice Tra cứu tổng số tiền đã đóng góp của một sinh viên cụ thể
     function getStudentContribution(address student) external view returns (uint256) {
         return studentContributions[student];
+    }
+
+    /// @notice Tra cứu hạn mức đóng góp còn khả dụng của sinh viên (đã trừ các yêu cầu hoàn tiền đang chờ duyệt)
+    function getStudentAvailableContribution(address student) public view returns (uint256) {
+        uint256 totalContrib = studentContributions[student];
+        uint256 pending = pendingStudentRefundAmount[student];
+        if (totalContrib <= pending) {
+            return 0;
+        }
+        return totalContrib - pending;
     }
 
     /// @notice Tra cứu chi tiết một đề xuất chi tiêu
@@ -583,8 +875,44 @@ contract ProjectCore {
         );
     }
 
-    /// @notice Kiểm tra một thành viên Ban cán sự đã bỏ phiếu cho đề xuất hay chưa
+    /// @notice Kiểm tra một thành viên Ban cán sự đã bỏ phiếu cho đề xuất chi hay chưa
     function hasMemberVoted(uint256 requestId, address member) external view returns (bool) {
         return hasVoted[requestId][member];
+    }
+
+    /// @notice Tra cứu chi tiết một yêu cầu hoàn tiền
+    function getRefundRequest(uint256 refundId)
+        external
+        view
+        returns (
+            uint256 id,
+            address applicant,
+            uint256 amount,
+            string memory reason,
+            uint256 createdAt,
+            uint256 yesVotes,
+            uint256 noVotes,
+            RequestStatus status
+        )
+    {
+        if (refundId == 0 || refundId > refundRequestCount) {
+            revert RefundRequestNotFound(refundId);
+        }
+        RefundRequest storage req = refundRequests[refundId];
+        return (
+            req.id,
+            req.applicant,
+            req.amount,
+            req.reason,
+            req.createdAt,
+            req.yesVotes,
+            req.noVotes,
+            req.status
+        );
+    }
+
+    /// @notice Kiểm tra một thành viên Ban cán sự đã bỏ phiếu cho yêu cầu hoàn tiền hay chưa
+    function hasMemberVotedRefund(uint256 refundId, address member) external view returns (bool) {
+        return hasVotedRefund[refundId][member];
     }
 }
