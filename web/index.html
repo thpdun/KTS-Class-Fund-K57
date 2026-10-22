@@ -1,56 +1,3520 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ứng dụng ECO2432</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KTS CLASS FUND — Cổng Thông Tin & Quản Lý Quỹ Lớp (K57 Kinh Tế Số)</title>
+  <meta name="description" content="Cổng thông tin và hệ thống quản lý quỹ lớp minh bạch bằng công nghệ Blockchain Ethereum Sepolia cho tập thể sinh viên ngành Kinh tế Số K57.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Ethers.js v6 via jsDelivr CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
   <style>
-    body{font-family:system-ui,sans-serif;max-width:680px;margin:40px auto;padding:0 18px;color:#172033}
-    button,input{font:inherit;padding:10px 12px;margin:5px 3px 5px 0} #status{min-height:1.5em;color:#1d4ed8}
+    :root {
+      --primary-navy: #0f172a;
+      --secondary-navy: #1e293b;
+      --brand-blue: #2563eb;
+      --brand-blue-hover: #1d4ed8;
+      --brand-cyan: #0284c7;
+      --bg-slate: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --info-bg: #eff6ff;
+      --purple-role: #8b5cf6;
+      --purple-bg: #f5f3ff;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-slate);
+      color: var(--text-main);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+
+    h1, h2, h3, h4, h5, .brand-font {
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+
+    a {
+      color: var(--brand-blue);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    a:hover {
+      color: var(--brand-blue-hover);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header & Navigation */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand-logo svg {
+      width: 32px;
+      height: 32px;
+      fill: #38bdf8;
+    }
+    .brand-sub {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #94a3b8;
+      display: block;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #38bdf8;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-network {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+    }
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .badge-dot.connected {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+    .badge-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .btn-primary {
+      background: var(--brand-blue);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--brand-blue-hover);
+      color: #fff;
+    }
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #059669;
+      color: #fff;
+    }
+    .btn-purple {
+      background: var(--purple-role);
+      color: #fff;
+    }
+    .btn-purple:hover {
+      background: #7c3aed;
+      color: #fff;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: #f1f5f9;
+    }
+    .btn-outline-white {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+    .btn-outline-white:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+      color: #fff;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      border-radius: var(--radius-sm);
+    }
+    .btn-warning {
+      background: var(--warning);
+      color: #fff;
+    }
+    .btn-warning:hover {
+      background: #d97706;
+      color: #fff;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1e3a8a 100%);
+      color: #fff;
+      padding: 60px 0 40px 0;
+      position: relative;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: 2.5rem;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+    .hero-desc {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin-bottom: 28px;
+      max-width: 820px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Quick Control Bar */
+    .quick-control-bar {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      text-align: left;
+      backdrop-filter: blur(10px);
+    }
+    .quick-status-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .quick-status-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .quick-status-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: #94a3b8;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .quick-status-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .contract-input-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .contract-input-bar input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.85rem;
+      font-family: monospace;
+      outline: none;
+      width: 250px;
+    }
+    .contract-input-bar input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* Live metrics ribbon */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .metric-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: left;
+      backdrop-filter: blur(6px);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .metric-title {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .metric-num {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #38bdf8;
+      font-family: 'Outfit', sans-serif;
+      margin-bottom: 4px;
+    }
+    .metric-note {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    /* 4 NÚT BẤM VAI TRÒ, DÒNG TIỀN & Ô CHI TIẾT TRANG CHỦ */
+    .role-btn-history {
+      border-color: #fed7aa;
+      color: #c2410c;
+    }
+    .role-btn-history:hover, .role-btn-history.active {
+      background: #ea580c;
+      color: #ffffff;
+      border-color: #ea580c;
+      box-shadow: 0 8px 20px -4px rgba(234, 88, 12, 0.4);
+    }
+    .role-panel.panel-history {
+      border-top: 5px solid #ea580c;
+    }
+
+    /* Flow Diagram Styles */
+    .flow-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .flow-step-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .flow-step-box:hover {
+      background: #ffffff;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .flow-step-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .flow-badge-inflow { background: #dcfce7; color: #166534; }
+    .flow-badge-spend { background: #dbeafe; color: #1e40af; }
+    .flow-badge-refund { background: #ffedd5; color: #9a3412; }
+    .flow-badge-gas { background: #f3e8ff; color: #6b21a8; }
+
+    /* Flow Balance Ribbon */
+    .flow-balance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .flow-balance-card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .flow-balance-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .flow-balance-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Flow Ledger Filters */
+    .flow-filter-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .flow-filter-btn {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      background: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .flow-filter-btn:hover {
+      background: #f1f5f9;
+      color: var(--primary-navy);
+    }
+    .flow-filter-btn.active {
+      background: #ea580c;
+      color: #fff;
+      border-color: #ea580c;
+    }
+
+    .dapp-hero-section {
+      padding: 40px 0 70px 0;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .role-buttons-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 18px 0 12px 0;
+    }
+    .role-btn-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 36px;
+      font-size: 1.12rem;
+      font-weight: 700;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #ffffff;
+      color: var(--primary-navy);
+      box-shadow: var(--shadow-sm);
+      min-width: 220px;
+    }
+    .role-btn-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .role-btn-student {
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+    .role-btn-student:hover, .role-btn-student.active {
+      background: #059669;
+      color: #ffffff;
+      border-color: #059669;
+      box-shadow: 0 8px 20px -4px rgba(5, 150, 105, 0.4);
+    }
+    .role-btn-bcs {
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+    .role-btn-bcs:hover, .role-btn-bcs.active {
+      background: var(--brand-blue);
+      color: #ffffff;
+      border-color: var(--brand-blue);
+      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+    }
+    .role-btn-advisor {
+      border-color: #ddd6fe;
+      color: #5b21b6;
+    }
+    .role-btn-advisor:hover, .role-btn-advisor.active {
+      background: var(--purple-role);
+      color: #ffffff;
+      border-color: var(--purple-role);
+      box-shadow: 0 8px 20px -4px rgba(139, 92, 246, 0.4);
+    }
+    .role-btn-icon {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+    .role-btn-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    /* Container Ô Chi Tiết */
+    .role-detail-container {
+      max-width: 1100px;
+      margin: 24px auto 0 auto;
+      transition: all 0.3s ease;
+    }
+    .role-detail-container .role-panel {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .role-panel {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s;
+    }
+    .role-panel.panel-student {
+      border-top: 5px solid var(--success);
+    }
+    .role-panel.panel-bcs {
+      border-top: 5px solid var(--brand-blue);
+    }
+    .role-panel.panel-advisor {
+      border-top: 5px solid var(--purple-role);
+    }
+
+    .panel-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafbfc;
+    }
+    .panel-title {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-student-role {
+      background: var(--success-bg);
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .badge-bcs-role {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .badge-advisor-role {
+      background: var(--purple-bg);
+      color: #6d28d9;
+      border: 1px solid #ddd6fe;
+    }
+
+    .panel-body {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Forms inside panels */
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--primary-navy);
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Status Pills */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-pending { background: var(--warning-bg); color: #b45309; border: 1px solid #fde68a; }
+    .status-ready { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-executed { background: var(--success-bg); color: #047857; border: 1px solid #a7f3d0; }
+    .status-expired { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+
+    /* Tables */
+    .data-table-container {
+      overflow-x: auto;
+      margin-top: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: #fff;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    table.data-table th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+    table.data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+    table.data-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Sections General */
+    section {
+      padding: 70px 0;
+    }
+    .section-header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 40px auto;
+    }
+    .section-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: var(--info-bg);
+      color: var(--brand-blue);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 2.1rem;
+      color: var(--primary-navy);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Cards Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--info-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand-blue);
+      margin-bottom: 16px;
+    }
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: var(--primary-navy);
+    }
+    .card-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* Process Timeline */
+    .timeline {
+      position: relative;
+      margin: 30px auto;
+      max-width: 960px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 36px;
+      width: 3px;
+      background: #e2e8f0;
+    }
+    .timeline-step {
+      position: relative;
+      display: flex;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .timeline-step:last-child {
+      margin-bottom: 0;
+    }
+    .step-badge {
+      position: relative;
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--brand-blue);
+      color: var(--brand-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .step-content {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      flex: 1;
+      box-shadow: var(--shadow-sm);
+    }
+    .step-content h4 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .step-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+    }
+    .meta-tag {
+      background: #f1f5f9;
+      padding: 3px 10px;
+      border-radius: 4px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* Calculator Box */
+    .calc-box {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* FAQ Section */
+    .faq-search-box {
+      max-width: 550px;
+      margin: 0 auto 30px auto;
+      position: relative;
+    }
+    .faq-search-input {
+      width: 100%;
+      padding: 14px 20px 14px 44px;
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      font-size: 1rem;
+      box-shadow: var(--shadow-sm);
+      outline: none;
+    }
+    .faq-search-input:focus {
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .faq-search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .accordion-item {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .accordion-header {
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--primary-navy);
+      background: #fff;
+      user-select: none;
+    }
+    .accordion-header:hover {
+      background: #f8fafc;
+    }
+    .accordion-icon {
+      transition: transform 0.2s;
+      color: var(--text-muted);
+    }
+    .accordion-item.open .accordion-icon {
+      transform: rotate(180deg);
+    }
+    .accordion-body {
+      display: none;
+      padding: 0 22px 18px 22px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      border-top: 1px solid #f1f5f9;
+    }
+    .accordion-item.open .accordion-body {
+      display: block;
+    }
+
+    /* Logs Terminal */
+    .log-terminal {
+      background: var(--primary-navy);
+      color: #38bdf8;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      height: 180px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    /* Modal Dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      padding: 30px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .modal-overlay.open .modal-box {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-header h3 {
+      font-size: 1.3rem;
+      color: var(--primary-navy);
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      background: var(--primary-navy);
+      color: #94a3b8;
+      padding: 60px 0 30px 0;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-brand h3 {
+      color: #fff;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+    .footer-links h4 {
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+    .footer-links ul {
+      list-style: none;
+    }
+    .footer-links li {
+      margin-bottom: 8px;
+    }
+    .footer-links a {
+      color: #94a3b8;
+    }
+    .footer-links a:hover {
+      color: #38bdf8;
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* Responsive */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .menu-toggle {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: #0f172a;
+        flex-direction: column;
+        padding: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        gap: 16px;
+      }
+      .nav-links.show {
+        display: flex;
+      }
+      .hero-title {
+        font-size: 2rem;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Két tiết kiệm của nhóm</h1>
-  <button id="btnConnect">Kết nối ví</button>
-  <p>Ví: <span id="account">chưa kết nối</span></p>
-  <p>Số dư trong két: <span id="vaultBalance">-</span> ETH</p>
-  <input id="amount" type="number" step="0.001" placeholder="Số ETH muốn nạp">
-  <button id="btnDeposit">Nạp tiền</button>
-  <button id="btnWithdraw">Rút tiền</button>
-  <p id="status"></p>
-<script>
-const CONTRACT_ADDRESS = "0x................................";
-const CONTRACT_ABI = [];
-let provider, signer, contract;
-const statusNode = document.getElementById("status");
-const setStatus = (message) => { statusNode.textContent = message; };
-async function refresh() {
-  const balance = await provider.getBalance(CONTRACT_ADDRESS);
-  document.getElementById("vaultBalance").textContent = ethers.formatEther(balance);
-}
-document.getElementById("btnConnect").onclick = async () => {
-  if (!window.ethereum) return alert("Chưa cài MetaMask");
-  provider = new ethers.BrowserProvider(window.ethereum);
-  await provider.send("eth_requestAccounts", []);
-  signer = await provider.getSigner();
-  contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-  document.getElementById("account").textContent = await signer.getAddress();
-  await refresh();
-};
-document.getElementById("btnDeposit").onclick = async () => {
-  try {
-    const value = document.getElementById("amount").value;
-    const tx = await contract.deposit({value: ethers.parseEther(value)});
-    setStatus("Đang chờ xác nhận..."); await tx.wait(); setStatus("Đã nạp: " + tx.hash); await refresh();
-  } catch (error) { setStatus(error.shortMessage || error.message); }
-};
-document.getElementById("btnWithdraw").onclick = async () => {
-  try {
-    const tx = await contract.withdraw(); setStatus("Đang chờ xác nhận...");
-    await tx.wait(); setStatus("Đã rút: " + tx.hash); await refresh();
-  } catch (error) { setStatus(error.shortMessage || error.message); }
-};
-</script>
+
+  <!-- ============================================================ -->
+  <!-- HEADER & NAVIGATION                                          -->
+  <!-- ============================================================ -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="#hero" class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div>
+          KTS CLASS FUND
+          <span class="brand-sub">Khoa HTTT Kinh Tế — Lớp K57 Đại Học Huế</span>
+        </div>
+      </a>
+
+      <button class="menu-toggle" id="btnToggleNav" aria-label="Mở menu">☰</button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#dapp-workspace" style="color: #38bdf8; font-weight: 700;">★ Vai trò & Dòng tiền</a></li>
+        <li><a href="#hero">Tổng quan</a></li>
+        <li><a href="#workflow">Quy trình</a></li>
+        <li><a href="#governance">Biểu quyết 51%</a></li>
+        <li><a href="#economics">Phân bổ 99/1</a></li>
+        <li><a href="#blockchain">Cẩm nang 101</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="badge-network" id="networkBadge">
+          <span class="badge-dot" id="networkDot"></span>
+          <span id="networkText">Chưa kết nối ví</span>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnConnectWallet" title="Bấm để kết nối hoặc đổi tài khoản">
+          <svg style="width:16px;height:16px;fill:currentColor;" viewBox="0 0 24 24"><path d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z"/></svg>
+          <span id="walletBtnText">Kết nối MetaMask</span>
+        </button>
+        <button class="btn btn-outline btn-sm" id="btnSwitchWallet" style="display:none; color:#fff; border-color:rgba(255,255,255,0.3);" title="Đổi sang tài khoản ví khác" onclick="switchAccount()">
+          🔄 Đổi ví
+        </button>
+        <button class="btn btn-danger btn-sm" id="btnDisconnectWallet" style="display:none; padding:6px 10px;" title="Ngắt kết nối ví" onclick="disconnectWallet()">
+          ✕
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- HERO SECTION                                                 -->
+  <!-- ============================================================ -->
+  <section class="hero-section" id="hero">
+    <div class="container hero-content">
+      <div class="hero-tag">
+        <span>●</span> Cổng Thông Tin & Quản Lý Quỹ Lớp Blockchain Chuẩn Mực ECO2432
+      </div>
+      <h1 class="hero-title">KTS CLASS FUND — Minh bạch hóa quản lý quỹ lớp bằng Blockchain</h1>
+      <p class="hero-desc">
+        Hệ thống hỗ trợ quản lý đóng góp, đề xuất chi tiêu và theo dõi giao dịch thông qua hợp đồng thông minh, giúp các thành viên hiểu rõ quy trình và kiểm chứng những hoạt động đã được ghi nhận trên blockchain.
+      </p>
+
+      <!-- Quick Control Bar (Address, Role, Contract Config) -->
+      <div class="quick-control-bar">
+        <div class="quick-status-group">
+          <div class="quick-status-item">
+            <span class="quick-status-label">Địa chỉ ví đang kết nối</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối ví</span>
+              <button class="btn btn-sm btn-outline-white" id="btnQuickSwitch" style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="switchAccount()">🔄 Đổi ví</button>
+              <button class="btn btn-sm btn-outline-white" id="btnQuickDisconnect" style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="disconnectWallet()">Đăng xuất</button>
+            </div>
+          </div>
+          <div class="quick-status-item">
+            <span class="quick-status-label">Vai trò xác thực</span>
+            <span class="status-pill status-ready" id="quickRoleBadge">Sinh viên lớp K57</span>
+          </div>
+          <div class="quick-status-item">
+            <span class="quick-status-label">Mạng mục tiêu</span>
+            <span class="quick-status-val" id="quickNetworkStatus">Ethereum Sepolia (11155111)</span>
+          </div>
+        </div>
+
+        <!-- Quick Contract Input -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="contract-input-bar">
+            <svg style="width:16px;height:16px;fill:#38bdf8;" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
+          </div>
+          <button class="btn btn-sm btn-primary" id="btnSaveQuickContract">Lưu & Tải</button>
+        </div>
+      </div>
+
+      <!-- Live metrics ribbon -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-title">Số dư Quỹ lớp (99%)</div>
+          <div class="metric-num" id="metricClassFund">- ETH</div>
+          <div class="metric-note" id="metricClassFundNote">Chờ cấu hình hợp đồng</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Quỹ phí vận hành (1%)</div>
+          <div class="metric-num" id="metricAdminFee">- ETH</div>
+          <div class="metric-note" id="metricAdminFeeNote">Bù đắp gas cho Cố vấn học tập</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Tổng đề nghị chi tiền</div>
+          <div class="metric-num" id="metricSpendCount">-</div>
+          <div class="metric-note">Biểu quyết dân chủ tối thiểu 51%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Tổng yêu cầu hoàn tiền</div>
+          <div class="metric-num" id="metricRefundCount">-</div>
+          <div class="metric-note">Bảo vệ quyền lợi khi nộp nhầm</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3 Ô GIAO DIỆN THEO 3 VAI TRÒ (HIỆN NGAY ĐẦU TRANG)          -->
+  <!-- ============================================================ -->
+  <section class="dapp-hero-section" id="dapp-workspace">
+    <div class="container">
+      <div class="workspace-role-header" style="text-align: center; max-width: 760px; margin: 0 auto 16px auto;">
+        <span class="section-badge" style="background:#e0e7ff; color:var(--brand-blue); font-weight:700;">Không Gian Thao Tác</span>
+        <h2 style="font-size: 2rem; color: var(--primary-navy); margin: 8px 0 6px 0;">
+          Chọn Vai Trò Để Thao Tác
+        </h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">
+          Bấm chọn vai trò hoặc xem toàn bộ luồng dòng tiền để mở ô chi tiết:
+        </p>
+
+        <!-- 3 NÚT BẤM TRANG CHỦ THEO YÊU CẦU -->
+        <div class="role-buttons-group">
+          <button class="role-btn-item role-btn-student" id="btnRoleStudent" onclick="selectRoleView('student')">
+            <span class="role-btn-icon">🎓</span>
+            <span class="role-btn-label">Sinh viên</span>
+          </button>
+          <button class="role-btn-item role-btn-bcs" id="btnRoleBCS" onclick="selectRoleView('bcs')">
+            <span class="role-btn-icon">👥</span>
+            <span class="role-btn-label">Ban cán sự</span>
+          </button>
+          <button class="role-btn-item role-btn-advisor" id="btnRoleAdvisor" onclick="selectRoleView('advisor')">
+            <span class="role-btn-icon">🛡️</span>
+            <span class="role-btn-label">Cố vấn học tập</span>
+          </button>
+          <button class="role-btn-item role-btn-history" id="btnRoleHistory" onclick="selectRoleView('history')">
+            <span class="role-btn-icon">📊</span>
+            <span class="role-btn-label">Lịch sử dòng tiền</span>
+          </button>
+        </div>
+
+        <div id="roleDetailHint" style="text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-top: 10px;">
+          💡 Bấm vào một trong 4 nút trên để mở ô chi tiết và theo dõi dòng tiền.
+        </div>
+      </div>
+
+      <!-- KHUNG Ô CHI TIẾT (MẶC ĐỊNH CHỈ HIỆN KHI CHỌN VAI TRÒ) -->
+      <div class="role-detail-container" id="roleDetailContainer" style="display: none;">
+
+        <!-- ======================================================== -->
+        <!-- Ô 1: GIAO DIỆN SINH VIÊN (STUDENT)                       -->
+        <!-- ======================================================== -->
+        <div class="role-panel panel-student" id="panelStudent" style="display: none;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="panel-title" style="color: #047857; display: flex; align-items: center; gap: 8px;">
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+              <strong style="font-size: 1.25rem;">Ô Chi Tiết: Dành Cho Sinh Viên</strong>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="panel-badge badge-student-role">Sinh viên K57</span>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- Đóng góp của bạn summary -->
+            <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px 16px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Tổng đóng góp của bạn:</span>
+                <strong style="color:var(--brand-blue);" id="myTotalContribution">0.0000 ETH</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Đang chờ BCS duyệt hoàn:</span>
+                <strong style="color:var(--warning);" id="myPendingRefund">0.0000 ETH</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Hạn mức hoàn khả dụng:</span>
+                <strong style="color:var(--success);" id="myAvailableRefund">0.0000 ETH</strong>
+              </div>
+            </div>
+
+            <!-- Form nộp quỹ -->
+            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                1. Đóng góp tiền vào quỹ lớp
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                Tự động tách 99% vào Quỹ lớp và 1% vào Quỹ phí vận hành.
+              </p>
+              <div class="form-group" style="margin-bottom: 10px;">
+                <label for="inputDepositAmount">Số ETH muốn đóng góp:</label>
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputDepositAmount" placeholder="Ví dụ: 0.05">
+              </div>
+              <button class="btn btn-success" id="btnDepositAction" style="width: 100%;">
+                Xác nhận nộp quỹ qua MetaMask
+              </button>
+            </div>
+
+            <!-- Form xin hoàn tiền -->
+            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                2. Xin hoàn tiền khi nộp nhầm
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                Nhận lại 99% số tiền xin hoàn sau khi được Ban cán sự phê duyệt (chịu 1% phí).
+              </p>
+              <div class="form-group" style="margin-bottom: 8px;">
+                <label for="inputRefundAmount">Số ETH xin hoàn lại:</label>
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputRefundAmount" placeholder="Không vượt quá hạn mức khả dụng">
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label for="inputRefundReason">Lý do nộp nhầm:</label>
+                <input type="text" class="form-control" id="inputRefundReason" placeholder="Ví dụ: Nộp thừa tiền quỹ kỳ 1">
+              </div>
+              <button class="btn btn-outline" id="btnCreateRefundAction" style="width: 100%;">
+                Gửi yêu cầu hoàn tiền đến Ban cán sự
+              </button>
+            </div>
+
+            <!-- Bảng danh sách yêu cầu hoàn tiền cá nhân -->
+            <div>
+              <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--primary-navy);">
+                Yêu cầu hoàn tiền của bạn
+              </h4>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Số ETH</th>
+                      <th>Lý do</th>
+                      <th>Tiến độ duyệt</th>
+                      <th>Trạng thái</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studentRefundTableBody">
+                    <tr>
+                      <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 18px;">
+                        Chưa có yêu cầu hoàn tiền nào từ tài khoản này.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- Ô 2: GIAO DIỆN BAN CÁN SỰ (BCS)                          -->
+        <!-- ======================================================== -->
+        <div class="role-panel panel-bcs" id="panelBCS" style="display: none;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="panel-title" style="color: var(--brand-blue); display: flex; align-items: center; gap: 8px;">
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <strong style="font-size: 1.25rem;">Ô Chi Tiết: Dành Cho Ban Cán Sự</strong>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="panel-badge badge-bcs-role">Ban cán sự K57</span>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- Form tạo đề nghị chi -->
+            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                1. Tạo đề nghị chi tiền mới
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                Khoản chi cần được ít nhất 51% Ban cán sự bỏ phiếu đồng ý trong 7 ngày để giải ngân.
+              </p>
+              <div class="form-group" style="margin-bottom: 8px;">
+                <label for="inputSpendRecipient">Địa chỉ ví người nhận tiền:</label>
+                <input type="text" class="form-control" id="inputSpendRecipient" placeholder="0x...">
+              </div>
+              <div class="form-group" style="margin-bottom: 8px;">
+                <label for="inputSpendAmount">Số ETH đề nghị chi:</label>
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputSpendAmount" placeholder="Ví dụ: 0.1">
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label for="inputSpendDesc">Mục đích chi tiêu:</label>
+                <input type="text" class="form-control" id="inputSpendDesc" placeholder="Ví dụ: Mua nước sự kiện giao lưu lớp">
+              </div>
+              <button class="btn btn-primary" id="btnCreateSpendAction" style="width: 100%;">
+                Tạo đề nghị chi & Tạm giữ ngân sách
+              </button>
+            </div>
+
+            <!-- Bảng đề nghị chi -->
+            <div>
+              <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--primary-navy);">
+                2. Đề nghị chi cần biểu quyết / giải ngân
+              </h4>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Người nhận</th>
+                      <th>Số ETH</th>
+                      <th>Nội dung</th>
+                      <th>Tiến độ</th>
+                      <th>Trạng thái</th>
+                      <th>Bỏ phiếu</th>
+                      <th>Giải ngân</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bcsSpendTableBody">
+                    <tr>
+                      <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 18px;">
+                        Chưa có đề nghị chi tiền nào trong hợp đồng.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Bảng duyệt hoàn tiền -->
+            <div>
+              <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--primary-navy);">
+                3. Đơn hoàn tiền từ sinh viên cần duyệt
+              </h4>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Sinh viên</th>
+                      <th>Số ETH</th>
+                      <th>Lý do</th>
+                      <th>Tiến độ</th>
+                      <th>Trạng thái</th>
+                      <th>Duyệt đơn</th>
+                      <th>Hoàn tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bcsRefundTableBody">
+                    <tr>
+                      <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 18px;">
+                        Chưa có yêu cầu hoàn tiền nào từ sinh viên.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- Ô 3: GIAO DIỆN CỐ VẤN HỌC TẬP (ADVISOR)                 -->
+        <!-- ======================================================== -->
+        <div class="role-panel panel-advisor" id="panelAdvisor" style="display: none;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="panel-title" style="color: var(--purple-role); display: flex; align-items: center; gap: 8px;">
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+              <strong style="font-size: 1.25rem;">Ô Chi Tiết: Dành Cho Cố Vấn Học Tập</strong>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="panel-badge badge-advisor-role">Cố vấn học tập</span>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- Quản trị nhân sự BCS -->
+            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                1. Quản lý nhân sự Ban cán sự
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                Đặc quyền Cố vấn: Kích hoạt hoặc thu hồi quyền hạn thành viên Ban cán sự. Mẫu số biểu quyết 51% sẽ tự động cập nhật.
+              </p>
+              <div class="form-group" style="margin-bottom: 8px;">
+                <label for="inputBcsAddress">Địa chỉ ví thành viên:</label>
+                <input type="text" class="form-control" id="inputBcsAddress" placeholder="0x...">
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label for="selectBcsStatus">Trạng thái phân quyền:</label>
+                <select class="form-control" id="selectBcsStatus">
+                  <option value="true">Bổ nhiệm vào Ban cán sự (Kích hoạt quyền)</option>
+                  <option value="false">Thu hồi quyền Ban cán sự (Tạm khóa)</option>
+                </select>
+              </div>
+              <button class="btn btn-purple" id="btnSetBcsAction" style="width: 100%;">
+                Cập nhật quyền Ban cán sự
+              </button>
+            </div>
+
+            <!-- Rút quỹ phí vận hành -->
+            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+              <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                2. Rút quỹ phí vận hành bù đắp gas
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                Cố vấn được rút số dư từ Quỹ phí (1% trích từ tiền nạp) về ví để trang trải chi phí gas mạng lưới.
+              </p>
+              <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.85rem; color:var(--text-muted);">Số dư Quỹ phí hiện có:</span>
+                <strong style="color:var(--warning); font-size:1.1rem;" id="advisorFeePoolBalance">0.0000 ETH</strong>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label for="inputWithdrawFeeAmount">Số ETH muốn rút:</label>
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputWithdrawFeeAmount" placeholder="Không vượt quá số dư quỹ phí">
+              </div>
+              <button class="btn btn-success" id="btnWithdrawFeeAction" style="width: 100%;">
+                Rút quỹ phí về ví Cố vấn
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- Ô CHI TIẾT 4: TOÀN CẢNH FLOW DÒNG TIỀN & LỊCH SỬ THU CHI -->
+        <!-- ======================================================== -->
+        <div class="role-panel panel-history" id="panelHistory" style="display: none;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="panel-title" style="color: #c2410c; display: flex; align-items: center; gap: 8px;">
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+              <strong style="font-size: 1.25rem;">Ô Chi Tiết: Toàn Cảnh Flow Dòng Tiền & Lịch Sử Thu Chi</strong>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="panel-badge" style="background:#ffedd5; color:#c2410c; border:1px solid #fed7aa;">Minh bạch On-chain</span>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- PHẦN 1: TÓM TẮT CÂN ĐỐI DÒNG TIỀN HIỆN TẠI -->
+            <div class="flow-balance-grid">
+              <div class="flow-balance-card" style="border-left: 4px solid var(--success);">
+                <div class="flow-balance-title">Quỹ lớp khả dụng (99%)</div>
+                <div class="flow-balance-val" style="color:#047857;" id="flowBalClassFund">0.0000 ETH</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Sẵn sàng phục vụ lớp</div>
+              </div>
+              <div class="flow-balance-card" style="border-left: 4px solid var(--warning);">
+                <div class="flow-balance-title">Tiền đang tạm giữ chờ duyệt</div>
+                <div class="flow-balance-val" style="color:#d97706;" id="flowBalReserved">0.0000 ETH</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Khóa bảo đảm đề xuất chi/hoàn</div>
+              </div>
+              <div class="flow-balance-card" style="border-left: 4px solid var(--purple-role);">
+                <div class="flow-balance-title">Quỹ phí vận hành (1%)</div>
+                <div class="flow-balance-val" style="color:#6d28d9;" id="flowBalAdminFee">0.0000 ETH</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Bù đắp gas cho Cố vấn</div>
+              </div>
+              <div class="flow-balance-card" style="border-left: 4px solid var(--brand-blue);">
+                <div class="flow-balance-title">Đã giải ngân chi tiêu</div>
+                <div class="flow-balance-val" style="color:#1d4ed8;" id="flowBalExecutedSpend">0.0000 ETH</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;" id="flowBalExecutedCount">0 đề xuất đã chuyển tiền</div>
+              </div>
+            </div>
+
+            <!-- PHẦN 2: SƠ ĐỒ TOÀN BỘ 4 FLOW CỦA DÒNG TIỀN -->
+            <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
+              <h4 style="font-size: 1.05rem; margin-bottom: 4px; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+                <span>🔄</span> Sơ Đồ Toàn Bộ Các Luồng (Flow) Của Dòng Tiền Quỹ Lớp
+              </h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Mỗi luồng tiền trong hệ thống đều tuân thủ các quy tắc kinh tế chuẩn mực và tự động ghi nhận trên Smart Contract:
+              </p>
+
+              <div class="flow-steps-grid">
+                <!-- Flow 1: Inflow -->
+                <div class="flow-step-box" style="border-top: 3px solid #10b981;">
+                  <span class="flow-step-badge flow-badge-inflow">📥 FLOW 1: THU NẠP QUỸ</span>
+                  <h5 style="font-size:0.92rem; margin-bottom:6px; color:#065f46;">Sinh viên đóng góp ETH</h5>
+                  <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+                    Sinh viên gửi ETH vào quỹ ➔ Hợp đồng tự động tách:
+                    <br><strong>● 99%</strong> nạp vào Quỹ lớp chính.
+                    <br><strong>● 1%</strong> nạp vào Quỹ phí vận hành.
+                  </p>
+                </div>
+
+                <!-- Flow 2: Spend Flow -->
+                <div class="flow-step-box" style="border-top: 3px solid #2563eb;">
+                  <span class="flow-step-badge flow-badge-spend">📤 FLOW 2: CHI TIÊU QUỸ</span>
+                  <h5 style="font-size:0.92rem; margin-bottom:6px; color:#1e40af;">Đề xuất & Biểu quyết 51%</h5>
+                  <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+                    BCS tạo đề xuất ➔ Khóa tạm giữ tiền ➔ BCS biểu quyết (7 ngày).
+                    <br>➔ <strong>&ge; 51% thuận:</strong> Giải ngân chuyển ETH đến ví nhận.
+                    <br>➔ <strong>Từ chối / Hết hạn:</strong> Trả tiền về quỹ.
+                  </p>
+                </div>
+
+                <!-- Flow 3: Refund Flow -->
+                <div class="flow-step-box" style="border-top: 3px solid #ea580c;">
+                  <span class="flow-step-badge flow-badge-refund">🔄 FLOW 3: HOÀN TIỀN NHẦM</span>
+                  <h5 style="font-size:0.92rem; margin-bottom:6px; color:#9a3412;">Sinh viên xin rút lại tiền</h5>
+                  <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+                    Sinh viên tạo yêu cầu ➔ Khóa hạn mức ➔ BCS biểu quyết (7 ngày).
+                    <br>➔ <strong>&ge; 51% thuận:</strong> Hoàn <strong>99%</strong> về ví sinh viên, <strong>1%</strong> đưa vào quỹ phí.
+                  </p>
+                </div>
+
+                <!-- Flow 4: Gas Rebalance -->
+                <div class="flow-step-box" style="border-top: 3px solid #8b5cf6;">
+                  <span class="flow-step-badge flow-badge-gas">⛽ FLOW 4: PHÍ BÙ ĐẮP GAS</span>
+                  <h5 style="font-size:0.92rem; margin-bottom:6px; color:#6b21a8;">Bù chi phí mạng lưới</h5>
+                  <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+                    Trích từ Quỹ phí vận hành (1%) ➔ Cố vấn học tập rút về ví để bù đắp chi phí gas khi deploy và quản lý nhân sự Ban cán sự.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- PHẦN 3: SỔ NHẬT KÝ & THEO DÕI TẤT CẢ CÁC KHOẢN CHI & HOÀN TIỀN CỦA LỚP -->
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <div>
+                  <h4 style="font-size: 1.05rem; color: var(--primary-navy); margin-bottom:2px;">
+                    📜 Sổ Nhật Ký Dòng Tiền & Tình Trạng Xét Duyệt Mọi Đề Xuất
+                  </h4>
+                  <p style="font-size: 0.82rem; color: var(--text-muted);">
+                    Tất cả thành viên đều có thể theo dõi chi tiết từng khoản chi, lý do và tiến độ duyệt của Ban cán sự:
+                  </p>
+                </div>
+
+                <!-- Bộ lọc dòng tiền -->
+                <div class="flow-filter-group" id="flowFilterGroup">
+                  <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Lọc theo:</span>
+                  <button class="flow-filter-btn active" onclick="filterFlowLedger('all', this)">Tất cả</button>
+                  <button class="flow-filter-btn" onclick="filterFlowLedger('spend', this)">📤 Đề xuất chi</button>
+                  <button class="flow-filter-btn" onclick="filterFlowLedger('refund', this)">🔄 Hoàn tiền</button>
+                  <button class="flow-filter-btn" onclick="filterFlowLedger('executed', this)">🟢 Đã giải ngân / Hoàn tất</button>
+                  <button class="flow-filter-btn" onclick="filterFlowLedger('pending', this)">🟡 Đang biểu quyết</button>
+                </div>
+              </div>
+
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Loại Flow</th>
+                      <th>Mã</th>
+                      <th>Số ETH</th>
+                      <th>Người liên quan</th>
+                      <th>Nội dung / Lý do</th>
+                      <th>Tiến độ biểu quyết</th>
+                      <th>Tình trạng xét duyệt</th>
+                      <th>Tra cứu</th>
+                    </tr>
+                  </thead>
+                  <tbody id="flowLedgerTableBody">
+                    <tr>
+                      <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                        Chưa có dữ liệu dòng tiền on-chain. Vui lòng kết nối ví và cấu hình hợp đồng.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Nút tra cứu Etherscan -->
+              <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #f8fafc; padding: 12px 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                  💡 Dữ liệu được ghi nhận vĩnh viễn và không thể sửa đổi trên sổ cái phân tán Ethereum Sepolia.
+                </div>
+                <a id="flowLinkEtherscan" href="https://sepolia.etherscan.io" target="_blank" class="btn btn-sm btn-outline" style="font-size: 0.85rem;">
+                  Tra cứu chi tiết trên Sepolia Etherscan &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- BỐI CẢNH, VẤN ĐỀ & MỤC TIÊU DỰ ÁN                             -->
+  <!-- ============================================================ -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Bối Cảnh & Vấn Đề</span>
+        <h2 class="section-title">Tại sao chúng tôi xây dựng KTS-Class-Fund?</h2>
+        <p class="section-desc">
+          Những khó khăn thường gặp khi quản lý quỹ lớp bằng phương pháp thủ công và cách công nghệ Blockchain giúp giải quyết minh bạch.
+        </p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom: 50px;">
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          </div>
+          <h3 class="card-title">Thông tin thu chi nằm ở nhiều nơi</h3>
+          <p class="card-desc">
+            Tiền chuyển vào tài khoản cá nhân, thông báo nằm rải rác trên các nhóm mạng xã hội, bảng sao kê giấy dễ thất lạc khiến việc đối chiếu thông tin trở nên phức tạp.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          </div>
+          <h3 class="card-title">Khó theo dõi tiến trình đề xuất</h3>
+          <p class="card-desc">
+            Thành viên lớp khó nắm bắt một khoản chi do ai khởi xướng, đã được bao nhiêu người đồng ý, còn hạn biểu quyết hay không, dẫn đến băn khoăn về tính khách quan.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+          </div>
+          <h3 class="card-title">Người quản lý phải giải thích lặp lại</h3>
+          <p class="card-desc">
+            Ban cán sự thường xuyên phải tốn nhiều thời gian chụp màn hình, giải thích tiến độ thu chi cho từng thành viên thay vì có một hệ thống tự động cập nhật công khai.
+          </p>
+        </div>
+      </div>
+
+      <!-- 6 Goals -->
+      <div class="section-header" style="margin-bottom: 30px;">
+        <h3 style="font-size: 1.5rem;">6 Mục Tiêu Cốt Lõi Của Dự Án</h3>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <h4 style="margin-bottom: 8px; color: var(--brand-blue);">1. Minh bạch hóa giao dịch</h4>
+          <p class="card-desc">Giúp người dùng dễ dàng kiểm tra các khoản đóng góp, đề xuất chi và hoàn tiền đã được ghi nhận trực tiếp trên sổ cái blockchain.</p>
+        </div>
+        <div class="card">
+          <h4 style="margin-bottom: 8px; color: var(--brand-blue);">2. Quy trình hóa rõ ràng</h4>
+          <p class="card-desc">Mô tả rõ ràng từng bước từ lúc đóng góp đến khi đề xuất, biểu quyết tập thể, giải ngân hoặc dọn dẹp khoản tiền quá hạn.</p>
+        </div>
+        <div class="card">
+          <h4 style="margin-bottom: 8px; color: var(--brand-blue);">3. Phân định quyền hạn chuẩn mực</h4>
+          <p class="card-desc">Mỗi vai trò (Cố vấn học tập, Ban cán sự, Sinh viên) chỉ được thực hiện đúng các chức năng tương ứng mà hợp đồng cho phép.</p>
+        </div>
+        <div class="card">
+          <h4 style="margin-bottom: 8px; color: var(--brand-blue);">4. Dễ tiếp cận cho sinh viên</h4>
+          <p class="card-desc">Sử dụng ngôn ngữ tự nhiên, giao diện trực quan và hướng dẫn từng bước chi tiết, không đòi hỏi người dùng phải biết lập trình.</p>
+        </div>
+        <div class="card">
+          <h4 style="margin-bottom: 8px; color: var(--brand-blue);">5. Có thể kiểm chứng độc lập</h4>
+          <p class="card-desc">Cung cấp liên kết tra cứu trực tiếp trên trình khám phá khối Sepolia Etherscan và mã băm giao dịch cho mọi hoạt động.</p>
+        </div>
+        <div class="card">
+          <h4 style="margin-bottom: 8px; color: var(--brand-blue);">6. Hỗ trợ giám sát tập thể</h4>
+          <p class="card-desc">Giúp mọi thành viên cùng theo dõi trạng thái dòng tiền thực tế thay vì chỉ nhận thông báo bằng lời nói hoặc bảng tính riêng lẻ.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- QUY TRÌNH HOẠT ĐỘNG CHUẨN HÓA                                -->
+  <!-- ============================================================ -->
+  <section id="workflow" style="background: #f1f5f9;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Quy Trình Hoạt Động</span>
+        <h2 class="section-title">Hai Quy Trình Quản Lý Quỹ Lớp</h2>
+        <p class="section-desc">
+          Toàn bộ hoạt động thu chi và hoàn tiền được mô tả bằng ngôn ngữ tự nhiên, phản ánh chính xác quy tắc được lập trình trong hợp đồng.
+        </p>
+      </div>
+
+      <!-- Quy trình 1: Đóng góp và Chi tiêu -->
+      <div style="margin-bottom: 50px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+          <div style="background: var(--brand-blue); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 700;">QUY TRÌNH 1</div>
+          <h3 style="font-size: 1.35rem;">Đóng góp và Chi tiêu Quỹ lớp</h3>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-badge">1</div>
+            <div class="step-content">
+              <h4><span>Bước 1 — Sinh viên đóng góp vào quỹ</span> <span class="status-pill status-executed">Đã ghi nhận</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Mọi sinh viên</strong></span>
+                <span class="meta-tag">Tỷ lệ: <strong>99% vào quỹ lớp, 1% vào quỹ phí</strong></span>
+              </div>
+              <p class="card-desc">
+                Mọi sinh viên đều có thể đóng góp ETH vào quỹ lớp bằng ví MetaMask. Theo quy định được triển khai trong hợp đồng, 99% số tiền đóng góp được đưa vào quỹ lớp và 1% được đưa vào quỹ phí. Sau khi giao dịch được xác nhận trên blockchain, khoản đóng góp được ghi nhận công khai.
+                <br><em>Ví dụ thực tế:</em> Đóng góp 1 ETH thì 0,99 ETH vào quỹ lớp và 0,01 ETH vào quỹ phí vận hành.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">2</div>
+            <div class="step-content">
+              <h4><span>Bước 2 — Ban cán sự đề nghị chi tiền</span> <span class="status-pill status-pending">Đang chờ biểu quyết</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự đang hoạt động</strong></span>
+                <span class="meta-tag">Yêu cầu: <strong>Số tiền, người nhận, lý do chi</strong></span>
+              </div>
+              <p class="card-desc">
+                Khi cần sử dụng quỹ cho một hoạt động của lớp, thành viên ban cán sự có quyền tạo đề nghị chi tiền. Đề nghị cần ghi rõ số tiền, người nhận và lý do chi. Hệ thống kiểm tra số dư khả dụng và tạm giữ khoản tiền tương ứng để tránh sử dụng cùng một khoản tiền cho nhiều đề nghị khác nhau.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">3</div>
+            <div class="step-content">
+              <h4><span>Bước 3 — Ban cán sự biểu quyết</span> <span class="status-pill status-pending">Đang bỏ phiếu</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Các thành viên Ban cán sự đủ điều kiện</strong></span>
+                <span class="meta-tag">Quy định: <strong>Mỗi người 1 phiếu, thời hạn 7 ngày</strong></span>
+              </div>
+              <p class="card-desc">
+                Các thành viên ban cán sự đủ điều kiện tham gia sẽ xem nội dung đề nghị và chọn đồng ý hoặc không đồng ý. Mỗi thành viên chỉ được bỏ phiếu một lần cho mỗi đề nghị. Thời gian biểu quyết là 7 ngày theo quy định của hợp đồng.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">4</div>
+            <div class="step-content">
+              <h4><span>Bước 4 — Hệ thống xác định kết quả</span> <span class="status-pill status-ready">Đã đủ điều kiện giải ngân</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ngưỡng thông qua: <strong>Tối thiểu 51% tổng số Ban cán sự</strong></span>
+                <span class="meta-tag">Lưu ý: <strong>Tiền chưa tự động chuyển</strong></span>
+              </div>
+              <p class="card-desc">
+                Sau mỗi lượt bỏ phiếu, hệ thống cập nhật kết quả. Khi số phiếu đồng ý đạt ngưỡng thông qua (ít nhất 51% tổng số thành viên ban cán sự đang hoạt động), đề nghị được chuyển sang trạng thái <strong>"Đã đủ điều kiện giải ngân"</strong>. Nếu chưa đạt ngưỡng, đề nghị tiếp tục chờ biểu quyết cho đến khi hết hạn.
+                <br><em>Quan trọng:</em> Đạt ngưỡng thông qua không đồng nghĩa với việc tiền đã được chuyển ngay lập tức.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">5</div>
+            <div class="step-content">
+              <h4><span>Bước 5 — Thực hiện chi tiền</span> <span class="status-pill status-executed">Đã chi tiền thành công</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự</strong></span>
+                <span class="meta-tag">Hành động: <strong>Kiểm tra điều kiện & chuyển tiền</strong></span>
+              </div>
+              <p class="card-desc">
+                Sau khi đề nghị đáp ứng đủ điều kiện, một thành viên ban cán sự được phép thực hiện giải ngân. Hệ thống kiểm tra điều kiện trước khi chuyển tiền đến người nhận. Chỉ khi giao dịch được thực hiện thành công trên blockchain, đề nghị mới được ghi nhận là đã chi tiền hoàn tất.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">6</div>
+            <div class="step-content">
+              <h4><span>Bước 6 — Xử lý đề nghị hết hạn</span> <span class="status-pill status-expired">Đã hết hạn</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Bất kỳ ai (sau 7 ngày)</strong></span>
+                <span class="meta-tag">Kết quả: <strong>Giải phóng khoản tiền đã tạm giữ</strong></span>
+              </div>
+              <p class="card-desc">
+                Nếu hết thời gian biểu quyết (7 ngày) mà đề nghị không đạt điều kiện thông qua, bất kỳ ai cũng có thể yêu cầu hệ thống kết thúc đề nghị quá hạn. Khoản tiền đã tạm giữ được giải phóng để có thể sử dụng cho các mục đích chi tiêu khác của lớp.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quy trình 2: Hoàn tiền khi nộp nhầm -->
+      <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+          <div style="background: var(--brand-cyan); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 700;">QUY TRÌNH 2</div>
+          <h3 style="font-size: 1.35rem;">Hoàn tiền khi sinh viên nộp nhầm</h3>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-badge">1</div>
+            <div class="step-content">
+              <h4><span>Bước 1 — Sinh viên gửi yêu cầu hoàn tiền</span> <span class="status-pill status-pending">Đã gửi yêu cầu</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Sinh viên đã đóng góp vào quỹ</strong></span>
+                <span class="meta-tag">Điều kiện: <strong>Không vượt quá số tiền đã đóng góp</strong></span>
+              </div>
+              <p class="card-desc">
+                Khi sinh viên phát hiện đã chuyển nhầm tiền vào quỹ lớp, sinh viên có thể tạo yêu cầu hoàn tiền trực tiếp trên website. Hệ thống sẽ kiểm tra để đảm bảo số tiền yêu cầu hoàn không vượt quá số tiền mà chính sinh viên đó đã thực sự đóng góp vào quỹ.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">2</div>
+            <div class="step-content">
+              <h4><span>Bước 2 — Hệ thống tạm giữ khoản tiền</span> <span class="status-pill status-pending">Đang tạm giữ</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Cơ chế: <strong>Bảo vệ dòng tiền hai chiều</strong></span>
+                <span class="meta-tag">Mục đích: <strong>Tránh rút tiền trùng lặp</strong></span>
+              </div>
+              <p class="card-desc">
+                Khoản tiền xin hoàn được hệ thống tạm giữ từ số dư quỹ lớp, đồng thời tạm khóa khỏi hạn mức của sinh viên để đảm bảo an toàn, tránh việc cùng một khoản tiền bị sử dụng hoặc xin hoàn nhiều lần.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">3</div>
+            <div class="step-content">
+              <h4><span>Bước 3 — Ban cán sự xem xét và biểu quyết</span> <span class="status-pill status-pending">Đang duyệt</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự</strong></span>
+                <span class="meta-tag">Thời hạn: <strong>7 ngày biểu quyết</strong></span>
+              </div>
+              <p class="card-desc">
+                Các thành viên ban cán sự kiểm tra lý do và thông tin nộp nhầm của sinh viên. Ban cán sự tham gia bỏ phiếu đồng ý hoặc không đồng ý để đảm bảo quỹ lớp không bị rút tùy tiện.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">4</div>
+            <div class="step-content">
+              <h4><span>Bước 4 — Xác định kết quả và hoàn trả</span> <span class="status-pill status-ready">Đã thông qua</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Ngưỡng duyệt: <strong>Tối thiểu 51% Ban cán sự</strong></span>
+                <span class="meta-tag">Mức hoàn: <strong>Nhận lại 99%, chịu 1% phí</strong></span>
+              </div>
+              <p class="card-desc">
+                Khi đạt đủ từ 51% số phiếu đồng ý của ban cán sự, yêu cầu chuyển sang trạng thái sẵn sàng hoàn tiền. Sinh viên hoặc ban cán sự có thể bấm thực hiện hoàn tiền. Theo quy định, sinh viên nhận lại 99% số tiền đã yêu cầu và chịu 1% phí vận hành (để bù đắp phí giao dịch trên blockchain).
+                <br><em>Ví dụ thực tế:</em> Nếu xin hoàn lại 0,1 ETH thì sinh viên nhận về ví 0,099 ETH, còn 0,001 ETH được giữ lại trong quỹ phí.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-badge">5</div>
+            <div class="step-content">
+              <h4><span>Bước 5 — Xử lý khi yêu cầu hết hạn</span> <span class="status-pill status-expired">Đã hết hạn</span></h4>
+              <div class="step-meta">
+                <span class="meta-tag">Thời gian: <strong>Sau 7 ngày không đủ phiếu</strong></span>
+                <span class="meta-tag">Kết quả: <strong>Giải phóng khoản tiền đã tạm giữ</strong></span>
+              </div>
+              <p class="card-desc">
+                Nếu quá 7 ngày mà yêu cầu không nhận đủ số phiếu đồng thuận từ ban cán sự, yêu cầu sẽ hết hạn. Toàn bộ số tiền tạm giữ sẽ được giải phóng và hoàn trả lại hạn mức cho sinh viên và quỹ lớp.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- QUY CHẾ BIỂU QUYẾT 51%                                       -->
+  <!-- ============================================================ -->
+  <section id="governance">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Quy Chế Biểu Quyết</span>
+        <h2 class="section-title">Khi Nào Một Đề Xuất Được Thông Qua?</h2>
+        <p class="section-desc">
+          Bảng giải đáp rõ ràng các quy tắc biểu quyết, tỷ lệ thông qua và vòng đời của một đề nghị chi tiêu trong lớp.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">1. Ai có quyền tạo đề nghị chi tiền?</h4>
+          <p class="card-desc">Chỉ những thành viên Ban cán sự lớp đang hoạt động hợp lệ mới có quyền tạo đề nghị chi tiền. Sinh viên không có quyền này.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">2. Ai có quyền tham gia biểu quyết?</h4>
+          <p class="card-desc">Chỉ các thành viên Ban cán sự đang hoạt động mới được bỏ phiếu. Mỗi thành viên có quyền biểu quyết độc lập và công bằng.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">3. Mỗi thành viên được bỏ phiếu bao nhiêu lần?</h4>
+          <p class="card-desc">Chính xác 01 lần duy nhất cho mỗi đề nghị. Hệ thống ghi nhận địa chỉ ví đã bỏ phiếu để tránh việc một người bỏ phiếu nhiều lần.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">4. Ngưỡng thông qua chính xác là bao nhiêu?</h4>
+          <p class="card-desc">Tối thiểu <strong>51%</strong> số phiếu đồng ý tính trên <strong>tổng số thành viên Ban cán sự đang hoạt động</strong>. Ví dụ: Nếu lớp có 3 thành viên Ban cán sự thì cần ít nhất 2 phiếu đồng ý (2/3 = 66,7% &ge; 51%).</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">5. Thời hạn biểu quyết bắt đầu và kết thúc khi nào?</h4>
+          <p class="card-desc">Thời hạn là đúng <strong>7 ngày</strong> tính từ thời điểm đề nghị chi tiền được tạo thành công. Sau 7 ngày, cổng bỏ phiếu tự động đóng lại.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">6. Đạt ngưỡng có tự động chuyển tiền ngay không?</h4>
+          <p class="card-desc"><strong>Không tự động chuyển tiền.</strong> Đạt ngưỡng chỉ giúp đề nghị chuyển sang trạng thái "Đã đủ điều kiện giải ngân". Cần một thành viên Ban cán sự bấm nút thực hiện giải ngân trên hệ thống.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PHÂN BỔ TÀI CHÍNH 99% / 1%                                    -->
+  <!-- ============================================================ -->
+  <section id="economics" style="background: #f1f5f9;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Quy Tắc Tài Chính</span>
+        <h2 class="section-title">Quy Tắc Phân Bổ 99% / 1% & Cơ Chế Phí Gas</h2>
+        <p class="section-desc">
+          Công thức phân bổ minh bạch cho từng khoản đóng góp và giải thích dễ hiểu về chi phí giao dịch trên blockchain.
+        </p>
+      </div>
+
+      <div class="grid-2" style="align-items: center;">
+        <div>
+          <h3 style="margin-bottom: 16px; font-size: 1.4rem;">Cách quỹ phân bổ dòng tiền tự động</h3>
+          <p class="card-desc" style="margin-bottom: 16px;">
+            Khi sinh viên đóng góp ETH vào quỹ lớp, hệ thống sẽ tự động tách số tiền thành hai phần riêng biệt:
+          </p>
+          <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 24px;">
+            <li><strong>99% đưa vào Quỹ lớp:</strong> Phục vụ các hoạt động học tập, phong trào, sự kiện chung của tập thể lớp K57.</li>
+            <li><strong>1% đưa vào Quỹ phí vận hành:</strong> Dành riêng cho Cố vấn học tập rút về để bù đắp chi phí Gas mạng lưới blockchain khi thực hiện các giao dịch quản trị.</li>
+            <li><strong>Quy định khi hoàn tiền nộp nhầm:</strong> Sinh viên xin hoàn tiền sẽ chịu 1% phí vận hành và nhận lại 99% số tiền đã yêu cầu. Phần phí 1% không được hoàn lại để đảm bảo bù đắp chi phí vận hành hệ thống.</li>
+          </ul>
+
+          <div style="background: var(--info-bg); border-left: 4px solid var(--brand-blue); padding: 14px; border-radius: var(--radius-sm);">
+            <strong style="color: var(--brand-blue);">Giải thích về Phí Gas:</strong>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">
+              Gas là khoản phí trả cho các máy tính trong mạng lưới blockchain để xử lý và ghi nhận giao dịch của bạn. Dù giao dịch thành công hay thất bại, máy tính vẫn phải tiêu tốn tài nguyên để kiểm tra, do đó phí gas vẫn bị trừ khỏi ví của bạn.
+            </p>
+          </div>
+        </div>
+
+        <!-- Simulator Box -->
+        <div class="calc-box">
+          <h4 style="font-size: 1.15rem; margin-bottom: 14px; color: var(--primary-navy);">
+            Máy tính mô phỏng phân bổ dòng tiền
+          </h4>
+          <div class="form-group">
+            <label for="calcInputEth">Số ETH đóng góp thử nghiệm:</label>
+            <input type="number" step="0.01" min="0.01" value="1.0" class="form-control" id="calcInputEth">
+          </div>
+
+          <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ lớp (99%):</span>
+              <strong style="color: var(--brand-blue); font-size: 1.05rem;" id="calcClassFund">0.9900 ETH</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ phí vận hành (1%):</span>
+              <strong style="color: var(--warning); font-size: 1.05rem;" id="calcAdminFee">0.0100 ETH</strong>
+            </div>
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between;">
+              <span style="font-size: 0.9rem; color: var(--text-muted);">Số tiền nhận lại nếu xin hoàn (99%):</span>
+              <strong style="color: var(--success); font-size: 1.05rem;" id="calcMaxRefund">0.9900 ETH</strong>
+            </div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-light); margin-top: 10px; text-align: center;">
+            * Đây là công cụ tính toán mô phỏng trực quan, không tạo giao dịch thật.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CẨM NANG BLOCKCHAIN 101 CHO SINH VIÊN                         -->
+  <!-- ============================================================ -->
+  <section id="blockchain">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Cẩm Nang 101</span>
+        <h2 class="section-title">Blockchain & Hợp Đồng Thông Minh Là Gì?</h2>
+        <p class="section-desc">
+          Những khái niệm cơ bản nhất giúp sinh viên chưa từng học blockchain cũng có thể hiểu và tự tin sử dụng hệ thống.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Blockchain là gì?</h4>
+          <p class="card-desc">Là một cuốn sổ kế toán điện tử được chia sẻ đồng thời cho hàng ngàn máy tính. Một khi giao dịch đã được ghi lại, không ai có thể tự ý sửa xóa.</p>
+        </div>
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Smart Contract là gì?</h4>
+          <p class="card-desc">Là chương trình máy tính tự động thực thi các điều khoản đã được thỏa thuận trước (ví dụ: đúng 51% người đồng ý thì mới cho phép chi tiền).</p>
+        </div>
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 8px;">MetaMask là gì?</h4>
+          <p class="card-desc">Là một tiện ích ví điện tử trên trình duyệt giúp bạn quản lý tài khoản, lưu giữ ETH và xác nhận các giao dịch một cách an toàn.</p>
+        </div>
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Địa chỉ ví & Địa chỉ hợp đồng?</h4>
+          <p class="card-desc">Địa chỉ ví là tài khoản của bạn (bắt đầu bằng 0x...). Địa chỉ hợp đồng là "ngôi nhà" của quỹ lớp trên blockchain nơi tiền được lưu giữ và quản lý.</p>
+        </div>
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Mã giao dịch (Tx Hash) là gì?</h4>
+          <p class="card-desc">Là mã biên lai duy nhất cho mỗi giao dịch. Bạn có thể dùng mã này để tra cứu chi tiết giờ giấc, số tiền và trạng thái giao dịch trên mạng.</p>
+        </div>
+        <div class="card">
+          <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Mạng Sepolia là gì?</h4>
+          <p class="card-desc">Là mạng thử nghiệm chính thức của Ethereum. ETH trên Sepolia hoàn toàn miễn phí và không có giá trị quy đổi tiền mặt, giúp sinh viên thực hành an toàn.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CÂU HỎI THƯỜNG GẶP (FAQ ACCORDION)                           -->
+  <!-- ============================================================ -->
+  <section id="faq" style="background: #f1f5f9;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Giải Đáp Thắc Mắc</span>
+        <h2 class="section-title">Câu Hỏi Thường Gặp (FAQ)</h2>
+        <p class="section-desc">
+          Tìm câu trả lời nhanh chóng cho các thắc mắc thường gặp về kết nối ví, đóng góp, biểu quyết và hoàn tiền.
+        </p>
+      </div>
+
+      <div class="faq-search-box">
+        <svg class="faq-search-icon" style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" class="faq-search-input" id="faqSearchInput" placeholder="Nhập từ khóa tìm kiếm (ví dụ: hoàn tiền, gas, 51%, ví...)">
+      </div>
+
+      <div id="faqAccordionContainer" style="max-width: 860px; margin: 0 auto;"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- MINH BẠCH VÀ CẤU HÌNH HỢP ĐỒNG                              -->
+  <!-- ============================================================ -->
+  <section id="transparency" style="background: #f8fafc; border-top: 1px solid var(--border-color);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Minh Bạch Dữ Liệu</span>
+        <h2 class="section-title">Cấu Hình Hợp Đồng & Nhật Ký On-chain</h2>
+        <p class="section-desc">
+          Thông tin chi tiết về hợp đồng trên mạng thử nghiệm Ethereum Sepolia và nhật ký tương tác thời gian thực.
+        </p>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 30px;">
+        <div class="card" style="background:#fff;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Địa chỉ Hợp đồng Thông minh (Smart Contract)</h3>
+          <div class="form-group">
+            <label for="configContractAddress">Địa chỉ Hợp đồng (ProjectCore Address):</label>
+            <input type="text" class="form-control" id="configContractAddress" value="" placeholder="Dán địa chỉ sau khi deploy bằng Remix IDE tại đây">
+          </div>
+          <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" id="btnApplyContractAddress">Áp dụng & Tải dữ liệu</button>
+            <a href="https://sepolia.etherscan.io" target="_blank" id="linkEtherscanContract" class="btn btn-outline btn-sm">Xem trên Sepolia Etherscan &rarr;</a>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+            <strong>Mạng mục tiêu:</strong> Ethereum Sepolia Testnet (Mã mạng Chain ID: 11155111 - 0xaa36a7)<br>
+            <strong>Trạng thái:</strong> <span id="textContractConfigStatus" style="color: var(--warning); font-weight: 600;">Chưa cấu hình địa chỉ hợp đồng</span><br>
+            <strong>Ghi chú:</strong> Hệ thống tự động lưu địa chỉ hợp đồng vào trình duyệt của bạn sau khi bấm Áp dụng.
+          </div>
+        </div>
+
+        <div class="card" style="background:#fff;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Nhật ký giao dịch (Terminal)</span>
+            <button class="btn btn-outline btn-sm" onclick="clearTerminal()">Xóa nhật ký</button>
+          </h3>
+          <div class="log-terminal" id="terminalLog">
+            [Hệ thống] Đang tải cổng thông tin KTS Class Fund...
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- MODAL HƯỚNG DẪN / CẤU HÌNH                                   -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="walletModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">Thông báo hệ thống</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalBody" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);"></div>
+      <div style="margin-top: 24px; text-align: right;" id="modalFooter">
+        <button class="btn btn-primary btn-sm" onclick="closeModal()">Đóng lại</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- FOOTER                                                       -->
+  <!-- ============================================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>KTS CLASS FUND</h3>
+          <p style="line-height: 1.7; max-width: 420px;">
+            Hệ thống quản lý quỹ lớp ứng dụng công nghệ Hợp đồng thông minh và Blockchain cho sinh viên lớp K57 ngành Kinh tế Số. Dự án phục vụ học phần ECO2432.
+          </p>
+        </div>
+        <div class="footer-links">
+          <h4>Điều Hướng</h4>
+          <ul>
+            <li><a href="#dapp-workspace">3 Ô Giao diện</a></li>
+            <li><a href="#hero">Tổng quan</a></li>
+            <li><a href="#workflow">Quy trình</a></li>
+            <li><a href="#governance">Quy tắc biểu quyết</a></li>
+            <li><a href="#economics">Phân bổ tài chính</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Mạng Thử Nghiệm</h4>
+          <ul>
+            <li><a href="https://sepolia.etherscan.io" target="_blank">Sepolia Etherscan</a></li>
+            <li><a href="https://metamask.io/download/" target="_blank">Tải tiện ích MetaMask</a></li>
+            <li><a href="https://sepoliafaucet.com" target="_blank">Nhận SepoliaETH miễn phí</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 KTS-Class-Fund (K57 Kinh Tế Số) — Dự án môn học ECO2432.</div>
+        <div style="color: #64748b; font-size: 0.8rem;">Thiết kế minh bạch • An toàn dữ liệu • Tôn trọng quyền riêng tư</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT LOGIC                                             -->
+  <!-- ============================================================ -->
+  <script>
+    // --- 1. CONFIGURATION ---
+    const CONFIG = {
+      chainId: 11155111,
+      chainIdHex: "0xaa36a7",
+      chainName: "Ethereum Sepolia Testnet",
+      blockExplorer: "https://sepolia.etherscan.io",
+      contractAddress: ""
+    };
+
+    // Full ProjectCore ABI
+    const CONTRACT_ABI = [{"inputs": [], "stateMutability": "nonpayable", "type": "constructor"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}, {"internalType": "address", "name": "voter", "type": "address"}], "name": "AlreadyVoted", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}, {"internalType": "address", "name": "voter", "type": "address"}], "name": "AlreadyVotedRefund", "type": "error"}, {"inputs": [], "name": "ETHTransferFailed", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientAdminFee", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientAvailableFund", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientContribution", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientFund", "type": "error"}, {"inputs": [], "name": "InvalidAddress", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "InvalidRefundStatus", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "InvalidRequestStatus", "type": "error"}, {"inputs": [], "name": "NoActiveBCS", "type": "error"}, {"inputs": [], "name": "NotActiveBCS", "type": "error"}, {"inputs": [], "name": "NotAdvisor", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundAlreadyExecuted", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundExpired", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundRequestNotFound", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundVotingPeriodEnded", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundVotingStillActive", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "RequestAlreadyExecuted", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "RequestExpired", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "RequestNotFound", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "activeBCSCount", "type": "uint256"}], "name": "ThresholdNotMet", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "VotingPeriodEnded", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "VotingStillActive", "type": "error"}, {"inputs": [], "name": "ZeroAmount", "type": "error"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "student", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "feeAmount", "type": "uint256"}], "name": "AdminFeeCollected", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "advisor", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "AdminFeeWithdrawn", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "member", "type": "address"}, {"indexed": false, "internalType": "bool", "name": "status", "type": "bool"}], "name": "BCSMemberUpdated", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "student", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "FundDeposited", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "student", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "RefundProcessed", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "applicant", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "reason", "type": "string"}, {"indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256"}], "name": "RefundRequestCreated", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "applicant", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "RefundRequestExecuted", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundRequestExpired", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundRequestReady", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "voter", "type": "address"}, {"indexed": false, "internalType": "bool", "name": "support", "type": "bool"}, {"indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256"}], "name": "RefundRequestVoted", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "creator", "type": "address"}, {"indexed": true, "internalType": "address", "name": "recipient", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "description", "type": "string"}, {"indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256"}], "name": "SpendRequestCreated", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "recipient", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "SpendRequestExecuted", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "SpendRequestExpired", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "SpendRequestReady", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "voter", "type": "address"}, {"indexed": false, "internalType": "bool", "name": "support", "type": "bool"}, {"indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256"}], "name": "SpendRequestVoted", "type": "event"}, {"inputs": [], "name": "BPS_DENOMINATOR", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "FEE_BPS", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "PASSING_THRESHOLD_BPS", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "VOTING_PERIOD", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "activeBCSCount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "adminFeePool", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "advisor", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "classFundBalance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "reason", "type": "string"}], "name": "createRefundRequest", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address payable", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "description", "type": "string"}], "name": "createSpendRequest", "outputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "deposit", "outputs": [], "stateMutability": "payable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "executeRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "executeSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "expireRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "expireSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "getAvailableClassFund", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "getFundBalance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "getRefundRequest", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address", "name": "applicant", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "reason", "type": "string"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "getSpendRequest", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "creator", "type": "address"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "student", "type": "address"}], "name": "getStudentAvailableContribution", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "student", "type": "address"}], "name": "getStudentContribution", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "getTotalContractBalance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}, {"internalType": "address", "name": "member", "type": "address"}], "name": "hasMemberVoted", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}, {"internalType": "address", "name": "member", "type": "address"}], "name": "hasMemberVotedRefund", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}, {"internalType": "address", "name": "", "type": "address"}], "name": "hasVoted", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}, {"internalType": "address", "name": "", "type": "address"}], "name": "hasVotedRefund", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "isBCSMember", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "pendingStudentRefundAmount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "refundRequestCount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "refundRequests", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address payable", "name": "applicant", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "reason", "type": "string"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "reservedRefundAmount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "reservedSpendAmount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "member", "type": "address"}, {"internalType": "bool", "name": "status", "type": "bool"}], "name": "setBCSMember", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "spendRequestCount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "spendRequests", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address payable", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "creator", "type": "address"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "studentContributions", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}, {"internalType": "bool", "name": "support", "type": "bool"}], "name": "voteRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}, {"internalType": "bool", "name": "support", "type": "bool"}], "name": "voteSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "withdrawAdminFee", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"stateMutability": "payable", "type": "receive"}];
+
+    // --- 2. FAQ DATA ---
+    const FAQ_DATA = [
+      { cat: "Tổng quan", q: "KTS-Class-Fund là gì?", a: "KTS-Class-Fund là cổng thông tin và hệ thống quản lý quỹ lớp được xây dựng dựa trên Smart Contract (hợp đồng thông minh) trên nền tảng blockchain Ethereum Sepolia. Hệ thống giúp minh bạch hóa các khoản đóng góp, quản lý đề xuất chi tiêu và hoàn tiền cho tập thể sinh viên K57 ngành Kinh tế Số." },
+      { cat: "Tổng quan", q: "Dự án giải quyết vấn đề gì?", a: "Dự án giải quyết những khó khăn khi quản lý quỹ thủ công như: thông tin thu chi nằm rải rác ở nhiều nơi, thành viên khó theo dõi một khoản chi do ai khởi xướng, khó kiểm chứng biên lai ngoài đời thực và người quản lý phải giải thích số liệu lặp đi lặp lại." },
+      { cat: "Tổng quan", q: "Tại sao dùng Blockchain thay vì chỉ dùng bảng tính?", a: "Bảng tính thông thường có thể bị chỉnh sửa bất kỳ lúc nào mà không để lại vết tích rõ ràng. Trong khi đó, blockchain ghi nhận mọi giao dịch và kết quả bỏ phiếu một cách bất biến, công khai, giúp mọi thành viên đều có quyền kiểm chứng độc lập mà không cần đặt niềm tin mù quáng vào một cá nhân." },
+      { cat: "Tổng quan", q: "Dữ liệu nào có thể kiểm tra công khai?", a: "Mọi thành viên đều có thể kiểm tra công khai: tổng số dư quỹ lớp, số dư quỹ phí vận hành, danh sách các đề nghị chi tiền, tiến độ bỏ phiếu tán thành của Ban cán sự và các giao dịch chuyển tiền đã được xác nhận trên Sepolia Etherscan." },
+      { cat: "Tổng quan", q: "Hệ thống đang chạy trên Sepolia hay Mainnet?", a: "Hệ thống đang hoạt động trên mạng thử nghiệm Ethereum Sepolia Testnet. Mạng này hoàn toàn miễn phí, ETH sử dụng là tài sản thử nghiệm (SepoliaETH) không có giá trị tiền tệ thực tế, giúp sinh viên làm quen và thực hành công nghệ mà không gặp rủi ro tài chính." },
+
+      { cat: "Ví và kết nối", q: "Tôi cần MetaMask để sử dụng website không?", a: "Nếu bạn chỉ muốn đọc tài liệu, tìm hiểu quy trình và xem hướng dẫn, bạn không cần cài MetaMask. Tuy nhiên, nếu bạn muốn nộp tiền vào quỹ, tạo đề nghị, tham gia biểu quyết hoặc xin hoàn tiền, bạn cần cài tiện ích ví MetaMask trên trình duyệt máy tính hoặc điện thoại." },
+      { cat: "Ví và kết nối", q: "Vì sao website yêu cầu kết nối ví?", a: "Kết nối ví cho phép website xác định danh tính kỹ thuật (địa chỉ ví) của bạn để hiển thị đúng quyền hạn (Cố vấn, Ban cán sự hoặc Sinh viên) và giúp bạn tự tay ký xác nhận các giao dịch trên blockchain." },
+      { cat: "Ví và kết nối", q: "Tại sao tôi phải chuyển sang mạng Sepolia?", a: "Hợp đồng thông minh của quỹ lớp được triển khai trên mạng thử nghiệm Ethereum Sepolia. Nếu ví của bạn đang kết nối ở mạng khác (như Ethereum Mainnet hay BNB Chain), các giao dịch sẽ không thể tương tác được với hợp đồng của lớp." },
+      { cat: "Ví và kết nối", q: "Tôi có cần cung cấp mật khẩu, private key hoặc cụm từ khôi phục không?", a: "TUYỆT ĐỐI KHÔNG. Website không bao giờ hỏi hoặc yêu cầu bạn cung cấp mật khẩu ví, private key hay 12 từ khóa khôi phục (seed phrase). Bạn chỉ ký duyệt các giao dịch trực tiếp trên cửa sổ bảo mật của tiện ích MetaMask." },
+      { cat: "Ví và kết nối", q: "Tôi làm gì nếu kết nối nhầm ví hoặc nhầm mạng?", a: "Bạn chỉ cần mở tiện ích MetaMask, bấm chọn đúng tài khoản mong muốn hoặc chuyển mạng sang Sepolia. Website sẽ tự động phát hiện và cập nhật trạng thái hiển thị ngay lập tức mà không cần tải lại trang." },
+
+      { cat: "Đóng góp và phí", q: "Gửi tiền vào quỹ như thế nào?", a: "Bạn kết nối ví MetaMask, chuyển đến Ô Giao diện Sinh viên, nhập số ETH muốn đóng góp (ví dụ 0.05 ETH) và bấm nút 'Xác nhận nộp quỹ qua MetaMask'. Cửa sổ MetaMask sẽ hiện ra để bạn kiểm tra số tiền, phí gas và bấm 'Xác nhận'." },
+      { cat: "Đóng góp và phí", q: "Vì sao MetaMask yêu cầu xác nhận giao dịch?", a: "MetaMask là người bảo vệ tài sản của bạn. Bất kỳ hành động nào làm thay đổi số dư hoặc gọi hợp đồng đều bắt buộc phải được chủ ví trực tiếp ký xác nhận mật mã học để tránh việc tiền bị chuyển đi trái phép." },
+      { cat: "Đóng góp và phí", q: "Vì sao giao dịch cần gas?", a: "Phí gas là chi phí trả cho các máy chủ đào/xác thực trong mạng lưới Ethereum để xử lý và ghi nhận giao dịch vào khối. Trên mạng Sepolia, bạn có thể nhận SepoliaETH miễn phí từ các trang vòi (faucet) để trả phí gas này." },
+      { cat: "Đóng góp và phí", q: "Tôi có thể hủy giao dịch sau khi đã xác nhận không?", a: "Khi một giao dịch đã được các khối blockchain xác nhận, dữ liệu trở thành vĩnh viễn và không thể đảo ngược. Do đó, hãy luôn kiểm tra kỹ số tiền và địa chỉ trước khi bấm xác nhận trên MetaMask." },
+      { cat: "Đóng góp và phí", q: "Tại sao số tiền đóng góp và số tiền vào quỹ lớp có thể khác nhau?", a: "Theo quy định được lập trình trong hợp đồng, khi bạn nộp 100% số tiền thì 99% sẽ được đưa vào Quỹ lớp chính để phục vụ tập thể, còn 1% được tự động trích vào Quỹ phí vận hành để hỗ trợ chi phí gas cho ban quản trị." },
+      { cat: "Đóng góp và phí", q: "Phần phí quản lý 1% được xử lý như thế nào?", a: "Khoản phí 1% được lưu trữ độc lập tại quỹ phí vận hành. Chỉ có Cố vấn học tập mới có quyền rút khoản phí này về ví để bù đắp chi phí gas khi thực hiện việc bổ nhiệm nhân sự và quản lý hệ thống." },
+
+      { cat: "Đề xuất và biểu quyết", q: "Ai có quyền tạo đề xuất chi tiền?", a: "Chỉ các thành viên Ban cán sự đang hoạt động hợp lệ mới có quyền tạo đề nghị chi tiền. Khi tạo, người đề xuất phải ghi rõ số tiền, địa chỉ người nhận và mục đích chi tiêu cụ thể." },
+      { cat: "Đề xuất và biểu quyết", q: "Khi nào đề xuất được thông qua?", a: "Đề nghị được thông qua khi đạt tỷ lệ đồng thuận tối thiểu từ 51% trở lên tính trên tổng số thành viên Ban cán sự đang hoạt động trong lớp, trong thời hạn quy định là 7 ngày." },
+      { cat: "Đề xuất và biểu quyết", q: "Tại sao đề xuất đủ phiếu nhưng chưa được chuyển tiền?", a: "Khi đạt đủ 51% phiếu đồng ý, đề xuất mới chỉ chuyển sang trạng thái 'Đã đủ điều kiện giải ngân'. Để đảm bảo an toàn, cần một thành viên Ban cán sự bấm nút thực hiện giải ngân để hợp đồng thực hiện lệnh chuyển ETH đến người nhận." },
+      { cat: "Đề xuất và biểu quyết", q: "Tôi có thể thay đổi phiếu sau khi đã bỏ phiếu không?", a: "Không thể thay đổi. Mỗi thành viên Ban cán sự chỉ được bỏ phiếu một lần duy nhất cho mỗi đề nghị để đảm bảo tính minh bạch và tránh gian lận biểu quyết." },
+      { cat: "Đề xuất và biểu quyết", q: "Điều gì xảy ra khi hết hạn 7 ngày mà chưa đạt ngưỡng?", a: "Nếu quá 7 ngày mà đề nghị không đạt đủ 51% phiếu thuận, đề nghị sẽ hết hạn. Bất kỳ ai cũng có thể bấm dọn dẹp để hệ thống giải phóng khoản tiền đang tạm giữ về lại số dư khả dụng cho quỹ lớp." },
+      { cat: "Đề xuất và biểu quyết", q: "Tôi có thể tạo hoặc bỏ phiếu nhiều lần không?", a: "Mỗi đề xuất chỉ được bỏ phiếu 1 lần đối với mỗi địa chỉ ví Ban cán sự. Cố ý bỏ phiếu lần 2 sẽ bị hợp đồng từ chối ngay lập tức." },
+
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Khi nào tôi có thể gửi yêu cầu hoàn tiền?", a: "Khi bạn chuyển nhầm tiền hoặc đóng thừa vào quỹ lớp, bạn có thể gửi yêu cầu hoàn tiền trong Ô Giao diện Sinh viên. Số tiền xin hoàn không được vượt quá số tiền bạn đã thực sự đóng góp vào quỹ." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Gửi yêu cầu hoàn tiền có đồng nghĩa với được hoàn tiền ngay không?", a: "Không. Để tránh việc kẻ xấu giả mạo rút trộm quỹ lớp, yêu cầu hoàn tiền phải được các thành viên Ban cán sự xem xét lý do và bỏ phiếu biểu quyết thông qua (tối thiểu 51%) trước khi được giải ngân." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Vì sao sinh viên xin hoàn tiền lại chịu 1% phí?", a: "Quy tắc kinh tế của quỹ quy định khoản phí 1% khi nộp vào đã được tính cho quỹ vận hành hệ thống. Khi sinh viên nộp nhầm xin rút lại, sinh viên sẽ nhận lại 99% số tiền đã yêu cầu và chịu 1% phí này." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Tôi phải làm gì nếu giao dịch pending (chờ xử lý) quá lâu?", a: "Giao dịch pending lâu thường do mạng Sepolia bị nghẽn hoặc mức phí gas quá thấp. Bạn có thể mở MetaMask, tìm giao dịch đang chờ và chọn nút 'Tăng tốc' (Speed up) để nâng phí gas giúp giao dịch được xác nhận nhanh hơn." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Làm sao kiểm tra giao dịch đã thành công?", a: "Sau khi giao dịch hoàn tất, bạn có thể bấm vào liên kết mã băm giao dịch (Tx Hash) hiển thị trên màn hình để mở trang Sepolia Etherscan và xem dấu tích xanh 'Success'." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Tôi cần làm gì nếu giao dịch thất bại?", a: "Nếu giao dịch thất bại (báo lỗi màu đỏ), bạn kiểm tra xem ví có đủ số dư SepoliaETH để trả phí gas không, bạn có đang kết nối đúng tài khoản có quyền thực hiện hay không, hoặc đọc thông báo lỗi chi tiết được hiển thị." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Tôi có thể gửi yêu cầu hoàn tiền lần nữa sau khi yêu cầu cũ hết hạn không?", a: "Có thể. Khi yêu cầu hoàn tiền cũ bị hết hạn, số tiền giữ chỗ được giải phóng về hạn mức của bạn, cho phép bạn tạo một yêu cầu hoàn tiền mới nếu vẫn còn lý do chính đáng." }
+    ];
+
+    // --- 3. STATE VARIABLES ---
+    let provider = null;
+    let signer = null;
+    let contract = null;
+    let userAddress = null;
+    let isAdvisor = false;
+    let isBcsMember = false;
+
+    // --- 4. UTILITIES ---
+    function shortenAddress(addr) {
+      if (!addr || addr.length < 10) return addr || "";
+      return addr.slice(0, 6) + "..." + addr.slice(-4);
+    }
+
+    function formatEth(weiVal) {
+      if (!weiVal) return "0.0000";
+      try {
+        const val = ethers.formatEther(weiVal);
+        return parseFloat(val).toFixed(4);
+      } catch (e) {
+        return "0.0000";
+      }
+    }
+
+    function logToTerminal(msg) {
+      const term = document.getElementById("terminalLog");
+      if (!term) return;
+      const timeStr = new Date().toLocaleTimeString();
+      const newDiv = document.createElement("div");
+      newDiv.style.marginBottom = "4px";
+      newDiv.textContent = `[${timeStr}] ${msg}`;
+      term.appendChild(newDiv);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function clearTerminal() {
+      const term = document.getElementById("terminalLog");
+      if (term) term.innerHTML = "[Hệ thống] Nhật ký đã được xóa sạch.";
+    }
+
+    function showModal(title, htmlContent, customFooterHtml = null) {
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").innerHTML = htmlContent;
+      const footer = document.getElementById("modalFooter");
+      if (customFooterHtml) {
+        footer.innerHTML = customFooterHtml;
+      } else {
+        footer.innerHTML = '<button class="btn btn-primary btn-sm" onclick="closeModal()">Đóng lại</button>';
+      }
+      document.getElementById("walletModal").classList.add("open");
+    }
+
+    function closeModal() {
+      document.getElementById("walletModal").classList.remove("open");
+    }
+
+    function getStatusBadge(statusNum) {
+      if (statusNum === 0) return '<span class="status-pill status-pending">Chờ biểu quyết</span>';
+      if (statusNum === 1) return '<span class="status-pill status-ready">Đủ điều kiện</span>';
+      if (statusNum === 2) return '<span class="status-pill status-executed">Đã thực hiện</span>';
+      if (statusNum === 4) return '<span class="status-pill status-expired">Đã hết hạn</span>';
+      return '<span class="status-pill status-expired">Không xác định</span>';
+    }
+
+    // Smart provider detector for MetaMask
+    function getMetaMaskProvider() {
+      if (typeof window === "undefined") return null;
+      if (window.ethereum) {
+        if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
+          const mm = window.ethereum.providers.find(p => p.isMetaMask);
+          if (mm) return mm;
+        }
+        return window.ethereum;
+      }
+      return null;
+    }
+
+    // Prompt user to enter contract address if missing
+    function promptContractConfig(actionName) {
+      showModal(
+        `Cấu hình Địa chỉ Hợp đồng để ${actionName}`,
+        `<p style="margin-bottom:12px;">Bạn đã kết nối ví MetaMask thành công với địa chỉ <strong>${shortenAddress(userAddress)}</strong>.</p>
+         <p style="margin-bottom:12px;">Tuy nhiên, hệ thống chưa có <strong>Địa chỉ Hợp đồng ProjectCore</strong> trên mạng Sepolia để thực hiện giao dịch này.</p>
+         <div class="form-group" style="margin-bottom:16px;">
+           <label for="inputModalContract">Dán địa chỉ Hợp đồng đã deploy (42 ký tự):</label>
+           <input type="text" class="form-control" id="inputModalContract" placeholder="0x..." value="${CONFIG.contractAddress || ''}">
+         </div>
+         <p style="font-size:0.85rem; color:var(--text-muted);">Địa chỉ này sẽ được lưu tự động vào trình duyệt để bạn không cần nhập lại lần sau.</p>`,
+        `<button class="btn btn-primary btn-sm" onclick="saveContractFromModal()">Lưu & Kích hoạt</button>
+         <button class="btn btn-outline btn-sm" onclick="closeModal()">Đóng lại</button>`
+      );
+    }
+
+    function saveContractFromModal() {
+      const input = document.getElementById("inputModalContract");
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val || !ethers.isAddress(val)) {
+        alert("Vui lòng nhập đúng định dạng địa chỉ hợp đồng Ethereum (42 ký tự, bắt đầu bằng 0x)!");
+        return;
+      }
+      applyContractAddress(val);
+      closeModal();
+      alert("Đã cấu hình hợp đồng thành công! Bạn có thể thực hiện giao dịch ngay bây giờ.");
+    }
+
+    // --- 5. WORKSPACE VIEW MODE SWITCHER & 4 VAI TRÒ / DÒNG TIỀN ---
+    let currentDetailRole = null; // 'student' | 'bcs' | 'advisor' | 'history' | null
+    let allFlowItems = []; // Lưu trữ tất cả flow dòng tiền để lọc nhanh
+
+    function selectRoleView(role) {
+      const pStudent = document.getElementById("panelStudent");
+      const pBCS = document.getElementById("panelBCS");
+      const pAdvisor = document.getElementById("panelAdvisor");
+      const pHistory = document.getElementById("panelHistory");
+
+      const btnStudent = document.getElementById("btnRoleStudent");
+      const btnBCS = document.getElementById("btnRoleBCS");
+      const btnAdvisor = document.getElementById("btnRoleAdvisor");
+      const btnHistory = document.getElementById("btnRoleHistory");
+
+      const container = document.getElementById("roleDetailContainer");
+      const hint = document.getElementById("roleDetailHint");
+
+      // Nếu bấm lại vào chính nút đang mở -> toggle thu gọn
+      if (currentDetailRole === role) {
+        closeRoleDetail();
+        return;
+      }
+
+      currentDetailRole = role;
+
+      // Reset active buttons
+      [btnStudent, btnBCS, btnAdvisor, btnHistory].forEach(b => {
+        if (b) b.classList.remove("active");
+      });
+
+      // Hide all panels initially
+      [pStudent, pBCS, pAdvisor, pHistory].forEach(p => {
+        if (p) p.style.display = "none";
+      });
+
+      if (container) container.style.display = "block";
+
+      if (role === "student") {
+        if (btnStudent) btnStudent.classList.add("active");
+        if (pStudent) pStudent.style.display = "flex";
+        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Sinh Viên</strong> (Bấm lại nút để thu gọn)</span>';
+      } else if (role === "bcs") {
+        if (btnBCS) btnBCS.classList.add("active");
+        if (pBCS) pBCS.style.display = "flex";
+        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Ban Cán Sự</strong> (Bấm lại nút để thu gọn)</span>';
+      } else if (role === "advisor") {
+        if (btnAdvisor) btnAdvisor.classList.add("active");
+        if (pAdvisor) pAdvisor.style.display = "flex";
+        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Cố Vấn Học Tập</strong> (Bấm lại nút để thu gọn)</span>';
+      } else if (role === "history") {
+        if (btnHistory) btnHistory.classList.add("active");
+        if (pHistory) {
+          pHistory.style.display = "flex";
+          renderFlowLedgerTable(allFlowItems);
+        }
+        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Lịch Sử Dòng Tiền & Toàn Bộ Flow</strong> (Bấm lại nút để thu gọn)</span>';
+        
+        // Nếu có hợp đồng mà dữ liệu chưa tải, tự động tải lại
+        if (contract && allFlowItems.length === 0) {
+          refreshContractData();
+        }
+      }
+
+      // Smooth scroll into detail box if needed
+      container.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function closeRoleDetail() {
+      currentDetailRole = null;
+      const pStudent = document.getElementById("panelStudent");
+      const pBCS = document.getElementById("panelBCS");
+      const pAdvisor = document.getElementById("panelAdvisor");
+      const pHistory = document.getElementById("panelHistory");
+
+      const btnStudent = document.getElementById("btnRoleStudent");
+      const btnBCS = document.getElementById("btnRoleBCS");
+      const btnAdvisor = document.getElementById("btnRoleAdvisor");
+      const btnHistory = document.getElementById("btnRoleHistory");
+
+      const container = document.getElementById("roleDetailContainer");
+      const hint = document.getElementById("roleDetailHint");
+
+      [btnStudent, btnBCS, btnAdvisor, btnHistory].forEach(b => {
+        if (b) b.classList.remove("active");
+      });
+
+      [pStudent, pBCS, pAdvisor, pHistory].forEach(p => {
+        if (p) p.style.display = "none";
+      });
+
+      if (container) container.style.display = "none";
+
+      if (hint) hint.innerHTML = '💡 Bấm vào một trong 4 nút trên để mở ô chi tiết và theo dõi dòng tiền.';
+    }
+
+    // Hàm tương thích ngược cho các lời gọi cũ
+    function setWorkspaceView(viewMode) {
+      if (viewMode === "all") {
+        selectRoleView("student");
+      } else {
+        selectRoleView(viewMode);
+      }
+    }
+
+    // --- 6. RENDER FAQ & CALCULATOR ---
+    function renderFaq(faqList) {
+      const container = document.getElementById("faqAccordionContainer");
+      if (!container) return;
+
+      if (faqList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">Không tìm thấy câu hỏi nào phù hợp với từ khóa tìm kiếm.</div>';
+        return;
+      }
+
+      let html = "";
+      faqList.forEach((item, index) => {
+        html += `
+          <div class="accordion-item" id="faq-item-${index}">
+            <div class="accordion-header" onclick="toggleFaq(${index})">
+              <span><strong>[${item.cat}]</strong> ${item.q}</span>
+              <span class="accordion-icon">&darr;</span>
+            </div>
+            <div class="accordion-body">
+              ${item.a}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function toggleFaq(index) {
+      const item = document.getElementById(`faq-item-${index}`);
+      if (!item) return;
+      const isOpen = item.classList.contains("open");
+      document.querySelectorAll(".accordion-item").forEach(el => el.classList.remove("open"));
+      if (!isOpen) {
+        item.classList.add("open");
+      }
+    }
+
+    function setupCalculator() {
+      const input = document.getElementById("calcInputEth");
+      if (!input) return;
+      input.addEventListener("input", () => {
+        const val = parseFloat(input.value) || 0;
+        const classFund = val * 0.99;
+        const adminFee = val * 0.01;
+        document.getElementById("calcClassFund").textContent = classFund.toFixed(4) + " ETH";
+        document.getElementById("calcAdminFee").textContent = adminFee.toFixed(4) + " ETH";
+        document.getElementById("calcMaxRefund").textContent = classFund.toFixed(4) + " ETH";
+      });
+    }
+
+    // --- 7. METAMASK & WEB3 INTEGRATION ---
+    async function initWeb3() {
+      // Check saved contract in localStorage
+      const savedAddr = localStorage.getItem("kts_class_fund_contract");
+      if (savedAddr && ethers.isAddress(savedAddr)) {
+        CONFIG.contractAddress = savedAddr;
+        const quickInp = document.getElementById("quickContractAddress");
+        const configInp = document.getElementById("configContractAddress");
+        if (quickInp) quickInp.value = savedAddr;
+        if (configInp) configInp.value = savedAddr;
+        logToTerminal(`[Bộ nhớ] Đã tải địa chỉ hợp đồng đã lưu: ${savedAddr}`);
+      }
+
+      const eth = getMetaMaskProvider();
+      if (eth) {
+        provider = new ethers.BrowserProvider(eth);
+
+        eth.on("accountsChanged", (accounts) => {
+          if (!accounts || accounts.length === 0) {
+            handleDisconnect();
+          } else {
+            handleAccountChange(accounts[0]);
+          }
+        });
+
+        eth.on("chainChanged", () => {
+          window.location.reload();
+        });
+
+        logToTerminal("[Khởi tạo] Tiện ích MetaMask đã sẵn sàng kết nối.");
+      } else {
+        logToTerminal("[Lưu ý] Chưa phát hiện tiện ích MetaMask trên trình duyệt.");
+      }
+    }
+
+    async function switchAccount() {
+      const eth = getMetaMaskProvider();
+      if (!eth) {
+        alert("Chưa phát hiện tiện ích ví MetaMask trên trình duyệt!");
+        return;
+      }
+      try {
+        logToTerminal("[MetaMask] Đang mở hộp thoại chọn đổi tài khoản trên MetaMask...");
+        await eth.request({
+          method: "wallet_requestPermissions",
+          params: [{ eth_accounts: {} }]
+        });
+        const accounts = await eth.request({ method: "eth_accounts" });
+        if (accounts && accounts.length > 0) {
+          await handleAccountChange(accounts[0]);
+          logToTerminal(`[Thành công] Đã chuyển đổi sang tài khoản ví: ${accounts[0]}`);
+          alert("Đã chuyển đổi sang tài khoản ví: " + accounts[0]);
+        }
+      } catch (err) {
+        if (err.code === 4001) {
+          logToTerminal("[Thông báo] Bạn đã đóng cửa sổ chọn đổi tài khoản.");
+        } else {
+          logToTerminal("[Lỗi đổi ví] " + (err.shortMessage || err.message));
+          disconnectWallet();
+        }
+      }
+    }
+
+    function disconnectWallet() {
+      handleDisconnect();
+      logToTerminal("[MetaMask] Đã ngắt kết nối ví. Bạn có thể mở MetaMask chọn tài khoản khác rồi bấm 'Kết nối MetaMask'.");
+      alert("Đã ngắt kết nối ví trên website! Bây giờ bạn có thể mở MetaMask trên trình duyệt, bấm chọn tài khoản khác rồi bấm 'Kết nối MetaMask'.");
+    }
+
+    async function connectWallet() {
+      if (userAddress) {
+        await switchAccount();
+        return;
+      }
+      const eth = getMetaMaskProvider();
+
+      if (!eth) {
+        if (window.location.protocol === "file:") {
+          showModal(
+            "Cần cấu hình tiện ích cho tệp cục bộ (file://)",
+            `<p>Bạn đang mở website trực tiếp từ ổ đĩa máy tính (giao thức <code>file:///...</code>). Theo chính sách bảo mật, trình duyệt mặc định không cho phép MetaMask hoạt động trên tệp cục bộ.</p>
+             <h4 style="margin: 14px 0 8px 0; color:var(--brand-blue);">Cách xử lý đơn giản (Chọn 1 trong 2 cách):</h4>
+             <div style="background:#f1f5f9; padding:12px; border-radius:8px; margin-bottom:12px;">
+               <strong>Cách 1 (Khuyên dùng nhất):</strong> Chạy máy chủ cục bộ bằng lệnh terminal:<br>
+               <code style="display:block; background:#0f172a; color:#38bdf8; padding:8px; border-radius:4px; margin-top:6px;">npx serve web</code>
+               sau đó mở địa chỉ: <strong>http://localhost:3000</strong> trên trình duyệt.
+             </div>
+             <div style="background:#f1f5f9; padding:12px; border-radius:8px;">
+               <strong>Cách 2 (Mở trực tiếp tệp):</strong> Vào cài đặt trình duyệt &rarr; Quản lý tiện ích (<code>chrome://extensions</code>) &rarr; Tìm <strong>MetaMask</strong> &rarr; Bấm <strong>Chi tiết</strong> (Details) &rarr; Bật nút <strong>"Cho phép truy cập vào các URL của tệp"</strong> (Allow access to file URLs) &rarr; Tải lại trang (F5).
+             </div>`
+          );
+        } else {
+          showModal(
+            "Chưa cài đặt tiện ích ví MetaMask",
+            `<p>Để tương tác với hợp đồng thông minh, bạn cần cài đặt tiện ích mở rộng ví MetaMask miễn phí trên trình duyệt của bạn.</p>
+             <p style="margin: 16px 0;">Vui lòng truy cập trang chủ chính thức của MetaMask để tải và cài đặt tiện ích:</p>
+             <a href="https://metamask.io/download/" target="_blank" class="btn btn-primary" style="display:inline-block; margin-bottom:12px;">Tải MetaMask chính thức tại metamask.io &rarr;</a>
+             <p style="font-size:0.85rem; color:var(--text-muted);">Sau khi cài đặt xong, hãy tạo ví và tải lại trang này để bấm nút Kết nối.</p>`
+          );
+        }
+        return;
+      }
+
+      try {
+        logToTerminal("[MetaMask] Đang gửi yêu cầu kết nối tài khoản ví...");
+        provider = new ethers.BrowserProvider(eth);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        if (accounts && accounts.length > 0) {
+          await handleAccountChange(accounts[0]);
+        }
+      } catch (err) {
+        if (err.code === 4001 || (err.message && err.message.includes("rejected"))) {
+          logToTerminal("[Thông báo] Bạn đã từ chối yêu cầu kết nối trên MetaMask.");
+          alert("Bạn đã hủy kết nối ví. Khi bạn sẵn sàng, vui lòng bấm lại nút 'Kết nối MetaMask' để sử dụng.");
+        } else if (err.code === -32002) {
+          logToTerminal("[Cảnh báo] MetaMask đang có một cửa sổ chờ mở khóa.");
+          alert("Cửa sổ MetaMask đang mở yêu cầu kết nối. Vui lòng bấm vào biểu tượng con cáo MetaMask trên góc trình duyệt để nhập mật khẩu.");
+        } else {
+          logToTerminal("[Lỗi kết nối] " + (err.shortMessage || err.message));
+          alert("Không thể kết nối ví: " + (err.shortMessage || err.message));
+        }
+      }
+    }
+
+    async function handleDisconnect() {
+      userAddress = null;
+      signer = null;
+      contract = null;
+      isAdvisor = false;
+      isBcsMember = false;
+      document.getElementById("walletBtnText").textContent = "Kết nối MetaMask";
+      document.getElementById("networkDot").className = "badge-dot";
+      document.getElementById("networkText").textContent = "Chưa kết nối ví";
+      document.getElementById("quickWalletAccount").textContent = "Chưa kết nối ví";
+      document.getElementById("quickRoleBadge").textContent = "Sinh viên lớp K57";
+      document.getElementById("quickRoleBadge").className = "status-pill status-ready";
+      const bSwitch = document.getElementById("btnSwitchWallet");
+      const bDisc = document.getElementById("btnDisconnectWallet");
+      const bQSwitch = document.getElementById("btnQuickSwitch");
+      const bQDisc = document.getElementById("btnQuickDisconnect");
+      if (bSwitch) bSwitch.style.display = "none";
+      if (bDisc) bDisc.style.display = "none";
+      if (bQSwitch) bQSwitch.style.display = "none";
+      if (bQDisc) bQDisc.style.display = "none";
+      logToTerminal("[MetaMask] Đã ngắt kết nối tài khoản.");
+    }
+
+    async function handleAccountChange(account) {
+      userAddress = account;
+      signer = await provider.getSigner();
+
+      // Kiểm tra mạng
+      const network = await provider.getNetwork();
+      const chainId = Number(network.chainId);
+
+      const netBadge = document.getElementById("networkText");
+      const netDot = document.getElementById("networkDot");
+
+      if (chainId === CONFIG.chainId) {
+        netDot.className = "badge-dot connected";
+        netBadge.textContent = "Sepolia (11155111)";
+        document.getElementById("quickNetworkStatus").textContent = "Sepolia (11155111)";
+        logToTerminal(`[Mạng lưới] Đã kết nối đúng mạng Ethereum Sepolia.`);
+      } else {
+        netDot.className = "badge-dot error";
+        netBadge.textContent = "Sai mạng (" + chainId + ")";
+        document.getElementById("quickNetworkStatus").textContent = `Sai mạng (Hiện tại: ${chainId} - Yêu cầu: 11155111)`;
+        logToTerminal(`[Cảnh báo] Bạn đang ở mạng Chain ID: ${chainId}. Hệ thống cần mạng Ethereum Sepolia (11155111).`);
+        promptSwitchSepoliaModal(chainId);
+      }
+
+      document.getElementById("walletBtnText").textContent = shortenAddress(account);
+      document.getElementById("quickWalletAccount").textContent = shortenAddress(account);
+      const bSwitch = document.getElementById("btnSwitchWallet");
+      const bDisc = document.getElementById("btnDisconnectWallet");
+      const bQSwitch = document.getElementById("btnQuickSwitch");
+      const bQDisc = document.getElementById("btnQuickDisconnect");
+      if (bSwitch) bSwitch.style.display = "inline-flex";
+      if (bDisc) bDisc.style.display = "inline-flex";
+      if (bQSwitch) bQSwitch.style.display = "inline-flex";
+      if (bQDisc) bQDisc.style.display = "inline-flex";
+
+      // Default role when wallet connects is always "Sinh viên lớp K57"
+      updateRoleDisplay("student");
+
+      logToTerminal(`[Tài khoản] Đã kết nối ví: ${shortenAddress(account)}`);
+
+      // Initialize contract if address available
+      if (CONFIG.contractAddress && ethers.isAddress(CONFIG.contractAddress)) {
+        await initContractInstance();
+      }
+    }
+
+    function promptSwitchSepoliaModal(currentChain) {
+      showModal(
+        "Chuyển sang mạng Ethereum Sepolia",
+        `<p>Hệ thống KTS Class Fund hoạt động trên mạng thử nghiệm <strong>Ethereum Sepolia</strong> (Chain ID: 11155111).</p>
+         <p style="margin: 12px 0;">Hiện tại ví của bạn đang kết nối ở mạng có Chain ID là <strong>${currentChain}</strong>.</p>
+         <p>Vui lòng bấm nút bên dưới để MetaMask chuyển sang mạng Sepolia:</p>
+         <div style="margin-top: 16px;">
+           <button class="btn btn-warning" onclick="doSwitchSepolia()">Chuyển sang mạng Sepolia trên MetaMask</button>
+         </div>`
+      );
+    }
+
+    async function doSwitchSepolia() {
+      const eth = getMetaMaskProvider();
+      if (!eth) return;
+      try {
+        await eth.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: CONFIG.chainIdHex }]
+        });
+        closeModal();
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          try {
+            await eth.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: CONFIG.chainIdHex,
+                chainName: CONFIG.chainName,
+                nativeCurrency: { name: "Sepolia ETH", symbol: "SEP", decimals: 18 },
+                rpcUrls: ["https://rpc.sepolia.org"],
+                blockExplorerUrls: [CONFIG.blockExplorer]
+              }]
+            });
+            closeModal();
+          } catch (addError) {
+            logToTerminal("[Lỗi] Không thể thêm mạng Sepolia vào MetaMask.");
+          }
+        }
+      }
+    }
+
+    // Update role display accurately (Sinh viên / Ban cán sự / Cố vấn học tập)
+    function updateRoleDisplay(roleType) {
+      const badge = document.getElementById("quickRoleBadge");
+      if (!badge) return;
+
+      if (roleType === "advisor") {
+        badge.textContent = "Cố vấn học tập";
+        badge.className = "status-pill";
+        badge.style.background = "var(--purple-bg)";
+        badge.style.color = "#6d28d9";
+        badge.style.border = "1px solid #ddd6fe";
+      } else if (roleType === "bcs") {
+        badge.textContent = "Ban cán sự lớp";
+        badge.className = "status-pill status-ready";
+        badge.style.background = "#dbeafe";
+        badge.style.color = "#1d4ed8";
+        badge.style.border = "1px solid #bfdbfe";
+      } else {
+        badge.textContent = "Sinh viên lớp K57";
+        badge.className = "status-pill status-executed";
+        badge.style.background = "var(--success-bg)";
+        badge.style.color = "#047857";
+        badge.style.border = "1px solid #a7f3d0";
+      }
+    }
+
+    // Apply contract address & save to localStorage
+    function applyContractAddress(address) {
+      if (!address || !ethers.isAddress(address)) {
+        alert("Địa chỉ hợp đồng không hợp lệ! Vui lòng nhập đúng địa chỉ ví 42 ký tự.");
+        return;
+      }
+      CONFIG.contractAddress = address;
+      localStorage.setItem("kts_class_fund_contract", address);
+
+      const quickInp = document.getElementById("quickContractAddress");
+      const configInp = document.getElementById("configContractAddress");
+      if (quickInp) quickInp.value = address;
+      if (configInp) configInp.value = address;
+
+      document.getElementById("textContractConfigStatus").textContent = "Đã cấu hình: " + address;
+      document.getElementById("textContractConfigStatus").style.color = "var(--success)";
+      document.getElementById("linkEtherscanContract").href = `${CONFIG.blockExplorer}/address/${address}`;
+
+      initContractInstance();
+    }
+
+    // --- 8. CONTRACT INSTANCE & ON-CHAIN DATA ---
+    async function initContractInstance() {
+      const address = CONFIG.contractAddress;
+      if (!address || !ethers.isAddress(address)) return;
+
+      try {
+        logToTerminal(`[Hợp đồng] Đang kết nối với ProjectCore tại: ${address}...`);
+        contract = new ethers.Contract(address, CONTRACT_ABI, signer || provider);
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi kết nối contract] ${err.message}`);
+      }
+    }
+
+    async function refreshContractData() {
+      if (!contract) return;
+      try {
+        logToTerminal("[Dữ liệu] Đang đồng bộ trạng thái on-chain từ Sepolia...");
+
+        // 1. Read global metrics
+        const classFund = await contract.classFundBalance();
+        const adminFee = await contract.adminFeePool();
+        const spendCount = await contract.spendRequestCount();
+        const refundCount = await contract.refundRequestCount();
+        const activeBCS = await contract.activeBCSCount();
+        const advisorAddr = await contract.advisor();
+
+        document.getElementById("metricClassFund").textContent = formatEth(classFund) + " ETH";
+        document.getElementById("metricAdminFee").textContent = formatEth(adminFee) + " ETH";
+        document.getElementById("metricSpendCount").textContent = Number(spendCount);
+        document.getElementById("metricRefundCount").textContent = Number(refundCount);
+        document.getElementById("advisorFeePoolBalance").textContent = formatEth(adminFee) + " ETH";
+        document.getElementById("metricClassFundNote").textContent = "Dữ liệu on-chain chính xác";
+
+        // 2. Identify and update user role
+        if (userAddress) {
+          isAdvisor = (userAddress.toLowerCase() === advisorAddr.toLowerCase());
+          isBcsMember = await contract.isBCSMember(userAddress);
+
+          if (isAdvisor) {
+            updateRoleDisplay("advisor");
+            selectRoleView("advisor");
+            logToTerminal("[Xác thực] Bạn là Cố vấn học tập. Đã mở ô chi tiết Cố vấn học tập.");
+          } else if (isBcsMember) {
+            updateRoleDisplay("bcs");
+            selectRoleView("bcs");
+            logToTerminal("[Xác thực] Bạn là thành viên Ban cán sự. Đã mở ô chi tiết Ban cán sự.");
+          } else {
+            updateRoleDisplay("student");
+            selectRoleView("student");
+            logToTerminal("[Xác thực] Bạn là Sinh viên. Đã mở ô chi tiết Sinh viên.");
+          }
+
+          // 3. User personal contribution
+          const myContrib = await contract.studentContributions(userAddress);
+          const myPending = await contract.pendingStudentRefundAmount(userAddress);
+          const myAvail = await contract.getStudentAvailableContribution(userAddress);
+
+          document.getElementById("myTotalContribution").textContent = formatEth(myContrib) + " ETH";
+          document.getElementById("myPendingRefund").textContent = formatEth(myPending) + " ETH";
+          document.getElementById("myAvailableRefund").textContent = formatEth(myAvail) + " ETH";
+        }
+
+        // 4. Load Requests Data & Cash Flow Ledger
+        await loadSpendRequests(Number(spendCount), Number(activeBCS));
+        await loadRefundRequests(Number(refundCount), Number(activeBCS));
+        await loadCashFlowLedger(Number(spendCount), Number(refundCount), Number(activeBCS), classFund, adminFee);
+
+        logToTerminal("[Dữ liệu] Hoàn tất đồng bộ dữ liệu hợp đồng và toàn bộ flow dòng tiền.");
+      } catch (err) {
+        logToTerminal(`[Lỗi đọc hợp đồng] ${err.shortMessage || err.message}`);
+      }
+    }
+
+    // Load Spend Requests
+    async function loadSpendRequests(totalCount, activeBcsCount) {
+      const bcsTableBody = document.getElementById("bcsSpendTableBody");
+      if (!bcsTableBody) return;
+
+      if (totalCount === 0) {
+        bcsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:var(--text-muted);">Hiện chưa có đề nghị chi tiền nào trong hợp đồng.</td></tr>`;
+        return;
+      }
+
+      let rowsHtml = "";
+      for (let i = 1; i <= totalCount; i++) {
+        try {
+          const req = await contract.getSpendRequest(i);
+          const reqId = Number(req[0]);
+          const recipient = req[1];
+          const amount = formatEth(req[2]);
+          const desc = req[3];
+          const yesVotes = Number(req[6]);
+          const status = Number(req[8]);
+
+          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          const statusBadge = getStatusBadge(status);
+
+          let voteActionHtml = "";
+          let executeActionHtml = "";
+
+          if (status === 0) { // Pending
+            voteActionHtml = `
+              <button class="btn btn-sm btn-primary" onclick="voteSpend(${reqId}, true)">Đồng ý</button>
+              <button class="btn btn-sm btn-danger" onclick="voteSpend(${reqId}, false)">Bác bỏ</button>
+            `;
+            executeActionHtml = `<span style="font-size:0.78rem; color:var(--text-light);">Cần &ge; 51% đồng ý</span>`;
+          } else if (status === 1) { // Ready
+            voteActionHtml = `<span style="font-size:0.8rem; color:var(--brand-blue); font-weight:600;">Đã đủ điều kiện</span>`;
+            executeActionHtml = `<button class="btn btn-sm btn-success" onclick="executeSpend(${reqId})">Giải ngân</button>`;
+          } else {
+            voteActionHtml = `-`;
+            executeActionHtml = `-`;
+          }
+
+          rowsHtml += `
+            <tr>
+              <td><strong>#${reqId}</strong></td>
+              <td><span title="${recipient}" style="font-family:monospace;">${shortenAddress(recipient)}</span></td>
+              <td><strong>${amount} ETH</strong></td>
+              <td>${desc}</td>
+              <td>${yesVotes}/${activeBcsCount} (${pct}%)</td>
+              <td>${statusBadge}</td>
+              <td>${voteActionHtml}</td>
+              <td>${executeActionHtml}</td>
+            </tr>
+          `;
+        } catch (e) {
+          console.error("Lỗi đọc đề nghị chi", i, e);
+        }
+      }
+      bcsTableBody.innerHTML = rowsHtml;
+    }
+
+    // Load Refund Requests
+    async function loadRefundRequests(totalCount, activeBcsCount) {
+      const bcsRefundTable = document.getElementById("bcsRefundTableBody");
+      const studentRefundTable = document.getElementById("studentRefundTableBody");
+
+      if (totalCount === 0) {
+        if (bcsRefundTable) bcsRefundTable.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:var(--text-muted);">Hiện chưa có yêu cầu hoàn tiền nào từ sinh viên.</td></tr>`;
+        if (studentRefundTable) studentRefundTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:18px; color:var(--text-muted);">Bạn chưa tạo yêu cầu hoàn tiền nào.</td></tr>`;
+        return;
+      }
+
+      let bcsRows = "";
+      let studentRows = "";
+
+      for (let i = 1; i <= totalCount; i++) {
+        try {
+          const req = await contract.getRefundRequest(i);
+          const refId = Number(req[0]);
+          const applicant = req[1];
+          const amount = formatEth(req[2]);
+          const reason = req[3];
+          const yesVotes = Number(req[5]);
+          const status = Number(req[7]);
+
+          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          const statusBadge = getStatusBadge(status);
+
+          // For BCS table
+          let bcsVoteHtml = "";
+          let bcsExecHtml = "";
+          if (status === 0) {
+            bcsVoteHtml = `
+              <button class="btn btn-sm btn-primary" onclick="voteRefund(${refId}, true)">Đồng ý duyệt</button>
+              <button class="btn btn-sm btn-danger" onclick="voteRefund(${refId}, false)">Bác bỏ</button>
+            `;
+            bcsExecHtml = `<span style="font-size:0.78rem; color:var(--text-light);">Cần &ge; 51% đồng ý</span>`;
+          } else if (status === 1) {
+            bcsVoteHtml = `<span style="font-size:0.8rem; color:var(--brand-blue); font-weight:600;">Đã thông qua</span>`;
+            bcsExecHtml = `<button class="btn btn-sm btn-success" onclick="executeRefund(${refId})">Hoàn tiền</button>`;
+          } else {
+            bcsVoteHtml = `-`;
+            bcsExecHtml = `-`;
+          }
+
+          bcsRows += `
+            <tr>
+              <td><strong>#${refId}</strong></td>
+              <td><span style="font-family:monospace;">${shortenAddress(applicant)}</span></td>
+              <td><strong>${amount} ETH</strong></td>
+              <td>${reason}</td>
+              <td>${yesVotes}/${activeBcsCount} (${pct}%)</td>
+              <td>${statusBadge}</td>
+              <td>${bcsVoteHtml}</td>
+              <td>${bcsExecHtml}</td>
+            </tr>
+          `;
+
+          // For Student's table
+          if (userAddress && applicant.toLowerCase() === userAddress.toLowerCase()) {
+            let studentExecBtn = (status === 1) ? `<button class="btn btn-sm btn-success" onclick="executeRefund(${refId})">Nhận tiền hoàn</button>` : `-`;
+            studentRows += `
+              <tr>
+                <td><strong>#${refId}</strong></td>
+                <td><strong>${amount} ETH</strong></td>
+                <td>${reason}</td>
+                <td>${yesVotes}/${activeBcsCount} (${pct}%)</td>
+                <td>${statusBadge}</td>
+                <td>${studentExecBtn}</td>
+              </tr>
+            `;
+          }
+        } catch (e) {
+          console.error("Lỗi đọc yêu cầu hoàn tiền", i, e);
+        }
+      }
+
+      if (bcsRefundTable) bcsRefundTable.innerHTML = bcsRows || `<tr><td colspan="8" style="text-align:center;">Không có dữ liệu</td></tr>`;
+      if (studentRefundTable) studentRefundTable.innerHTML = studentRows || `<tr><td colspan="6" style="text-align:center; padding:18px; color:var(--text-muted);">Tài khoản hiện tại chưa tạo yêu cầu hoàn tiền nào.</td></tr>`;
+    }
+
+    // --- 9. CASH FLOW LEDGER & FLOW TRACKER ---
+    async function loadCashFlowLedger(spendCount, refundCount, activeBcsCount, classFundWei, adminFeeWei) {
+      const tableBody = document.getElementById("flowLedgerTableBody");
+      const flowBalClass = document.getElementById("flowBalClassFund");
+      const flowBalRes = document.getElementById("flowBalReserved");
+      const flowBalFee = document.getElementById("flowBalAdminFee");
+      const flowBalExec = document.getElementById("flowBalExecutedSpend");
+      const flowBalExecCount = document.getElementById("flowBalExecutedCount");
+      const linkEtherscan = document.getElementById("flowLinkEtherscan");
+
+      if (flowBalClass) flowBalClass.textContent = formatEth(classFundWei) + " ETH";
+      if (flowBalFee) flowBalFee.textContent = formatEth(adminFeeWei) + " ETH";
+      if (linkEtherscan && CONFIG.contractAddress) {
+        linkEtherscan.href = `${CONFIG.blockExplorer}/address/${CONFIG.contractAddress}`;
+      }
+
+      allFlowItems = [];
+      let totalExecutedSpendWei = 0n;
+      let executedSpendCount = 0;
+      let totalReservedWei = 0n;
+
+      // 1. Fetch reserved amounts if available
+      try {
+        const resSpend = await contract.reservedSpendAmount();
+        const resRefund = await contract.reservedRefundAmount();
+        totalReservedWei = (resSpend || 0n) + (resRefund || 0n);
+      } catch (e) {
+        console.warn("Could not read reserved amounts", e);
+      }
+      if (flowBalRes) flowBalRes.textContent = formatEth(totalReservedWei) + " ETH";
+
+      // 2. Collect all Spend Requests into ledger
+      for (let i = 1; i <= spendCount; i++) {
+        try {
+          const req = await contract.getSpendRequest(i);
+          const reqId = Number(req[0]);
+          const recipient = req[1];
+          const rawAmount = req[2];
+          const desc = req[3];
+          const creator = req[4];
+          const createdAt = Number(req[5]);
+          const yesVotes = Number(req[6]);
+          const status = Number(req[8]);
+
+          if (status === 2) { // Executed
+            totalExecutedSpendWei += rawAmount;
+            executedSpendCount++;
+          }
+
+          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          allFlowItems.push({
+            category: "spend",
+            id: `SP-${reqId}`,
+            numId: reqId,
+            flowType: "📤 Chi tiêu",
+            badgeClass: "flow-badge-spend",
+            amountEth: formatEth(rawAmount),
+            party: `Nhận: ${shortenAddress(recipient)} (Tạo: ${shortenAddress(creator)})`,
+            desc: desc,
+            votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
+            statusNum: status,
+            statusBadge: getStatusBadge(status),
+            createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
+          });
+        } catch (e) {
+          console.error("Error reading spend for ledger", i, e);
+        }
+      }
+
+      // 3. Collect all Refund Requests into ledger
+      for (let i = 1; i <= refundCount; i++) {
+        try {
+          const req = await contract.getRefundRequest(i);
+          const refId = Number(req[0]);
+          const applicant = req[1];
+          const rawAmount = req[2];
+          const reason = req[3];
+          const createdAt = Number(req[4]);
+          const yesVotes = Number(req[5]);
+          const status = Number(req[7]);
+
+          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          allFlowItems.push({
+            category: "refund",
+            id: `RF-${refId}`,
+            numId: refId,
+            flowType: "🔄 Hoàn tiền",
+            badgeClass: "flow-badge-refund",
+            amountEth: formatEth(rawAmount),
+            party: `SV: ${shortenAddress(applicant)}`,
+            desc: reason,
+            votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
+            statusNum: status,
+            statusBadge: getStatusBadge(status),
+            createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
+          });
+        } catch (e) {
+          console.error("Error reading refund for ledger", i, e);
+        }
+      }
+
+      if (flowBalExec) flowBalExec.textContent = formatEth(totalExecutedSpendWei) + " ETH";
+      if (flowBalExecCount) flowBalExecCount.textContent = `${executedSpendCount} khoản chi đã giải ngân`;
+
+      renderFlowLedgerTable(allFlowItems);
+    }
+
+    function renderFlowLedgerTable(items) {
+      const tableBody = document.getElementById("flowLedgerTableBody");
+      if (!tableBody) return;
+
+      if (!items || items.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted);">Hiện chưa có đề xuất chi tiêu hoặc yêu cầu hoàn tiền nào trong hợp đồng.</td></tr>`;
+        return;
+      }
+
+      let rowsHtml = "";
+      items.forEach(item => {
+        const isSpend = item.category === "spend";
+        const sign = isSpend ? "- " : "~ ";
+        const amountColor = isSpend ? "#ef4444" : "#ea580c";
+
+        rowsHtml += `
+          <tr>
+            <td><span class="flow-step-badge ${item.badgeClass}">${item.flowType}</span></td>
+            <td><strong>#${item.id}</strong></td>
+            <td><strong style="color:${amountColor};">${sign}${item.amountEth} ETH</strong></td>
+            <td><span style="font-family:monospace; font-size:0.85rem;">${item.party}</span></td>
+            <td>${item.desc}</td>
+            <td>${item.votesText}</td>
+            <td>${item.statusBadge}</td>
+            <td>
+              <a href="${CONFIG.blockExplorer}/address/${CONFIG.contractAddress}" target="_blank" style="font-size:0.8rem; color:var(--brand-blue); text-decoration:underline;">
+                Xem Tx ↗
+              </a>
+            </td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = rowsHtml;
+    }
+
+    function filterFlowLedger(filterType, btnEl) {
+      const buttons = document.querySelectorAll("#flowFilterGroup .flow-filter-btn");
+      buttons.forEach(b => b.classList.remove("active"));
+      if (btnEl) btnEl.classList.add("active");
+
+      if (filterType === "all") {
+        renderFlowLedgerTable(allFlowItems);
+      } else if (filterType === "spend") {
+        const filtered = allFlowItems.filter(item => item.category === "spend");
+        renderFlowLedgerTable(filtered);
+      } else if (filterType === "refund") {
+        const filtered = allFlowItems.filter(item => item.category === "refund");
+        renderFlowLedgerTable(filtered);
+      } else if (filterType === "executed") {
+        const filtered = allFlowItems.filter(item => item.statusNum === 2); // Executed
+        renderFlowLedgerTable(filtered);
+      } else if (filterType === "pending") {
+        const filtered = allFlowItems.filter(item => item.statusNum === 0); // Pending
+        renderFlowLedgerTable(filtered);
+      }
+    }
+
+    // --- 9. TRANSACTIONS VIA SIGNER ---
+
+    // Nộp tiền vào quỹ
+    async function doDeposit() {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask! Vui lòng bấm nút 'Kết nối MetaMask' ở thanh menu trên cùng.");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("nộp tiền vào quỹ");
+        return;
+      }
+
+      const amountStr = document.getElementById("inputDepositAmount").value.trim();
+      if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH đóng góp lớn hơn 0!");
+
+      try {
+        logToTerminal(`[Đóng góp] Đang chuẩn bị nộp ${amountStr} ETH vào quỹ lớp...`);
+        const valueWei = ethers.parseEther(amountStr);
+        const tx = await contract.deposit({ value: valueWei });
+        logToTerminal(`[Đang xử lý] Mã giao dịch: ${tx.hash}. Đang chờ xác nhận từ blockchain...`);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã nộp thành công ${amountStr} ETH vào Quỹ lớp!`);
+        alert(`Đóng góp tiền vào quỹ thành công! Mã giao dịch: ${tx.hash}`);
+        document.getElementById("inputDepositAmount").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi nộp quỹ] ${err.shortMessage || err.message}`);
+        alert("Giao dịch nộp tiền thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Gửi yêu cầu hoàn tiền
+    async function doCreateRefund() {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask! Vui lòng bấm nút 'Kết nối MetaMask' ở thanh menu trên cùng.");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("gửi yêu cầu hoàn tiền");
+        return;
+      }
+
+      const amountStr = document.getElementById("inputRefundAmount").value.trim();
+      const reason = document.getElementById("inputRefundReason").value.trim();
+      if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH muốn xin hoàn lại hợp lệ!");
+      if (!reason) return alert("Vui lòng nhập rõ lý do chuyển nhầm tiền!");
+
+      try {
+        logToTerminal(`[Yêu cầu hoàn tiền] Đang gửi yêu cầu xin hoàn ${amountStr} ETH...`);
+        const valueWei = ethers.parseEther(amountStr);
+        const tx = await contract.createRefundRequest(valueWei, reason);
+        logToTerminal(`[Đang xử lý] Mã giao dịch: ${tx.hash}. Chờ xác nhận...`);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã gửi yêu cầu hoàn tiền thành công! Đang chờ Ban cán sự xem xét.`);
+        alert("Yêu cầu hoàn tiền đã được gửi thành công! Mã giao dịch: " + tx.hash);
+        document.getElementById("inputRefundAmount").value = "";
+        document.getElementById("inputRefundReason").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi gửi yêu cầu hoàn tiền] ${err.shortMessage || err.message}`);
+        alert("Không thể gửi yêu cầu hoàn tiền: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Ban cán sự biểu quyết duyệt hoàn tiền
+    async function voteRefund(refundId, support) {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("biểu quyết duyệt hoàn tiền");
+        return;
+      }
+
+      try {
+        logToTerminal(`[Biểu quyết hoàn tiền] Đang bỏ phiếu ${support ? 'ĐỒNG Ý' : 'KHÔNG ĐỒNG Ý'} cho Yêu cầu #${refundId}...`);
+        const tx = await contract.voteRefundRequest(refundId, support);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã bỏ phiếu thành công cho Yêu cầu hoàn tiền #${refundId}!`);
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi bỏ phiếu hoàn tiền] ${err.shortMessage || err.message}`);
+        alert("Bỏ phiếu thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Thực hiện hoàn tiền về ví sinh viên
+    async function executeRefund(refundId) {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("thực hiện hoàn tiền");
+        return;
+      }
+
+      try {
+        logToTerminal(`[Hoàn tiền] Đang thực hiện chuyển tiền hoàn cho Yêu cầu #${refundId}...`);
+        const tx = await contract.executeRefundRequest(refundId);
+        await tx.wait();
+        logToTerminal(`[Thành công] Tiền hoàn đã được chuyển về ví của sinh viên! Mã giao dịch: ${tx.hash}`);
+        alert("Hoàn tiền thành công về ví sinh viên! Mã giao dịch: " + tx.hash);
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi hoàn tiền] ${err.shortMessage || err.message}`);
+        alert("Thực hiện hoàn tiền thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Tạo đề xuất chi tiêu
+    async function doCreateSpend() {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("tạo đề nghị chi tiền");
+        return;
+      }
+
+      const recipient = document.getElementById("inputSpendRecipient").value.trim();
+      const amountStr = document.getElementById("inputSpendAmount").value.trim();
+      const desc = document.getElementById("inputSpendDesc").value.trim();
+
+      if (!recipient || !ethers.isAddress(recipient)) return alert("Vui lòng nhập địa chỉ ví người nhận tiền hợp lệ!");
+      if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH đề nghị chi hợp lệ!");
+      if (!desc) return alert("Vui lòng nhập nội dung chi tiêu!");
+
+      try {
+        logToTerminal(`[Đề nghị chi] Đang tạo đề nghị chi ${amountStr} ETH cho ${shortenAddress(recipient)}...`);
+        const amountWei = ethers.parseEther(amountStr);
+        const tx = await contract.createSpendRequest(recipient, amountWei, desc);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã tạo đề nghị chi tiền mới! Khoản tiền đã được tạm giữ an toàn.`);
+        alert("Tạo đề nghị chi tiền thành công! Mã giao dịch: " + tx.hash);
+        document.getElementById("inputSpendRecipient").value = "";
+        document.getElementById("inputSpendAmount").value = "";
+        document.getElementById("inputSpendDesc").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi tạo đề nghị chi] ${err.shortMessage || err.message}`);
+        alert("Tạo đề nghị chi thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Ban cán sự biểu quyết đề xuất chi
+    async function voteSpend(requestId, support) {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("bỏ phiếu đề nghị chi");
+        return;
+      }
+
+      try {
+        logToTerminal(`[Biểu quyết chi] Đang bỏ phiếu ${support ? 'ĐỒNG Ý' : 'KHÔNG ĐỒNG Ý'} cho Đề xuất #${requestId}...`);
+        const tx = await contract.voteSpendRequest(requestId, support);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã ghi nhận phiếu biểu quyết cho Đề xuất #${requestId}!`);
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi bỏ phiếu chi] ${err.shortMessage || err.message}`);
+        alert("Bỏ phiếu thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Thực hiện giải ngân đề xuất chi
+    async function executeSpend(requestId) {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("thực hiện giải ngân");
+        return;
+      }
+
+      try {
+        logToTerminal(`[Giải ngân chi tiêu] Đang thực hiện chuyển tiền cho Đề xuất #${requestId}...`);
+        const tx = await contract.executeSpendRequest(requestId);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã giải ngân thành công! Tiền đã chuyển đến người nhận. Mã giao dịch: ${tx.hash}`);
+        alert("Giải ngân thành công! Mã giao dịch: " + tx.hash);
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi giải ngân] ${err.shortMessage || err.message}`);
+        alert("Giải ngân thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Cố vấn học tập cập nhật nhân sự Ban cán sự
+    async function doSetBCS() {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("cập nhật nhân sự Ban cán sự");
+        return;
+      }
+
+      const memberAddr = document.getElementById("inputBcsAddress").value.trim();
+      const statusVal = (document.getElementById("selectBcsStatus").value === "true");
+
+      if (!memberAddr || !ethers.isAddress(memberAddr)) return alert("Vui lòng nhập địa chỉ ví hợp lệ!");
+
+      try {
+        logToTerminal(`[Quản trị Cố vấn] Đang cập nhật quyền Ban cán sự cho ${shortenAddress(memberAddr)} -> ${statusVal ? 'Kích hoạt' : 'Thu hồi'}...`);
+        const tx = await contract.setBCSMember(memberAddr, statusVal);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã cập nhật thành công nhân sự Ban cán sự! Mã giao dịch: ${tx.hash}`);
+        alert("Cập nhật Ban cán sự thành công! Mã giao dịch: " + tx.hash);
+        document.getElementById("inputBcsAddress").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi cập nhật BCS] ${err.shortMessage || err.message}`);
+        alert("Cập nhật BCS thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // Cố vấn học tập rút quỹ phí vận hành bù gas
+    async function doWithdrawFee() {
+      if (!signer) {
+        alert("Bạn chưa kết nối ví MetaMask!");
+        return;
+      }
+      if (!contract) {
+        promptContractConfig("rút quỹ phí vận hành");
+        return;
+      }
+
+      const amountStr = document.getElementById("inputWithdrawFeeAmount").value.trim();
+      if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH muốn rút hợp lệ!");
+
+      try {
+        logToTerminal(`[Rút phí Cố vấn] Đang rút ${amountStr} ETH từ quỹ phí vận hành về ví Cố vấn...`);
+        const amountWei = ethers.parseEther(amountStr);
+        const tx = await contract.withdrawAdminFee(amountWei);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã rút thành công phí vận hành bù đắp gas! Mã giao dịch: ${tx.hash}`);
+        alert("Rút phí vận hành thành công! Mã giao dịch: " + tx.hash);
+        document.getElementById("inputWithdrawFeeAmount").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi rút phí vận hành] ${err.shortMessage || err.message}`);
+        alert("Rút phí thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    // --- 10. SETUP EVENT LISTENERS ---
+    window.addEventListener("DOMContentLoaded", () => {
+      // Setup FAQ
+      renderFaq(FAQ_DATA);
+      const searchBox = document.getElementById("faqSearchInput");
+      if (searchBox) {
+        searchBox.addEventListener("input", (e) => {
+          const keyword = e.target.value.toLowerCase().trim();
+          const filtered = FAQ_DATA.filter(item => item.q.toLowerCase().includes(keyword) || item.a.toLowerCase().includes(keyword));
+          renderFaq(filtered);
+        });
+      }
+
+      // Setup Calculator
+      setupCalculator();
+
+      // Mobile nav toggle
+      const btnToggle = document.getElementById("btnToggleNav");
+      const navLinks = document.getElementById("navLinks");
+      if (btnToggle && navLinks) {
+        btnToggle.addEventListener("click", () => {
+          navLinks.classList.toggle("show");
+        });
+      }
+
+      // Action buttons
+      document.getElementById("btnConnectWallet").addEventListener("click", connectWallet);
+      document.getElementById("btnDepositAction").addEventListener("click", doDeposit);
+      document.getElementById("btnCreateRefundAction").addEventListener("click", doCreateRefund);
+      document.getElementById("btnCreateSpendAction").addEventListener("click", doCreateSpend);
+      document.getElementById("btnSetBcsAction").addEventListener("click", doSetBCS);
+      document.getElementById("btnWithdrawFeeAction").addEventListener("click", doWithdrawFee);
+
+      // Contract apply buttons
+      document.getElementById("btnSaveQuickContract").addEventListener("click", () => {
+        const val = document.getElementById("quickContractAddress").value.trim();
+        applyContractAddress(val);
+      });
+      document.getElementById("btnApplyContractAddress").addEventListener("click", () => {
+        const val = document.getElementById("configContractAddress").value.trim();
+        applyContractAddress(val);
+      });
+
+      // Init Web3 Provider
+      initWeb3();
+    });
+
+    window.addEventListener('ethereum#initialized', () => {
+      initWeb3();
+    }, { once: true });
+  </script>
 </body>
 </html>
