@@ -46,13 +46,12 @@ def wei_to_eth(wei_amount: int) -> float:
 
 
 CANDIDATE_MODELS = [
-    os.getenv("GEMINI_MODEL", "gemini-3.6-flash"),
-    "gemini-3.6-flash",
-    "gemini-3.5-flash",
-    "gemini-3.1-flash-lite",
-    "gemini-3-flash-preview",
+    os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
     "gemini-2.5-flash",
-    "gemini-flash-latest"
+    "gemini-2.5-flash-lite",
+    "gemini-flash-latest",
+    "gemini-2.5-pro",
+    "gemini-pro-latest"
 ]
 
 
@@ -186,17 +185,50 @@ class AIAssistantService:
                 context_parts.append(f"- Tiêu đề đợt thu: {announcement.get('title')}")
                 context_parts.append(f"- Mức đóng quy định: {announcement.get('targetAmountEth', '0.01')} ETH/sinh viên")
                 context_parts.append(f"- Hạn chót nộp quỹ: {announcement.get('deadline', 'Chưa xác định')}")
-                context_parts.append(f"- Mục tiêu sĩ số: {announcement.get('classSize', 50)} sinh viên")
+                context_parts.append(f"- Sĩ số lớp: {announcement.get('classSize', 50)} sinh viên")
                 context_parts.append(f"- Mục đích thu quỹ: {announcement.get('purpose', '')}")
                 context_parts.append(f"- Tiến độ thu thực tế: {announcement.get('progressText', '0%')}")
                 context_parts.append(f"- Trạng thái đợt thu: {announcement.get('status', 'Đang diễn ra')}")
 
+            # Danh bạ sinh viên lớp K57 (Class Roster - CHỈ DÀNH CHO BCS VÀ CỐ VẤN)
+            viewer_role = onchain_data.get("viewerRole", "student")
+            is_privileged_viewer = viewer_role in ["advisor", "bcs"]
+
+            roster = onchain_data.get("roster", [])
+            if roster and is_privileged_viewer:
+                context_parts.append("\n--- DANH BẠ SINH VIÊN LỚP K57 (QUẢN TRỊ NỘI BỘ BCS & CỐ VẤN) ---")
+                context_parts.append(f"- Tổng số sinh viên trong danh bạ: {len(roster)} thành viên.")
+                for st in roster:
+                    mssv = st.get("mssv", "N/A")
+                    name = st.get("name", "N/A")
+                    wallet = st.get("wallet", "N/A")
+                    role_title = st.get("roleTitle", "Sinh viên")
+                    context_parts.append(f"  • {name} (MSSV: {mssv}) | Ví: {wallet} | Vai trò: {role_title}")
+
+        viewer_role = (onchain_data or {}).get("viewerRole", "student")
+        is_privileged_viewer = viewer_role in ["advisor", "bcs"]
+
         context_parts.append("\n--- HƯỚNG DẪN BẮT BUỘC KHI TRẢ LỜI ---")
-        context_parts.append("1. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG NGƯỜI NỘP QUỸ:")
+
+        if not is_privileged_viewer:
+            context_parts.append("★ CHÍNH SÁCH BẢO VỆ QUYỀN RIÊNG TƯ & ẨN DANH NGƯỜI NỘP QUỸ (BẮT BUỘC):")
+            context_parts.append("1. Người dùng đang trò chuyện là SINH VIÊN HOẶC KHÁCH VÃNG LAI (không phải Ban cán sự hay Cố vấn).")
+            context_parts.append("2. ẨN DANH DANH TÍNH HOÀN TOÀN: Khi trả lời về số lượng người nộp quỹ hoặc danh sách những người đã nộp ('Ai đã nộp rồi?', 'Có ai nộp chưa?', 'Ví 0x... là của ai?'):")
+            context_parts.append("   - BÁO RÕ số lượng sinh viên đã nộp ({depositors_count} sinh viên) và tổng số tiền {total_deposited_eth} ETH.")
+            context_parts.append("   - CHỈ ĐƯỢC PHÉP LIỆT KÊ ĐỊA CHỈ VÍ ETHEREUM on-chain (ví dụ: 0x7856...159a) kèm số ETH đã nộp.")
+            context_parts.append("   - TUYỆT ĐỐI KHÔNG ĐƯỢC TIẾT LỘ HỌ TÊN HOẶC MSSV CỦA BẤT KỲ SINH VIÊN NÀO ĐÃ NỘP HAY CHƯA NỘP.")
+            context_parts.append("   - GIẢI THÍCH CHUẨN MỰC: 'Để đảm bảo quyền riêng tư tài chính cho sinh viên, hệ thống ẩn danh danh tính người nộp và chỉ hiển thị địa chỉ ví on-chain. Việc đối chiếu địa chỉ ví với danh bạ sinh viên chỉ dành riêng cho Cố vấn học tập và Ban cán sự để phục vụ công tác đối soát quỹ.'")
+            context_parts.append("   - Nếu người dùng hỏi về ví của chính họ (ví dụ: 'Ví của tôi 0x... đã nộp chưa?'): Kiểm tra xem địa chỉ ví đó có trong danh sách ví đã nộp on-chain hay không và trả lời.")
+        else:
+            context_parts.append("★ QUYỀN TRUY XUẤT BAN CÁN SỰ & CỐ VẤN HỌC TẬP (ĐỐI SOÁT NỘI BỘ):")
+            context_parts.append("1. Bạn đang trò chuyện với Ban cán sự hoặc Cố vấn học tập đã được phân quyền xác thực.")
+            context_parts.append("2. Được phép hỗ trợ đối chiếu danh bạ nội bộ giữa ví on-chain và sinh viên (Họ tên, MSSV) phục vụ công tác ghi sổ và đối soát quỹ.")
+
+        context_parts.append("2. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG NGƯỜI NỘP QUỸ:")
         context_parts.append("   - Trả lời rõ ràng, dứt khoát số lượng người đã nộp ({depositors_count} sinh viên) với tổng số tiền đã nộp ({total_deposited_eth} ETH).")
         context_parts.append("   - Nêu rõ số dư Quỹ lớp (99%) và Quỹ dịch vụ vận hành của Cố vấn (1%).")
         context_parts.append("   - Nếu {depositors_count} >= 1 hoặc tổng tiền > 0, tuyệt đối KHÔNG nói 'chưa có ai nộp'.")
-        context_parts.append("2. KHI ĐƯỢC HỎI VỀ CÁC YÊU CẦU CHI TIÊU:")
+        context_parts.append("3. KHI ĐƯỢC HỎI VỀ CÁC YÊU CẦU CHI TIÊU:")
         context_parts.append("   - PHẢI LIỆT KÊ ĐẦY ĐỦ TẤT CẢ CÁC YÊU CẦU CHI TIÊU VÀ TRÌNH BÀY RÕ RÀNG CHI TIẾT TỪNG MỤC:")
         context_parts.append("     • Mã yêu cầu: #[ID]")
         context_parts.append("     • Mục đích chi tiêu: [Mục đích]")
@@ -205,11 +237,11 @@ class AIAssistantService:
         context_parts.append("     • Tiến độ biểu quyết: [Số phiếu / Tổng số BCS] ([Tỷ lệ]%)")
         context_parts.append("     • Trạng thái hiện tại: [Trạng thái]")
         context_parts.append("     • Quy chế giải ngân: Nhắc lại điều kiện cần tối thiểu 51% phiếu thuận từ Ban cán sự trong 7 ngày (R4/R5).")
-        context_parts.append("3. TUYỆT ĐỐI KHÔNG ĐƯỢC LẶP LẠI: Mỗi mã yêu cầu chỉ xuất hiện đúng 1 lần duy nhất trong câu trả lời. Không được in trùng lặp.")
-        context_parts.append("4. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG BAN CÁN SỰ (BCS) HOẶC TẠI SAO BCS LÀ 0:")
+        context_parts.append("4. TUYỆT ĐỐI KHÔNG ĐƯỢC LẶP LẠI: Mỗi mã yêu cầu chỉ xuất hiện đúng 1 lần duy nhất trong câu trả lời. Không được in trùng lặp.")
+        context_parts.append("5. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG BAN CÁN SỰ (BCS) HOẶC TẠI SAO BCS LÀ 0:")
         context_parts.append("   - Trả lời rõ ràng số lượng thành viên Ban cán sự đang hoạt động on-chain.")
         context_parts.append("   - Nếu số lượng là 0, giải thích rõ nguyên nhân: Hợp đồng ProjectCore khi mới deploy ban đầu có activeBCSCount = 0 (chỉ có ví Cố vấn học tập). Cố vấn học tập cần dùng ví của mình truy cập ô 'Cố vấn học tập' -> 'Quản trị nhân sự Ban cán sự' để kích hoạt thành viên (R1) trước khi có thể biểu quyết các khoản chi.")
-        context_parts.append("5. KHI ĐƯỢC HỎI VỀ THÔNG BÁO LỚP, HẠN NỘP QUỸ, MỨC ĐÓNG HOẶC TIẾN ĐỘ THU QUỸ:")
+        context_parts.append("6. KHI ĐƯỢC HỎI VỀ THÔNG BÁO LỚP, HẠN NỘP QUỸ, MỨC ĐÓNG HOẶC TIẾN ĐỘ THU QUỸ:")
         context_parts.append("   - Trích xuất chính xác tiêu đề đợt thu, mức tiền quy định (ETH), hạn chót nộp, mục đích thu quỹ và tiến độ thực tế (số bạn đã nộp/sĩ số).")
         context_parts.append("   - Thân thiện nhắc nhở sinh viên có thể bấm nút 'Nộp quỹ ngay' trên thanh thông báo ở giao diện để hoàn thành đóng góp.")
         return "\n".join(context_parts)

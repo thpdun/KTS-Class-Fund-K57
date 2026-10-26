@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <!-- Ethers.js v6 via jsDelivr CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
@@ -52,7 +52,7 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg-slate);
       color: var(--text-main);
       line-height: 1.6;
@@ -65,7 +65,7 @@
     h4,
     h5,
     .brand-font {
-      font-family: 'Outfit', 'Inter', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
       font-weight: 700;
       color: var(--primary-navy);
     }
@@ -503,7 +503,7 @@
       font-weight: 800;
       color: #ffffff;
       margin: 0 0 6px 0;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
       letter-spacing: -0.3px;
     }
 
@@ -625,7 +625,7 @@
       font-size: 1.7rem;
       font-weight: 800;
       color: #38bdf8;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
       margin-bottom: 4px;
     }
 
@@ -729,7 +729,7 @@
     .flow-balance-val {
       font-size: 1.25rem;
       font-weight: 800;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     }
 
     /* Flow Ledger Filters */
@@ -787,7 +787,7 @@
       padding: 16px 36px;
       font-size: 1.12rem;
       font-weight: 700;
-      font-family: 'Outfit', 'Inter', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
       border-radius: var(--radius-lg);
       border: 2px solid var(--border-color);
       cursor: pointer;
@@ -1383,6 +1383,298 @@
       line-height: 1;
     }
 
+    /* --- ROSTER MODAL PREMIUM DESIGN SYSTEM --- */
+    #rosterModal .modal-box {
+      max-width: 1040px;
+      width: 95vw;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 28px;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .roster-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+
+    .roster-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 14px 0 16px 0;
+    }
+
+    .roster-stat-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+    .roster-stat-card:hover {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+    .roster-stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+    .roster-stat-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .roster-stat-label {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .roster-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .roster-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+    }
+    .roster-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+    .roster-search-input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      transition: all 0.2s;
+    }
+    .roster-search-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .roster-filter-pills {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .roster-filter-btn {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .roster-filter-btn:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .roster-filter-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+
+    .roster-table-wrapper {
+      flex: 1;
+      max-height: 380px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      margin-bottom: 14px;
+    }
+    .roster-table-wrapper::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .roster-table-wrapper::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .roster-table-wrapper::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .roster-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.85rem;
+    }
+    .roster-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .roster-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      color: #1e293b;
+    }
+    .roster-table tr:hover td {
+      background: #f8fafc;
+    }
+    .roster-table tr.is-me td {
+      background: #f0fdf4 !important;
+    }
+
+    .roster-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #ffffff;
+      margin-right: 10px;
+      flex-shrink: 0;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .roster-student-info {
+      display: inline-flex;
+      align-items: center;
+    }
+    .roster-student-name {
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .roster-mssv-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: #f1f5f9;
+      color: #334155;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      display: inline-block;
+    }
+
+    .roster-wallet-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      max-width: 100%;
+    }
+    .roster-wallet-addr {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.78rem;
+      color: #0369a1;
+      white-space: nowrap;
+      user-select: all;
+      font-weight: 500;
+    }
+    .roster-copy-btn, .roster-explorer-link {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 3px 7px;
+      font-size: 0.75rem;
+      color: #475569;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .roster-copy-btn:hover, .roster-explorer-link:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+    }
+
+    @media (max-width: 768px) {
+      .roster-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      #rosterModal .modal-box {
+        padding: 16px;
+        width: 96vw;
+      }
+      .roster-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .roster-filter-pills {
+        overflow-x: auto;
+        padding-bottom: 4px;
+        flex-wrap: wrap;
+      }
+    }
+
     /* Footer */
     footer.site-footer {
       background: var(--primary-navy);
@@ -1501,7 +1793,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-family: 'Outfit', 'Inter', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
       font-weight: 600;
       font-size: 0.95rem;
       cursor: pointer;
@@ -1564,7 +1856,7 @@
     }
 
     .ai-header-title {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
       font-weight: 700;
       font-size: 1.05rem;
       display: flex;
@@ -1834,24 +2126,33 @@
         thành viên hiểu rõ quy trình và kiểm chứng những hoạt động đã được ghi nhận trên blockchain.
       </p>
 
-      <!-- Quick Control Bar (Address, Role, Contract Config) -->
+      <!-- Quick Control Bar (Address, Role, Student Identity, Contract Config) -->
       <div class="quick-control-bar">
-        <div class="quick-status-group">
+        <div class="quick-status-group" style="flex-wrap: wrap;">
           <div class="quick-status-item">
             <span class="quick-status-label">Địa chỉ ví đang kết nối</span>
             <div style="display:flex; align-items:center; gap:8px;">
-              <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối
-                ví</span>
+              <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối ví</span>
               <button class="btn btn-sm btn-outline-white" id="btnQuickSwitch"
                 style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="switchAccount()">🔄 Đổi ví</button>
               <button class="btn btn-sm btn-outline-white" id="btnQuickDisconnect"
-                style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="disconnectWallet()">Đăng
-                xuất</button>
+                style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="disconnectWallet()">Đăng xuất</button>
             </div>
           </div>
           <div class="quick-status-item">
             <span class="quick-status-label">Vai trò xác thực</span>
-            <span class="status-pill status-ready" id="quickRoleBadge">Sinh viên lớp K57</span>
+            <span class="status-pill status-ready" id="quickRoleBadge">Chưa kết nối</span>
+          </div>
+          <div class="quick-status-item">
+            <span class="quick-status-label">Định danh sinh viên K57</span>
+            <span class="quick-status-val" id="quickStudentIdentity" style="color: #38bdf8; font-weight: 600;">--</span>
+          </div>
+          <div class="quick-status-item" id="itemRosterModalBtn" style="justify-content: center; display: none;">
+            <button class="btn btn-sm btn-outline-white" id="btnOpenRosterModal" onclick="openRosterModal()"
+              style="font-size:0.8rem; padding:4px 10px; display:inline-flex; align-items:center; gap:6px;"
+              title="Chỉ Ban cán sự và Cố vấn học tập mới có quyền mở">
+              <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">7</span>)
+            </button>
           </div>
           <div class="quick-status-item">
             <span class="quick-status-label">Mạng mục tiêu</span>
@@ -1869,6 +2170,17 @@
             <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
           </div>
           <button class="btn btn-sm btn-primary" id="btnSaveQuickContract">Lưu & Tải</button>
+        </div>
+      </div>
+
+      <!-- CẢNH BÁO KHÁCH VÃNG LAI (GUEST WARNING BANNER) -->
+      <div id="guestWarningBanner" style="display: none; margin-top: 14px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md); padding: 12px 18px; color: #fde68a; font-size: 0.88rem; align-items: center; justify-content: space-between; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.3rem;">⚠️</span>
+          <div>
+            <strong>Địa chỉ ví của bạn chưa được liên kết với Danh bạ sinh viên K57.</strong>
+            <div style="font-size: 0.8rem; color: #fef3c7; opacity: 0.9;">Hệ thống đang mở ở chế độ <strong>Khách vãng lai (Chỉ xem)</strong>. Để được định danh theo Tên & MSSV khi nộp quỹ và biểu quyết, vui lòng liên hệ Ban cán sự hoặc Cố vấn học tập.</div>
+          </div>
         </div>
       </div>
 
@@ -1902,7 +2214,7 @@
               <span class="ann-meta-val" id="annDeadline">23:59 ngày 15/11/2026</span>
             </div>
             <div class="ann-meta-item">
-              <span class="ann-meta-label">🎯 Mục tiêu sĩ số:</span>
+              <span class="ann-meta-label">👥 Sĩ số lớp:</span>
               <span class="ann-meta-val" id="annClassSize">50 sinh viên</span>
             </div>
           </div>
@@ -3099,7 +3411,7 @@
               placeholder="0.01">
           </div>
           <div class="form-group">
-            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Sĩ số lớp (người):</label>
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Sĩ số lớp:</label>
             <input type="number" min="1" class="form-control" id="formAnnClassSize" style="width: 100%;"
               placeholder="50">
           </div>
@@ -3130,6 +3442,150 @@
       <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
         <button class="btn btn-secondary btn-sm" onclick="closeAnnModal()">Hủy bỏ</button>
         <button class="btn btn-primary btn-sm" id="btnSaveAnnouncementModal">Lưu & Đăng thông báo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL DANH BẠ SINH VIÊN K57 & XÁC THỰC VÍ                    -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="rosterModal" onclick="if(event.target === this) closeRosterModal()">
+    <div class="modal-box">
+      <!-- HEADER -->
+      <div class="roster-modal-header" style="display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 14px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+            <h3 style="margin: 0; color: #0f172a; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+              <span>📋</span> Danh bạ Sinh viên &amp; Xác thực Ví Lớp K57
+            </h3>
+            <span class="roster-header-badge">ECO2432 &bull; K57 KTS</span>
+          </div>
+          <p style="margin: 0; color: #64748b; font-size: 0.85rem;">
+            Hệ thống đối chiếu định danh minh bạch giữa Danh bạ lớp và Địa chỉ ví Web3 trên mạng Ethereum Sepolia.
+          </p>
+        </div>
+        <button class="btn btn-sm btn-outline" id="btnCloseRosterHeader" onclick="closeRosterModal()" style="border: 1px solid #cbd5e1; cursor: pointer; padding: 6px 14px; border-radius: 8px; font-weight: 600; color: #475569; background: #fff; display: inline-flex; align-items: center; gap: 6px;" title="Đóng danh bạ (Phím Esc)">
+          ✕ Đóng
+        </button>
+      </div>
+
+      <!-- SCROLLABLE BODY -->
+      <div class="roster-modal-body" style="overflow-y: auto; flex: 1; padding-right: 4px;">
+        <!-- STATS CARDS -->
+        <div class="roster-stats-grid">
+          <div class="roster-stat-card">
+            <div class="roster-stat-icon" style="background: #e0f2fe; color: #0284c7;">👥</div>
+            <div>
+              <div class="roster-stat-value" id="rosterStatTotal">0</div>
+              <div class="roster-stat-label">Tổng sĩ số K57</div>
+            </div>
+          </div>
+          <div class="roster-stat-card">
+            <div class="roster-stat-icon" style="background: #fef3c7; color: #d97706;">⭐</div>
+            <div>
+              <div class="roster-stat-value" id="rosterStatBcs">0</div>
+              <div class="roster-stat-label">Ban cán sự</div>
+            </div>
+          </div>
+          <div class="roster-stat-card">
+            <div class="roster-stat-icon" style="background: #dcfce7; color: #16a34a;">🎓</div>
+            <div>
+              <div class="roster-stat-value" id="rosterStatStudents">0</div>
+              <div class="roster-stat-label">Sinh viên lớp</div>
+            </div>
+          </div>
+          <div class="roster-stat-card">
+            <div class="roster-stat-icon" style="background: #f3e8ff; color: #7e22ce;">💰</div>
+            <div>
+              <div class="roster-stat-value" id="rosterStatPaid">0/0</div>
+              <div class="roster-stat-label">Tiến độ nộp quỹ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEARCH & FILTER TOOLBAR -->
+        <div class="roster-toolbar">
+          <div class="roster-search-wrapper">
+            <span class="roster-search-icon">🔍</span>
+            <input type="text" class="roster-search-input" id="rosterSearchInput" placeholder="Tìm theo Họ tên, MSSV hoặc Địa chỉ ví Ethereum (0x...)..." oninput="filterRosterTable()">
+          </div>
+          <div class="roster-filter-pills">
+            <button class="roster-filter-btn active" id="rfFilterAll" onclick="setRosterFilter('all')">Tất cả</button>
+            <button class="roster-filter-btn" id="rfFilterBcs" onclick="setRosterFilter('bcs')">⭐ Ban cán sự</button>
+            <button class="roster-filter-btn" id="rfFilterStudent" onclick="setRosterFilter('student')">🎓 Sinh viên</button>
+            <button class="roster-filter-btn" id="rfFilterPaid" onclick="setRosterFilter('paid')">✅ Đã nộp</button>
+            <button class="roster-filter-btn" id="rfFilterUnpaid" onclick="setRosterFilter('unpaid')">⏳ Chưa nộp</button>
+          </div>
+        </div>
+
+        <!-- TABLE WRAPPER -->
+        <div class="roster-table-wrapper">
+          <table class="roster-table">
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">STT</th>
+                <th style="min-width: 190px;">Họ và Tên</th>
+                <th style="width: 120px;">MSSV</th>
+                <th style="width: 130px;">Vai trò</th>
+                <th style="min-width: 320px;">Địa chỉ ví (Ethereum)</th>
+                <th style="width: 150px;">Tình trạng nộp quỹ</th>
+                <th id="thRosterAction" style="width: 80px; text-align: center;">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="rosterTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Khung thông báo dành cho Ban cán sự (chỉ xem) -->
+        <div id="rosterBcsViewNote" style="padding: 12px 16px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; margin-bottom: 14px; display: none; font-size: 0.85rem; color: #1e40af; line-height: 1.5;">
+          ℹ️ <strong>Quyền hạn Ban cán sự:</strong> Bạn có quyền xem toàn bộ danh bạ và theo dõi tình trạng nộp quỹ on-chain của từng sinh viên để đối soát. Quyền thêm mới hoặc cập nhật liên kết thông tin sinh viên thuộc thẩm quyền riêng của Cố vấn học tập.
+        </div>
+
+        <!-- Khung thêm/sửa sinh viên dành riêng cho Cố vấn học tập -->
+        <div id="rosterAdminSection" style="padding: 18px 20px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; margin-bottom: 12px; display: none;">
+          <h4 id="rosterFormTitle" style="margin: 0 0 12px 0; color: #0f172a; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>➕</span> Đăng ký / Cập nhật liên kết ví sinh viên (Dành riêng cho Cố vấn học tập)
+          </h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Mã số sinh viên (MSSV):</label>
+              <input type="text" class="form-control" id="formRosterMssv" placeholder="Ví dụ: 23K4300005" style="width: 100%; font-size: 0.85rem; border-radius: 8px;">
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Họ và tên sinh viên:</label>
+              <input type="text" class="form-control" id="formRosterName" placeholder="Ví dụ: Trần Thị Bình Dương" style="width: 100%; font-size: 0.85rem; border-radius: 8px;">
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Địa chỉ ví Ethereum (0x...):</label>
+              <input type="text" class="form-control" id="formRosterWallet" placeholder="0x..." style="width: 100%; font-family: monospace; font-size: 0.82rem; border-radius: 8px;">
+            </div>
+            <div>
+              <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Vai trò sinh viên:</label>
+              <select class="form-control" id="formRosterRole" style="width: 100%; font-size: 0.85rem; border-radius: 8px;">
+                <option value="student|Sinh viên">🎓 Sinh viên</option>
+                <option value="bcs|Ban cán sự">⭐ Ban cán sự</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn btn-sm btn-primary" id="btnSaveRosterEntry" onclick="saveRosterEntry()" style="padding: 7px 16px; border-radius: 8px; font-weight: 600;">💾 Lưu vào Danh bạ K57</button>
+            <button class="btn btn-sm btn-outline" id="btnCancelEditRoster" onclick="cancelEditRoster()" style="display: none; padding: 7px 14px; font-size: 0.82rem; cursor: pointer; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;">✕ Hủy chỉnh sửa</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 0.8rem; color: #64748b;" id="rosterFooterSummary">
+          Đang hiển thị danh sách lớp K57
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeRosterModal()" style="padding: 7px 18px; font-weight: 600; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+          ✕ Đóng danh bạ
+        </button>
       </div>
     </div>
   </div>
@@ -3235,6 +3691,7 @@
     let userAddress = null;
     let isAdvisor = false;
     let isBcsMember = false;
+    let classRoster = [];
 
     // --- 4. UTILITIES ---
     function shortenAddress(addr) {
@@ -3645,8 +4102,7 @@
       document.getElementById("networkDot").className = "badge-dot";
       document.getElementById("networkText").textContent = "Chưa kết nối ví";
       document.getElementById("quickWalletAccount").textContent = "Chưa kết nối ví";
-      document.getElementById("quickRoleBadge").textContent = "Sinh viên lớp K57";
-      document.getElementById("quickRoleBadge").className = "status-pill status-ready";
+      updateRoleDisplay("none");
       const bSwitch = document.getElementById("btnSwitchWallet");
       const bDisc = document.getElementById("btnDisconnectWallet");
       const bQSwitch = document.getElementById("btnQuickSwitch");
@@ -3693,10 +4149,31 @@
       if (bQSwitch) bQSwitch.style.display = "inline-flex";
       if (bQDisc) bQDisc.style.display = "inline-flex";
 
-      // Default role when wallet connects is always "Sinh viên lớp K57"
-      updateRoleDisplay("student");
+      const student = await checkMyStudentIdentity(userAddress);
+      const isKnownAdvisor = (
+        (userAddress && userAddress.toLowerCase() === "0x36fd4887e9d1eca4ae5062a745cc2c6182b77060".toLowerCase()) ||
+        (student && student.role === "advisor")
+      );
 
-      logToTerminal(`[Tài khoản] Đã kết nối ví: ${shortenAddress(account)}`);
+      if (isKnownAdvisor) {
+        isAdvisor = true;
+        isBcsMember = false;
+        updateRoleDisplay("advisor", null);
+        logToTerminal(`[Tài khoản] Đã kết nối: Cố vấn học tập K57 - ${shortenAddress(account)}`);
+        loadClassRoster(userAddress);
+      } else if (student) {
+        if (student.role === "bcs") {
+          isBcsMember = true;
+        }
+        updateRoleDisplay(student.role === "bcs" ? "bcs" : "student", student);
+        logToTerminal(`[Tài khoản] Đã kết nối: ${student.name} (${student.mssv}) - ${shortenAddress(account)}`);
+        if (student.role === "bcs") {
+          loadClassRoster(userAddress);
+        }
+      } else {
+        updateRoleDisplay("guest", null);
+        logToTerminal(`[Tài khoản] Đã kết nối ví: ${shortenAddress(account)} (Chưa có trong danh bạ K57)`);
+      }
 
       // Initialize contract if address available
       if (CONFIG.contractAddress && ethers.isAddress(CONFIG.contractAddress)) {
@@ -3746,29 +4223,556 @@
       }
     }
 
-    // Update role display accurately (Sinh viên / Ban cán sự / Cố vấn học tập)
-    function updateRoleDisplay(roleType) {
+    // --- ROSTER MANAGEMENT & PRIVACY PROTECTION ---
+    let myStudentProfile = null;
+
+    async function checkMyStudentIdentity(address) {
+      if (!address) return null;
+      try {
+        const res = await fetch(`http://localhost:8000/api/roster/check?address=${encodeURIComponent(address)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && data.isMember && data.student) {
+            myStudentProfile = data.student;
+            return data.student;
+          }
+        }
+      } catch (e) {
+        console.warn("Lỗi kiểm tra danh tính:", e);
+      }
+      return null;
+    }
+
+    async function loadClassRoster(signerAddr = null) {
+      const caller = signerAddr || userAddress || "";
+      const isBcs = isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs");
+      try {
+        const res = await fetch(`http://localhost:8000/api/roster?address=${encodeURIComponent(caller)}&isBcs=${isBcs ? '1' : '0'}&isAdvisor=${isAdvisor ? '1' : '0'}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && Array.isArray(data.roster)) {
+            classRoster = data.roster;
+            const countBadge = document.getElementById("rosterCountBadge");
+            if (countBadge) countBadge.textContent = classRoster.length;
+            renderRosterTable();
+            return classRoster;
+          }
+        } else if (res.status === 403) {
+          // Sinh viên hoặc khách vãng lai không có quyền xem toàn bộ danh bạ
+          classRoster = [];
+        }
+      } catch (err) {
+        console.warn("Chưa thể tải danh bạ từ backend:", err);
+      }
+      return classRoster;
+    }
+
+    function lookupStudent(addr) {
+      if (!addr) return null;
+      if (myStudentProfile && myStudentProfile.wallet && myStudentProfile.wallet.toLowerCase() === addr.toLowerCase()) {
+        return myStudentProfile;
+      }
+      if (classRoster && classRoster.length > 0) {
+        const target = addr.toLowerCase().trim();
+        return classRoster.find(s => s.wallet && s.wallet.toLowerCase().trim() === target) || null;
+      }
+      return null;
+    }
+
+    function openRosterModal() {
+      // Phân quyền bảo mật: Sinh viên và khách vãng lai tuyệt đối không được mở modal danh bạ
+      const isBcs = isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs");
+      if (!isAdvisor && !isBcs) {
+        alert("Quyền riêng tư: Danh bạ sinh viên chỉ dành riêng cho Cố vấn học tập và Ban cán sự.");
+        return;
+      }
+      const modal = document.getElementById("rosterModal");
+      const adminSec = document.getElementById("rosterAdminSection");
+      const bcsNote = document.getElementById("rosterBcsViewNote");
+
+      // CHỈ CỐ VẤN HỌC TẬP MỚI ĐƯỢC HIỂN THỊ KHUNG THÊM/SỬA
+      if (adminSec) {
+        adminSec.style.display = isAdvisor ? "block" : "none";
+      }
+      // Ban cán sự chỉ xem đối soát nộp quỹ
+      if (bcsNote) {
+        bcsNote.style.display = (isBcs && !isAdvisor) ? "block" : "none";
+      }
+
+      if (modal) {
+        modal.classList.add("open");
+        modal.classList.add("show");
+
+        // Đặt lại ô tìm kiếm và bộ lọc về Tất cả mỗi khi mở
+        const searchInput = document.getElementById("rosterSearchInput");
+        if (searchInput) searchInput.value = "";
+        currentRosterFilter = "all";
+        ["rfFilterAll", "rfFilterBcs", "rfFilterStudent", "rfFilterPaid", "rfFilterUnpaid"].forEach(id => {
+          const btn = document.getElementById(id);
+          if (btn) {
+            if (id === "rfFilterAll") btn.classList.add("active");
+            else btn.classList.remove("active");
+          }
+        });
+
+        if (!classRoster || classRoster.length === 0) {
+          loadClassRoster(userAddress);
+        } else {
+          renderRosterTable();
+        }
+      }
+    }
+
+    function closeRosterModal() {
+      const modal = document.getElementById("rosterModal");
+      if (modal) {
+        modal.classList.remove("open");
+        modal.classList.remove("show");
+      }
+      cancelEditRoster();
+    }
+
+    let currentEditingMssv = null;
+
+    function editRosterStudent(mssv) {
+      if (!isAdvisor) {
+        alert("Chỉ Cố vấn học tập mới có quyền chỉnh sửa thông tin sinh viên!");
+        return;
+      }
+      const s = classRoster.find(item => item.mssv === mssv);
+      if (!s) return;
+      currentEditingMssv = s.mssv;
+
+      const fMssv = document.getElementById("formRosterMssv");
+      const fName = document.getElementById("formRosterName");
+      const fWallet = document.getElementById("formRosterWallet");
+      const fRole = document.getElementById("formRosterRole");
+      const fTitle = document.getElementById("rosterFormTitle");
+      const btnSave = document.getElementById("btnSaveRosterEntry");
+      const btnCancel = document.getElementById("btnCancelEditRoster");
+      const adminSec = document.getElementById("rosterAdminSection");
+
+      if (fMssv) fMssv.value = s.mssv;
+      if (fName) fName.value = s.name;
+      if (fWallet) fWallet.value = s.wallet;
+      if (fRole) fRole.value = (s.role === "bcs") ? "bcs|Ban cán sự" : "student|Sinh viên";
+
+      if (fTitle) {
+        fTitle.innerHTML = `<span>✏️</span> Chỉnh sửa sinh viên: <strong>${s.name}</strong> (${s.mssv})`;
+      }
+      if (btnSave) {
+        btnSave.textContent = "💾 Cập nhật thay đổi";
+      }
+      if (btnCancel) {
+        btnCancel.style.display = "inline-flex";
+      }
+      if (adminSec) {
+        adminSec.style.display = "block";
+        adminSec.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    let currentRosterFilter = "all";
+    const rosterContribCache = new Map();
+
+    function setRosterFilter(filterName) {
+      currentRosterFilter = filterName;
+      const btnIds = {
+        all: "rfFilterAll",
+        bcs: "rfFilterBcs",
+        student: "rfFilterStudent",
+        paid: "rfFilterPaid",
+        unpaid: "rfFilterUnpaid"
+      };
+      Object.keys(btnIds).forEach(key => {
+        const btn = document.getElementById(btnIds[key]);
+        if (btn) {
+          if (key === filterName) btn.classList.add("active");
+          else btn.classList.remove("active");
+        }
+      });
+      renderRosterTable();
+    }
+
+    function filterRosterTable() {
+      renderRosterTable();
+    }
+
+    function getRosterAvatarGradient(str) {
+      const gradients = [
+        "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+        "linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)",
+        "linear-gradient(135deg, #059669 0%, #34d399 100%)",
+        "linear-gradient(135deg, #d97706 0%, #fbbf24 100%)",
+        "linear-gradient(135deg, #e11d48 0%, #fb7185 100%)",
+        "linear-gradient(135deg, #7c3aed 0%, #c084fc 100%)",
+        "linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%)",
+        "linear-gradient(135deg, #4f46e5 0%, #818cf8 100%)"
+      ];
+      let hash = 0;
+      for (let i = 0; i < (str || "").length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return gradients[Math.abs(hash) % gradients.length];
+    }
+
+    function getInitials(name) {
+      if (!name) return "SV";
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+      return (parts[parts.length - 2][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function copyRosterWallet(addr, btnEl) {
+      if (!addr) return;
+      const doSuccess = () => {
+        const origText = btnEl.innerHTML;
+        btnEl.innerHTML = "✓ Đã chép!";
+        btnEl.style.color = "#16a34a";
+        btnEl.style.borderColor = "#86efac";
+        btnEl.style.background = "#f0fdf4";
+        setTimeout(() => {
+          btnEl.innerHTML = origText;
+          btnEl.style.color = "";
+          btnEl.style.borderColor = "";
+          btnEl.style.background = "";
+        }, 1800);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).then(doSuccess).catch(() => {
+          fallbackCopyText(addr, doSuccess);
+        });
+      } else {
+        fallbackCopyText(addr, doSuccess);
+      }
+    }
+
+    function fallbackCopyText(text, callback) {
+      const inp = document.createElement("input");
+      inp.value = text;
+      document.body.appendChild(inp);
+      inp.select();
+      try {
+        document.execCommand("copy");
+        if (callback) callback();
+      } catch (e) {
+        alert("Địa chỉ ví: " + text);
+      }
+      document.body.removeChild(inp);
+    }
+
+    function cancelEditRoster() {
+      currentEditingMssv = null;
+      const fMssv = document.getElementById("formRosterMssv");
+      const fName = document.getElementById("formRosterName");
+      const fWallet = document.getElementById("formRosterWallet");
+      const fRole = document.getElementById("formRosterRole");
+      const fTitle = document.getElementById("rosterFormTitle");
+      const btnSave = document.getElementById("btnSaveRosterEntry");
+      const btnCancel = document.getElementById("btnCancelEditRoster");
+
+      if (fMssv) fMssv.value = "";
+      if (fName) fName.value = "";
+      if (fWallet) fWallet.value = "";
+      if (fRole) fRole.value = "student|Sinh viên";
+
+      if (fTitle) {
+        fTitle.innerHTML = `<span>➕</span> Đăng ký / Cập nhật liên kết ví sinh viên (Dành riêng cho Cố vấn học tập)`;
+      }
+      if (btnSave) {
+        btnSave.textContent = "💾 Lưu vào Danh bạ K57";
+      }
+      if (btnCancel) {
+        btnCancel.style.display = "none";
+      }
+    }
+
+    async function renderRosterTable() {
+      const tbody = document.getElementById("rosterTableBody");
+      if (!tbody) return;
+      if (!classRoster || classRoster.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px 16px; color:#64748b;">Đang tải danh bạ sinh viên K57 hoặc chưa có dữ liệu...</td></tr>`;
+        return;
+      }
+
+      // 1. Đồng bộ số liệu on-chain cho từng sinh viên (kèm bộ nhớ đệm cache)
+      let paidCount = 0;
+      for (const s of classRoster) {
+        if (s.wallet && ethers.isAddress(s.wallet)) {
+          const key = s.wallet.toLowerCase();
+          if (!rosterContribCache.has(key)) {
+            if (contract) {
+              try {
+                const contrib = await contract.studentContributions(s.wallet);
+                rosterContribCache.set(key, {
+                  isPaid: contrib && contrib > 0n,
+                  amountWei: contrib || 0n
+                });
+              } catch (e) {
+                rosterContribCache.set(key, { isPaid: false, amountWei: 0n });
+              }
+            } else {
+              rosterContribCache.set(key, { isPaid: false, amountWei: 0n });
+            }
+          }
+          if (rosterContribCache.get(key).isPaid) {
+            paidCount++;
+          }
+        }
+      }
+
+      // 2. Cập nhật 4 thẻ thống kê ở đầu danh bạ
+      const totalCount = classRoster.length;
+      const bcsCount = classRoster.filter(s => s.role === "bcs").length;
+      const studentCount = classRoster.filter(s => s.role !== "bcs").length;
+
+      const elTotal = document.getElementById("rosterStatTotal");
+      const elBcs = document.getElementById("rosterStatBcs");
+      const elStudents = document.getElementById("rosterStatStudents");
+      const elPaid = document.getElementById("rosterStatPaid");
+
+      if (elTotal) elTotal.textContent = `${totalCount} bạn`;
+      if (elBcs) elBcs.textContent = `${bcsCount} thành viên`;
+      if (elStudents) elStudents.textContent = `${studentCount} bạn`;
+      if (elPaid) elPaid.textContent = `${paidCount}/${totalCount} (${Math.round((paidCount / (totalCount || 1)) * 100)}%)`;
+
+      // 3. Lọc danh sách theo từ khóa tìm kiếm và nút filter
+      const searchInput = document.getElementById("rosterSearchInput");
+      const keyword = (searchInput ? searchInput.value : "").toLowerCase().trim();
+
+      const filtered = classRoster.filter(s => {
+        // Lọc theo vai trò & tình trạng nộp
+        const cache = s.wallet ? rosterContribCache.get(s.wallet.toLowerCase()) : null;
+        const isPaid = cache ? cache.isPaid : false;
+
+        if (currentRosterFilter === "bcs" && s.role !== "bcs") return false;
+        if (currentRosterFilter === "student" && s.role === "bcs") return false;
+        if (currentRosterFilter === "paid" && !isPaid) return false;
+        if (currentRosterFilter === "unpaid" && isPaid) return false;
+
+        // Lọc theo từ khóa (Tên, MSSV, Địa chỉ ví)
+        if (keyword) {
+          const matchName = (s.name || "").toLowerCase().includes(keyword);
+          const matchMssv = (s.mssv || "").toLowerCase().includes(keyword);
+          const matchWallet = (s.wallet || "").toLowerCase().includes(keyword);
+          if (!matchName && !matchMssv && !matchWallet) return false;
+        }
+
+        return true;
+      });
+
+      // 4. Cập nhật tóm tắt ở footer
+      const footerSum = document.getElementById("rosterFooterSummary");
+      if (footerSum) {
+        footerSum.innerHTML = `Đang hiển thị <strong>${filtered.length}</strong> / <strong>${totalCount}</strong> sinh viên K57`;
+      }
+
+      // 5. Render bảng sinh viên
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 36px 16px; color: #64748b;">
+              <div style="font-size: 2rem; margin-bottom: 8px;">🔍</div>
+              <div style="font-weight: 600; color: #0f172a; margin-bottom: 4px;">Không tìm thấy sinh viên phù hợp</div>
+              <div style="font-size: 0.8rem;">Thử nhập lại từ khóa khác hoặc chuyển bộ lọc sang "Tất cả".</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = "";
+      for (let i = 0; i < filtered.length; i++) {
+        const s = filtered[i];
+        const isMe = userAddress && s.wallet && userAddress.toLowerCase() === s.wallet.toLowerCase();
+        const cache = s.wallet ? rosterContribCache.get(s.wallet.toLowerCase()) : null;
+        const isPaid = cache ? cache.isPaid : false;
+        const paidAmount = cache && cache.amountWei > 0n ? formatEth(cache.amountWei) : null;
+
+        let statusBadge = "";
+        if (isPaid) {
+          statusBadge = `<span class="status-pill status-executed" style="font-size: 0.75rem; font-weight: 600; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">✅ Đã nộp (${paidAmount} ETH)</span>`;
+        } else {
+          statusBadge = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">⏳ Chưa nộp</span>`;
+        }
+
+        const roleBadge = (s.role === "bcs")
+          ? `<span class="status-pill" style="font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">⭐ ${s.roleTitle || 'Ban cán sự'}</span>`
+          : `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;">🎓 ${s.roleTitle || 'Sinh viên'}</span>`;
+
+        const actionBtn = isAdvisor
+          ? `<button class="btn btn-sm btn-outline" onclick="editRosterStudent('${s.mssv}')" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; color: #0284c7; border: 1px solid #bae6fd; background: #f0f9ff; font-weight: 600;" title="Chỉnh sửa thông tin, vai trò hoặc địa chỉ ví của sinh viên này">✏️ Sửa</button>`
+          : '<span style="color: #94a3b8; font-size: 0.75rem;">--</span>';
+
+        const avatarGrad = getRosterAvatarGradient(s.mssv || s.name);
+        const initials = getInitials(s.name);
+
+        html += `
+          <tr class="${isMe ? 'is-me' : ''}">
+            <td style="text-align: center; font-weight: 700; color: #64748b; font-size: 0.8rem;">${i + 1}</td>
+            <td>
+              <div class="roster-student-info">
+                <span class="roster-avatar" style="background: ${avatarGrad};">${initials}</span>
+                <span class="roster-student-name">
+                  ${escapeHtml(s.name)}
+                  ${isMe ? '<span class="status-pill status-executed" style="font-size: 0.65rem; padding: 1px 6px; font-weight: 700; background: #22c55e; color: #fff; margin-left: 4px;">Tôi</span>' : ''}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="roster-mssv-badge">${escapeHtml(s.mssv)}</span>
+            </td>
+            <td>${roleBadge}</td>
+            <td>
+              <div class="roster-wallet-box">
+                <span class="roster-wallet-addr" title="${s.wallet}">${s.wallet}</span>
+                <button class="roster-copy-btn" onclick="copyRosterWallet('${s.wallet}', this)" title="Sao chép toàn bộ địa chỉ ví">📋</button>
+                <a class="roster-explorer-link" href="https://sepolia.etherscan.io/address/${s.wallet}" target="_blank" rel="noopener noreferrer" title="Mở trên Sepolia Etherscan">↗</a>
+              </div>
+            </td>
+            <td>${statusBadge}</td>
+            <td style="text-align: center;">${actionBtn}</td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML = html;
+    }
+
+    async function saveRosterEntry() {
+      // Bảo vệ phân quyền: CHỈ CỐ VẤN HỌC TẬP MỚI CÓ QUYỀN THÊM/SỬA
+      if (!isAdvisor) {
+        alert("Quyền hạn: Chỉ Cố vấn học tập mới có quyền thêm mới hoặc chỉnh sửa danh bạ sinh viên! Ban cán sự chỉ có quyền xem danh sách.");
+        return;
+      }
+
+      const mssv = document.getElementById("formRosterMssv").value.trim();
+      const name = document.getElementById("formRosterName").value.trim();
+      const wallet = document.getElementById("formRosterWallet").value.trim();
+      const roleVal = document.getElementById("formRosterRole").value;
+      const [role, roleTitle] = roleVal.split("|");
+
+      if (!mssv || !name || !wallet) {
+        alert("Vui lòng nhập đầy đủ MSSV, Họ và tên và Địa chỉ ví!");
+        return;
+      }
+      if (!wallet.startsWith("0x") || wallet.length !== 42) {
+        alert("Địa chỉ ví không hợp lệ (phải bắt đầu bằng 0x và đủ 42 ký tự)!");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:8000/api/roster/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            originalMssv: currentEditingMssv,
+            mssv,
+            name,
+            wallet,
+            role,
+            roleTitle: (role === "bcs") ? "Ban cán sự" : "Sinh viên",
+            signerAddress: userAddress || "advisor",
+            isAdvisor: true
+          })
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          alert(data.message || "Lưu thành công vào danh bạ K57!");
+          classRoster = data.roster;
+          const countBadge = document.getElementById("rosterCountBadge");
+          if (countBadge) countBadge.textContent = classRoster.length;
+          cancelEditRoster();
+          renderRosterTable();
+          if (userAddress) updateRoleDisplay(isAdvisor ? "advisor" : (isBcsMember ? "bcs" : "student"));
+        } else {
+          alert("Lỗi: " + (data.error || "Không thể lưu"));
+        }
+      } catch (err) {
+        alert("Không thể kết nối đến máy chủ backend để lưu danh bạ.");
+      }
+    }
+
+    // Update role display accurately (Sinh viên / Ban cán sự / Cố vấn học tập / Khách vãng lai)
+    function updateRoleDisplay(roleType, studentObj = null) {
       const badge = document.getElementById("quickRoleBadge");
-      if (!badge) return;
+      const idEl = document.getElementById("quickStudentIdentity");
+      const warnBanner = document.getElementById("guestWarningBanner");
+      const adminSec = document.getElementById("rosterAdminSection");
+
+      if (!studentObj && userAddress) {
+        studentObj = lookupStudent(userAddress);
+      }
 
       if (roleType === "advisor") {
-        badge.textContent = "Cố vấn học tập";
-        badge.className = "status-pill";
-        badge.style.background = "var(--purple-bg)";
-        badge.style.color = "#6d28d9";
-        badge.style.border = "1px solid #ddd6fe";
+        isAdvisor = true;
+        isBcsMember = false;
+        if (badge) {
+          badge.textContent = "🏛️ Cố vấn học tập";
+          badge.className = "status-pill";
+          badge.style.background = "var(--purple-bg)";
+          badge.style.color = "#6d28d9";
+          badge.style.border = "1px solid #ddd6fe";
+        }
+        if (idEl) idEl.innerHTML = `<span style="color:#a855f7;">Giảng viên phụ trách K57</span>`;
+        if (warnBanner) warnBanner.style.display = "none";
+        // Cố vấn học tập: Hiển thị form quản lý danh bạ
+        if (adminSec) adminSec.style.display = "block";
       } else if (roleType === "bcs") {
-        badge.textContent = "Ban cán sự lớp";
-        badge.className = "status-pill status-ready";
-        badge.style.background = "#dbeafe";
-        badge.style.color = "#1d4ed8";
-        badge.style.border = "1px solid #bfdbfe";
+        isBcsMember = true;
+        const title = studentObj ? (studentObj.roleTitle || "Ban cán sự") : "Ban cán sự lớp";
+        if (badge) {
+          badge.textContent = `⭐ ${title}`;
+          badge.className = "status-pill status-ready";
+          badge.style.background = "#dbeafe";
+          badge.style.color = "#1d4ed8";
+          badge.style.border = "1px solid #bfdbfe";
+        }
+        if (idEl) {
+          if (studentObj) {
+            idEl.innerHTML = `<strong>${studentObj.name}</strong> (${studentObj.mssv})`;
+          } else {
+            idEl.innerHTML = `<span style="color:#93c5fd;">BCS (Chưa liên kết MSSV)</span>`;
+          }
+        }
+        if (warnBanner) warnBanner.style.display = "none";
+        // Ban cán sự: ẨN form thêm/sửa sinh viên, chỉ xem đối soát nộp quỹ
+        if (adminSec) adminSec.style.display = "none";
+      } else if (studentObj) {
+        if (badge) {
+          badge.textContent = "🎓 Sinh viên lớp K57";
+          badge.className = "status-pill status-executed";
+          badge.style.background = "var(--success-bg)";
+          badge.style.color = "#047857";
+          badge.style.border = "1px solid #a7f3d0";
+        }
+        if (idEl) idEl.innerHTML = `<strong>${studentObj.name}</strong> (${studentObj.mssv})`;
+        if (warnBanner) warnBanner.style.display = "none";
+        if (adminSec) adminSec.style.display = "none";
+      } else if (userAddress) {
+        if (badge) {
+          badge.textContent = "⚠️ Khách vãng lai (Chỉ xem)";
+          badge.className = "status-pill";
+          badge.style.background = "var(--warning-bg)";
+          badge.style.color = "#b45309";
+          badge.style.border = "1px solid #fde68a";
+        }
+        if (idEl) idEl.innerHTML = `<span style="color:#f59e0b;">Chưa có trong danh bạ</span>`;
+        if (warnBanner) warnBanner.style.display = "flex";
+        if (adminSec) adminSec.style.display = "none";
       } else {
-        badge.textContent = "Sinh viên lớp K57";
-        badge.className = "status-pill status-executed";
-        badge.style.background = "var(--success-bg)";
-        badge.style.color = "#047857";
-        badge.style.border = "1px solid #a7f3d0";
+        if (badge) {
+          badge.textContent = "Chưa kết nối ví";
+          badge.className = "status-pill status-ready";
+          badge.style.background = "";
+          badge.style.color = "";
+          badge.style.border = "";
+        }
+        if (idEl) idEl.textContent = "--";
+        if (warnBanner) warnBanner.style.display = "none";
+        if (adminSec) adminSec.style.display = "none";
       }
 
       // Phân quyền hiển thị nút Quản trị thông báo: CHỈ HIỆN VỚI BAN CÁN SỰ (HOẶC CỐ VẤN)
@@ -3778,6 +4782,16 @@
           btnOpenAnn.style.display = "inline-flex";
         } else {
           btnOpenAnn.style.display = "none";
+        }
+      }
+
+      // Phân quyền hiển thị nút Quản lý Danh bạ K57: CHỈ HIỆN VỚI BAN CÁN SỰ HOẶC CỐ VẤN (SINH VIÊN KHÔNG ĐƯỢC XEM)
+      const itemRoster = document.getElementById("itemRosterModalBtn");
+      if (itemRoster) {
+        if (roleType === "bcs" || roleType === "advisor") {
+          itemRoster.style.display = "flex";
+        } else {
+          itemRoster.style.display = "none";
         }
       }
     }
@@ -3843,21 +4857,30 @@
 
         // 2. Identify and update user role
         if (userAddress) {
-          isAdvisor = (userAddress.toLowerCase() === advisorAddr.toLowerCase());
+          if (advisorAddr && ethers.isAddress(advisorAddr) && advisorAddr !== "0x0000000000000000000000000000000000000000") {
+            isAdvisor = (userAddress.toLowerCase() === advisorAddr.toLowerCase());
+          } else {
+            isAdvisor = (userAddress.toLowerCase() === "0x36fd4887e9d1eca4ae5062a745cc2c6182b77060".toLowerCase());
+          }
           isBcsMember = await contract.isBCSMember(userAddress);
+          const student = lookupStudent(userAddress);
 
           if (isAdvisor) {
-            updateRoleDisplay("advisor");
+            updateRoleDisplay("advisor", student);
             selectRoleView("advisor");
             logToTerminal("[Xác thực] Bạn là Cố vấn học tập. Đã mở ô chi tiết Cố vấn học tập.");
           } else if (isBcsMember) {
-            updateRoleDisplay("bcs");
+            updateRoleDisplay("bcs", student);
             selectRoleView("bcs");
-            logToTerminal("[Xác thực] Bạn là thành viên Ban cán sự. Đã mở ô chi tiết Ban cán sự.");
-          } else {
-            updateRoleDisplay("student");
+            logToTerminal(`[Xác thực] Bạn là thành viên Ban cán sự${student ? ` (${student.name} - ${student.mssv})` : ''}. Đã mở ô chi tiết Ban cán sự.`);
+          } else if (student) {
+            updateRoleDisplay("student", student);
             selectRoleView("student");
-            logToTerminal("[Xác thực] Bạn là Sinh viên. Đã mở ô chi tiết Sinh viên.");
+            logToTerminal(`[Xác thực] Chào bạn ${student.name} (MSSV: ${student.mssv}) - Sinh viên lớp K57.`);
+          } else {
+            updateRoleDisplay("guest", null);
+            selectRoleView("student");
+            logToTerminal(`[Cảnh báo] Địa chỉ ví ${shortenAddress(userAddress)} chưa thuộc danh bạ sinh viên K57. Chế độ khách vãng lai.`);
           }
 
           // 3. User personal contribution
@@ -3923,10 +4946,13 @@
             executeActionHtml = `-`;
           }
 
+          const recStudent = lookupStudent(recipient);
+          const recLabel = recStudent ? `<span title="${recipient}"><strong>${recStudent.name}</strong> (${recStudent.mssv})</span>` : `<span title="${recipient}" style="font-family:monospace;">${shortenAddress(recipient)}</span>`;
+
           rowsHtml += `
             <tr>
               <td><strong>#${reqId}</strong></td>
-              <td><span title="${recipient}" style="font-family:monospace;">${shortenAddress(recipient)}</span></td>
+              <td>${recLabel}</td>
               <td><strong>${amount} ETH</strong></td>
               <td>${desc}</td>
               <td>${yesVotes}/${activeBcsCount} (${pct}%)</td>
@@ -3986,10 +5012,13 @@
             bcsExecHtml = `-`;
           }
 
+          const appStudent = lookupStudent(applicant);
+          const appLabel = appStudent ? `<span title="${applicant}"><strong>${appStudent.name}</strong> (${appStudent.mssv})</span>` : `<span style="font-family:monospace;">${shortenAddress(applicant)}</span>`;
+
           bcsRows += `
             <tr>
               <td><strong>#${refId}</strong></td>
-              <td><span style="font-family:monospace;">${shortenAddress(applicant)}</span></td>
+              <td>${appLabel}</td>
               <td><strong>${amount} ETH</strong></td>
               <td>${reason}</td>
               <td>${yesVotes}/${activeBcsCount} (${pct}%)</td>
@@ -4072,6 +5101,12 @@
           }
 
           const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          const canViewIdentity = isAdvisor || isBcsMember;
+          const recStudent = canViewIdentity ? lookupStudent(recipient) : null;
+          const creStudent = canViewIdentity ? lookupStudent(creator) : null;
+          const recText = recStudent ? `${recStudent.name} (${recStudent.mssv})` : shortenAddress(recipient);
+          const creText = creStudent ? `${creStudent.name} (${creStudent.mssv})` : shortenAddress(creator);
+
           allFlowItems.push({
             category: "spend",
             id: `SP-${reqId}`,
@@ -4079,7 +5114,7 @@
             flowType: "📤 Chi tiêu",
             badgeClass: "flow-badge-spend",
             amountEth: formatEth(rawAmount),
-            party: `Nhận: ${shortenAddress(recipient)} (Tạo: ${shortenAddress(creator)})`,
+            party: `Nhận: ${recText} (Tạo: ${creText})`,
             desc: desc,
             votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
             statusNum: status,
@@ -4104,6 +5139,10 @@
           const status = Number(req[7]);
 
           const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          const canViewIdentity = isAdvisor || isBcsMember;
+          const appStudent = canViewIdentity ? lookupStudent(applicant) : null;
+          const appText = appStudent ? `${appStudent.name} (${appStudent.mssv})` : shortenAddress(applicant);
+
           allFlowItems.push({
             category: "refund",
             id: `RF-${refId}`,
@@ -4111,7 +5150,7 @@
             flowType: "🔄 Hoàn tiền",
             badgeClass: "flow-badge-refund",
             amountEth: formatEth(rawAmount),
-            party: `SV: ${shortenAddress(applicant)}`,
+            party: `SV: ${appText}`,
             desc: reason,
             votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
             statusNum: status,
@@ -4496,8 +5535,25 @@
       // Init Class Announcement System
       initAnnouncementSystem();
 
+      // Init Class Roster & Student Verification
+      loadClassRoster();
+
       // Init AI Chatbot
       initAIChatbot();
+
+      // Lắng nghe phím Escape để đóng nhanh modal danh bạ hoặc thông báo
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const rosterModal = document.getElementById("rosterModal");
+          if (rosterModal && (rosterModal.classList.contains("open") || rosterModal.classList.contains("show"))) {
+            closeRosterModal();
+          }
+          const annModal = document.getElementById("announcementModal");
+          if (annModal && (annModal.classList.contains("open") || annModal.classList.contains("show"))) {
+            closeAnnModal();
+          }
+        }
+      });
     });
 
     window.addEventListener('ethereum#initialized', () => {
@@ -4808,6 +5864,8 @@
             body: JSON.stringify({
               ...newAnn,
               signerAddress: userAddress || "Ban cán sự",
+              isBcsMember: isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs"),
+              isAdvisor: isAdvisor,
               updatedAt: new Date().toISOString()
             })
           })
@@ -4959,7 +6017,25 @@
         }
       }
 
-      // 5. Đối chiếu số dư thực tế trên hợp đồng
+      // 5. Kiểm tra các sinh viên trong danh bạ K57
+      if (contract && classRoster && classRoster.length > 0) {
+        for (const s of classRoster) {
+          if (s.wallet && ethers.isAddress(s.wallet) && !uniqueMap.has(s.wallet.toLowerCase())) {
+            try {
+              const c = await contract.studentContributions(s.wallet);
+              if (c && c > 0n) {
+                totalWei += BigInt(c);
+                uniqueMap.set(s.wallet.toLowerCase(), {
+                  address: s.wallet,
+                  totalWei: BigInt(c)
+                });
+              }
+            } catch (e) { }
+          }
+        }
+      }
+
+      // 6. Đối chiếu số dư thực tế trên hợp đồng
       const cfWei = classFundWei || 0n;
       const afWei = adminFeeWei || 0n;
       const totalOnchainWei = cfWei + afWei;
@@ -4984,11 +6060,17 @@
       // Cập nhật thanh tiến độ trên Bảng thông báo lớp
       updateAnnouncementProgress(finalCount);
 
-      const list = Array.from(uniqueMap.values()).map(item => ({
-        address: shortenAddress(item.address),
-        fullAddress: item.address,
-        amountEth: formatEth(item.totalWei)
-      }));
+      const canViewIdentity = isAdvisor || isBcsMember;
+      const list = Array.from(uniqueMap.values()).map(item => {
+        const student = canViewIdentity ? lookupStudent(item.address) : null;
+        return {
+          address: student ? `${student.name} (${student.mssv})` : shortenAddress(item.address),
+          fullAddress: item.address,
+          name: student ? student.name : "",
+          mssv: student ? student.mssv : "",
+          amountEth: formatEth(item.totalWei)
+        };
+      });
 
       return {
         count: finalCount,
@@ -5121,9 +6203,18 @@
         progressText: `${depCount}/${classSize} bạn đã nộp (${percent}%)`
       };
 
+      // 5. BẢO MẬT & QUYỀN RIÊNG TƯ CHATBOT:
+      // Sinh viên & khách vãng lai chỉ được thấy địa chỉ ví on-chain, TUYỆT ĐỐI không gửi danh bạ họ tên/MSSV
+      const canViewIdentity = isAdvisor || isBcsMember;
+      const safeRoster = canViewIdentity ? classRoster : [];
+
       return {
         isContractConnected: isConnected,
         contractAddress: CONFIG.contractAddress || "Chưa kết nối",
+        userAddress: userAddress || "",
+        isBcsMember: isBcsMember || false,
+        isAdvisor: isAdvisor || false,
+        viewerRole: isAdvisor ? "advisor" : (isBcsMember ? "bcs" : "student"),
         classFundBalanceEth: classFund.replace(" ETH", "").trim(),
         adminFeePoolEth: adminFee.replace(" ETH", "").trim(),
         spendCount: spendCount,
@@ -5131,8 +6222,15 @@
         activeBCSCount: activeBcs,
         depositorsCount: depData.count,
         totalDepositedEth: depData.totalEth,
-        depositorsList: depData.list,
+        depositorsList: depData.list.map(d => ({
+          address: canViewIdentity ? d.address : shortenAddress(d.fullAddress || d.address),
+          fullAddress: d.fullAddress || d.address,
+          name: canViewIdentity ? (d.name || "") : "",
+          mssv: canViewIdentity ? (d.mssv || "") : "",
+          amountEth: d.amountEth
+        })),
         announcement: annSnapshot,
+        roster: safeRoster,
         spendRequests: Array.from(spendMap.values()),
         refundRequests: Array.from(refundMap.values())
       };
@@ -5156,6 +6254,9 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             question: question,
+            signerAddress: userAddress || "",
+            isBcsMember: isBcsMember || false,
+            isAdvisor: isAdvisor || false,
             onchain_data: onchainData
           })
         });

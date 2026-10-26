@@ -1,10 +1,10 @@
 {
-  "title": "Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số",
-  "targetAmountEth": "0.01",
-  "deadline": "23:59 ngày 15/11/2026",
-  "classSize": 50,
+  "title": "Kêu gọi nộp Quỹ Lớp Học kỳ 2",
+  "targetAmountEth": "0.005",
+  "deadline": "23:59 ngày 20/11/2026",
+  "classSize": 10,
   "purpose": "Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại khóa và quỹ dự phòng",
   "status": "Đang diễn ra",
-  "updatedBy": "0x785641c88c7f9999111122223333444455556666",
-  "updatedAt": null
+  "updatedBy": "0x36fd4887e9d1eca4ae5062a745cc2c6182b77060",
+  "updatedAt": "2026-10-26T18:14:03.138Z"
 }
