@@ -113,17 +113,21 @@ def is_authorized_viewer(address: str, is_bcs: bool = False, is_advisor: bool = 
 
 
 def load_announcement() -> dict:
+    roster_len = len(load_roster())
     if ANNOUNCEMENT_FILE.exists():
         try:
             with open(ANNOUNCEMENT_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                # Sĩ số lớp tự động bằng số người trong danh sách lớp
+                data["classSize"] = roster_len if roster_len > 0 else int(data.get("classSize", 5))
+                return data
         except Exception:
             pass
     return {
         "title": "Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số",
         "targetAmountEth": "0.01",
         "deadline": "23:59 ngày 15/11/2026",
-        "classSize": 50,
+        "classSize": roster_len if roster_len > 0 else 5,
         "purpose": "Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại khóa và quỹ dự phòng hỗ trợ sinh viên K57.",
         "status": "Đang diễn ra",
         "updatedAt": None,
@@ -132,6 +136,10 @@ def load_announcement() -> dict:
 
 
 def save_announcement(data: dict):
+    # Sĩ số lớp tự động bằng số người trong danh sách lớp
+    roster_len = len(load_roster())
+    if roster_len > 0:
+        data["classSize"] = roster_len
     with open(ANNOUNCEMENT_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -232,11 +240,13 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(403, {"success": False, "error": "Truy cập bị từ chối: Chỉ tài khoản Ban cán sự hoặc Cố vấn học tập mới có quyền cập nhật thông báo."})
                 return
 
+            roster_len = len(load_roster())
+            actual_class_size = roster_len if roster_len > 0 else int(req_data.get("classSize", 5))
             announcement_data = {
                 "title": title,
                 "targetAmountEth": target_amount,
                 "deadline": str(req_data.get("deadline", "Chưa xác định")).strip(),
-                "classSize": int(req_data.get("classSize", 50)),
+                "classSize": actual_class_size,
                 "purpose": str(req_data.get("purpose", "")).strip(),
                 "status": str(req_data.get("status", "Đang diễn ra")),
                 "updatedBy": signer,
@@ -380,6 +390,10 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
             api_key_override = req_data.get("api_key")
             ai_service = AIAssistantService(api_key=api_key_override)
             result = ai_service.answer_question(question, onchain_data)
+
+            if result.get("model_used") == "local-fallback-engine":
+                sys.stdout.write(f"[AI Backend Info] Kích hoạt Local Fallback Engine do: {result.get('fallback_reason')}\n")
+                sys.stdout.flush()
 
             status_code = 200 if result.get("success") else 500
             if not result.get("success"):
