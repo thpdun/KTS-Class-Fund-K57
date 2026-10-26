@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KTS CLASS FUND — Cổng Thông Tin & Quản Lý Quỹ Lớp (K57 Kinh Tế Số)</title>
-  <meta name="description" content="Cổng thông tin và hệ thống quản lý quỹ lớp minh bạch bằng công nghệ Blockchain Ethereum Sepolia cho tập thể sinh viên ngành Kinh tế Số K57.">
+  <meta name="description"
+    content="Cổng thông tin và hệ thống quản lý quỹ lớp minh bạch bằng công nghệ Blockchain Ethereum Sepolia cho tập thể sinh viên ngành Kinh tế Số K57.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <!-- Ethers.js v6 via jsDelivr CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
   <style>
@@ -55,7 +59,12 @@
       scroll-behavior: smooth;
     }
 
-    h1, h2, h3, h4, h5, .brand-font {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    .brand-font {
       font-family: 'Outfit', 'Inter', sans-serif;
       font-weight: 700;
       color: var(--primary-navy);
@@ -66,6 +75,7 @@
       text-decoration: none;
       transition: color 0.2s;
     }
+
     a:hover {
       color: var(--brand-blue-hover);
     }
@@ -104,11 +114,13 @@
       font-weight: 800;
       letter-spacing: -0.5px;
     }
+
     .brand-logo svg {
       width: 32px;
       height: 32px;
       fill: #38bdf8;
     }
+
     .brand-sub {
       font-size: 0.72rem;
       font-weight: 500;
@@ -124,13 +136,16 @@
       gap: 20px;
       list-style: none;
     }
+
     .nav-links a {
       color: #cbd5e1;
       font-size: 0.92rem;
       font-weight: 500;
       transition: color 0.2s;
     }
-    .nav-links a:hover, .nav-links a.active {
+
+    .nav-links a:hover,
+    .nav-links a.active {
       color: #38bdf8;
     }
 
@@ -152,16 +167,19 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #e2e8f0;
     }
+
     .badge-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: #94a3b8;
     }
+
     .badge-dot.connected {
       background: var(--success);
       box-shadow: 0 0 8px var(--success);
     }
+
     .badge-dot.error {
       background: var(--danger);
       box-shadow: 0 0 8px var(--danger);
@@ -183,64 +201,79 @@
       text-decoration: none;
       line-height: 1.4;
     }
+
     .btn-primary {
       background: var(--brand-blue);
       color: #fff;
     }
+
     .btn-primary:hover {
       background: var(--brand-blue-hover);
       color: #fff;
     }
+
     .btn-success {
       background: var(--success);
       color: #fff;
     }
+
     .btn-success:hover {
       background: #059669;
       color: #fff;
     }
+
     .btn-purple {
       background: var(--purple-role);
       color: #fff;
     }
+
     .btn-purple:hover {
       background: #7c3aed;
       color: #fff;
     }
+
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border-color);
       color: var(--text-main);
     }
+
     .btn-outline:hover {
       background: #f1f5f9;
     }
+
     .btn-outline-white {
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: #fff;
     }
+
     .btn-outline-white:hover {
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
+
     .btn-danger {
       background: var(--danger);
       color: #fff;
     }
+
     .btn-danger:hover {
       background: #dc2626;
       color: #fff;
     }
+
     .btn-sm {
       padding: 6px 12px;
       font-size: 0.82rem;
       border-radius: var(--radius-sm);
     }
+
     .btn-warning {
       background: var(--warning);
       color: #fff;
     }
+
     .btn-warning:hover {
       background: #d97706;
       color: #fff;
@@ -253,6 +286,7 @@
       padding: 60px 0 40px 0;
       position: relative;
     }
+
     .hero-content {
       position: relative;
       z-index: 2;
@@ -260,6 +294,7 @@
       margin: 0 auto;
       text-align: center;
     }
+
     .hero-tag {
       display: inline-flex;
       align-items: center;
@@ -273,6 +308,7 @@
       font-weight: 600;
       margin-bottom: 20px;
     }
+
     .hero-title {
       font-size: 2.5rem;
       line-height: 1.25;
@@ -281,6 +317,7 @@
       font-weight: 800;
       letter-spacing: -0.8px;
     }
+
     .hero-desc {
       font-size: 1.1rem;
       line-height: 1.7;
@@ -306,17 +343,20 @@
       text-align: left;
       backdrop-filter: blur(10px);
     }
+
     .quick-status-group {
       display: flex;
       align-items: center;
       gap: 20px;
       flex-wrap: wrap;
     }
+
     .quick-status-item {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
+
     .quick-status-label {
       font-size: 0.72rem;
       text-transform: uppercase;
@@ -324,6 +364,7 @@
       font-weight: 600;
       letter-spacing: 0.5px;
     }
+
     .quick-status-val {
       font-size: 0.95rem;
       font-weight: 700;
@@ -339,6 +380,7 @@
       border-radius: var(--radius-md);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
+
     .contract-input-bar input {
       background: transparent;
       border: none;
@@ -348,8 +390,205 @@
       outline: none;
       width: 250px;
     }
+
     .contract-input-bar input::placeholder {
       color: #94a3b8;
+    }
+
+    /* Class Announcement Board */
+    .class-announcement-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(30, 41, 59, 0.92) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.45), 0 0 20px rgba(56, 189, 248, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .class-announcement-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399);
+    }
+
+    .ann-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .ann-tag-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ann-badge-pill {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .ann-status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+
+    .ann-dot-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+      animation: annPulse 1.8s infinite;
+    }
+
+    @keyframes annPulse {
+      0% {
+        transform: scale(0.95);
+        opacity: 0.8;
+      }
+
+      50% {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(0.95);
+        opacity: 0.8;
+      }
+    }
+
+    .btn-outline-light {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+      transition: all 0.2s;
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .ann-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 6px 0;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.3px;
+    }
+
+    .ann-purpose {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      margin: 0 0 16px 0;
+      line-height: 1.55;
+    }
+
+    .ann-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .ann-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ann-meta-label {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .ann-meta-val {
+      font-size: 0.95rem;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .ann-progress-section {
+      margin-top: 10px;
+    }
+
+    .ann-progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    .ann-progress-header strong {
+      color: #34d399;
+      font-size: 0.88rem;
+    }
+
+    .ann-progress-track {
+      width: 100%;
+      height: 9px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ann-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8 0%, #34d399 100%);
+      border-radius: 9999px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+    }
+
+    .ann-footer {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .ann-tip {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-style: italic;
     }
 
     /* Live metrics ribbon */
@@ -359,6 +598,7 @@
       gap: 16px;
       margin-top: 20px;
     }
+
     .metric-card {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -368,16 +608,19 @@
       backdrop-filter: blur(6px);
       transition: transform 0.2s, background 0.2s;
     }
+
     .metric-card:hover {
       transform: translateY(-2px);
       background: rgba(255, 255, 255, 0.1);
     }
+
     .metric-title {
       font-size: 0.82rem;
       color: #94a3b8;
       font-weight: 600;
       margin-bottom: 6px;
     }
+
     .metric-num {
       font-size: 1.7rem;
       font-weight: 800;
@@ -385,6 +628,7 @@
       font-family: 'Outfit', sans-serif;
       margin-bottom: 4px;
     }
+
     .metric-note {
       font-size: 0.75rem;
       color: #94a3b8;
@@ -395,12 +639,15 @@
       border-color: #fed7aa;
       color: #c2410c;
     }
-    .role-btn-history:hover, .role-btn-history.active {
+
+    .role-btn-history:hover,
+    .role-btn-history.active {
       background: #ea580c;
       color: #ffffff;
       border-color: #ea580c;
       box-shadow: 0 8px 20px -4px rgba(234, 88, 12, 0.4);
     }
+
     .role-panel.panel-history {
       border-top: 5px solid #ea580c;
     }
@@ -412,6 +659,7 @@
       gap: 16px;
       margin: 20px 0;
     }
+
     .flow-step-box {
       background: #f8fafc;
       border: 1px solid var(--border-color);
@@ -420,11 +668,13 @@
       position: relative;
       transition: all 0.2s;
     }
+
     .flow-step-box:hover {
       background: #ffffff;
       box-shadow: var(--shadow-md);
       transform: translateY(-2px);
     }
+
     .flow-step-badge {
       display: inline-block;
       padding: 3px 8px;
@@ -433,10 +683,26 @@
       font-weight: 700;
       margin-bottom: 8px;
     }
-    .flow-badge-inflow { background: #dcfce7; color: #166534; }
-    .flow-badge-spend { background: #dbeafe; color: #1e40af; }
-    .flow-badge-refund { background: #ffedd5; color: #9a3412; }
-    .flow-badge-gas { background: #f3e8ff; color: #6b21a8; }
+
+    .flow-badge-inflow {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .flow-badge-spend {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .flow-badge-refund {
+      background: #ffedd5;
+      color: #9a3412;
+    }
+
+    .flow-badge-gas {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
 
     /* Flow Balance Ribbon */
     .flow-balance-grid {
@@ -445,6 +711,7 @@
       gap: 14px;
       margin-bottom: 24px;
     }
+
     .flow-balance-card {
       background: #fff;
       border: 1px solid var(--border-color);
@@ -452,11 +719,13 @@
       padding: 14px 18px;
       box-shadow: var(--shadow-sm);
     }
+
     .flow-balance-title {
       font-size: 0.8rem;
       color: var(--text-muted);
       margin-bottom: 4px;
     }
+
     .flow-balance-val {
       font-size: 1.25rem;
       font-weight: 800;
@@ -471,6 +740,7 @@
       margin-bottom: 14px;
       align-items: center;
     }
+
     .flow-filter-btn {
       padding: 6px 14px;
       border-radius: 9999px;
@@ -482,10 +752,12 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .flow-filter-btn:hover {
       background: #f1f5f9;
       color: var(--primary-navy);
     }
+
     .flow-filter-btn.active {
       background: #ea580c;
       color: #fff;
@@ -497,6 +769,7 @@
       background: #f1f5f9;
       border-bottom: 1px solid var(--border-color);
     }
+
     .role-buttons-group {
       display: flex;
       justify-content: center;
@@ -505,6 +778,7 @@
       flex-wrap: wrap;
       margin: 18px 0 12px 0;
     }
+
     .role-btn-item {
       display: inline-flex;
       align-items: center;
@@ -523,44 +797,56 @@
       box-shadow: var(--shadow-sm);
       min-width: 220px;
     }
+
     .role-btn-item:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
     }
+
     .role-btn-student {
       border-color: #a7f3d0;
       color: #065f46;
     }
-    .role-btn-student:hover, .role-btn-student.active {
+
+    .role-btn-student:hover,
+    .role-btn-student.active {
       background: #059669;
       color: #ffffff;
       border-color: #059669;
       box-shadow: 0 8px 20px -4px rgba(5, 150, 105, 0.4);
     }
+
     .role-btn-bcs {
       border-color: #bfdbfe;
       color: #1e40af;
     }
-    .role-btn-bcs:hover, .role-btn-bcs.active {
+
+    .role-btn-bcs:hover,
+    .role-btn-bcs.active {
       background: var(--brand-blue);
       color: #ffffff;
       border-color: var(--brand-blue);
       box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
     }
+
     .role-btn-advisor {
       border-color: #ddd6fe;
       color: #5b21b6;
     }
-    .role-btn-advisor:hover, .role-btn-advisor.active {
+
+    .role-btn-advisor:hover,
+    .role-btn-advisor.active {
       background: var(--purple-role);
       color: #ffffff;
       border-color: var(--purple-role);
       box-shadow: 0 8px 20px -4px rgba(139, 92, 246, 0.4);
     }
+
     .role-btn-icon {
       font-size: 1.35rem;
       line-height: 1;
     }
+
     .role-btn-label {
       font-size: 1.1rem;
       font-weight: 700;
@@ -572,6 +858,7 @@
       margin: 24px auto 0 auto;
       transition: all 0.3s ease;
     }
+
     .role-detail-container .role-panel {
       width: 100%;
       border-radius: var(--radius-lg);
@@ -588,12 +875,15 @@
       flex-direction: column;
       transition: all 0.2s;
     }
+
     .role-panel.panel-student {
       border-top: 5px solid var(--success);
     }
+
     .role-panel.panel-bcs {
       border-top: 5px solid var(--brand-blue);
     }
+
     .role-panel.panel-advisor {
       border-top: 5px solid var(--purple-role);
     }
@@ -606,12 +896,14 @@
       align-items: center;
       background: #fafbfc;
     }
+
     .panel-title {
       font-size: 1.2rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+
     .panel-badge {
       font-size: 0.72rem;
       font-weight: 700;
@@ -620,16 +912,19 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .badge-student-role {
       background: var(--success-bg);
       color: #047857;
       border: 1px solid #a7f3d0;
     }
+
     .badge-bcs-role {
       background: #dbeafe;
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
     }
+
     .badge-advisor-role {
       background: var(--purple-bg);
       color: #6d28d9;
@@ -649,6 +944,7 @@
       margin-bottom: 16px;
       text-align: left;
     }
+
     .form-group label {
       display: block;
       font-size: 0.88rem;
@@ -656,6 +952,7 @@
       margin-bottom: 6px;
       color: var(--primary-navy);
     }
+
     .form-control {
       width: 100%;
       padding: 10px 14px;
@@ -667,6 +964,7 @@
       background: #fff;
       transition: border-color 0.2s;
     }
+
     .form-control:focus {
       outline: none;
       border-color: var(--brand-blue);
@@ -685,10 +983,30 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .status-pending { background: var(--warning-bg); color: #b45309; border: 1px solid #fde68a; }
-    .status-ready { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
-    .status-executed { background: var(--success-bg); color: #047857; border: 1px solid #a7f3d0; }
-    .status-expired { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+
+    .status-pending {
+      background: var(--warning-bg);
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .status-ready {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .status-executed {
+      background: var(--success-bg);
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-expired {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #cbd5e1;
+    }
 
     /* Tables */
     .data-table-container {
@@ -698,12 +1016,14 @@
       border-radius: var(--radius-md);
       background: #fff;
     }
+
     table.data-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.88rem;
     }
+
     table.data-table th {
       background: #f8fafc;
       padding: 12px 14px;
@@ -712,14 +1032,17 @@
       border-bottom: 1px solid var(--border-color);
       white-space: nowrap;
     }
+
     table.data-table td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--border-color);
       color: var(--text-main);
     }
+
     table.data-table tr:last-child td {
       border-bottom: none;
     }
+
     table.data-table tr:hover {
       background: #f8fafc;
     }
@@ -728,11 +1051,13 @@
     section {
       padding: 70px 0;
     }
+
     .section-header {
       text-align: center;
       max-width: 800px;
       margin: 0 auto 40px auto;
     }
+
     .section-badge {
       display: inline-block;
       padding: 4px 12px;
@@ -745,12 +1070,14 @@
       letter-spacing: 0.5px;
       margin-bottom: 12px;
     }
+
     .section-title {
       font-size: 2.1rem;
       color: var(--primary-navy);
       margin-bottom: 14px;
       letter-spacing: -0.5px;
     }
+
     .section-desc {
       font-size: 1.05rem;
       color: var(--text-muted);
@@ -763,6 +1090,7 @@
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 28px;
     }
+
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -777,10 +1105,12 @@
       box-shadow: var(--shadow-sm);
       transition: all 0.2s;
     }
+
     .card:hover {
       box-shadow: var(--shadow-md);
       transform: translateY(-2px);
     }
+
     .card-icon {
       width: 44px;
       height: 44px;
@@ -792,15 +1122,18 @@
       color: var(--brand-blue);
       margin-bottom: 16px;
     }
+
     .card-icon svg {
       width: 24px;
       height: 24px;
     }
+
     .card-title {
       font-size: 1.2rem;
       margin-bottom: 10px;
       color: var(--primary-navy);
     }
+
     .card-desc {
       font-size: 0.92rem;
       color: var(--text-muted);
@@ -813,6 +1146,7 @@
       margin: 30px auto;
       max-width: 960px;
     }
+
     .timeline::before {
       content: '';
       position: absolute;
@@ -822,15 +1156,18 @@
       width: 3px;
       background: #e2e8f0;
     }
+
     .timeline-step {
       position: relative;
       display: flex;
       gap: 24px;
       margin-bottom: 28px;
     }
+
     .timeline-step:last-child {
       margin-bottom: 0;
     }
+
     .step-badge {
       position: relative;
       z-index: 2;
@@ -848,6 +1185,7 @@
       flex-shrink: 0;
       box-shadow: var(--shadow-sm);
     }
+
     .step-content {
       background: #fff;
       border: 1px solid var(--border-color);
@@ -856,6 +1194,7 @@
       flex: 1;
       box-shadow: var(--shadow-sm);
     }
+
     .step-content h4 {
       font-size: 1.15rem;
       margin-bottom: 8px;
@@ -866,6 +1205,7 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+
     .step-meta {
       display: flex;
       gap: 12px;
@@ -873,6 +1213,7 @@
       margin-bottom: 10px;
       font-size: 0.85rem;
     }
+
     .meta-tag {
       background: #f1f5f9;
       padding: 3px 10px;
@@ -896,6 +1237,7 @@
       margin: 0 auto 30px auto;
       position: relative;
     }
+
     .faq-search-input {
       width: 100%;
       padding: 14px 20px 14px 44px;
@@ -905,10 +1247,12 @@
       box-shadow: var(--shadow-sm);
       outline: none;
     }
+
     .faq-search-input:focus {
       border-color: var(--brand-blue);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
+
     .faq-search-icon {
       position: absolute;
       left: 16px;
@@ -926,6 +1270,7 @@
       box-shadow: var(--shadow-sm);
       transition: all 0.2s;
     }
+
     .accordion-header {
       padding: 16px 22px;
       display: flex;
@@ -937,16 +1282,20 @@
       background: #fff;
       user-select: none;
     }
+
     .accordion-header:hover {
       background: #f8fafc;
     }
+
     .accordion-icon {
       transition: transform 0.2s;
       color: var(--text-muted);
     }
+
     .accordion-item.open .accordion-icon {
       transform: rotate(180deg);
     }
+
     .accordion-body {
       display: none;
       padding: 0 22px 18px 22px;
@@ -955,6 +1304,7 @@
       line-height: 1.65;
       border-top: 1px solid #f1f5f9;
     }
+
     .accordion-item.open .accordion-body {
       display: block;
     }
@@ -990,10 +1340,12 @@
       pointer-events: none;
       transition: opacity 0.2s;
     }
+
     .modal-overlay.open {
       opacity: 1;
       pointer-events: auto;
     }
+
     .modal-box {
       background: #fff;
       border-radius: var(--radius-lg);
@@ -1005,19 +1357,23 @@
       transition: transform 0.2s;
       position: relative;
     }
+
     .modal-overlay.open .modal-box {
       transform: translateY(0);
     }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
     }
+
     .modal-header h3 {
       font-size: 1.3rem;
       color: var(--primary-navy);
     }
+
     .modal-close {
       background: transparent;
       border: none;
@@ -1035,34 +1391,42 @@
       font-size: 0.9rem;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
+
     .footer-grid {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr;
       gap: 40px;
       margin-bottom: 40px;
     }
+
     .footer-brand h3 {
       color: #fff;
       margin-bottom: 12px;
       font-size: 1.3rem;
     }
+
     .footer-links h4 {
       color: #fff;
       font-size: 1rem;
       margin-bottom: 16px;
     }
+
     .footer-links ul {
       list-style: none;
     }
+
     .footer-links li {
       margin-bottom: 8px;
     }
+
     .footer-links a {
       color: #94a3b8;
     }
+
     .footer-links a:hover {
       color: #38bdf8;
     }
+
     .footer-bottom {
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       padding-top: 24px;
@@ -1082,10 +1446,12 @@
       font-size: 1.5rem;
       cursor: pointer;
     }
+
     @media (max-width: 900px) {
       .menu-toggle {
         display: block;
       }
+
       .nav-links {
         display: none;
         position: absolute;
@@ -1098,12 +1464,15 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         gap: 16px;
       }
+
       .nav-links.show {
         display: flex;
       }
+
       .hero-title {
         font-size: 2rem;
       }
+
       .footer-grid {
         grid-template-columns: 1fr;
       }
@@ -1177,6 +1546,7 @@
         opacity: 0;
         transform: translateY(16px) scale(0.97);
       }
+
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1218,10 +1588,12 @@
       border-radius: 50%;
       background: #94a3b8;
     }
+
     .ai-status-indicator.online {
       background: #10b981;
       box-shadow: 0 0 8px #10b981;
     }
+
     .ai-status-indicator.offline {
       background: #ef4444;
     }
@@ -1370,15 +1742,30 @@
       border-radius: 50%;
       animation: aiDotBounce 1.4s infinite ease-in-out both;
     }
-    .ai-typing-dot:nth-child(1) { animation-delay: -0.32s; }
-    .ai-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    .ai-typing-dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .ai-typing-dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
 
     @keyframes aiDotBounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
+
+      0%,
+      80%,
+      100% {
+        transform: scale(0);
+      }
+
+      40% {
+        transform: scale(1);
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- ============================================================ -->
@@ -1387,7 +1774,9 @@
   <header class="site-header">
     <div class="container navbar">
       <a href="#hero" class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
         <div>
           KTS CLASS FUND
           <span class="brand-sub">Khoa HTTT Kinh Tế — Lớp K57 Đại Học Huế</span>
@@ -1412,13 +1801,19 @@
           <span id="networkText">Chưa kết nối ví</span>
         </div>
         <button class="btn btn-primary btn-sm" id="btnConnectWallet" title="Bấm để kết nối hoặc đổi tài khoản">
-          <svg style="width:16px;height:16px;fill:currentColor;" viewBox="0 0 24 24"><path d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z"/></svg>
+          <svg style="width:16px;height:16px;fill:currentColor;" viewBox="0 0 24 24">
+            <path
+              d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z" />
+          </svg>
           <span id="walletBtnText">Kết nối MetaMask</span>
         </button>
-        <button class="btn btn-outline btn-sm" id="btnSwitchWallet" style="display:none; color:#fff; border-color:rgba(255,255,255,0.3);" title="Đổi sang tài khoản ví khác" onclick="switchAccount()">
+        <button class="btn btn-outline btn-sm" id="btnSwitchWallet"
+          style="display:none; color:#fff; border-color:rgba(255,255,255,0.3);" title="Đổi sang tài khoản ví khác"
+          onclick="switchAccount()">
           🔄 Đổi ví
         </button>
-        <button class="btn btn-danger btn-sm" id="btnDisconnectWallet" style="display:none; padding:6px 10px;" title="Ngắt kết nối ví" onclick="disconnectWallet()">
+        <button class="btn btn-danger btn-sm" id="btnDisconnectWallet" style="display:none; padding:6px 10px;"
+          title="Ngắt kết nối ví" onclick="disconnectWallet()">
           ✕
         </button>
       </div>
@@ -1435,7 +1830,8 @@
       </div>
       <h1 class="hero-title">KTS CLASS FUND — Minh bạch hóa quản lý quỹ lớp bằng Blockchain</h1>
       <p class="hero-desc">
-        Hệ thống hỗ trợ quản lý đóng góp, đề xuất chi tiêu và theo dõi giao dịch thông qua hợp đồng thông minh, giúp các thành viên hiểu rõ quy trình và kiểm chứng những hoạt động đã được ghi nhận trên blockchain.
+        Hệ thống hỗ trợ quản lý đóng góp, đề xuất chi tiêu và theo dõi giao dịch thông qua hợp đồng thông minh, giúp các
+        thành viên hiểu rõ quy trình và kiểm chứng những hoạt động đã được ghi nhận trên blockchain.
       </p>
 
       <!-- Quick Control Bar (Address, Role, Contract Config) -->
@@ -1444,9 +1840,13 @@
           <div class="quick-status-item">
             <span class="quick-status-label">Địa chỉ ví đang kết nối</span>
             <div style="display:flex; align-items:center; gap:8px;">
-              <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối ví</span>
-              <button class="btn btn-sm btn-outline-white" id="btnQuickSwitch" style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="switchAccount()">🔄 Đổi ví</button>
-              <button class="btn btn-sm btn-outline-white" id="btnQuickDisconnect" style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="disconnectWallet()">Đăng xuất</button>
+              <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối
+                ví</span>
+              <button class="btn btn-sm btn-outline-white" id="btnQuickSwitch"
+                style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="switchAccount()">🔄 Đổi ví</button>
+              <button class="btn btn-sm btn-outline-white" id="btnQuickDisconnect"
+                style="padding:2px 8px; font-size:0.75rem; display:none;" onclick="disconnectWallet()">Đăng
+                xuất</button>
             </div>
           </div>
           <div class="quick-status-item">
@@ -1462,10 +1862,68 @@
         <!-- Quick Contract Input -->
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="contract-input-bar">
-            <svg style="width:16px;height:16px;fill:#38bdf8;" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <svg style="width:16px;height:16px;fill:#38bdf8;" viewBox="0 0 24 24">
+              <path
+                d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+            </svg>
             <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
           </div>
           <button class="btn btn-sm btn-primary" id="btnSaveQuickContract">Lưu & Tải</button>
+        </div>
+      </div>
+
+      <!-- BẢNG THÔNG BÁO THU QUỸ LỚP (CLASS ANNOUNCEMENT BANNER) -->
+      <div class="class-announcement-card" id="classAnnouncementCard">
+        <div class="ann-header">
+          <div class="ann-tag-group">
+            <span class="ann-badge-pill">📢 THÔNG BÁO QUỸ LỚP</span>
+            <span class="ann-status-tag" id="annStatusTag"><span class="ann-dot-pulse"></span> <span
+                id="annStatusText">Đang diễn ra</span></span>
+          </div>
+          <button class="btn btn-sm btn-outline-light" id="btnOpenAnnModal"
+            style="display: none;"
+            title="Chỉ Ban cán sự mới có quyền sửa">
+            ✏️ Quản trị thông báo (BCS)
+          </button>
+        </div>
+
+        <div class="ann-body">
+          <h2 class="ann-title" id="annTitle">Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số</h2>
+          <p class="ann-purpose" id="annPurpose">Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại
+            khóa và quỹ dự phòng hỗ trợ sinh viên K57.</p>
+
+          <div class="ann-meta-grid">
+            <div class="ann-meta-item">
+              <span class="ann-meta-label">💰 Mức đóng quy định:</span>
+              <span class="ann-meta-val" id="annAmount">0.0100 ETH / bạn</span>
+            </div>
+            <div class="ann-meta-item">
+              <span class="ann-meta-label">⏳ Hạn chót nộp:</span>
+              <span class="ann-meta-val" id="annDeadline">23:59 ngày 15/11/2026</span>
+            </div>
+            <div class="ann-meta-item">
+              <span class="ann-meta-label">🎯 Mục tiêu sĩ số:</span>
+              <span class="ann-meta-val" id="annClassSize">50 sinh viên</span>
+            </div>
+          </div>
+
+          <div class="ann-progress-section">
+            <div class="ann-progress-header">
+              <span>Tiến độ thu quỹ toàn lớp:</span>
+              <strong id="annProgressText">0/50 bạn đã nộp (0%)</strong>
+            </div>
+            <div class="ann-progress-track">
+              <div class="ann-progress-fill" id="annProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ann-footer">
+          <button class="btn btn-primary" id="btnBannerQuickDeposit">
+            ⚡ Nộp quỹ ngay (0.01 ETH)
+          </button>
+          <span class="ann-tip">💡 Sinh viên có thể bấm nộp trực tiếp hoặc hỏi Trợ lý AI để tra cứu thông tin chi tiết
+            về đợt thu này.</span>
         </div>
       </div>
 
@@ -1511,7 +1969,8 @@
   <section class="dapp-hero-section" id="dapp-workspace">
     <div class="container">
       <div class="workspace-role-header" style="text-align: center; max-width: 760px; margin: 0 auto 16px auto;">
-        <span class="section-badge" style="background:#e0e7ff; color:var(--brand-blue); font-weight:700;">Không Gian Thao Tác</span>
+        <span class="section-badge" style="background:#e0e7ff; color:var(--brand-blue); font-weight:700;">Không Gian
+          Thao Tác</span>
         <h2 style="font-size: 2rem; color: var(--primary-navy); margin: 8px 0 6px 0;">
           Chọn Vai Trò Để Thao Tác
         </h2>
@@ -1539,7 +1998,8 @@
           </button>
         </div>
 
-        <div id="roleDetailHint" style="text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-top: 10px;">
+        <div id="roleDetailHint"
+          style="text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-top: 10px;">
           💡 Bấm vào một trong 4 nút trên để mở ô chi tiết và theo dõi dòng tiền.
         </div>
       </div>
@@ -1553,18 +2013,22 @@
         <div class="role-panel panel-student" id="panelStudent" style="display: none;">
           <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="panel-title" style="color: #047857; display: flex; align-items: center; gap: 8px;">
-              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
+              </svg>
               <strong style="font-size: 1.25rem;">Ô Chi Tiết: Dành Cho Sinh Viên</strong>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
               <span class="panel-badge badge-student-role">Sinh viên K57</span>
-              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;"
+                onclick="closeRoleDetail()">✕ Thu gọn</button>
             </div>
           </div>
 
           <div class="panel-body">
             <!-- Đóng góp của bạn summary -->
-            <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px 16px;">
+            <div
+              style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px 16px;">
               <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
                 <span style="font-size:0.85rem; color:var(--text-muted);">Tổng đóng góp của bạn:</span>
                 <strong style="color:var(--brand-blue);" id="myTotalContribution">0.0000 ETH</strong>
@@ -1580,7 +2044,8 @@
             </div>
 
             <!-- Form nộp quỹ -->
-            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+            <div
+              style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
               <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
                 1. Đóng góp tiền vào quỹ lớp
               </h4>
@@ -1589,7 +2054,8 @@
               </p>
               <div class="form-group" style="margin-bottom: 10px;">
                 <label for="inputDepositAmount">Số ETH muốn đóng góp:</label>
-                <input type="number" step="0.001" min="0.001" class="form-control" id="inputDepositAmount" placeholder="Ví dụ: 0.05">
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputDepositAmount"
+                  placeholder="Ví dụ: 0.05">
               </div>
               <button class="btn btn-success" id="btnDepositAction" style="width: 100%;">
                 Xác nhận nộp quỹ qua MetaMask
@@ -1597,7 +2063,8 @@
             </div>
 
             <!-- Form xin hoàn tiền -->
-            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+            <div
+              style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
               <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
                 2. Xin hoàn tiền khi nộp nhầm
               </h4>
@@ -1606,11 +2073,13 @@
               </p>
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="inputRefundAmount">Số ETH xin hoàn lại:</label>
-                <input type="number" step="0.001" min="0.001" class="form-control" id="inputRefundAmount" placeholder="Không vượt quá hạn mức khả dụng">
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputRefundAmount"
+                  placeholder="Không vượt quá hạn mức khả dụng">
               </div>
               <div class="form-group" style="margin-bottom: 12px;">
                 <label for="inputRefundReason">Lý do nộp nhầm:</label>
-                <input type="text" class="form-control" id="inputRefundReason" placeholder="Ví dụ: Nộp thừa tiền quỹ kỳ 1">
+                <input type="text" class="form-control" id="inputRefundReason"
+                  placeholder="Ví dụ: Nộp thừa tiền quỹ kỳ 1">
               </div>
               <button class="btn btn-outline" id="btnCreateRefundAction" style="width: 100%;">
                 Gửi yêu cầu hoàn tiền đến Ban cán sự
@@ -1653,18 +2122,23 @@
         <div class="role-panel panel-bcs" id="panelBCS" style="display: none;">
           <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="panel-title" style="color: var(--brand-blue); display: flex; align-items: center; gap: 8px;">
-              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24">
+                <path
+                  d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+              </svg>
               <strong style="font-size: 1.25rem;">Ô Chi Tiết: Dành Cho Ban Cán Sự</strong>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
               <span class="panel-badge badge-bcs-role">Ban cán sự K57</span>
-              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;"
+                onclick="closeRoleDetail()">✕ Thu gọn</button>
             </div>
           </div>
 
           <div class="panel-body">
             <!-- Form tạo đề nghị chi -->
-            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+            <div
+              style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
               <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
                 1. Tạo đề nghị chi tiền mới
               </h4>
@@ -1677,11 +2151,13 @@
               </div>
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="inputSpendAmount">Số ETH đề nghị chi:</label>
-                <input type="number" step="0.001" min="0.001" class="form-control" id="inputSpendAmount" placeholder="Ví dụ: 0.1">
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputSpendAmount"
+                  placeholder="Ví dụ: 0.1">
               </div>
               <div class="form-group" style="margin-bottom: 12px;">
                 <label for="inputSpendDesc">Mục đích chi tiêu:</label>
-                <input type="text" class="form-control" id="inputSpendDesc" placeholder="Ví dụ: Mua nước sự kiện giao lưu lớp">
+                <input type="text" class="form-control" id="inputSpendDesc"
+                  placeholder="Ví dụ: Mua nước sự kiện giao lưu lớp">
               </div>
               <button class="btn btn-primary" id="btnCreateSpendAction" style="width: 100%;">
                 Tạo đề nghị chi & Tạm giữ ngân sách
@@ -1756,23 +2232,29 @@
         <div class="role-panel panel-advisor" id="panelAdvisor" style="display: none;">
           <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="panel-title" style="color: var(--purple-role); display: flex; align-items: center; gap: 8px;">
-              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24">
+                <path
+                  d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+              </svg>
               <strong style="font-size: 1.25rem;">Ô Chi Tiết: Dành Cho Cố Vấn Học Tập</strong>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
               <span class="panel-badge badge-advisor-role">Cố vấn học tập</span>
-              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;"
+                onclick="closeRoleDetail()">✕ Thu gọn</button>
             </div>
           </div>
 
           <div class="panel-body">
             <!-- Quản trị nhân sự BCS -->
-            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+            <div
+              style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
               <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
                 1. Quản lý nhân sự Ban cán sự
               </h4>
               <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                Đặc quyền Cố vấn: Kích hoạt hoặc thu hồi quyền hạn thành viên Ban cán sự. Mẫu số biểu quyết 51% sẽ tự động cập nhật.
+                Đặc quyền Cố vấn: Kích hoạt hoặc thu hồi quyền hạn thành viên Ban cán sự. Mẫu số biểu quyết 51% sẽ tự
+                động cập nhật.
               </p>
               <div class="form-group" style="margin-bottom: 8px;">
                 <label for="inputBcsAddress">Địa chỉ ví thành viên:</label>
@@ -1791,20 +2273,23 @@
             </div>
 
             <!-- Rút quỹ phí vận hành -->
-            <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+            <div
+              style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
               <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
                 2. Rút quỹ phí vận hành bù đắp gas
               </h4>
               <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
                 Cố vấn được rút số dư từ Quỹ phí (1% trích từ tiền nạp) về ví để trang trải chi phí gas mạng lưới.
               </p>
-              <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+              <div
+                style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.85rem; color:var(--text-muted);">Số dư Quỹ phí hiện có:</span>
                 <strong style="color:var(--warning); font-size:1.1rem;" id="advisorFeePoolBalance">0.0000 ETH</strong>
               </div>
               <div class="form-group" style="margin-bottom: 12px;">
                 <label for="inputWithdrawFeeAmount">Số ETH muốn rút:</label>
-                <input type="number" step="0.001" min="0.001" class="form-control" id="inputWithdrawFeeAmount" placeholder="Không vượt quá số dư quỹ phí">
+                <input type="number" step="0.001" min="0.001" class="form-control" id="inputWithdrawFeeAmount"
+                  placeholder="Không vượt quá số dư quỹ phí">
               </div>
               <button class="btn btn-success" id="btnWithdrawFeeAction" style="width: 100%;">
                 Rút quỹ phí về ví Cố vấn
@@ -1819,12 +2304,17 @@
         <div class="role-panel panel-history" id="panelHistory" style="display: none;">
           <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="panel-title" style="color: #c2410c; display: flex; align-items: center; gap: 8px;">
-              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+              <svg style="width:24px;height:24px;fill:currentColor;" viewBox="0 0 24 24">
+                <path
+                  d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z" />
+              </svg>
               <strong style="font-size: 1.25rem;">Ô Chi Tiết: Toàn Cảnh Flow Dòng Tiền & Lịch Sử Thu Chi</strong>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
-              <span class="panel-badge" style="background:#ffedd5; color:#c2410c; border:1px solid #fed7aa;">Minh bạch On-chain</span>
-              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;" onclick="closeRoleDetail()">✕ Thu gọn</button>
+              <span class="panel-badge" style="background:#ffedd5; color:#c2410c; border:1px solid #fed7aa;">Minh bạch
+                On-chain</span>
+              <button class="btn btn-sm btn-outline" style="padding: 4px 12px; font-size: 0.85rem;"
+                onclick="closeRoleDetail()">✕ Thu gọn</button>
             </div>
           </div>
 
@@ -1839,7 +2329,8 @@
               <div class="flow-balance-card" style="border-left: 4px solid var(--warning);">
                 <div class="flow-balance-title">Tiền đang tạm giữ chờ duyệt</div>
                 <div class="flow-balance-val" style="color:#d97706;" id="flowBalReserved">0.0000 ETH</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Khóa bảo đảm đề xuất chi/hoàn</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Khóa bảo đảm đề xuất chi/hoàn
+                </div>
               </div>
               <div class="flow-balance-card" style="border-left: 4px solid var(--purple-role);">
                 <div class="flow-balance-title">Quỹ phí vận hành (1%)</div>
@@ -1849,17 +2340,21 @@
               <div class="flow-balance-card" style="border-left: 4px solid var(--brand-blue);">
                 <div class="flow-balance-title">Đã giải ngân chi tiêu</div>
                 <div class="flow-balance-val" style="color:#1d4ed8;" id="flowBalExecutedSpend">0.0000 ETH</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;" id="flowBalExecutedCount">0 đề xuất đã chuyển tiền</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;" id="flowBalExecutedCount">0 đề
+                  xuất đã chuyển tiền</div>
               </div>
             </div>
 
             <!-- PHẦN 2: SƠ ĐỒ TOÀN BỘ 4 FLOW CỦA DÒNG TIỀN -->
-            <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
-              <h4 style="font-size: 1.05rem; margin-bottom: 4px; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+            <div
+              style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
+              <h4
+                style="font-size: 1.05rem; margin-bottom: 4px; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
                 <span>🔄</span> Sơ Đồ Toàn Bộ Các Luồng (Flow) Của Dòng Tiền Quỹ Lớp
               </h4>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-                Mỗi luồng tiền trong hệ thống đều tuân thủ các quy tắc kinh tế chuẩn mực và tự động ghi nhận trên Smart Contract:
+                Mỗi luồng tiền trong hệ thống đều tuân thủ các quy tắc kinh tế chuẩn mực và tự động ghi nhận trên Smart
+                Contract:
               </p>
 
               <div class="flow-steps-grid">
@@ -1891,7 +2386,8 @@
                   <h5 style="font-size:0.92rem; margin-bottom:6px; color:#9a3412;">Sinh viên xin rút lại tiền</h5>
                   <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
                     Sinh viên tạo yêu cầu ➔ Khóa hạn mức ➔ BCS biểu quyết (7 ngày).
-                    <br>➔ <strong>&ge; 51% thuận:</strong> Hoàn <strong>99%</strong> về ví sinh viên, <strong>1%</strong> đưa vào quỹ phí.
+                    <br>➔ <strong>&ge; 51% thuận:</strong> Hoàn <strong>99%</strong> về ví sinh viên,
+                    <strong>1%</strong> đưa vào quỹ phí.
                   </p>
                 </div>
 
@@ -1900,7 +2396,8 @@
                   <span class="flow-step-badge flow-badge-gas">⛽ FLOW 4: PHÍ BÙ ĐẮP GAS</span>
                   <h5 style="font-size:0.92rem; margin-bottom:6px; color:#6b21a8;">Bù chi phí mạng lưới</h5>
                   <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-                    Trích từ Quỹ phí vận hành (1%) ➔ Cố vấn học tập rút về ví để bù đắp chi phí gas khi deploy và quản lý nhân sự Ban cán sự.
+                    Trích từ Quỹ phí vận hành (1%) ➔ Cố vấn học tập rút về ví để bù đắp chi phí gas khi deploy và quản
+                    lý nhân sự Ban cán sự.
                   </p>
                 </div>
               </div>
@@ -1908,13 +2405,15 @@
 
             <!-- PHẦN 3: SỔ NHẬT KÝ & THEO DÕI TẤT CẢ CÁC KHOẢN CHI & HOÀN TIỀN CỦA LỚP -->
             <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <div
+                style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
                 <div>
                   <h4 style="font-size: 1.05rem; color: var(--primary-navy); margin-bottom:2px;">
                     📜 Sổ Nhật Ký Dòng Tiền & Tình Trạng Xét Duyệt Mọi Đề Xuất
                   </h4>
                   <p style="font-size: 0.82rem; color: var(--text-muted);">
-                    Tất cả thành viên đều có thể theo dõi chi tiết từng khoản chi, lý do và tiến độ duyệt của Ban cán sự:
+                    Tất cả thành viên đều có thể theo dõi chi tiết từng khoản chi, lý do và tiến độ duyệt của Ban cán
+                    sự:
                   </p>
                 </div>
 
@@ -1924,8 +2423,10 @@
                   <button class="flow-filter-btn active" onclick="filterFlowLedger('all', this)">Tất cả</button>
                   <button class="flow-filter-btn" onclick="filterFlowLedger('spend', this)">📤 Đề xuất chi</button>
                   <button class="flow-filter-btn" onclick="filterFlowLedger('refund', this)">🔄 Hoàn tiền</button>
-                  <button class="flow-filter-btn" onclick="filterFlowLedger('executed', this)">🟢 Đã giải ngân / Hoàn tất</button>
-                  <button class="flow-filter-btn" onclick="filterFlowLedger('pending', this)">🟡 Đang biểu quyết</button>
+                  <button class="flow-filter-btn" onclick="filterFlowLedger('executed', this)">🟢 Đã giải ngân / Hoàn
+                    tất</button>
+                  <button class="flow-filter-btn" onclick="filterFlowLedger('pending', this)">🟡 Đang biểu
+                    quyết</button>
                 </div>
               </div>
 
@@ -1954,11 +2455,13 @@
               </div>
 
               <!-- Nút tra cứu Etherscan -->
-              <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #f8fafc; padding: 12px 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <div
+                style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #f8fafc; padding: 12px 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
                 <div style="font-size: 0.85rem; color: var(--text-muted);">
                   💡 Dữ liệu được ghi nhận vĩnh viễn và không thể sửa đổi trên sổ cái phân tán Ethereum Sepolia.
                 </div>
-                <a id="flowLinkEtherscan" href="https://sepolia.etherscan.io" target="_blank" class="btn btn-sm btn-outline" style="font-size: 0.85rem;">
+                <a id="flowLinkEtherscan" href="https://sepolia.etherscan.io" target="_blank"
+                  class="btn btn-sm btn-outline" style="font-size: 0.85rem;">
                   Tra cứu chi tiết trên Sepolia Etherscan &rarr;
                 </a>
               </div>
@@ -1979,38 +2482,51 @@
         <span class="section-badge">Bối Cảnh & Vấn Đề</span>
         <h2 class="section-title">Tại sao chúng tôi xây dựng KTS-Class-Fund?</h2>
         <p class="section-desc">
-          Những khó khăn thường gặp khi quản lý quỹ lớp bằng phương pháp thủ công và cách công nghệ Blockchain giúp giải quyết minh bạch.
+          Những khó khăn thường gặp khi quản lý quỹ lớp bằng phương pháp thủ công và cách công nghệ Blockchain giúp giải
+          quyết minh bạch.
         </p>
       </div>
 
       <div class="grid-3" style="margin-bottom: 50px;">
         <div class="card">
           <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path fill="currentColor"
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+            </svg>
           </div>
           <h3 class="card-title">Thông tin thu chi nằm ở nhiều nơi</h3>
           <p class="card-desc">
-            Tiền chuyển vào tài khoản cá nhân, thông báo nằm rải rác trên các nhóm mạng xã hội, bảng sao kê giấy dễ thất lạc khiến việc đối chiếu thông tin trở nên phức tạp.
+            Tiền chuyển vào tài khoản cá nhân, thông báo nằm rải rác trên các nhóm mạng xã hội, bảng sao kê giấy dễ thất
+            lạc khiến việc đối chiếu thông tin trở nên phức tạp.
           </p>
         </div>
 
         <div class="card">
           <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path fill="currentColor"
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+            </svg>
           </div>
           <h3 class="card-title">Khó theo dõi tiến trình đề xuất</h3>
           <p class="card-desc">
-            Thành viên lớp khó nắm bắt một khoản chi do ai khởi xướng, đã được bao nhiêu người đồng ý, còn hạn biểu quyết hay không, dẫn đến băn khoăn về tính khách quan.
+            Thành viên lớp khó nắm bắt một khoản chi do ai khởi xướng, đã được bao nhiêu người đồng ý, còn hạn biểu
+            quyết hay không, dẫn đến băn khoăn về tính khách quan.
           </p>
         </div>
 
         <div class="card">
           <div class="card-icon">
-            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path fill="currentColor"
+                d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+            </svg>
           </div>
           <h3 class="card-title">Người quản lý phải giải thích lặp lại</h3>
           <p class="card-desc">
-            Ban cán sự thường xuyên phải tốn nhiều thời gian chụp màn hình, giải thích tiến độ thu chi cho từng thành viên thay vì có một hệ thống tự động cập nhật công khai.
+            Ban cán sự thường xuyên phải tốn nhiều thời gian chụp màn hình, giải thích tiến độ thu chi cho từng thành
+            viên thay vì có một hệ thống tự động cập nhật công khai.
           </p>
         </div>
       </div>
@@ -2022,27 +2538,33 @@
       <div class="grid-3">
         <div class="card">
           <h4 style="margin-bottom: 8px; color: var(--brand-blue);">1. Minh bạch hóa giao dịch</h4>
-          <p class="card-desc">Giúp người dùng dễ dàng kiểm tra các khoản đóng góp, đề xuất chi và hoàn tiền đã được ghi nhận trực tiếp trên sổ cái blockchain.</p>
+          <p class="card-desc">Giúp người dùng dễ dàng kiểm tra các khoản đóng góp, đề xuất chi và hoàn tiền đã được ghi
+            nhận trực tiếp trên sổ cái blockchain.</p>
         </div>
         <div class="card">
           <h4 style="margin-bottom: 8px; color: var(--brand-blue);">2. Quy trình hóa rõ ràng</h4>
-          <p class="card-desc">Mô tả rõ ràng từng bước từ lúc đóng góp đến khi đề xuất, biểu quyết tập thể, giải ngân hoặc dọn dẹp khoản tiền quá hạn.</p>
+          <p class="card-desc">Mô tả rõ ràng từng bước từ lúc đóng góp đến khi đề xuất, biểu quyết tập thể, giải ngân
+            hoặc dọn dẹp khoản tiền quá hạn.</p>
         </div>
         <div class="card">
           <h4 style="margin-bottom: 8px; color: var(--brand-blue);">3. Phân định quyền hạn chuẩn mực</h4>
-          <p class="card-desc">Mỗi vai trò (Cố vấn học tập, Ban cán sự, Sinh viên) chỉ được thực hiện đúng các chức năng tương ứng mà hợp đồng cho phép.</p>
+          <p class="card-desc">Mỗi vai trò (Cố vấn học tập, Ban cán sự, Sinh viên) chỉ được thực hiện đúng các chức năng
+            tương ứng mà hợp đồng cho phép.</p>
         </div>
         <div class="card">
           <h4 style="margin-bottom: 8px; color: var(--brand-blue);">4. Dễ tiếp cận cho sinh viên</h4>
-          <p class="card-desc">Sử dụng ngôn ngữ tự nhiên, giao diện trực quan và hướng dẫn từng bước chi tiết, không đòi hỏi người dùng phải biết lập trình.</p>
+          <p class="card-desc">Sử dụng ngôn ngữ tự nhiên, giao diện trực quan và hướng dẫn từng bước chi tiết, không đòi
+            hỏi người dùng phải biết lập trình.</p>
         </div>
         <div class="card">
           <h4 style="margin-bottom: 8px; color: var(--brand-blue);">5. Có thể kiểm chứng độc lập</h4>
-          <p class="card-desc">Cung cấp liên kết tra cứu trực tiếp trên trình khám phá khối Sepolia Etherscan và mã băm giao dịch cho mọi hoạt động.</p>
+          <p class="card-desc">Cung cấp liên kết tra cứu trực tiếp trên trình khám phá khối Sepolia Etherscan và mã băm
+            giao dịch cho mọi hoạt động.</p>
         </div>
         <div class="card">
           <h4 style="margin-bottom: 8px; color: var(--brand-blue);">6. Hỗ trợ giám sát tập thể</h4>
-          <p class="card-desc">Giúp mọi thành viên cùng theo dõi trạng thái dòng tiền thực tế thay vì chỉ nhận thông báo bằng lời nói hoặc bảng tính riêng lẻ.</p>
+          <p class="card-desc">Giúp mọi thành viên cùng theo dõi trạng thái dòng tiền thực tế thay vì chỉ nhận thông báo
+            bằng lời nói hoặc bảng tính riêng lẻ.</p>
         </div>
       </div>
     </div>
@@ -2057,14 +2579,17 @@
         <span class="section-badge">Quy Trình Hoạt Động</span>
         <h2 class="section-title">Hai Quy Trình Quản Lý Quỹ Lớp</h2>
         <p class="section-desc">
-          Toàn bộ hoạt động thu chi và hoàn tiền được mô tả bằng ngôn ngữ tự nhiên, phản ánh chính xác quy tắc được lập trình trong hợp đồng.
+          Toàn bộ hoạt động thu chi và hoàn tiền được mô tả bằng ngôn ngữ tự nhiên, phản ánh chính xác quy tắc được lập
+          trình trong hợp đồng.
         </p>
       </div>
 
       <!-- Quy trình 1: Đóng góp và Chi tiêu -->
       <div style="margin-bottom: 50px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-          <div style="background: var(--brand-blue); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 700;">QUY TRÌNH 1</div>
+          <div
+            style="background: var(--brand-blue); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 700;">
+            QUY TRÌNH 1</div>
           <h3 style="font-size: 1.35rem;">Đóng góp và Chi tiêu Quỹ lớp</h3>
         </div>
 
@@ -2072,13 +2597,16 @@
           <div class="timeline-step">
             <div class="step-badge">1</div>
             <div class="step-content">
-              <h4><span>Bước 1 — Sinh viên đóng góp vào quỹ</span> <span class="status-pill status-executed">Đã ghi nhận</span></h4>
+              <h4><span>Bước 1 — Sinh viên đóng góp vào quỹ</span> <span class="status-pill status-executed">Đã ghi
+                  nhận</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Mọi sinh viên</strong></span>
                 <span class="meta-tag">Tỷ lệ: <strong>99% vào quỹ lớp, 1% vào quỹ phí</strong></span>
               </div>
               <p class="card-desc">
-                Mọi sinh viên đều có thể đóng góp ETH vào quỹ lớp bằng ví MetaMask. Theo quy định được triển khai trong hợp đồng, 99% số tiền đóng góp được đưa vào quỹ lớp và 1% được đưa vào quỹ phí. Sau khi giao dịch được xác nhận trên blockchain, khoản đóng góp được ghi nhận công khai.
+                Mọi sinh viên đều có thể đóng góp ETH vào quỹ lớp bằng ví MetaMask. Theo quy định được triển khai trong
+                hợp đồng, 99% số tiền đóng góp được đưa vào quỹ lớp và 1% được đưa vào quỹ phí. Sau khi giao dịch được
+                xác nhận trên blockchain, khoản đóng góp được ghi nhận công khai.
                 <br><em>Ví dụ thực tế:</em> Đóng góp 1 ETH thì 0,99 ETH vào quỹ lớp và 0,01 ETH vào quỹ phí vận hành.
               </p>
             </div>
@@ -2087,13 +2615,16 @@
           <div class="timeline-step">
             <div class="step-badge">2</div>
             <div class="step-content">
-              <h4><span>Bước 2 — Ban cán sự đề nghị chi tiền</span> <span class="status-pill status-pending">Đang chờ biểu quyết</span></h4>
+              <h4><span>Bước 2 — Ban cán sự đề nghị chi tiền</span> <span class="status-pill status-pending">Đang chờ
+                  biểu quyết</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự đang hoạt động</strong></span>
                 <span class="meta-tag">Yêu cầu: <strong>Số tiền, người nhận, lý do chi</strong></span>
               </div>
               <p class="card-desc">
-                Khi cần sử dụng quỹ cho một hoạt động của lớp, thành viên ban cán sự có quyền tạo đề nghị chi tiền. Đề nghị cần ghi rõ số tiền, người nhận và lý do chi. Hệ thống kiểm tra số dư khả dụng và tạm giữ khoản tiền tương ứng để tránh sử dụng cùng một khoản tiền cho nhiều đề nghị khác nhau.
+                Khi cần sử dụng quỹ cho một hoạt động của lớp, thành viên ban cán sự có quyền tạo đề nghị chi tiền. Đề
+                nghị cần ghi rõ số tiền, người nhận và lý do chi. Hệ thống kiểm tra số dư khả dụng và tạm giữ khoản tiền
+                tương ứng để tránh sử dụng cùng một khoản tiền cho nhiều đề nghị khác nhau.
               </p>
             </div>
           </div>
@@ -2101,13 +2632,16 @@
           <div class="timeline-step">
             <div class="step-badge">3</div>
             <div class="step-content">
-              <h4><span>Bước 3 — Ban cán sự biểu quyết</span> <span class="status-pill status-pending">Đang bỏ phiếu</span></h4>
+              <h4><span>Bước 3 — Ban cán sự biểu quyết</span> <span class="status-pill status-pending">Đang bỏ
+                  phiếu</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Các thành viên Ban cán sự đủ điều kiện</strong></span>
                 <span class="meta-tag">Quy định: <strong>Mỗi người 1 phiếu, thời hạn 7 ngày</strong></span>
               </div>
               <p class="card-desc">
-                Các thành viên ban cán sự đủ điều kiện tham gia sẽ xem nội dung đề nghị và chọn đồng ý hoặc không đồng ý. Mỗi thành viên chỉ được bỏ phiếu một lần cho mỗi đề nghị. Thời gian biểu quyết là 7 ngày theo quy định của hợp đồng.
+                Các thành viên ban cán sự đủ điều kiện tham gia sẽ xem nội dung đề nghị và chọn đồng ý hoặc không đồng
+                ý. Mỗi thành viên chỉ được bỏ phiếu một lần cho mỗi đề nghị. Thời gian biểu quyết là 7 ngày theo quy
+                định của hợp đồng.
               </p>
             </div>
           </div>
@@ -2115,14 +2649,18 @@
           <div class="timeline-step">
             <div class="step-badge">4</div>
             <div class="step-content">
-              <h4><span>Bước 4 — Hệ thống xác định kết quả</span> <span class="status-pill status-ready">Đã đủ điều kiện giải ngân</span></h4>
+              <h4><span>Bước 4 — Hệ thống xác định kết quả</span> <span class="status-pill status-ready">Đã đủ điều kiện
+                  giải ngân</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ngưỡng thông qua: <strong>Tối thiểu 51% tổng số Ban cán sự</strong></span>
                 <span class="meta-tag">Lưu ý: <strong>Tiền chưa tự động chuyển</strong></span>
               </div>
               <p class="card-desc">
-                Sau mỗi lượt bỏ phiếu, hệ thống cập nhật kết quả. Khi số phiếu đồng ý đạt ngưỡng thông qua (ít nhất 51% tổng số thành viên ban cán sự đang hoạt động), đề nghị được chuyển sang trạng thái <strong>"Đã đủ điều kiện giải ngân"</strong>. Nếu chưa đạt ngưỡng, đề nghị tiếp tục chờ biểu quyết cho đến khi hết hạn.
-                <br><em>Quan trọng:</em> Đạt ngưỡng thông qua không đồng nghĩa với việc tiền đã được chuyển ngay lập tức.
+                Sau mỗi lượt bỏ phiếu, hệ thống cập nhật kết quả. Khi số phiếu đồng ý đạt ngưỡng thông qua (ít nhất 51%
+                tổng số thành viên ban cán sự đang hoạt động), đề nghị được chuyển sang trạng thái <strong>"Đã đủ điều
+                  kiện giải ngân"</strong>. Nếu chưa đạt ngưỡng, đề nghị tiếp tục chờ biểu quyết cho đến khi hết hạn.
+                <br><em>Quan trọng:</em> Đạt ngưỡng thông qua không đồng nghĩa với việc tiền đã được chuyển ngay lập
+                tức.
               </p>
             </div>
           </div>
@@ -2130,13 +2668,16 @@
           <div class="timeline-step">
             <div class="step-badge">5</div>
             <div class="step-content">
-              <h4><span>Bước 5 — Thực hiện chi tiền</span> <span class="status-pill status-executed">Đã chi tiền thành công</span></h4>
+              <h4><span>Bước 5 — Thực hiện chi tiền</span> <span class="status-pill status-executed">Đã chi tiền thành
+                  công</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự</strong></span>
                 <span class="meta-tag">Hành động: <strong>Kiểm tra điều kiện & chuyển tiền</strong></span>
               </div>
               <p class="card-desc">
-                Sau khi đề nghị đáp ứng đủ điều kiện, một thành viên ban cán sự được phép thực hiện giải ngân. Hệ thống kiểm tra điều kiện trước khi chuyển tiền đến người nhận. Chỉ khi giao dịch được thực hiện thành công trên blockchain, đề nghị mới được ghi nhận là đã chi tiền hoàn tất.
+                Sau khi đề nghị đáp ứng đủ điều kiện, một thành viên ban cán sự được phép thực hiện giải ngân. Hệ thống
+                kiểm tra điều kiện trước khi chuyển tiền đến người nhận. Chỉ khi giao dịch được thực hiện thành công
+                trên blockchain, đề nghị mới được ghi nhận là đã chi tiền hoàn tất.
               </p>
             </div>
           </div>
@@ -2144,13 +2685,16 @@
           <div class="timeline-step">
             <div class="step-badge">6</div>
             <div class="step-content">
-              <h4><span>Bước 6 — Xử lý đề nghị hết hạn</span> <span class="status-pill status-expired">Đã hết hạn</span></h4>
+              <h4><span>Bước 6 — Xử lý đề nghị hết hạn</span> <span class="status-pill status-expired">Đã hết hạn</span>
+              </h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Bất kỳ ai (sau 7 ngày)</strong></span>
                 <span class="meta-tag">Kết quả: <strong>Giải phóng khoản tiền đã tạm giữ</strong></span>
               </div>
               <p class="card-desc">
-                Nếu hết thời gian biểu quyết (7 ngày) mà đề nghị không đạt điều kiện thông qua, bất kỳ ai cũng có thể yêu cầu hệ thống kết thúc đề nghị quá hạn. Khoản tiền đã tạm giữ được giải phóng để có thể sử dụng cho các mục đích chi tiêu khác của lớp.
+                Nếu hết thời gian biểu quyết (7 ngày) mà đề nghị không đạt điều kiện thông qua, bất kỳ ai cũng có thể
+                yêu cầu hệ thống kết thúc đề nghị quá hạn. Khoản tiền đã tạm giữ được giải phóng để có thể sử dụng cho
+                các mục đích chi tiêu khác của lớp.
               </p>
             </div>
           </div>
@@ -2160,7 +2704,9 @@
       <!-- Quy trình 2: Hoàn tiền khi nộp nhầm -->
       <div>
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-          <div style="background: var(--brand-cyan); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 700;">QUY TRÌNH 2</div>
+          <div
+            style="background: var(--brand-cyan); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 700;">
+            QUY TRÌNH 2</div>
           <h3 style="font-size: 1.35rem;">Hoàn tiền khi sinh viên nộp nhầm</h3>
         </div>
 
@@ -2168,13 +2714,16 @@
           <div class="timeline-step">
             <div class="step-badge">1</div>
             <div class="step-content">
-              <h4><span>Bước 1 — Sinh viên gửi yêu cầu hoàn tiền</span> <span class="status-pill status-pending">Đã gửi yêu cầu</span></h4>
+              <h4><span>Bước 1 — Sinh viên gửi yêu cầu hoàn tiền</span> <span class="status-pill status-pending">Đã gửi
+                  yêu cầu</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Sinh viên đã đóng góp vào quỹ</strong></span>
                 <span class="meta-tag">Điều kiện: <strong>Không vượt quá số tiền đã đóng góp</strong></span>
               </div>
               <p class="card-desc">
-                Khi sinh viên phát hiện đã chuyển nhầm tiền vào quỹ lớp, sinh viên có thể tạo yêu cầu hoàn tiền trực tiếp trên website. Hệ thống sẽ kiểm tra để đảm bảo số tiền yêu cầu hoàn không vượt quá số tiền mà chính sinh viên đó đã thực sự đóng góp vào quỹ.
+                Khi sinh viên phát hiện đã chuyển nhầm tiền vào quỹ lớp, sinh viên có thể tạo yêu cầu hoàn tiền trực
+                tiếp trên website. Hệ thống sẽ kiểm tra để đảm bảo số tiền yêu cầu hoàn không vượt quá số tiền mà chính
+                sinh viên đó đã thực sự đóng góp vào quỹ.
               </p>
             </div>
           </div>
@@ -2182,13 +2731,15 @@
           <div class="timeline-step">
             <div class="step-badge">2</div>
             <div class="step-content">
-              <h4><span>Bước 2 — Hệ thống tạm giữ khoản tiền</span> <span class="status-pill status-pending">Đang tạm giữ</span></h4>
+              <h4><span>Bước 2 — Hệ thống tạm giữ khoản tiền</span> <span class="status-pill status-pending">Đang tạm
+                  giữ</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Cơ chế: <strong>Bảo vệ dòng tiền hai chiều</strong></span>
                 <span class="meta-tag">Mục đích: <strong>Tránh rút tiền trùng lặp</strong></span>
               </div>
               <p class="card-desc">
-                Khoản tiền xin hoàn được hệ thống tạm giữ từ số dư quỹ lớp, đồng thời tạm khóa khỏi hạn mức của sinh viên để đảm bảo an toàn, tránh việc cùng một khoản tiền bị sử dụng hoặc xin hoàn nhiều lần.
+                Khoản tiền xin hoàn được hệ thống tạm giữ từ số dư quỹ lớp, đồng thời tạm khóa khỏi hạn mức của sinh
+                viên để đảm bảo an toàn, tránh việc cùng một khoản tiền bị sử dụng hoặc xin hoàn nhiều lần.
               </p>
             </div>
           </div>
@@ -2196,13 +2747,15 @@
           <div class="timeline-step">
             <div class="step-badge">3</div>
             <div class="step-content">
-              <h4><span>Bước 3 — Ban cán sự xem xét và biểu quyết</span> <span class="status-pill status-pending">Đang duyệt</span></h4>
+              <h4><span>Bước 3 — Ban cán sự xem xét và biểu quyết</span> <span class="status-pill status-pending">Đang
+                  duyệt</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự</strong></span>
                 <span class="meta-tag">Thời hạn: <strong>7 ngày biểu quyết</strong></span>
               </div>
               <p class="card-desc">
-                Các thành viên ban cán sự kiểm tra lý do và thông tin nộp nhầm của sinh viên. Ban cán sự tham gia bỏ phiếu đồng ý hoặc không đồng ý để đảm bảo quỹ lớp không bị rút tùy tiện.
+                Các thành viên ban cán sự kiểm tra lý do và thông tin nộp nhầm của sinh viên. Ban cán sự tham gia bỏ
+                phiếu đồng ý hoặc không đồng ý để đảm bảo quỹ lớp không bị rút tùy tiện.
               </p>
             </div>
           </div>
@@ -2210,14 +2763,18 @@
           <div class="timeline-step">
             <div class="step-badge">4</div>
             <div class="step-content">
-              <h4><span>Bước 4 — Xác định kết quả và hoàn trả</span> <span class="status-pill status-ready">Đã thông qua</span></h4>
+              <h4><span>Bước 4 — Xác định kết quả và hoàn trả</span> <span class="status-pill status-ready">Đã thông
+                  qua</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Ngưỡng duyệt: <strong>Tối thiểu 51% Ban cán sự</strong></span>
                 <span class="meta-tag">Mức hoàn: <strong>Nhận lại 99%, chịu 1% phí</strong></span>
               </div>
               <p class="card-desc">
-                Khi đạt đủ từ 51% số phiếu đồng ý của ban cán sự, yêu cầu chuyển sang trạng thái sẵn sàng hoàn tiền. Sinh viên hoặc ban cán sự có thể bấm thực hiện hoàn tiền. Theo quy định, sinh viên nhận lại 99% số tiền đã yêu cầu và chịu 1% phí vận hành (để bù đắp phí giao dịch trên blockchain).
-                <br><em>Ví dụ thực tế:</em> Nếu xin hoàn lại 0,1 ETH thì sinh viên nhận về ví 0,099 ETH, còn 0,001 ETH được giữ lại trong quỹ phí.
+                Khi đạt đủ từ 51% số phiếu đồng ý của ban cán sự, yêu cầu chuyển sang trạng thái sẵn sàng hoàn tiền.
+                Sinh viên hoặc ban cán sự có thể bấm thực hiện hoàn tiền. Theo quy định, sinh viên nhận lại 99% số tiền
+                đã yêu cầu và chịu 1% phí vận hành (để bù đắp phí giao dịch trên blockchain).
+                <br><em>Ví dụ thực tế:</em> Nếu xin hoàn lại 0,1 ETH thì sinh viên nhận về ví 0,099 ETH, còn 0,001 ETH
+                được giữ lại trong quỹ phí.
               </p>
             </div>
           </div>
@@ -2225,13 +2782,15 @@
           <div class="timeline-step">
             <div class="step-badge">5</div>
             <div class="step-content">
-              <h4><span>Bước 5 — Xử lý khi yêu cầu hết hạn</span> <span class="status-pill status-expired">Đã hết hạn</span></h4>
+              <h4><span>Bước 5 — Xử lý khi yêu cầu hết hạn</span> <span class="status-pill status-expired">Đã hết
+                  hạn</span></h4>
               <div class="step-meta">
                 <span class="meta-tag">Thời gian: <strong>Sau 7 ngày không đủ phiếu</strong></span>
                 <span class="meta-tag">Kết quả: <strong>Giải phóng khoản tiền đã tạm giữ</strong></span>
               </div>
               <p class="card-desc">
-                Nếu quá 7 ngày mà yêu cầu không nhận đủ số phiếu đồng thuận từ ban cán sự, yêu cầu sẽ hết hạn. Toàn bộ số tiền tạm giữ sẽ được giải phóng và hoàn trả lại hạn mức cho sinh viên và quỹ lớp.
+                Nếu quá 7 ngày mà yêu cầu không nhận đủ số phiếu đồng thuận từ ban cán sự, yêu cầu sẽ hết hạn. Toàn bộ
+                số tiền tạm giữ sẽ được giải phóng và hoàn trả lại hạn mức cho sinh viên và quỹ lớp.
               </p>
             </div>
           </div>
@@ -2256,32 +2815,42 @@
       <div class="grid-2">
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 6px;">1. Ai có quyền tạo đề nghị chi tiền?</h4>
-          <p class="card-desc">Chỉ những thành viên Ban cán sự lớp đang hoạt động hợp lệ mới có quyền tạo đề nghị chi tiền. Sinh viên không có quyền này.</p>
+          <p class="card-desc">Chỉ những thành viên Ban cán sự lớp đang hoạt động hợp lệ mới có quyền tạo đề nghị chi
+            tiền. Sinh viên không có quyền này.</p>
         </div>
 
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 6px;">2. Ai có quyền tham gia biểu quyết?</h4>
-          <p class="card-desc">Chỉ các thành viên Ban cán sự đang hoạt động mới được bỏ phiếu. Mỗi thành viên có quyền biểu quyết độc lập và công bằng.</p>
+          <p class="card-desc">Chỉ các thành viên Ban cán sự đang hoạt động mới được bỏ phiếu. Mỗi thành viên có quyền
+            biểu quyết độc lập và công bằng.</p>
         </div>
 
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 6px;">3. Mỗi thành viên được bỏ phiếu bao nhiêu lần?</h4>
-          <p class="card-desc">Chính xác 01 lần duy nhất cho mỗi đề nghị. Hệ thống ghi nhận địa chỉ ví đã bỏ phiếu để tránh việc một người bỏ phiếu nhiều lần.</p>
+          <p class="card-desc">Chính xác 01 lần duy nhất cho mỗi đề nghị. Hệ thống ghi nhận địa chỉ ví đã bỏ phiếu để
+            tránh việc một người bỏ phiếu nhiều lần.</p>
         </div>
 
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 6px;">4. Ngưỡng thông qua chính xác là bao nhiêu?</h4>
-          <p class="card-desc">Tối thiểu <strong>51%</strong> số phiếu đồng ý tính trên <strong>tổng số thành viên Ban cán sự đang hoạt động</strong>. Ví dụ: Nếu lớp có 3 thành viên Ban cán sự thì cần ít nhất 2 phiếu đồng ý (2/3 = 66,7% &ge; 51%).</p>
+          <p class="card-desc">Tối thiểu <strong>51%</strong> số phiếu đồng ý tính trên <strong>tổng số thành viên Ban
+              cán sự đang hoạt động</strong>. Ví dụ: Nếu lớp có 3 thành viên Ban cán sự thì cần ít nhất 2 phiếu đồng ý
+            (2/3 = 66,7% &ge; 51%).</p>
         </div>
 
         <div class="card">
-          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">5. Thời hạn biểu quyết bắt đầu và kết thúc khi nào?</h4>
-          <p class="card-desc">Thời hạn là đúng <strong>7 ngày</strong> tính từ thời điểm đề nghị chi tiền được tạo thành công. Sau 7 ngày, cổng bỏ phiếu tự động đóng lại.</p>
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">5. Thời hạn biểu quyết bắt đầu và kết thúc khi nào?
+          </h4>
+          <p class="card-desc">Thời hạn là đúng <strong>7 ngày</strong> tính từ thời điểm đề nghị chi tiền được tạo
+            thành công. Sau 7 ngày, cổng bỏ phiếu tự động đóng lại.</p>
         </div>
 
         <div class="card">
-          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">6. Đạt ngưỡng có tự động chuyển tiền ngay không?</h4>
-          <p class="card-desc"><strong>Không tự động chuyển tiền.</strong> Đạt ngưỡng chỉ giúp đề nghị chuyển sang trạng thái "Đã đủ điều kiện giải ngân". Cần một thành viên Ban cán sự bấm nút thực hiện giải ngân trên hệ thống.</p>
+          <h4 style="color: var(--brand-blue); margin-bottom: 6px;">6. Đạt ngưỡng có tự động chuyển tiền ngay không?
+          </h4>
+          <p class="card-desc"><strong>Không tự động chuyển tiền.</strong> Đạt ngưỡng chỉ giúp đề nghị chuyển sang trạng
+            thái "Đã đủ điều kiện giải ngân". Cần một thành viên Ban cán sự bấm nút thực hiện giải ngân trên hệ thống.
+          </p>
         </div>
       </div>
     </div>
@@ -2296,7 +2865,8 @@
         <span class="section-badge">Quy Tắc Tài Chính</span>
         <h2 class="section-title">Quy Tắc Phân Bổ 99% / 1% & Cơ Chế Phí Gas</h2>
         <p class="section-desc">
-          Công thức phân bổ minh bạch cho từng khoản đóng góp và giải thích dễ hiểu về chi phí giao dịch trên blockchain.
+          Công thức phân bổ minh bạch cho từng khoản đóng góp và giải thích dễ hiểu về chi phí giao dịch trên
+          blockchain.
         </p>
       </div>
 
@@ -2306,16 +2876,24 @@
           <p class="card-desc" style="margin-bottom: 16px;">
             Khi sinh viên đóng góp ETH vào quỹ lớp, hệ thống sẽ tự động tách số tiền thành hai phần riêng biệt:
           </p>
-          <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 24px;">
-            <li><strong>99% đưa vào Quỹ lớp:</strong> Phục vụ các hoạt động học tập, phong trào, sự kiện chung của tập thể lớp K57.</li>
-            <li><strong>1% đưa vào Quỹ phí vận hành:</strong> Dành riêng cho Cố vấn học tập rút về để bù đắp chi phí Gas mạng lưới blockchain khi thực hiện các giao dịch quản trị.</li>
-            <li><strong>Quy định khi hoàn tiền nộp nhầm:</strong> Sinh viên xin hoàn tiền sẽ chịu 1% phí vận hành và nhận lại 99% số tiền đã yêu cầu. Phần phí 1% không được hoàn lại để đảm bảo bù đắp chi phí vận hành hệ thống.</li>
+          <ul
+            style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 24px;">
+            <li><strong>99% đưa vào Quỹ lớp:</strong> Phục vụ các hoạt động học tập, phong trào, sự kiện chung của tập
+              thể lớp K57.</li>
+            <li><strong>1% đưa vào Quỹ phí vận hành:</strong> Dành riêng cho Cố vấn học tập rút về để bù đắp chi phí Gas
+              mạng lưới blockchain khi thực hiện các giao dịch quản trị.</li>
+            <li><strong>Quy định khi hoàn tiền nộp nhầm:</strong> Sinh viên xin hoàn tiền sẽ chịu 1% phí vận hành và
+              nhận lại 99% số tiền đã yêu cầu. Phần phí 1% không được hoàn lại để đảm bảo bù đắp chi phí vận hành hệ
+              thống.</li>
           </ul>
 
-          <div style="background: var(--info-bg); border-left: 4px solid var(--brand-blue); padding: 14px; border-radius: var(--radius-sm);">
+          <div
+            style="background: var(--info-bg); border-left: 4px solid var(--brand-blue); padding: 14px; border-radius: var(--radius-sm);">
             <strong style="color: var(--brand-blue);">Giải thích về Phí Gas:</strong>
             <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">
-              Gas là khoản phí trả cho các máy tính trong mạng lưới blockchain để xử lý và ghi nhận giao dịch của bạn. Dù giao dịch thành công hay thất bại, máy tính vẫn phải tiêu tốn tài nguyên để kiểm tra, do đó phí gas vẫn bị trừ khỏi ví của bạn.
+              Gas là khoản phí trả cho các máy tính trong mạng lưới blockchain để xử lý và ghi nhận giao dịch của bạn.
+              Dù giao dịch thành công hay thất bại, máy tính vẫn phải tiêu tốn tài nguyên để kiểm tra, do đó phí gas vẫn
+              bị trừ khỏi ví của bạn.
             </p>
           </div>
         </div>
@@ -2330,7 +2908,8 @@
             <input type="number" step="0.01" min="0.01" value="1.0" class="form-control" id="calcInputEth">
           </div>
 
-          <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--border-color);">
+          <div
+            style="background: #f8fafc; border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--border-color);">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
               <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ lớp (99%):</span>
               <strong style="color: var(--brand-blue); font-size: 1.05rem;" id="calcClassFund">0.9900 ETH</strong>
@@ -2339,7 +2918,8 @@
               <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ phí vận hành (1%):</span>
               <strong style="color: var(--warning); font-size: 1.05rem;" id="calcAdminFee">0.0100 ETH</strong>
             </div>
-            <div style="border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between;">
+            <div
+              style="border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between;">
               <span style="font-size: 0.9rem; color: var(--text-muted);">Số tiền nhận lại nếu xin hoàn (99%):</span>
               <strong style="color: var(--success); font-size: 1.05rem;" id="calcMaxRefund">0.9900 ETH</strong>
             </div>
@@ -2361,34 +2941,41 @@
         <span class="section-badge">Cẩm Nang 101</span>
         <h2 class="section-title">Blockchain & Hợp Đồng Thông Minh Là Gì?</h2>
         <p class="section-desc">
-          Những khái niệm cơ bản nhất giúp sinh viên chưa từng học blockchain cũng có thể hiểu và tự tin sử dụng hệ thống.
+          Những khái niệm cơ bản nhất giúp sinh viên chưa từng học blockchain cũng có thể hiểu và tự tin sử dụng hệ
+          thống.
         </p>
       </div>
 
       <div class="grid-3">
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Blockchain là gì?</h4>
-          <p class="card-desc">Là một cuốn sổ kế toán điện tử được chia sẻ đồng thời cho hàng ngàn máy tính. Một khi giao dịch đã được ghi lại, không ai có thể tự ý sửa xóa.</p>
+          <p class="card-desc">Là một cuốn sổ kế toán điện tử được chia sẻ đồng thời cho hàng ngàn máy tính. Một khi
+            giao dịch đã được ghi lại, không ai có thể tự ý sửa xóa.</p>
         </div>
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Smart Contract là gì?</h4>
-          <p class="card-desc">Là chương trình máy tính tự động thực thi các điều khoản đã được thỏa thuận trước (ví dụ: đúng 51% người đồng ý thì mới cho phép chi tiền).</p>
+          <p class="card-desc">Là chương trình máy tính tự động thực thi các điều khoản đã được thỏa thuận trước (ví dụ:
+            đúng 51% người đồng ý thì mới cho phép chi tiền).</p>
         </div>
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 8px;">MetaMask là gì?</h4>
-          <p class="card-desc">Là một tiện ích ví điện tử trên trình duyệt giúp bạn quản lý tài khoản, lưu giữ ETH và xác nhận các giao dịch một cách an toàn.</p>
+          <p class="card-desc">Là một tiện ích ví điện tử trên trình duyệt giúp bạn quản lý tài khoản, lưu giữ ETH và
+            xác nhận các giao dịch một cách an toàn.</p>
         </div>
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Địa chỉ ví & Địa chỉ hợp đồng?</h4>
-          <p class="card-desc">Địa chỉ ví là tài khoản của bạn (bắt đầu bằng 0x...). Địa chỉ hợp đồng là "ngôi nhà" của quỹ lớp trên blockchain nơi tiền được lưu giữ và quản lý.</p>
+          <p class="card-desc">Địa chỉ ví là tài khoản của bạn (bắt đầu bằng 0x...). Địa chỉ hợp đồng là "ngôi nhà" của
+            quỹ lớp trên blockchain nơi tiền được lưu giữ và quản lý.</p>
         </div>
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Mã giao dịch (Tx Hash) là gì?</h4>
-          <p class="card-desc">Là mã biên lai duy nhất cho mỗi giao dịch. Bạn có thể dùng mã này để tra cứu chi tiết giờ giấc, số tiền và trạng thái giao dịch trên mạng.</p>
+          <p class="card-desc">Là mã biên lai duy nhất cho mỗi giao dịch. Bạn có thể dùng mã này để tra cứu chi tiết giờ
+            giấc, số tiền và trạng thái giao dịch trên mạng.</p>
         </div>
         <div class="card">
           <h4 style="color: var(--brand-blue); margin-bottom: 8px;">Mạng Sepolia là gì?</h4>
-          <p class="card-desc">Là mạng thử nghiệm chính thức của Ethereum. ETH trên Sepolia hoàn toàn miễn phí và không có giá trị quy đổi tiền mặt, giúp sinh viên thực hành an toàn.</p>
+          <p class="card-desc">Là mạng thử nghiệm chính thức của Ethereum. ETH trên Sepolia hoàn toàn miễn phí và không
+            có giá trị quy đổi tiền mặt, giúp sinh viên thực hành an toàn.</p>
         </div>
       </div>
     </div>
@@ -2408,8 +2995,12 @@
       </div>
 
       <div class="faq-search-box">
-        <svg class="faq-search-icon" style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" class="faq-search-input" id="faqSearchInput" placeholder="Nhập từ khóa tìm kiếm (ví dụ: hoàn tiền, gas, 51%, ví...)">
+        <svg class="faq-search-icon" style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24">
+          <path
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+        </svg>
+        <input type="text" class="faq-search-input" id="faqSearchInput"
+          placeholder="Nhập từ khóa tìm kiếm (ví dụ: hoàn tiền, gas, 51%, ví...)">
       </div>
 
       <div id="faqAccordionContainer" style="max-width: 860px; margin: 0 auto;"></div>
@@ -2434,21 +3025,25 @@
           <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Địa chỉ Hợp đồng Thông minh (Smart Contract)</h3>
           <div class="form-group">
             <label for="configContractAddress">Địa chỉ Hợp đồng (ProjectCore Address):</label>
-            <input type="text" class="form-control" id="configContractAddress" value="" placeholder="Dán địa chỉ sau khi deploy bằng Remix IDE tại đây">
+            <input type="text" class="form-control" id="configContractAddress" value=""
+              placeholder="Dán địa chỉ sau khi deploy bằng Remix IDE tại đây">
           </div>
           <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
             <button class="btn btn-primary btn-sm" id="btnApplyContractAddress">Áp dụng & Tải dữ liệu</button>
-            <a href="https://sepolia.etherscan.io" target="_blank" id="linkEtherscanContract" class="btn btn-outline btn-sm">Xem trên Sepolia Etherscan &rarr;</a>
+            <a href="https://sepolia.etherscan.io" target="_blank" id="linkEtherscanContract"
+              class="btn btn-outline btn-sm">Xem trên Sepolia Etherscan &rarr;</a>
           </div>
           <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
             <strong>Mạng mục tiêu:</strong> Ethereum Sepolia Testnet (Mã mạng Chain ID: 11155111 - 0xaa36a7)<br>
-            <strong>Trạng thái:</strong> <span id="textContractConfigStatus" style="color: var(--warning); font-weight: 600;">Chưa cấu hình địa chỉ hợp đồng</span><br>
+            <strong>Trạng thái:</strong> <span id="textContractConfigStatus"
+              style="color: var(--warning); font-weight: 600;">Chưa cấu hình địa chỉ hợp đồng</span><br>
             <strong>Ghi chú:</strong> Hệ thống tự động lưu địa chỉ hợp đồng vào trình duyệt của bạn sau khi bấm Áp dụng.
           </div>
         </div>
 
         <div class="card" style="background:#fff;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <h3
+            style="font-size: 1.2rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
             <span>Nhật ký giao dịch (Terminal)</span>
             <button class="btn btn-outline btn-sm" onclick="clearTerminal()">Xóa nhật ký</button>
           </h3>
@@ -2477,6 +3072,69 @@
   </div>
 
   <!-- ============================================================ -->
+  <!-- MODAL QUẢN TRỊ THÔNG BÁO LỚP (BCS & CỐ VẤN)                 -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="announcementModal">
+    <div class="modal-box" style="max-width: 560px;">
+      <div class="modal-header">
+        <h3 style="margin: 0; color: #0f172a;">📢 Cập nhật thông báo Quỹ lớp K57</h3>
+        <button class="modal-close" onclick="closeAnnModal()">&times;</button>
+      </div>
+      <div style="font-size: 0.92rem; line-height: 1.6; color: var(--text-main); margin-top: 10px;">
+        <p style="color: #64748b; margin-bottom: 16px;">
+          Quyền hạn: Dành riêng cho <strong>Cố vấn học tập</strong> và <strong>Ban cán sự</strong> để thông báo lịch thu
+          quỹ và tiến độ cho cả lớp.
+        </p>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-weight: 600; display: block; margin-bottom: 4px;">Tiêu đề đợt thu quỹ:</label>
+          <input type="text" class="form-control" id="formAnnTitle" style="width: 100%;"
+            placeholder="Ví dụ: Đợt thu Quỹ Lớp Học kỳ 1 - K57">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Mức đóng (ETH/bạn):</label>
+            <input type="number" step="0.001" min="0.001" class="form-control" id="formAnnAmount" style="width: 100%;"
+              placeholder="0.01">
+          </div>
+          <div class="form-group">
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Sĩ số lớp (người):</label>
+            <input type="number" min="1" class="form-control" id="formAnnClassSize" style="width: 100%;"
+              placeholder="50">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Hạn chót nộp:</label>
+            <input type="text" class="form-control" id="formAnnDeadline" style="width: 100%;"
+              placeholder="Ví dụ: 23:59 ngày 15/11/2026">
+          </div>
+          <div class="form-group">
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Trạng thái đợt thu:</label>
+            <select class="form-control" id="formAnnStatus" style="width: 100%;">
+              <option value="Đang diễn ra">🔴 Đang diễn ra</option>
+              <option value="Sắp kết thúc">⏳ Sắp kết thúc</option>
+              <option value="Đã hoàn thành">✅ Đã hoàn thành</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 600; display: block; margin-bottom: 4px;">Mục đích chi tiết:</label>
+          <textarea class="form-control" id="formAnnPurpose" rows="3" style="width: 100%;"
+            placeholder="Nêu rõ mục đích thu quỹ (tài liệu học tập, các hoạt động ngoại khóa, teambuilding...)"></textarea>
+        </div>
+      </div>
+      <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-secondary btn-sm" onclick="closeAnnModal()">Hủy bỏ</button>
+        <button class="btn btn-primary btn-sm" id="btnSaveAnnouncementModal">Lưu & Đăng thông báo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
   <!-- FOOTER                                                       -->
   <!-- ============================================================ -->
   <footer class="site-footer">
@@ -2485,7 +3143,8 @@
         <div class="footer-brand">
           <h3>KTS CLASS FUND</h3>
           <p style="line-height: 1.7; max-width: 420px;">
-            Hệ thống quản lý quỹ lớp ứng dụng công nghệ Hợp đồng thông minh và Blockchain cho sinh viên lớp K57 ngành Kinh tế Số. Dự án phục vụ học phần ECO2432.
+            Hệ thống quản lý quỹ lớp ứng dụng công nghệ Hợp đồng thông minh và Blockchain cho sinh viên lớp K57 ngành
+            Kinh tế Số. Dự án phục vụ học phần ECO2432.
           </p>
         </div>
         <div class="footer-links">
@@ -2510,7 +3169,8 @@
 
       <div class="footer-bottom">
         <div>&copy; 2026 KTS-Class-Fund (K57 Kinh Tế Số) — Dự án môn học ECO2432.</div>
-        <div style="color: #64748b; font-size: 0.8rem;">Thiết kế minh bạch • An toàn dữ liệu • Tôn trọng quyền riêng tư</div>
+        <div style="color: #64748b; font-size: 0.8rem;">Thiết kế minh bạch • An toàn dữ liệu • Tôn trọng quyền riêng tư
+        </div>
       </div>
     </div>
   </footer>
@@ -2529,7 +3189,7 @@
     };
 
     // Full ProjectCore ABI
-    const CONTRACT_ABI = [{"inputs": [], "stateMutability": "nonpayable", "type": "constructor"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}, {"internalType": "address", "name": "voter", "type": "address"}], "name": "AlreadyVoted", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}, {"internalType": "address", "name": "voter", "type": "address"}], "name": "AlreadyVotedRefund", "type": "error"}, {"inputs": [], "name": "ETHTransferFailed", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientAdminFee", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientAvailableFund", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientContribution", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requested", "type": "uint256"}, {"internalType": "uint256", "name": "available", "type": "uint256"}], "name": "InsufficientFund", "type": "error"}, {"inputs": [], "name": "InvalidAddress", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "InvalidRefundStatus", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "InvalidRequestStatus", "type": "error"}, {"inputs": [], "name": "NoActiveBCS", "type": "error"}, {"inputs": [], "name": "NotActiveBCS", "type": "error"}, {"inputs": [], "name": "NotAdvisor", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundAlreadyExecuted", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundExpired", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundRequestNotFound", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundVotingPeriodEnded", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundVotingStillActive", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "RequestAlreadyExecuted", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "RequestExpired", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "RequestNotFound", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "activeBCSCount", "type": "uint256"}], "name": "ThresholdNotMet", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "VotingPeriodEnded", "type": "error"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "VotingStillActive", "type": "error"}, {"inputs": [], "name": "ZeroAmount", "type": "error"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "student", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "feeAmount", "type": "uint256"}], "name": "AdminFeeCollected", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "advisor", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "AdminFeeWithdrawn", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "member", "type": "address"}, {"indexed": false, "internalType": "bool", "name": "status", "type": "bool"}], "name": "BCSMemberUpdated", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "student", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "FundDeposited", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "student", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "RefundProcessed", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "applicant", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "reason", "type": "string"}, {"indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256"}], "name": "RefundRequestCreated", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "applicant", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "RefundRequestExecuted", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundRequestExpired", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "RefundRequestReady", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "voter", "type": "address"}, {"indexed": false, "internalType": "bool", "name": "support", "type": "bool"}, {"indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256"}], "name": "RefundRequestVoted", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "creator", "type": "address"}, {"indexed": true, "internalType": "address", "name": "recipient", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "description", "type": "string"}, {"indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256"}], "name": "SpendRequestCreated", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "recipient", "type": "address"}, {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "SpendRequestExecuted", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "SpendRequestExpired", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "SpendRequestReady", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256"}, {"indexed": true, "internalType": "address", "name": "voter", "type": "address"}, {"indexed": false, "internalType": "bool", "name": "support", "type": "bool"}, {"indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256"}], "name": "SpendRequestVoted", "type": "event"}, {"inputs": [], "name": "BPS_DENOMINATOR", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "FEE_BPS", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "PASSING_THRESHOLD_BPS", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "VOTING_PERIOD", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "activeBCSCount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "adminFeePool", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "advisor", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "classFundBalance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "reason", "type": "string"}], "name": "createRefundRequest", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address payable", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "description", "type": "string"}], "name": "createSpendRequest", "outputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "deposit", "outputs": [], "stateMutability": "payable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "executeRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "executeSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "expireRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "expireSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "getAvailableClassFund", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "getFundBalance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}], "name": "getRefundRequest", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address", "name": "applicant", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "reason", "type": "string"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}], "name": "getSpendRequest", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "creator", "type": "address"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "student", "type": "address"}], "name": "getStudentAvailableContribution", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "student", "type": "address"}], "name": "getStudentContribution", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "getTotalContractBalance", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}, {"internalType": "address", "name": "member", "type": "address"}], "name": "hasMemberVoted", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}, {"internalType": "address", "name": "member", "type": "address"}], "name": "hasMemberVotedRefund", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}, {"internalType": "address", "name": "", "type": "address"}], "name": "hasVoted", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}, {"internalType": "address", "name": "", "type": "address"}], "name": "hasVotedRefund", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "isBCSMember", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "pendingStudentRefundAmount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "refundRequestCount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "refundRequests", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address payable", "name": "applicant", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "reason", "type": "string"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "reservedRefundAmount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "reservedSpendAmount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "member", "type": "address"}, {"internalType": "bool", "name": "status", "type": "bool"}], "name": "setBCSMember", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "spendRequestCount", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "spendRequests", "outputs": [{"internalType": "uint256", "name": "id", "type": "uint256"}, {"internalType": "address payable", "name": "recipient", "type": "address"}, {"internalType": "uint256", "name": "amount", "type": "uint256"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "creator", "type": "address"}, {"internalType": "uint256", "name": "createdAt", "type": "uint256"}, {"internalType": "uint256", "name": "yesVotes", "type": "uint256"}, {"internalType": "uint256", "name": "noVotes", "type": "uint256"}, {"internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "address", "name": "", "type": "address"}], "name": "studentContributions", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "refundId", "type": "uint256"}, {"internalType": "bool", "name": "support", "type": "bool"}], "name": "voteRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "requestId", "type": "uint256"}, {"internalType": "bool", "name": "support", "type": "bool"}], "name": "voteSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}], "name": "withdrawAdminFee", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"stateMutability": "payable", "type": "receive"}];
+    const CONTRACT_ABI = [{ "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "internalType": "address", "name": "voter", "type": "address" }], "name": "AlreadyVoted", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "internalType": "address", "name": "voter", "type": "address" }], "name": "AlreadyVotedRefund", "type": "error" }, { "inputs": [], "name": "ETHTransferFailed", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientAdminFee", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientAvailableFund", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientContribution", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientFund", "type": "error" }, { "inputs": [], "name": "InvalidAddress", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "InvalidRefundStatus", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "InvalidRequestStatus", "type": "error" }, { "inputs": [], "name": "NoActiveBCS", "type": "error" }, { "inputs": [], "name": "NotActiveBCS", "type": "error" }, { "inputs": [], "name": "NotAdvisor", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundAlreadyExecuted", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundExpired", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundRequestNotFound", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundVotingPeriodEnded", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundVotingStillActive", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "RequestAlreadyExecuted", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "RequestExpired", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "RequestNotFound", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "activeBCSCount", "type": "uint256" }], "name": "ThresholdNotMet", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "VotingPeriodEnded", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "VotingStillActive", "type": "error" }, { "inputs": [], "name": "ZeroAmount", "type": "error" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "student", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "feeAmount", "type": "uint256" }], "name": "AdminFeeCollected", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "advisor", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "AdminFeeWithdrawn", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "member", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "status", "type": "bool" }], "name": "BCSMemberUpdated", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "student", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "FundDeposited", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "student", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "RefundProcessed", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "applicant", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "string", "name": "reason", "type": "string" }, { "indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256" }], "name": "RefundRequestCreated", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "applicant", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "RefundRequestExecuted", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundRequestExpired", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundRequestReady", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "voter", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "support", "type": "bool" }, { "indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256" }], "name": "RefundRequestVoted", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "creator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "string", "name": "description", "type": "string" }, { "indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256" }], "name": "SpendRequestCreated", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "SpendRequestExecuted", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "SpendRequestExpired", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "SpendRequestReady", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "voter", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "support", "type": "bool" }, { "indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256" }], "name": "SpendRequestVoted", "type": "event" }, { "inputs": [], "name": "BPS_DENOMINATOR", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "FEE_BPS", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "PASSING_THRESHOLD_BPS", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "VOTING_PERIOD", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "activeBCSCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "adminFeePool", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "advisor", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "classFundBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "reason", "type": "string" }], "name": "createRefundRequest", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address payable", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "description", "type": "string" }], "name": "createSpendRequest", "outputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "deposit", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "executeRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "executeSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "expireRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "expireSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "getAvailableClassFund", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getFundBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "getRefundRequest", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "applicant", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "reason", "type": "string" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "getSpendRequest", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "description", "type": "string" }, { "internalType": "address", "name": "creator", "type": "address" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "student", "type": "address" }], "name": "getStudentAvailableContribution", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "student", "type": "address" }], "name": "getStudentContribution", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getTotalContractBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "internalType": "address", "name": "member", "type": "address" }], "name": "hasMemberVoted", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "internalType": "address", "name": "member", "type": "address" }], "name": "hasMemberVotedRefund", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }, { "internalType": "address", "name": "", "type": "address" }], "name": "hasVoted", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }, { "internalType": "address", "name": "", "type": "address" }], "name": "hasVotedRefund", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "isBCSMember", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "pendingStudentRefundAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "refundRequestCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "refundRequests", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address payable", "name": "applicant", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "reason", "type": "string" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "reservedRefundAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "reservedSpendAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "member", "type": "address" }, { "internalType": "bool", "name": "status", "type": "bool" }], "name": "setBCSMember", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "spendRequestCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "spendRequests", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address payable", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "description", "type": "string" }, { "internalType": "address", "name": "creator", "type": "address" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "studentContributions", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "internalType": "bool", "name": "support", "type": "bool" }], "name": "voteRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "internalType": "bool", "name": "support", "type": "bool" }], "name": "voteSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "withdrawAdminFee", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "stateMutability": "payable", "type": "receive" }];
 
     // --- 2. FAQ DATA ---
     const FAQ_DATA = [
@@ -2731,7 +3391,7 @@
           renderFlowLedgerTable(allFlowItems);
         }
         if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Lịch Sử Dòng Tiền & Toàn Bộ Flow</strong> (Bấm lại nút để thu gọn)</span>';
-        
+
         // Nếu có hợp đồng mà dữ liệu chưa tải, tự động tải lại
         if (contract && allFlowItems.length === 0) {
           refreshContractData();
@@ -3109,6 +3769,16 @@
         badge.style.background = "var(--success-bg)";
         badge.style.color = "#047857";
         badge.style.border = "1px solid #a7f3d0";
+      }
+
+      // Phân quyền hiển thị nút Quản trị thông báo: CHỈ HIỆN VỚI BAN CÁN SỰ (HOẶC CỐ VẤN)
+      const btnOpenAnn = document.getElementById("btnOpenAnnModal");
+      if (btnOpenAnn) {
+        if (roleType === "bcs" || roleType === "advisor") {
+          btnOpenAnn.style.display = "inline-flex";
+        } else {
+          btnOpenAnn.style.display = "none";
+        }
       }
     }
 
@@ -3547,7 +4217,7 @@
             known.push(userAddress.toLowerCase());
             localStorage.setItem("kts_known_depositors", JSON.stringify(known));
           }
-        } catch (e) {}
+        } catch (e) { }
         await refreshContractData();
       } catch (err) {
         logToTerminal(`[Lỗi nộp quỹ] ${err.shortMessage || err.message}`);
@@ -3823,6 +4493,9 @@
       // Init Web3 Provider
       initWeb3();
 
+      // Init Class Announcement System
+      initAnnouncementSystem();
+
       // Init AI Chatbot
       initAIChatbot();
     });
@@ -3954,6 +4627,223 @@
       return formatted;
     }
 
+    // ============================================================
+    // HỆ THỐNG THÔNG BÁO NỘP QUỸ LỚP (CLASS ANNOUNCEMENT SYSTEM)
+    // ============================================================
+    const DEFAULT_ANNOUNCEMENT = {
+      title: "Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số",
+      targetAmountEth: "0.01",
+      deadline: "23:59 ngày 15/11/2026",
+      classSize: 50,
+      purpose: "Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại khóa và quỹ dự phòng hỗ trợ sinh viên K57.",
+      status: "Đang diễn ra"
+    };
+
+    function getAnnouncementData() {
+      try {
+        const saved = localStorage.getItem("kts_class_announcement");
+        if (saved) return JSON.parse(saved);
+      } catch (e) { }
+      return DEFAULT_ANNOUNCEMENT;
+    }
+
+    function saveAnnouncementData(data) {
+      try {
+        localStorage.setItem("kts_class_announcement", JSON.stringify(data));
+      } catch (e) { }
+    }
+
+    function renderAnnouncementUI() {
+      const ann = getAnnouncementData();
+      const titleEl = document.getElementById("annTitle");
+      const purposeEl = document.getElementById("annPurpose");
+      const amountEl = document.getElementById("annAmount");
+      const deadlineEl = document.getElementById("annDeadline");
+      const classSizeEl = document.getElementById("annClassSize");
+      const statusTextEl = document.getElementById("annStatusText");
+      const btnDeposit = document.getElementById("btnBannerQuickDeposit");
+
+      if (titleEl) titleEl.textContent = ann.title || DEFAULT_ANNOUNCEMENT.title;
+      if (purposeEl) purposeEl.textContent = ann.purpose || DEFAULT_ANNOUNCEMENT.purpose;
+      if (amountEl) amountEl.textContent = `${ann.targetAmountEth || "0.01"} ETH / bạn`;
+      if (deadlineEl) deadlineEl.textContent = ann.deadline || DEFAULT_ANNOUNCEMENT.deadline;
+      if (classSizeEl) classSizeEl.textContent = `${ann.classSize || 50} sinh viên`;
+      if (statusTextEl) statusTextEl.textContent = ann.status || "Đang diễn ra";
+      if (btnDeposit) btnDeposit.textContent = `⚡ Nộp quỹ ngay (${ann.targetAmountEth || "0.01"} ETH)`;
+
+      // Cập nhật tiến độ
+      const depNumText = document.getElementById("metricDepositorsCount")?.textContent || "0";
+      const depCount = parseInt(depNumText) || 0;
+      updateAnnouncementProgress(depCount);
+    }
+
+    function updateAnnouncementProgress(depositorsCount) {
+      const ann = getAnnouncementData();
+      const count = Number(depositorsCount) || 0;
+      const classSize = Number(ann.classSize) || 50;
+      const percent = Math.min(100, Math.round((count / classSize) * 100));
+
+      const progTextEl = document.getElementById("annProgressText");
+      const progBarEl = document.getElementById("annProgressBar");
+
+      if (progTextEl) {
+        progTextEl.textContent = `${count}/${classSize} bạn đã nộp (${percent}%)`;
+      }
+      if (progBarEl) {
+        progBarEl.style.width = `${percent}%`;
+      }
+    }
+
+    function openAnnModal() {
+      // 1. Kiểm tra kết nối ví
+      if (!userAddress) {
+        alert(
+          "⚠️ Truy cập bị từ chối!\n\n" +
+          "Bạn chưa kết nối ví MetaMask. Chức năng chỉnh sửa thông báo CHỈ DÀNH RIÊNG cho tài khoản đăng nhập là Ban cán sự lớp K57.\n\n" +
+          "Vui lòng bấm 'Kết nối ví' bằng tài khoản Ban cán sự để tiếp tục."
+        );
+        return;
+      }
+
+      // 2. Kiểm tra phân quyền on-chain nghiêm ngặt: Tuyệt đối không mở cho sinh viên hay chế độ demo
+      if (!isBcsMember && !isAdvisor) {
+        alert(
+          "⚠️ Truy cập bị từ chối!\n\n" +
+          `Tài khoản hiện tại (${shortenAddress(userAddress)}) là Sinh viên / Người dùng thông thường, KHÔNG PHẢI Ban cán sự.\n\n` +
+          "Theo quy chế quản trị quỹ lớp, sinh viên chỉ có quyền xem thông báo và nộp quỹ, tuyệt đối KHÔNG có quyền chỉnh sửa thông báo của lớp (hệ thống không hỗ trợ chế độ demo)."
+        );
+        return;
+      }
+
+      const ann = getAnnouncementData();
+      document.getElementById("formAnnTitle").value = ann.title || "";
+      document.getElementById("formAnnAmount").value = ann.targetAmountEth || "0.01";
+      document.getElementById("formAnnClassSize").value = ann.classSize || 50;
+      document.getElementById("formAnnDeadline").value = ann.deadline || "";
+      document.getElementById("formAnnPurpose").value = ann.purpose || "";
+      document.getElementById("formAnnStatus").value = ann.status || "Đang diễn ra";
+
+      const modalEl = document.getElementById("announcementModal");
+      if (modalEl) {
+        modalEl.classList.add("open");
+        modalEl.classList.add("show");
+      }
+    }
+
+    function closeAnnModal() {
+      const modalEl = document.getElementById("announcementModal");
+      if (modalEl) {
+        modalEl.classList.remove("open");
+        modalEl.classList.remove("show");
+      }
+    }
+
+    async function syncAnnouncementFromServer() {
+      try {
+        const resp = await fetch(`${AI_BACKEND_URL}/api/announcement`);
+        if (resp.ok) {
+          const res = await resp.json();
+          if (res.success && res.announcement) {
+            saveAnnouncementData(res.announcement);
+            renderAnnouncementUI();
+            logToTerminal(`[Đồng bộ] Đã tải thông báo mới nhất của lớp từ máy chủ.`);
+          }
+        }
+      } catch (e) {
+        console.warn("Chưa thể đồng bộ thông báo từ server, dùng cache offline:", e);
+      }
+    }
+
+    function initAnnouncementSystem() {
+      renderAnnouncementUI();
+      syncAnnouncementFromServer();
+
+      // Nút mở modal chỉnh sửa
+      const btnOpen = document.getElementById("btnOpenAnnModal");
+      if (btnOpen) {
+        btnOpen.addEventListener("click", openAnnModal);
+      }
+
+      // Nút lưu thông báo trong modal
+      const btnSave = document.getElementById("btnSaveAnnouncementModal");
+      if (btnSave) {
+        btnSave.addEventListener("click", () => {
+          // Kiểm tra xác thực quyền hạn trước khi lưu
+          if (!userAddress || (!isBcsMember && !isAdvisor)) {
+            alert("⚠️ Truy cập bị từ chối: Chỉ tài khoản Ban cán sự mới có quyền lưu và phát thông báo!");
+            closeAnnModal();
+            return;
+          }
+
+          const title = document.getElementById("formAnnTitle").value.trim();
+          const amount = document.getElementById("formAnnAmount").value.trim();
+          const classSize = parseInt(document.getElementById("formAnnClassSize").value) || 50;
+          const deadline = document.getElementById("formAnnDeadline").value.trim();
+          const purpose = document.getElementById("formAnnPurpose").value.trim();
+          const status = document.getElementById("formAnnStatus").value;
+
+          if (!title || !amount) {
+            alert("Vui lòng nhập đầy đủ tiêu đề và mức nộp!");
+            return;
+          }
+
+          const newAnn = {
+            title,
+            targetAmountEth: amount,
+            classSize,
+            deadline: deadline || "Chưa xác định",
+            purpose: purpose || "Kinh phí phục vụ hoạt động lớp",
+            status
+          };
+
+          saveAnnouncementData(newAnn);
+          renderAnnouncementUI();
+          closeAnnModal();
+          logToTerminal(`[Thông báo] Ban cán sự/Cố vấn đã cập nhật thông báo đợt thu: "${title}" (Mức đóng: ${amount} ETH).`);
+
+          // Đồng bộ lên máy chủ trung tâm (Multi-device Sync)
+          fetch(`${AI_BACKEND_URL}/api/announcement`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...newAnn,
+              signerAddress: userAddress || "Ban cán sự",
+              updatedAt: new Date().toISOString()
+            })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                logToTerminal(`[Đồng bộ] Thông báo mới đã được phát tán thành công đến tất cả thiết bị của lớp!`);
+                alert("✅ Đã lưu và phát thông báo mới tới toàn thể lớp K57!");
+              }
+            })
+            .catch(err => {
+              console.warn("Lỗi đồng bộ server:", err);
+            });
+        });
+      }
+
+      // Nút nộp quỹ nhanh từ Banner
+      const btnQuickDep = document.getElementById("btnBannerQuickDeposit");
+      if (btnQuickDep) {
+        btnQuickDep.addEventListener("click", () => {
+          selectRoleView("student");
+          const ann = getAnnouncementData();
+          const depInput = document.getElementById("inputDepositAmount");
+          if (depInput) {
+            depInput.value = ann.targetAmountEth || "0.01";
+            depInput.focus();
+          }
+          const studentPanel = document.getElementById("roleViewStudent");
+          if (studentPanel) {
+            studentPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+          logToTerminal(`[Hành động nhanh] Đã điền sẵn số tiền ${ann.targetAmountEth || "0.01"} ETH theo thông báo lớp.`);
+        });
+      }
+    }
+
     // --- HÀM ĐỒNG BỘ VÀ LƯU VẾT NGƯỜI NỘP QUỸ ---
     function saveKnownDepositor(addr) {
       if (!addr || !ethers.isAddress(addr)) return;
@@ -3963,7 +4853,7 @@
           cached.push(addr.toLowerCase());
           localStorage.setItem("kts_known_depositors", JSON.stringify(cached));
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function syncDepositorsData(classFundWei, adminFeeWei) {
@@ -3985,7 +4875,7 @@
             });
             saveKnownDepositor(userAddress);
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       // 2. Tải danh sách ví đã lưu trong localStorage
@@ -4002,10 +4892,10 @@
                   totalWei: BigInt(c)
                 });
               }
-            } catch (e) {}
+            } catch (e) { }
           }
         }
-      } catch (e) {}
+      } catch (e) { }
 
       // 3. Quét các applicant từ yêu cầu hoàn tiền (sinh viên làm đơn xin hoàn tiền chắc chắn đã từng nộp quỹ)
       if (contract) {
@@ -4028,7 +4918,7 @@
               }
             }
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       // 4. Quét sự kiện FundDeposited chia thành 5 chunks (mỗi chunk 9000 block, quét ngược tối đa ~45.000 block)
@@ -4090,6 +4980,9 @@
       // Cập nhật lên Dashboard
       if (depNumEl) depNumEl.textContent = `${finalCount} sinh viên`;
       if (depNoteEl) depNoteEl.textContent = `Tổng nộp: ${finalEth} ETH`;
+
+      // Cập nhật thanh tiến độ trên Bảng thông báo lớp
+      updateAnnouncementProgress(finalCount);
 
       const list = Array.from(uniqueMap.values()).map(item => ({
         address: shortenAddress(item.address),
@@ -4213,6 +5106,21 @@
         }
       }
 
+      // 4. Lấy dữ liệu thông báo lớp hiện tại để cấp cho AI
+      const ann = getAnnouncementData();
+      const depCount = depData.count || 0;
+      const classSize = ann.classSize || 50;
+      const percent = Math.min(100, Math.round((depCount / classSize) * 100));
+      const annSnapshot = {
+        title: ann.title,
+        targetAmountEth: ann.targetAmountEth,
+        deadline: ann.deadline,
+        classSize: classSize,
+        purpose: ann.purpose,
+        status: ann.status,
+        progressText: `${depCount}/${classSize} bạn đã nộp (${percent}%)`
+      };
+
       return {
         isContractConnected: isConnected,
         contractAddress: CONFIG.contractAddress || "Chưa kết nối",
@@ -4224,6 +5132,7 @@
         depositorsCount: depData.count,
         totalDepositedEth: depData.totalEth,
         depositorsList: depData.list,
+        announcement: annSnapshot,
         spendRequests: Array.from(spendMap.values()),
         refundRequests: Array.from(refundMap.values())
       };
@@ -4294,13 +5203,20 @@
 
       <div class="ai-chat-body" id="aiChatBody">
         <div class="ai-msg ai-msg-bot">
-          👋 <strong>Xin chào bạn!</strong> Tôi là Trợ lý AI Quỹ lớp K57 Kinh Tế Số. Tôi có thể giải đáp tự động các thông tin on-chain về số người nộp quỹ, danh sách chi tiêu, và quy chế vận hành.
+          👋 <strong>Xin chào bạn!</strong> Tôi là Trợ lý AI Quỹ lớp K57 Kinh Tế Số. Tôi có thể giải đáp tự động các
+          thông tin on-chain về số người nộp quỹ, danh sách chi tiêu, và quy chế vận hành.
           <div class="ai-quick-prompts">
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">Gợi ý câu hỏi nhanh:</div>
-            <button class="ai-prompt-chip" onclick="askAIPrompt('Hiện tại có bao nhiêu người nộp quỹ lớp rồi?')">👥 Có bao nhiêu người nộp quỹ rồi?</button>
-            <button class="ai-prompt-chip" onclick="askAIPrompt('Hiện tại quỹ lớp đang có những yêu cầu chi nào?')">📋 Quỹ đang có những yêu cầu chi nào?</button>
-            <button class="ai-prompt-chip" onclick="askAIPrompt('Quy chế biểu quyết chi tiêu của Ban cán sự như thế nào?')">⚖️ Quy chế biểu quyết chi tiêu ra sao?</button>
-            <button class="ai-prompt-chip" onclick="askAIPrompt('Sinh viên nộp nhầm tiền xin hoàn lại như thế nào?')">🔄 Sinh viên xin hoàn tiền thế nào?</button>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">Gợi ý câu hỏi
+              nhanh:</div>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Hiện tại có bao nhiêu người nộp quỹ lớp rồi?')">👥 Có
+              bao nhiêu người nộp quỹ rồi?</button>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Hiện tại quỹ lớp đang có những yêu cầu chi nào?')">📋
+              Quỹ đang có những yêu cầu chi nào?</button>
+            <button class="ai-prompt-chip"
+              onclick="askAIPrompt('Quy chế biểu quyết chi tiêu của Ban cán sự như thế nào?')">⚖️ Quy chế biểu quyết chi
+              tiêu ra sao?</button>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Sinh viên nộp nhầm tiền xin hoàn lại như thế nào?')">🔄
+              Sinh viên xin hoàn tiền thế nào?</button>
           </div>
         </div>
       </div>
@@ -4323,4 +5239,5 @@
     </button>
   </div>
 </body>
+
 </html>

@@ -179,6 +179,18 @@ class AIAssistantService:
                         f"Số tiền: {amount} ETH | Trạng thái: {status_text}"
                     )
 
+            # Thông tin thông báo đợt thu quỹ lớp (từ Ban cán sự & Cố vấn)
+            announcement = onchain_data.get("announcement", {})
+            if announcement and announcement.get("title"):
+                context_parts.append("\n--- THÔNG BÁO THU QUỸ LỚP HIỆN HÀNH (TỪ BAN CÁN SỰ & CỐ VẤN) ---")
+                context_parts.append(f"- Tiêu đề đợt thu: {announcement.get('title')}")
+                context_parts.append(f"- Mức đóng quy định: {announcement.get('targetAmountEth', '0.01')} ETH/sinh viên")
+                context_parts.append(f"- Hạn chót nộp quỹ: {announcement.get('deadline', 'Chưa xác định')}")
+                context_parts.append(f"- Mục tiêu sĩ số: {announcement.get('classSize', 50)} sinh viên")
+                context_parts.append(f"- Mục đích thu quỹ: {announcement.get('purpose', '')}")
+                context_parts.append(f"- Tiến độ thu thực tế: {announcement.get('progressText', '0%')}")
+                context_parts.append(f"- Trạng thái đợt thu: {announcement.get('status', 'Đang diễn ra')}")
+
         context_parts.append("\n--- HƯỚNG DẪN BẮT BUỘC KHI TRẢ LỜI ---")
         context_parts.append("1. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG NGƯỜI NỘP QUỸ:")
         context_parts.append("   - Trả lời rõ ràng, dứt khoát số lượng người đã nộp ({depositors_count} sinh viên) với tổng số tiền đã nộp ({total_deposited_eth} ETH).")
@@ -197,6 +209,9 @@ class AIAssistantService:
         context_parts.append("4. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG BAN CÁN SỰ (BCS) HOẶC TẠI SAO BCS LÀ 0:")
         context_parts.append("   - Trả lời rõ ràng số lượng thành viên Ban cán sự đang hoạt động on-chain.")
         context_parts.append("   - Nếu số lượng là 0, giải thích rõ nguyên nhân: Hợp đồng ProjectCore khi mới deploy ban đầu có activeBCSCount = 0 (chỉ có ví Cố vấn học tập). Cố vấn học tập cần dùng ví của mình truy cập ô 'Cố vấn học tập' -> 'Quản trị nhân sự Ban cán sự' để kích hoạt thành viên (R1) trước khi có thể biểu quyết các khoản chi.")
+        context_parts.append("5. KHI ĐƯỢC HỎI VỀ THÔNG BÁO LỚP, HẠN NỘP QUỸ, MỨC ĐÓNG HOẶC TIẾN ĐỘ THU QUỸ:")
+        context_parts.append("   - Trích xuất chính xác tiêu đề đợt thu, mức tiền quy định (ETH), hạn chót nộp, mục đích thu quỹ và tiến độ thực tế (số bạn đã nộp/sĩ số).")
+        context_parts.append("   - Thân thiện nhắc nhở sinh viên có thể bấm nút 'Nộp quỹ ngay' trên thanh thông báo ở giao diện để hoàn thành đóng góp.")
         return "\n".join(context_parts)
 
     def answer_question(self, user_question: str, onchain_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

@@ -52,6 +52,33 @@ HOST = "0.0.0.0"
 PORT = 8000
 
 
+ANNOUNCEMENT_FILE = Path(__file__).parent / "announcements.json"
+
+
+def load_announcement() -> dict:
+    if ANNOUNCEMENT_FILE.exists():
+        try:
+            with open(ANNOUNCEMENT_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "title": "Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số",
+        "targetAmountEth": "0.01",
+        "deadline": "23:59 ngày 15/11/2026",
+        "classSize": 50,
+        "purpose": "Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại khóa và quỹ dự phòng hỗ trợ sinh viên K57.",
+        "status": "Đang diễn ra",
+        "updatedAt": None,
+        "updatedBy": None
+    }
+
+
+def save_announcement(data: dict):
+    with open(ANNOUNCEMENT_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
 class AIChatRequestHandler(BaseHTTPRequestHandler):
     def _send_cors_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -82,11 +109,61 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                 "note": "AI Key đã sẵn sàng" if ai_service.is_configured() else "Chưa cấu hình GEMINI_API_KEY trong .env"
             }
             self._send_json(200, status_data)
+        elif self.path == "/api/announcement":
+            data = load_announcement()
+            self._send_json(200, {"success": True, "announcement": data})
         else:
             self._send_json(404, {"error": "Not Found"})
 
     def do_POST(self):
-        if self.path == "/api/chat":
+        if self.path == "/api/announcement":
+            content_length = int(self.headers.get("Content-Length", 0))
+            if content_length == 0:
+                self._send_json(400, {"success": False, "error": "Thiếu dữ liệu thông báo."})
+                return
+
+            try:
+                raw_body = self.rfile.read(content_length).decode("utf-8")
+                req_data = json.loads(raw_body)
+            except Exception as e:
+                self._send_json(400, {"success": False, "error": f"Dữ liệu JSON không hợp lệ: {str(e)}"})
+                return
+
+            title = str(req_data.get("title", "")).strip()
+            target_amount = str(req_data.get("targetAmountEth", "")).strip()
+            if not title or not target_amount:
+                self._send_json(400, {"success": False, "error": "Tiêu đề và mức đóng không được để trống."})
+                return
+
+            try:
+                amount_val = float(target_amount)
+                if amount_val <= 0:
+                    self._send_json(400, {"success": False, "error": "Mức đóng phải lớn hơn 0 ETH."})
+                    return
+            except ValueError:
+                self._send_json(400, {"success": False, "error": "Mức đóng không hợp lệ."})
+                return
+
+            signer = str(req_data.get("signerAddress", "")).strip()
+            if not signer or signer.lower() in ["sinh viên", "guest", "anonymous", "null", "undefined"]:
+                self._send_json(403, {"success": False, "error": "Truy cập bị từ chối: Chỉ tài khoản Ban cán sự mới có quyền cập nhật thông báo."})
+                return
+
+            announcement_data = {
+                "title": title,
+                "targetAmountEth": target_amount,
+                "deadline": str(req_data.get("deadline", "Chưa xác định")).strip(),
+                "classSize": int(req_data.get("classSize", 50)),
+                "purpose": str(req_data.get("purpose", "")).strip(),
+                "status": str(req_data.get("status", "Đang diễn ra")),
+                "updatedBy": signer,
+                "updatedAt": req_data.get("updatedAt")
+            }
+
+            save_announcement(announcement_data)
+            self._send_json(200, {"success": True, "announcement": announcement_data})
+
+        elif self.path == "/api/chat":
             content_length = int(self.headers.get("Content-Length", 0))
             if content_length == 0:
                 self._send_json(400, {"success": False, "error": "Thiếu dữ liệu yêu cầu."})
