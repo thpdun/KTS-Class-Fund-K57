@@ -1108,6 +1108,275 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ============================================================ */
+    /* AI CHATBOT FLOATING WIDGET STYLES                            */
+    /* ============================================================ */
+    .ai-fab-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .ai-fab-btn {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4), 0 8px 10px -6px rgba(37, 99, 235, 0.3);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ai-fab-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+    }
+
+    .ai-fab-badge {
+      background: #10b981;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 2px #ffffff;
+    }
+
+    .ai-chat-drawer {
+      display: none;
+      width: 400px;
+      max-width: calc(100vw - 32px);
+      height: 560px;
+      max-height: calc(100vh - 120px);
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(226, 232, 240, 0.8);
+      flex-direction: column;
+      overflow: hidden;
+      animation: aiDrawerSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .ai-chat-drawer.open {
+      display: flex;
+    }
+
+    @keyframes aiDrawerSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .ai-chat-header {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ai-header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-header-status {
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .ai-status-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .ai-status-indicator.online {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+    .ai-status-indicator.offline {
+      background: #ef4444;
+    }
+
+    .ai-header-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #ffffff;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .ai-header-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .ai-chat-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f8fafc;
+    }
+
+    .ai-msg {
+      max-width: 88%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .ai-msg-bot {
+      align-self: flex-start;
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .ai-msg-user {
+      align-self: flex-end;
+      background: #2563eb;
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-quick-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .ai-prompt-chip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ai-prompt-chip:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      transform: translateX(2px);
+    }
+
+    .ai-chat-footer {
+      padding: 12px 16px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ai-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ai-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .ai-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .ai-send-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 0 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .ai-send-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .ai-footer-note {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .ai-typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 6px 10px;
+      align-items: center;
+    }
+
+    .ai-typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #94a3b8;
+      border-radius: 50%;
+      animation: aiDotBounce 1.4s infinite ease-in-out both;
+    }
+    .ai-typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .ai-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes aiDotBounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -3232,10 +3501,16 @@
         const valueWei = ethers.parseEther(amountStr);
         const tx = await contract.deposit({ value: valueWei });
         logToTerminal(`[Đang xử lý] Mã giao dịch: ${tx.hash}. Đang chờ xác nhận từ blockchain...`);
-        await tx.wait();
         logToTerminal(`[Thành công] Đã nộp thành công ${amountStr} ETH vào Quỹ lớp!`);
         alert(`Đóng góp tiền vào quỹ thành công! Mã giao dịch: ${tx.hash}`);
         document.getElementById("inputDepositAmount").value = "";
+        try {
+          const known = JSON.parse(localStorage.getItem("kts_known_depositors") || "[]");
+          if (userAddress && !known.includes(userAddress.toLowerCase())) {
+            known.push(userAddress.toLowerCase());
+            localStorage.setItem("kts_known_depositors", JSON.stringify(known));
+          }
+        } catch (e) {}
         await refreshContractData();
       } catch (err) {
         logToTerminal(`[Lỗi nộp quỹ] ${err.shortMessage || err.message}`);
@@ -3510,11 +3785,393 @@
 
       // Init Web3 Provider
       initWeb3();
+
+      // Init AI Chatbot
+      initAIChatbot();
     });
 
     window.addEventListener('ethereum#initialized', () => {
       initWeb3();
     }, { once: true });
+
+    // ============================================================
+    // AI ASSISTANT CHATBOT LOGIC
+    // ============================================================
+    const AI_BACKEND_URL = "http://localhost:8000";
+    let isAIOpen = false;
+
+    function initAIChatbot() {
+      const fabBtn = document.getElementById("aiFabToggle");
+      const drawer = document.getElementById("aiChatDrawer");
+      const closeBtn = document.getElementById("aiBtnClose");
+      const sendBtn = document.getElementById("aiBtnSend");
+      const input = document.getElementById("aiUserInput");
+
+      if (!fabBtn || !drawer) return;
+
+      fabBtn.addEventListener("click", () => {
+        isAIOpen = !isAIOpen;
+        drawer.classList.toggle("open", isAIOpen);
+        if (isAIOpen) {
+          checkAIStatus();
+          input.focus();
+        }
+      });
+
+      closeBtn.addEventListener("click", () => {
+        isAIOpen = false;
+        drawer.classList.remove("open");
+      });
+
+      sendBtn.addEventListener("click", () => handleUserSend());
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleUserSend();
+        }
+      });
+
+      // Kiểm tra trạng thái backend ngay khi nạp trang
+      checkAIStatus();
+    }
+
+    async function checkAIStatus() {
+      const indicator = document.getElementById("aiStatusIndicator");
+      const statusText = document.getElementById("aiStatusText");
+      if (!indicator || !statusText) return;
+
+      try {
+        const resp = await fetch(`${AI_BACKEND_URL}/api/status`, { method: "GET" });
+        if (resp.ok) {
+          const data = await resp.json();
+          indicator.className = "ai-status-indicator online";
+          statusText.textContent = data.is_configured ? "Backend Python sẵn sàng" : "Thiếu GEMINI_API_KEY";
+          statusText.style.color = data.is_configured ? "#10b981" : "#f59e0b";
+        } else {
+          throw new Error("Backend response not ok");
+        }
+      } catch (err) {
+        indicator.className = "ai-status-indicator offline";
+        statusText.textContent = "Chưa kết nối Backend (Port 8000)";
+        statusText.style.color = "#ef4444";
+      }
+    }
+
+    function appendAIMessage(sender, htmlContent) {
+      const body = document.getElementById("aiChatBody");
+      if (!body) return;
+
+      const msgDiv = document.createElement("div");
+      msgDiv.className = `ai-msg ai-msg-${sender}`;
+      msgDiv.innerHTML = htmlContent;
+      body.appendChild(msgDiv);
+      body.scrollTop = body.scrollHeight;
+      return msgDiv;
+    }
+
+    function showTypingIndicator() {
+      const body = document.getElementById("aiChatBody");
+      if (!body) return null;
+
+      const indicator = document.createElement("div");
+      indicator.className = "ai-msg ai-msg-bot ai-typing-indicator";
+      indicator.id = "aiTypingIndicator";
+      indicator.innerHTML = `
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+        <span class="ai-typing-dot"></span>
+        <span style="font-size:0.75rem; color:#64748b; margin-left:6px;">AI đang suy nghĩ...</span>
+      `;
+      body.appendChild(indicator);
+      body.scrollTop = body.scrollHeight;
+      return indicator;
+    }
+
+    function removeTypingIndicator() {
+      const el = document.getElementById("aiTypingIndicator");
+      if (el) el.remove();
+    }
+
+    function askAIPrompt(text) {
+      const input = document.getElementById("aiUserInput");
+      if (input) {
+        input.value = text;
+        handleUserSend();
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+
+    function formatAIReply(text) {
+      let formatted = escapeHtml(text);
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      formatted = formatted.replace(/\n\n/g, '<br><br>');
+      formatted = formatted.replace(/\n/g, '<br>');
+      return formatted;
+    }
+
+    async function getOnchainSnapshot() {
+      const isConnected = !!(contract && CONFIG.contractAddress && ethers.isAddress(CONFIG.contractAddress));
+
+      // 1. Làm mới dữ liệu on-chain từ Sepolia ngay thời điểm người dùng hỏi
+      if (isConnected) {
+        try {
+          await refreshContractData();
+        } catch (e) {
+          console.warn("Không thể refresh dữ liệu trước khi gửi câu hỏi:", e);
+        }
+      }
+
+      const classFund = document.getElementById("metricClassFund")?.textContent || "0 ETH";
+      const adminFee = document.getElementById("metricAdminFee")?.textContent || "0 ETH";
+      const spendCount = document.getElementById("metricSpendCount")?.textContent || "0";
+      const refundCount = document.getElementById("metricRefundCount")?.textContent || "0";
+      const activeBcs = document.getElementById("metricActiveBCS")?.textContent || "0";
+
+      let depositorsCount = 0;
+      let totalDepositedEth = "0";
+      let depositorsList = [];
+
+      // 2. Truy xuất người nộp quỹ toàn diện
+      if (isConnected) {
+        try {
+          const uniqueMap = new Map();
+          let totalWei = 0n;
+
+          // A. Kiểm tra ví hiện tại của người dùng đang kết nối
+          if (userAddress) {
+            try {
+              const myContribWei = await contract.studentContributions(userAddress);
+              if (myContribWei && myContribWei > 0n) {
+                totalWei += BigInt(myContribWei);
+                uniqueMap.set(userAddress.toLowerCase(), {
+                  address: userAddress,
+                  totalWei: BigInt(myContribWei)
+                });
+              }
+            } catch (e) {}
+          }
+
+          // B. Kiểm tra danh sách ví đã biết từng nộp lưu trong localStorage
+          try {
+            const known = JSON.parse(localStorage.getItem("kts_known_depositors") || "[]");
+            for (const addr of known) {
+              if (ethers.isAddress(addr) && !uniqueMap.has(addr.toLowerCase())) {
+                try {
+                  const contrib = await contract.studentContributions(addr);
+                  if (contrib && contrib > 0n) {
+                    totalWei += BigInt(contrib);
+                    uniqueMap.set(addr.toLowerCase(), {
+                      address: addr,
+                      totalWei: BigInt(contrib)
+                    });
+                  }
+                } catch(e) {}
+              }
+            }
+          } catch(e) {}
+
+          // C. Quét sự kiện FundDeposited trong khoảng block an toàn gần nhất
+          try {
+            const currentBlock = await provider.getBlockNumber();
+            const fromBlock = Math.max(0, currentBlock - 5000);
+            const filter = contract.filters.FundDeposited();
+            const events = await contract.queryFilter(filter, fromBlock, "latest");
+            events.forEach(ev => {
+              const student = ev.args ? (ev.args[0] || ev.args.student) : null;
+              const amount = ev.args ? (ev.args[1] || ev.args.amount) : 0n;
+              if (student) {
+                const addrLower = student.toLowerCase();
+                if (!uniqueMap.has(addrLower)) {
+                  uniqueMap.set(addrLower, {
+                    address: student,
+                    totalWei: BigInt(amount)
+                  });
+                }
+              }
+            });
+          } catch (filterErr) {
+            console.warn("Không thể quét queryFilter FundDeposited:", filterErr);
+          }
+
+          // D. Đối chiếu số dư thực tế on-chain (quỹ lớp 99% + quỹ CVHT 1% = 100% tổng nộp)
+          const cfVal = parseFloat(classFund.replace(" ETH", "").trim()) || 0;
+          const afVal = parseFloat(adminFee.replace(" ETH", "").trim()) || 0;
+          const actualTotalFundEth = (cfVal + afVal).toFixed(4);
+
+          // Nếu số dư > 0 thì CHẮC CHẮN đã có người nộp (tối thiểu 1 người)
+          if (uniqueMap.size === 0 && (cfVal + afVal) > 0) {
+            depositorsCount = 1;
+            totalDepositedEth = actualTotalFundEth;
+            depositorsList = [{
+              address: userAddress ? shortenAddress(userAddress) : "Sinh viên trong lớp",
+              fullAddress: userAddress || "N/A",
+              amountEth: actualTotalFundEth
+            }];
+          } else {
+            depositorsCount = uniqueMap.size;
+            totalDepositedEth = (cfVal + afVal) > 0 ? actualTotalFundEth : formatEth(totalWei);
+            depositorsList = Array.from(uniqueMap.values()).map(item => ({
+              address: shortenAddress(item.address),
+              fullAddress: item.address,
+              amountEth: formatEth(item.totalWei)
+            }));
+          }
+        } catch (err) {
+          console.warn("Lỗi tổng hợp số lượng người nộp:", err);
+        }
+      }
+
+      // 3. Chuẩn hóa danh sách yêu cầu chi dạng văn bản thuần túy (không lẫn thẻ HTML)
+      const spendList = (typeof allFlowItems !== "undefined" && Array.isArray(allFlowItems))
+        ? allFlowItems.filter(item => item.category === "spend").map(item => {
+            let statusClean = "Đang chờ biểu quyết (Pending)";
+            if (item.statusNum === 1) statusClean = "Đã đủ điều kiện giải ngân (Ready - Đạt >= 51% phiếu thuận)";
+            else if (item.statusNum === 2) statusClean = "Đã thực thi giải ngân thành công (Executed)";
+            else if (item.statusNum === 3 || item.statusNum === 4) statusClean = "Đã hết hạn hoặc bị hủy (Expired)";
+
+            return {
+              id: item.numId,
+              description: item.desc || "Chi hoạt động lớp",
+              amountEth: item.amountEth,
+              recipient: item.party ? item.party.replace("Nhận: ", "") : "N/A",
+              statusText: statusClean,
+              votesText: item.votesText || "Chưa có biểu quyết"
+            };
+          })
+        : [];
+
+      // 4. Chuẩn hóa danh sách hoàn tiền
+      const refundList = (typeof allFlowItems !== "undefined" && Array.isArray(allFlowItems))
+        ? allFlowItems.filter(item => item.category === "refund").map(item => {
+            let statusClean = "Đang chờ biểu quyết (Pending)";
+            if (item.statusNum === 1) statusClean = "Đã duyệt hoàn tiền (Approved)";
+            else if (item.statusNum === 2) statusClean = "Đã hoàn tiền về ví (Refunded)";
+            else if (item.statusNum === 3) statusClean = "Bị từ chối hoặc hết hạn (Rejected/Expired)";
+
+            return {
+              id: item.numId,
+              reason: item.desc || "Nộp nhầm tiền",
+              amountEth: item.amountEth,
+              applicant: item.party ? item.party.replace("SV: ", "") : "N/A",
+              statusText: statusClean
+            };
+          })
+        : [];
+
+      return {
+        isContractConnected: isConnected,
+        contractAddress: CONFIG.contractAddress || "Chưa kết nối",
+        classFundBalanceEth: classFund.replace(" ETH", "").trim(),
+        adminFeePoolEth: adminFee.replace(" ETH", "").trim(),
+        spendCount: Number(spendCount),
+        refundCount: Number(refundCount),
+        activeBCSCount: Number(activeBcs) || 0,
+        depositorsCount: depositorsCount,
+        totalDepositedEth: totalDepositedEth,
+        depositorsList: depositorsList,
+        spendRequests: spendList,
+        refundRequests: refundList
+      };
+    }
+
+    async function handleUserSend() {
+      const input = document.getElementById("aiUserInput");
+      if (!input) return;
+      const question = input.value.trim();
+      if (!question) return;
+
+      appendAIMessage("user", escapeHtml(question));
+      input.value = "";
+
+      const typing = showTypingIndicator();
+
+      try {
+        const onchainData = await getOnchainSnapshot();
+        const resp = await fetch(`${AI_BACKEND_URL}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: question,
+            onchain_data: onchainData
+          })
+        });
+
+        removeTypingIndicator();
+
+        if (!resp.ok) {
+          const errData = await resp.json().catch(() => ({}));
+          const errMsg = errData.error || `Lỗi máy chủ (${resp.status})`;
+          appendAIMessage("bot", `⚠️ <strong>Lỗi:</strong> ${escapeHtml(errMsg)}<br><small style="color:var(--text-muted); display:inline-block; margin-top:4px;">💡 Hãy khởi động Backend: <code>python backend/server.py</code> và cấu hình <code>GEMINI_API_KEY</code> trong <code>.env</code>.</small>`);
+          return;
+        }
+
+        const data = await resp.json();
+        if (data.success && data.reply) {
+          appendAIMessage("bot", formatAIReply(data.reply));
+        } else {
+          appendAIMessage("bot", `⚠️ <strong>Lỗi:</strong> ${escapeHtml(data.error || "Không có phản hồi từ AI.")}`);
+        }
+      } catch (err) {
+        removeTypingIndicator();
+        appendAIMessage("bot", `⚠️ <strong>Không thể kết nối đến Backend AI:</strong><br>${escapeHtml(err.message)}<br><br><span style="font-size:0.8rem; color:var(--text-muted);">💡 Vui lòng mở terminal và khởi chạy máy chủ:<br><code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:600;">python backend/server.py</code></span>`);
+      }
+    }
   </script>
+
+  <!-- ============================================================ -->
+  <!-- AI ASSISTANT FLOATING CHAT WIDGET                            -->
+  <!-- ============================================================ -->
+  <div class="ai-fab-container" id="aiFabContainer">
+    <!-- Chat Drawer -->
+    <div class="ai-chat-drawer" id="aiChatDrawer">
+      <div class="ai-chat-header">
+        <div>
+          <div class="ai-header-title">
+            <span>✨</span> Trợ lý AI Quỹ Lớp
+          </div>
+          <div class="ai-header-status">
+            <span class="ai-status-indicator" id="aiStatusIndicator"></span>
+            <span id="aiStatusText">Đang kiểm tra kết nối Backend...</span>
+          </div>
+        </div>
+        <button class="ai-header-close" id="aiBtnClose" title="Thu nhỏ chat">&times;</button>
+      </div>
+
+      <div class="ai-chat-body" id="aiChatBody">
+        <div class="ai-msg ai-msg-bot">
+          👋 <strong>Xin chào bạn!</strong> Tôi là Trợ lý AI Quỹ lớp K57 Kinh Tế Số. Tôi có thể giải đáp tự động các thông tin on-chain về số người nộp quỹ, danh sách chi tiêu, và quy chế vận hành.
+          <div class="ai-quick-prompts">
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">Gợi ý câu hỏi nhanh:</div>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Hiện tại có bao nhiêu người nộp quỹ lớp rồi?')">👥 Có bao nhiêu người nộp quỹ rồi?</button>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Hiện tại quỹ lớp đang có những yêu cầu chi nào?')">📋 Quỹ đang có những yêu cầu chi nào?</button>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Quy chế biểu quyết chi tiêu của Ban cán sự như thế nào?')">⚖️ Quy chế biểu quyết chi tiêu ra sao?</button>
+            <button class="ai-prompt-chip" onclick="askAIPrompt('Sinh viên nộp nhầm tiền xin hoàn lại như thế nào?')">🔄 Sinh viên xin hoàn tiền thế nào?</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-chat-footer">
+        <div class="ai-input-row">
+          <input type="text" id="aiUserInput" class="ai-input" placeholder="Hỏi AI về quỹ lớp, thu chi, quy chế..." />
+          <button id="aiBtnSend" class="ai-send-btn">Gửi</button>
+        </div>
+        <div class="ai-footer-note">
+          Backend Python <code>:8000</code> &bull; Mô hình Google Gemini
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="ai-fab-btn" id="aiFabToggle">
+      <span class="ai-fab-badge" id="aiFabBadge"></span>
+      <span>✨ Hỏi đáp AI Quỹ Lớp</span>
+    </button>
+  </div>
 </body>
 </html>

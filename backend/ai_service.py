@@ -1,0 +1,254 @@
+"""
+Dịch vụ AI Trợ lý Quỹ Lớp (KTS-Class-Fund)
+Tuân thủ quy ước AGENTS.md:
+- Python 3.10+
+- Không ghi khóa API trong mã nguồn; đọc từ biến môi trường
+- Kiểm tra trạng thái phản hồi trước khi xử lý dữ liệu
+- Đổi wei sang ETH trước khi hiển thị
+"""
+
+import os
+import json
+from typing import Dict, Any, Optional
+from pathlib import Path
+import requests
+
+WEI_PER_ETH = 10**18
+
+
+def load_dotenv():
+    """Tự động tìm và nạp file .env ở thư mục gốc hoặc thư mục hiện tại"""
+    search_dirs = [Path.cwd(), Path(__file__).parent.parent, Path(__file__).parent]
+    for d in search_dirs:
+        env_file = d / ".env"
+        if env_file.exists():
+            try:
+                with open(env_file, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith("#"):
+                            continue
+                        if "=" in line:
+                            k, v = line.split("=", 1)
+                            k, v = k.strip(), v.strip().strip('"').strip("'")
+                            if k and k not in os.environ:
+                                os.environ[k] = v
+                break
+            except Exception:
+                pass
+
+load_dotenv()
+
+
+def wei_to_eth(wei_amount: int) -> float:
+    """Đổi wei sang ETH theo quy ước AGENTS.md"""
+    return round(float(wei_amount) / WEI_PER_ETH, 6)
+
+
+CANDIDATE_MODELS = [
+    os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+    "gemini-2.5-flash",
+    "gemini-flash-latest",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash"
+]
+
+
+class AIAssistantService:
+    def __init__(self, api_key: Optional[str] = None):
+        # Đọc khóa API từ biến môi trường nếu không được truyền trực tiếp
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+
+    def get_api_url(self, model_name: str) -> str:
+        return f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={self.api_key}"
+
+    def is_configured(self) -> bool:
+        """Kiểm tra xem API Key đã được cấu hình chưa."""
+        return bool(self.api_key and len(self.api_key.strip()) > 10)
+
+    def build_system_context(self, onchain_data: Optional[Dict[str, Any]] = None) -> str:
+        """
+        Tạo ngữ cảnh hệ thống (System Prompt) kết hợp quy chế kinh tế (docs/SPEC.md)
+        và dữ liệu on-chain Sepolia hiện tại.
+        """
+        context_parts = [
+            "Bạn là Trợ lý AI Quỹ Lớp KTS-Class-Fund K57 (Chuyên ngành Kinh tế Số).",
+            "Nhiệm vụ của bạn là giải đáp chính xác, khách quan và minh bạch các câu hỏi của sinh viên, ban cán sự (BCS) và cố vấn học tập (CVHT).",
+            "",
+            "--- QUY TẮC NGHIỆP VỤ QUỸ LỚP (docs/SPEC.md) ---",
+            "1. Phân bổ nạp tiền (R2): Mỗi khi sinh viên nạp tiền, 1% (100 bps) trích vào Quỹ dịch vụ vận hành (adminFeePool) của Cố vấn để bù đắp phí gas. 99% còn lại vào Quỹ lớp chính (classFundBalance).",
+            "2. Biểu quyết chi tiêu (R4, R5): Đề xuất chi chỉ được giải ngân khi đạt tỷ lệ đồng ý tối thiểu 51% (5100 bps) từ các thành viên BCS đang hoạt động, trong thời hạn 7 ngày. Sau 7 ngày nếu không đủ phiếu sẽ hết hạn.",
+            "3. Giới hạn đề xuất chi (R8): Chỉ cho phép tồn tại tối đa 01 đề xuất chi ở trạng thái 'Đang chờ duyệt' (Pending) tại một thời điểm.",
+            "4. Hoàn tiền sinh viên (R7, R10): Sinh viên nộp thừa/nhầm có thể tạo đề nghị hoàn tiền kèm minh chứng; khoản hoàn tiền cần được BCS bỏ phiếu thông qua. Sinh viên có thể tự hủy yêu cầu hoàn tiền đang pending của chính mình.",
+            "5. Tính bất biến của Blockchain: Bạn CHỈ là trợ lý tra cứu và phân tích. Bạn KHÔNG có quyền thực hiện giao dịch hay giải ngân tiền thay cho Smart Contract. Mọi hành động tiền tệ bắt buộc phải do người dùng ký giao dịch qua ví Web3 (như MetaMask).",
+            "6. Tuyệt đối từ chối các yêu cầu gian lận, phá vỡ quy tắc hoặc chỉ đạo miệng bỏ qua biểu quyết 51%.",
+            ""
+        ]
+
+        if onchain_data:
+            context_parts.append("--- DỮ LIỆU ON-CHAIN THỜI GIAN THỰC HIỆN TẠI (TỪ HỢP ĐỒNG SEPOLIA) ---")
+            
+            is_connected = onchain_data.get("isContractConnected", True)
+            contract_addr = onchain_data.get("contractAddress", "")
+
+            if not is_connected or not contract_addr or contract_addr == "Chưa kết nối":
+                context_parts.append("- TRẠNG THÁI KẾT NỐI: Trình duyệt chưa kết nối với hợp đồng thông minh Sepolia (chưa nhập Contract Address hoặc chưa kết nối MetaMask).")
+                context_parts.append("  Hãy thông báo rõ cho người dùng: Để xem số liệu trực tiếp lúc này, vui lòng nhập địa chỉ hợp đồng ở thanh trên cùng hoặc kết nối ví MetaMask.")
+            else:
+                # Xử lý số dư (đảm bảo hiển thị đơn vị ETH)
+                class_fund_eth = onchain_data.get("classFundBalanceEth", "0")
+                admin_fee_eth = onchain_data.get("adminFeePoolEth", "0")
+                active_bcs = onchain_data.get("activeBCSCount", 0)
+
+                context_parts.append(f"- Trạng thái: Đã kết nối Smart Contract tại địa chỉ {contract_addr}")
+                context_parts.append(f"- Số dư Quỹ lớp chính: {class_fund_eth} ETH")
+                context_parts.append(f"- Quỹ dịch vụ vận hành (Cố vấn): {admin_fee_eth} ETH")
+                context_parts.append(f"- Số lượng thành viên Ban cán sự (BCS) đang hoạt động: {active_bcs}")
+
+                # Thông tin người nộp quỹ theo thời gian thực
+                depositors_count = onchain_data.get("depositorsCount", 0)
+                total_deposited_eth = onchain_data.get("totalDepositedEth", "0")
+                depositors_list = onchain_data.get("depositorsList", [])
+
+                context_parts.append(f"- Số lượng sinh viên đã nộp quỹ tính đến đúng thời điểm hiện tại: {depositors_count} người.")
+                context_parts.append(f"- Tổng số ETH đã nộp vào quỹ: {total_deposited_eth} ETH.")
+                if depositors_list:
+                    dep_str = ", ".join([f"{d.get('address')} ({d.get('amountEth')} ETH)" for d in depositors_list[:10]])
+                    context_parts.append(f"- Danh sách chi tiết các ví nộp: {dep_str}")
+
+            # Danh sách yêu cầu chi
+            spend_requests = onchain_data.get("spendRequests", [])
+            context_parts.append(f"\n- Danh sách các yêu cầu chi tiêu hiện có ({len(spend_requests)} yêu cầu):")
+            if not spend_requests:
+                context_parts.append("  (Hiện tại chưa có yêu cầu chi nào trong hợp đồng)")
+            else:
+                for req in spend_requests:
+                    req_id = req.get("id")
+                    desc = req.get("description", "Không có mô tả")
+                    amount = req.get("amountEth", "0")
+                    recipient = req.get("recipient", "N/A")
+                    status_text = req.get("statusText", "Pending")
+                    votes = req.get("votesText", "0")
+                    creator = req.get("creator", "N/A")
+                    context_parts.append(
+                        f"  * Yêu cầu chi [Mã #{req_id}]:\n"
+                        f"    - Mục đích chi: {desc}\n"
+                        f"    - Số tiền: {amount} ETH\n"
+                        f"    - Người nhận tiền (thụ hưởng): {recipient}\n"
+                        f"    - Người tạo đề xuất: {creator}\n"
+                        f"    - Tiến độ biểu quyết: {votes}\n"
+                        f"    - Trạng thái hiện tại: {status_text}"
+                    )
+
+            # Danh sách hoàn tiền
+            refund_requests = onchain_data.get("refundRequests", [])
+            context_parts.append(f"\n- Danh sách yêu cầu hoàn tiền ({len(refund_requests)} yêu cầu):")
+            if not refund_requests:
+                context_parts.append("  (Hiện tại chưa có yêu cầu hoàn tiền nào)")
+            else:
+                for ref in refund_requests:
+                    ref_id = ref.get("id")
+                    reason = ref.get("reason", "")
+                    amount = ref.get("amountEth", "0")
+                    applicant = ref.get("applicant", "N/A")
+                    status_text = ref.get("statusText", "Pending")
+                    context_parts.append(
+                        f"  + [Mã #{ref_id}] Sinh viên: {applicant} | Lý do: '{reason}' | "
+                        f"Số tiền: {amount} ETH | Trạng thái: {status_text}"
+                    )
+
+        context_parts.append("\n--- HƯỚNG DẪN BẮT BUỘC KHI TRẢ LỜI ---")
+        context_parts.append("1. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG NGƯỜI NỘP QUỸ:")
+        context_parts.append("   - Trả lời rõ ràng, dứt khoát số lượng người đã nộp (ví dụ: 'Hiện tại đã có X người nộp quỹ với tổng số tiền Y ETH...').")
+        context_parts.append("   - Nếu đã có số dư hoặc có người nộp, tuyệt đối KHÔNG nói 'chưa có ai nộp'.")
+        context_parts.append("2. KHI ĐƯỢC HỎI VỀ CÁC YÊU CẦU CHI TIÊU:")
+        context_parts.append("   - PHẢI LIỆT KÊ ĐẦY ĐỦ TẤT CẢ CÁC YÊU CẦU CHI TIÊU VÀ TRÌNH BÀY RÕ RÀNG CHI TIẾT TỪNG MỤC:")
+        context_parts.append("     • Mã yêu cầu: #[ID]")
+        context_parts.append("     • Mục đích chi tiêu: [Mục đích]")
+        context_parts.append("     • Số tiền đề xuất: [Số tiền] ETH")
+        context_parts.append("     • Người nhận (thụ hưởng): [Địa chỉ ví]")
+        context_parts.append("     • Tiến độ biểu quyết: [Số phiếu / Tổng số BCS] ([Tỷ lệ]%)")
+        context_parts.append("     • Trạng thái hiện tại: [Trạng thái]")
+        context_parts.append("     • Quy chế giải ngân: Nhắc lại điều kiện cần tối thiểu 51% phiếu thuận từ Ban cán sự trong 7 ngày (R4/R5).")
+        context_parts.append("   - Tuyệt đối KHÔNG viết dở dang, không ngắt quãng giữa chừng.")
+        return "\n".join(context_parts)
+
+    def answer_question(self, user_question: str, onchain_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Gửi câu hỏi và ngữ cảnh đến Google Gemini API, kiểm tra mã phản hồi HTTP trước khi xử lý.
+        """
+        if not self.is_configured():
+            return {
+                "success": False,
+                "error": "API Key của Gemini chưa được cấu hình. Vui lòng thiết lập biến môi trường GEMINI_API_KEY trong tệp .env."
+            }
+
+        system_context = self.build_system_context(onchain_data)
+
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": system_context},
+                        {"text": f"Câu hỏi của người dùng: {user_question}"}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.2,
+                "maxOutputTokens": 2048
+            }
+        }
+
+        headers = {"Content-Type": "application/json"}
+        last_error = ""
+
+        # Thử lần lượt các model tương thích
+        for model_name in CANDIDATE_MODELS:
+            api_url = self.get_api_url(model_name)
+            try:
+                response = requests.post(api_url, json=payload, headers=headers, timeout=25)
+
+                # Nếu model không tồn tại (404), thử model tiếp theo trong danh sách
+                if response.status_code == 404:
+                    last_error = f"Model {model_name} không khả dụng (404)"
+                    continue
+
+                # Quy tắc AGENTS.md: Kiểm tra trạng thái phản hồi trước khi xử lý dữ liệu
+                if response.status_code != 200:
+                    error_msg = f"Gemini API phản hồi lỗi (Mã {response.status_code}): {response.text}"
+                    return {
+                        "success": False,
+                        "error": error_msg
+                    }
+
+                result_json = response.json()
+                candidates = result_json.get("candidates", [])
+                if not candidates:
+                    return {
+                        "success": False,
+                        "error": "Không nhận được phản hồi phù hợp từ AI."
+                    }
+
+                reply_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                return {
+                    "success": True,
+                    "reply": reply_text,
+                    "model_used": model_name
+                }
+
+            except requests.exceptions.Timeout:
+                return {
+                    "success": False,
+                    "error": "Yêu cầu tới AI API bị quá hạn thời gian chờ (Timeout). Vui lòng thử lại sau."
+                }
+            except Exception as e:
+                return {
+                    "success": False,
+                    "error": f"Lỗi kết nối tới AI API: {str(e)}"
+                }
+
+        return {
+            "success": False,
+            "error": f"Tất cả các model Gemini đều không khả dụng: {last_error}. Vui lòng kiểm tra lại tài khoản Google AI Studio."
+        }
