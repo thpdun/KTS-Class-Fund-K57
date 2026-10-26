@@ -1482,6 +1482,11 @@
           <div class="metric-note" id="metricAdminFeeNote">Bù đắp gas cho Cố vấn học tập</div>
         </div>
         <div class="metric-card">
+          <div class="metric-title">Sinh viên đã nộp quỹ</div>
+          <div class="metric-num" id="metricDepositorsCount">-</div>
+          <div class="metric-note" id="metricDepositorsNote">Đồng bộ từ blockchain</div>
+        </div>
+        <div class="metric-card">
           <div class="metric-title">Tổng đề nghị chi tiền</div>
           <div class="metric-num" id="metricSpendCount">-</div>
           <div class="metric-note">Biểu quyết dân chủ tối thiểu 51%</div>
@@ -1490,6 +1495,11 @@
           <div class="metric-title">Tổng yêu cầu hoàn tiền</div>
           <div class="metric-num" id="metricRefundCount">-</div>
           <div class="metric-note">Bảo vệ quyền lợi khi nộp nhầm</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Ban cán sự hoạt động</div>
+          <div class="metric-num" id="metricActiveBCS">-</div>
+          <div class="metric-note" id="metricActiveBCSNote">Cố vấn học tập quản trị (R1)</div>
         </div>
       </div>
     </div>
@@ -2849,8 +2859,30 @@
         });
 
         logToTerminal("[Khởi tạo] Tiện ích MetaMask đã sẵn sàng kết nối.");
+
+        // Tự động khôi phục tài khoản nếu ví đã từng kết nối trước đó (Silent reconnect)
+        try {
+          const preAccounts = await eth.request({ method: "eth_accounts" });
+          if (preAccounts && preAccounts.length > 0) {
+            await handleAccountChange(preAccounts[0]);
+          }
+        } catch (e) {
+          console.warn("Silent eth_accounts error:", e);
+        }
       } else {
         logToTerminal("[Lưu ý] Chưa phát hiện tiện ích MetaMask trên trình duyệt.");
+      }
+
+      // Nếu ví chưa kết nối nhưng đã có địa chỉ hợp đồng, tự động tải dữ liệu on-chain ở chế độ đọc
+      if (!contract && CONFIG.contractAddress && ethers.isAddress(CONFIG.contractAddress)) {
+        try {
+          if (!provider) {
+            provider = new ethers.JsonRpcProvider("https://ethereum-sepolia-rpc.publicnode.com");
+          }
+          await initContractInstance();
+        } catch (readErr) {
+          console.warn("Fallback read contract instance error:", readErr);
+        }
       }
     }
 
@@ -3132,6 +3164,10 @@
         document.getElementById("metricAdminFee").textContent = formatEth(adminFee) + " ETH";
         document.getElementById("metricSpendCount").textContent = Number(spendCount);
         document.getElementById("metricRefundCount").textContent = Number(refundCount);
+        const bcsEl = document.getElementById("metricActiveBCS");
+        if (bcsEl) bcsEl.textContent = `${Number(activeBCS)} thành viên`;
+        const bcsNote = document.getElementById("metricActiveBCSNote");
+        if (bcsNote) bcsNote.textContent = Number(activeBCS) > 0 ? "Đã sẵn sàng biểu quyết (≥51%)" : "Cần Cố vấn kích hoạt (R1)";
         document.getElementById("advisorFeePoolBalance").textContent = formatEth(adminFee) + " ETH";
         document.getElementById("metricClassFundNote").textContent = "Dữ liệu on-chain chính xác";
 
@@ -3168,6 +3204,7 @@
         await loadSpendRequests(Number(spendCount), Number(activeBCS));
         await loadRefundRequests(Number(refundCount), Number(activeBCS));
         await loadCashFlowLedger(Number(spendCount), Number(refundCount), Number(activeBCS), classFund, adminFee);
+        await syncDepositorsData(classFund, adminFee);
 
         logToTerminal("[Dữ liệu] Hoàn tất đồng bộ dữ liệu hợp đồng và toàn bộ flow dòng tiền.");
       } catch (err) {
@@ -3910,173 +3947,285 @@
       let formatted = escapeHtml(text);
       formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      formatted = formatted.replace(/`([^`]+)`/g, '<code style="background:#f1f5f9; color:#0f172a; padding:2px 6px; border-radius:4px; font-family:monospace; font-size:0.85em; border:1px solid #cbd5e1;">$1</code>');
+      formatted = formatted.replace(/^\*\s+(.*)$/gm, '&bull; $1');
       formatted = formatted.replace(/\n\n/g, '<br><br>');
       formatted = formatted.replace(/\n/g, '<br>');
       return formatted;
     }
 
+    // --- HÀM ĐỒNG BỘ VÀ LƯU VẾT NGƯỜI NỘP QUỸ ---
+    function saveKnownDepositor(addr) {
+      if (!addr || !ethers.isAddress(addr)) return;
+      try {
+        const cached = JSON.parse(localStorage.getItem("kts_known_depositors") || "[]");
+        if (!cached.includes(addr.toLowerCase())) {
+          cached.push(addr.toLowerCase());
+          localStorage.setItem("kts_known_depositors", JSON.stringify(cached));
+        }
+      } catch (e) {}
+    }
+
+    async function syncDepositorsData(classFundWei, adminFeeWei) {
+      const depNumEl = document.getElementById("metricDepositorsCount");
+      const depNoteEl = document.getElementById("metricDepositorsNote");
+
+      let uniqueMap = new Map();
+      let totalWei = 0n;
+
+      // 1. Kiểm tra ví hiện tại của người dùng đang kết nối
+      if (userAddress && contract) {
+        try {
+          const myContrib = await contract.studentContributions(userAddress);
+          if (myContrib && myContrib > 0n) {
+            totalWei += BigInt(myContrib);
+            uniqueMap.set(userAddress.toLowerCase(), {
+              address: userAddress,
+              totalWei: BigInt(myContrib)
+            });
+            saveKnownDepositor(userAddress);
+          }
+        } catch (e) {}
+      }
+
+      // 2. Tải danh sách ví đã lưu trong localStorage
+      try {
+        const cached = JSON.parse(localStorage.getItem("kts_known_depositors") || "[]");
+        for (const addr of cached) {
+          if (ethers.isAddress(addr) && !uniqueMap.has(addr.toLowerCase()) && contract) {
+            try {
+              const c = await contract.studentContributions(addr);
+              if (c && c > 0n) {
+                totalWei += BigInt(c);
+                uniqueMap.set(addr.toLowerCase(), {
+                  address: addr,
+                  totalWei: BigInt(c)
+                });
+              }
+            } catch (e) {}
+          }
+        }
+      } catch (e) {}
+
+      // 3. Quét các applicant từ yêu cầu hoàn tiền (sinh viên làm đơn xin hoàn tiền chắc chắn đã từng nộp quỹ)
+      if (contract) {
+        try {
+          const refCount = Number(await contract.refundRequestCount());
+          for (let r = 1; r <= refCount; r++) {
+            const req = await contract.getRefundRequest(r);
+            const applicant = req[1];
+            if (applicant && ethers.isAddress(applicant)) {
+              saveKnownDepositor(applicant);
+              if (!uniqueMap.has(applicant.toLowerCase())) {
+                const c = await contract.studentContributions(applicant);
+                if (c && c > 0n) {
+                  totalWei += BigInt(c);
+                  uniqueMap.set(applicant.toLowerCase(), {
+                    address: applicant,
+                    totalWei: BigInt(c)
+                  });
+                }
+              }
+            }
+          }
+        } catch (e) {}
+      }
+
+      // 4. Quét sự kiện FundDeposited chia thành 5 chunks (mỗi chunk 9000 block, quét ngược tối đa ~45.000 block)
+      if (contract && provider) {
+        try {
+          const currentBlock = await provider.getBlockNumber();
+          let toBlock = currentBlock;
+          const filter = contract.filters.FundDeposited();
+          for (let chunk = 0; chunk < 5; chunk++) {
+            if (toBlock <= 0) break;
+            const fromBlock = Math.max(0, toBlock - 9000);
+            try {
+              const events = await contract.queryFilter(filter, fromBlock, toBlock);
+              if (events && events.length > 0) {
+                events.forEach(ev => {
+                  const student = ev.args ? (ev.args[0] || ev.args.student) : null;
+                  const amt = ev.args ? (ev.args[1] || ev.args.amount) : 0n;
+                  if (student && ethers.isAddress(student)) {
+                    saveKnownDepositor(student);
+                    const addrLower = student.toLowerCase();
+                    if (!uniqueMap.has(addrLower)) {
+                      uniqueMap.set(addrLower, {
+                        address: student,
+                        totalWei: BigInt(amt)
+                      });
+                    }
+                  }
+                });
+              }
+            } catch (chunkErr) {
+              console.warn("Chunk scan queryFilter warning:", chunkErr);
+              break;
+            }
+            toBlock = fromBlock - 1;
+          }
+        } catch (filterErr) {
+          console.warn("RPC queryFilter warning:", filterErr);
+        }
+      }
+
+      // 5. Đối chiếu số dư thực tế trên hợp đồng
+      const cfWei = classFundWei || 0n;
+      const afWei = adminFeeWei || 0n;
+      const totalOnchainWei = cfWei + afWei;
+      const totalOnchainEth = formatEth(totalOnchainWei);
+
+      let finalCount = uniqueMap.size;
+      let finalEth = totalOnchainEth;
+
+      // Nếu quỹ đã có tiền (> 0) mà danh sách rỗng, chắc chắn có ít nhất 1 người nộp
+      if (finalCount === 0 && totalOnchainWei > 0n) {
+        finalCount = 1;
+        uniqueMap.set((userAddress || "0xStudent").toLowerCase(), {
+          address: userAddress || "Sinh viên đóng quỹ",
+          totalWei: totalOnchainWei
+        });
+      }
+
+      // Cập nhật lên Dashboard
+      if (depNumEl) depNumEl.textContent = `${finalCount} sinh viên`;
+      if (depNoteEl) depNoteEl.textContent = `Tổng nộp: ${finalEth} ETH`;
+
+      const list = Array.from(uniqueMap.values()).map(item => ({
+        address: shortenAddress(item.address),
+        fullAddress: item.address,
+        amountEth: formatEth(item.totalWei)
+      }));
+
+      return {
+        count: finalCount,
+        totalEth: finalEth,
+        list: list
+      };
+    }
+
     async function getOnchainSnapshot() {
       const isConnected = !!(contract && CONFIG.contractAddress && ethers.isAddress(CONFIG.contractAddress));
 
-      // 1. Làm mới dữ liệu on-chain từ Sepolia ngay thời điểm người dùng hỏi
       if (isConnected) {
         try {
           await refreshContractData();
         } catch (e) {
-          console.warn("Không thể refresh dữ liệu trước khi gửi câu hỏi:", e);
+          console.warn("Lỗi refresh trước khi hỏi:", e);
         }
       }
 
       const classFund = document.getElementById("metricClassFund")?.textContent || "0 ETH";
       const adminFee = document.getElementById("metricAdminFee")?.textContent || "0 ETH";
-      const spendCount = document.getElementById("metricSpendCount")?.textContent || "0";
-      const refundCount = document.getElementById("metricRefundCount")?.textContent || "0";
-      const activeBcs = document.getElementById("metricActiveBCS")?.textContent || "0";
+      let spendCount = Number(document.getElementById("metricSpendCount")?.textContent) || 0;
+      let refundCount = Number(document.getElementById("metricRefundCount")?.textContent) || 0;
+      let activeBcs = 0;
 
-      let depositorsCount = 0;
-      let totalDepositedEth = "0";
-      let depositorsList = [];
-
-      // 2. Truy xuất người nộp quỹ toàn diện
       if (isConnected) {
         try {
-          const uniqueMap = new Map();
-          let totalWei = 0n;
-
-          // A. Kiểm tra ví hiện tại của người dùng đang kết nối
-          if (userAddress) {
-            try {
-              const myContribWei = await contract.studentContributions(userAddress);
-              if (myContribWei && myContribWei > 0n) {
-                totalWei += BigInt(myContribWei);
-                uniqueMap.set(userAddress.toLowerCase(), {
-                  address: userAddress,
-                  totalWei: BigInt(myContribWei)
-                });
-              }
-            } catch (e) {}
-          }
-
-          // B. Kiểm tra danh sách ví đã biết từng nộp lưu trong localStorage
-          try {
-            const known = JSON.parse(localStorage.getItem("kts_known_depositors") || "[]");
-            for (const addr of known) {
-              if (ethers.isAddress(addr) && !uniqueMap.has(addr.toLowerCase())) {
-                try {
-                  const contrib = await contract.studentContributions(addr);
-                  if (contrib && contrib > 0n) {
-                    totalWei += BigInt(contrib);
-                    uniqueMap.set(addr.toLowerCase(), {
-                      address: addr,
-                      totalWei: BigInt(contrib)
-                    });
-                  }
-                } catch(e) {}
-              }
-            }
-          } catch(e) {}
-
-          // C. Quét sự kiện FundDeposited trong khoảng block an toàn gần nhất
-          try {
-            const currentBlock = await provider.getBlockNumber();
-            const fromBlock = Math.max(0, currentBlock - 5000);
-            const filter = contract.filters.FundDeposited();
-            const events = await contract.queryFilter(filter, fromBlock, "latest");
-            events.forEach(ev => {
-              const student = ev.args ? (ev.args[0] || ev.args.student) : null;
-              const amount = ev.args ? (ev.args[1] || ev.args.amount) : 0n;
-              if (student) {
-                const addrLower = student.toLowerCase();
-                if (!uniqueMap.has(addrLower)) {
-                  uniqueMap.set(addrLower, {
-                    address: student,
-                    totalWei: BigInt(amount)
-                  });
-                }
-              }
-            });
-          } catch (filterErr) {
-            console.warn("Không thể quét queryFilter FundDeposited:", filterErr);
-          }
-
-          // D. Đối chiếu số dư thực tế on-chain (quỹ lớp 99% + quỹ CVHT 1% = 100% tổng nộp)
-          const cfVal = parseFloat(classFund.replace(" ETH", "").trim()) || 0;
-          const afVal = parseFloat(adminFee.replace(" ETH", "").trim()) || 0;
-          const actualTotalFundEth = (cfVal + afVal).toFixed(4);
-
-          // Nếu số dư > 0 thì CHẮC CHẮN đã có người nộp (tối thiểu 1 người)
-          if (uniqueMap.size === 0 && (cfVal + afVal) > 0) {
-            depositorsCount = 1;
-            totalDepositedEth = actualTotalFundEth;
-            depositorsList = [{
-              address: userAddress ? shortenAddress(userAddress) : "Sinh viên trong lớp",
-              fullAddress: userAddress || "N/A",
-              amountEth: actualTotalFundEth
-            }];
-          } else {
-            depositorsCount = uniqueMap.size;
-            totalDepositedEth = (cfVal + afVal) > 0 ? actualTotalFundEth : formatEth(totalWei);
-            depositorsList = Array.from(uniqueMap.values()).map(item => ({
-              address: shortenAddress(item.address),
-              fullAddress: item.address,
-              amountEth: formatEth(item.totalWei)
-            }));
-          }
-        } catch (err) {
-          console.warn("Lỗi tổng hợp số lượng người nộp:", err);
+          activeBcs = Number(await contract.activeBCSCount());
+          spendCount = Number(await contract.spendRequestCount());
+          refundCount = Number(await contract.refundRequestCount());
+        } catch (e) {
+          console.warn("Lỗi đọc số liệu on-chain:", e);
         }
       }
 
-      // 3. Chuẩn hóa danh sách yêu cầu chi dạng văn bản thuần túy (không lẫn thẻ HTML)
-      const spendList = (typeof allFlowItems !== "undefined" && Array.isArray(allFlowItems))
-        ? allFlowItems.filter(item => item.category === "spend").map(item => {
-            let statusClean = "Đang chờ biểu quyết (Pending)";
-            if (item.statusNum === 1) statusClean = "Đã đủ điều kiện giải ngân (Ready - Đạt >= 51% phiếu thuận)";
-            else if (item.statusNum === 2) statusClean = "Đã thực thi giải ngân thành công (Executed)";
-            else if (item.statusNum === 3 || item.statusNum === 4) statusClean = "Đã hết hạn hoặc bị hủy (Expired)";
+      // 1. Đồng bộ người nộp quỹ
+      let depData = { count: 0, totalEth: "0", list: [] };
+      if (isConnected) {
+        try {
+          const cfWei = await contract.classFundBalance();
+          const afWei = await contract.adminFeePool();
+          depData = await syncDepositorsData(cfWei, afWei);
+        } catch (e) {
+          console.warn("Lỗi sync depositors:", e);
+        }
+      }
 
-            return {
-              id: item.numId,
-              description: item.desc || "Chi hoạt động lớp",
-              amountEth: item.amountEth,
-              recipient: item.party ? item.party.replace("Nhận: ", "") : "N/A",
+      // 2. Đọc trực tiếp danh sách yêu cầu chi và KHỬ TRÙNG LẶP (Deduplicate)
+      const spendMap = new Map();
+      if (isConnected && spendCount > 0) {
+        for (let i = 1; i <= spendCount; i++) {
+          try {
+            const req = await contract.getSpendRequest(i);
+            const reqId = Number(req[0]);
+            const recipient = req[1];
+            const rawAmount = req[2];
+            const desc = req[3];
+            const creator = req[4];
+            const yesVotes = Number(req[6]);
+            const status = Number(req[8]);
+
+            let statusClean = "Đang chờ biểu quyết (Pending)";
+            if (status === 1) statusClean = "Đã đủ điều kiện giải ngân (Ready - Đạt >= 51% phiếu thuận)";
+            else if (status === 2) statusClean = "Đã thực thi giải ngân thành công (Executed)";
+            else if (status === 3 || status === 4) statusClean = "Đã hết hạn hoặc bị hủy (Expired)";
+
+            const bcsNum = activeBcs > 0 ? activeBcs : 1;
+            const pct = ((yesVotes / bcsNum) * 100).toFixed(0);
+
+            spendMap.set(reqId, {
+              id: reqId,
+              description: desc || "Chi hoạt động lớp",
+              amountEth: formatEth(rawAmount),
+              recipient: shortenAddress(recipient),
+              fullRecipient: recipient,
+              creator: shortenAddress(creator),
               statusText: statusClean,
-              votesText: item.votesText || "Chưa có biểu quyết"
-            };
-          })
-        : [];
+              votesText: `${yesVotes}/${bcsNum} phiếu (${pct}%)`
+            });
+          } catch (err) {
+            console.warn("Lỗi đọc yêu cầu chi on-chain:", i, err);
+          }
+        }
+      }
 
-      // 4. Chuẩn hóa danh sách hoàn tiền
-      const refundList = (typeof allFlowItems !== "undefined" && Array.isArray(allFlowItems))
-        ? allFlowItems.filter(item => item.category === "refund").map(item => {
+      // 3. Đọc trực tiếp danh sách hoàn tiền và KHỬ TRÙNG LẶP
+      const refundMap = new Map();
+      if (isConnected && refundCount > 0) {
+        for (let i = 1; i <= refundCount; i++) {
+          try {
+            const req = await contract.getRefundRequest(i);
+            const refId = Number(req[0]);
+            const applicant = req[1];
+            const rawAmount = req[2];
+            const reason = req[3];
+            const yesVotes = Number(req[5]);
+            const status = Number(req[7]);
+
             let statusClean = "Đang chờ biểu quyết (Pending)";
-            if (item.statusNum === 1) statusClean = "Đã duyệt hoàn tiền (Approved)";
-            else if (item.statusNum === 2) statusClean = "Đã hoàn tiền về ví (Refunded)";
-            else if (item.statusNum === 3) statusClean = "Bị từ chối hoặc hết hạn (Rejected/Expired)";
+            if (status === 1) statusClean = "Đã duyệt hoàn tiền (Approved)";
+            else if (status === 2) statusClean = "Đã hoàn tiền về ví (Refunded)";
+            else if (status === 3) statusClean = "Bị từ chối hoặc hết hạn (Rejected/Expired)";
 
-            return {
-              id: item.numId,
-              reason: item.desc || "Nộp nhầm tiền",
-              amountEth: item.amountEth,
-              applicant: item.party ? item.party.replace("SV: ", "") : "N/A",
+            refundMap.set(refId, {
+              id: refId,
+              reason: reason || "Nộp nhầm tiền",
+              amountEth: formatEth(rawAmount),
+              applicant: shortenAddress(applicant),
+              fullApplicant: applicant,
               statusText: statusClean
-            };
-          })
-        : [];
+            });
+          } catch (err) {
+            console.warn("Lỗi đọc yêu cầu hoàn tiền on-chain:", i, err);
+          }
+        }
+      }
 
       return {
         isContractConnected: isConnected,
         contractAddress: CONFIG.contractAddress || "Chưa kết nối",
         classFundBalanceEth: classFund.replace(" ETH", "").trim(),
         adminFeePoolEth: adminFee.replace(" ETH", "").trim(),
-        spendCount: Number(spendCount),
-        refundCount: Number(refundCount),
-        activeBCSCount: Number(activeBcs) || 0,
-        depositorsCount: depositorsCount,
-        totalDepositedEth: totalDepositedEth,
-        depositorsList: depositorsList,
-        spendRequests: spendList,
-        refundRequests: refundList
+        spendCount: spendCount,
+        refundCount: refundCount,
+        activeBCSCount: activeBcs,
+        depositorsCount: depData.count,
+        totalDepositedEth: depData.totalEth,
+        depositorsList: depData.list,
+        spendRequests: Array.from(spendMap.values()),
+        refundRequests: Array.from(refundMap.values())
       };
     }
 
