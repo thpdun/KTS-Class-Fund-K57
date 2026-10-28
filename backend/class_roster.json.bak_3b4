@@ -1,0 +1,37 @@
+[
+  {
+    "mssv": "23K4300004",
+    "name": "Trần Hoàng Phương Dung",
+    "wallet": "0x78567A377559F0cB30173f93869326a82320159a",
+    "role": "bcs",
+    "roleTitle": "Ban cán sự"
+  },
+  {
+    "mssv": "23K4300015",
+    "name": "Võ Ngọc Tâm Phúc",
+    "wallet": "0xf5D971952dbDF69058a28D23110381d96B00cb50",
+    "role": "bcs",
+    "roleTitle": "Ban cán sự"
+  },
+  {
+    "mssv": "23K4300014",
+    "name": "Phan Thị Yến Nhi",
+    "wallet": "0x7Af21f18DEfDA4a141BAD89681C0d4767A42333C",
+    "role": "bcs",
+    "roleTitle": "Ban cán sự"
+  },
+  {
+    "mssv": "23K4300005",
+    "name": "Trần Thị Bình Dương",
+    "wallet": "0x64ADE1f3E814c98dEFeC19f07253afeBDD2DBfcf",
+    "role": "student",
+    "roleTitle": "Sinh viên"
+  },
+  {
+    "mssv": "23K4300025",
+    "name": "Nguyễn Thị Kim Chi",
+    "wallet": "0x372819EB492cc6A071b946d5b82BF46174FE8394",
+    "role": "student",
+    "roleTitle": "Sinh viên"
+  }
+]

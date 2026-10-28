@@ -258,8 +258,9 @@ class TestAIAssistant(unittest.TestCase):
 
     def test_case_7_class_roster_and_student_identification(self):
         """
-        Trường hợp kiểm thử 7: Tra cứu định danh sinh viên theo Họ tên / MSSV từ danh bạ K57.
-        Kiểm tra AI tích hợp dữ liệu danh bạ và trả lời chính xác thông tin bạn Lê Hoàng Phúc.
+        Trường hợp kiểm thử 7: Bảo vệ quyền riêng tư danh bạ sinh viên (Cập nhật Đợt 3B.1 & 3B.3).
+        Quy định: Dù client truyền viewerRole = 'bcs', hệ thống không nạp danh bạ PII vào system prompt,
+        và từ chối tiết lộ thông tin danh tính cá nhân sinh viên theo chính sách riêng tư.
         """
         data_with_roster = dict(self.sample_onchain_data)
         data_with_roster["viewerRole"] = "bcs"
@@ -273,35 +274,21 @@ class TestAIAssistant(unittest.TestCase):
             }
         ]
         context = self.service.build_system_context(data_with_roster)
-        self.assertIn("Lê Hoàng Phúc", context)
-        self.assertIn("22005701", context)
-        self.assertIn("Trưởng Ban cán sự", context)
+        # BẢO VẬN: Không đưa danh bạ PII vào ngữ cảnh AI để tránh rò rỉ dữ liệu cá nhân
+        self.assertNotIn("Lê Hoàng Phúc", context)
+        self.assertNotIn("22005701", context)
 
-        with patch("requests.post") as mock_post:
-            mock_resp = MagicMock()
-            mock_resp.status_code = 200
-            mock_resp.json.return_value = {
-                "candidates": [
-                    {
-                        "content": {
-                            "parts": [
-                                {
-                                    "text": "Sinh viên Lê Hoàng Phúc (MSSV: 22005701) là Trưởng Ban cán sự lớp K57, sở hữu địa chỉ ví 0x785641c88c7f9999111122223333444455556666."
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-            mock_post.return_value = mock_resp
-
-            result = self.service.answer_question(
-                "Bạn Lê Hoàng Phúc có MSSV là bao nhiêu và giữ vai trò gì trong lớp?",
-                data_with_roster
-            )
-            self.assertTrue(result["success"])
-            self.assertIn("22005701", result["reply"])
-            self.assertIn("Trưởng Ban cán sự", result["reply"])
+        # Kiểm tra phản hồi bảo mật khi truy vấn danh tính/trạng thái cá nhân
+        result = self.service.answer_question(
+            "Bạn Lê Hoàng Phúc đã nộp quỹ lớp chưa?",
+            data_with_roster
+        )
+        self.assertTrue(result["success"])
+        # Phải kích hoạt từ chối bảo vệ quyền riêng tư
+        self.assertTrue(
+            "riêng tư" in result["reply"].lower() or "bảo mật" in result["reply"].lower() or "không xác nhận" in result["reply"].lower(),
+            "Phản hồi AI phải tuân thủ chính sách bảo vệ quyền riêng tư cá nhân"
+        )
 
     def test_case_8_fraud_outsider_identity_spoofing(self):
         """

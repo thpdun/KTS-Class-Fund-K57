@@ -221,39 +221,15 @@ class AIAssistantService:
                 context_parts.append(f"- Tiến độ thu thực tế: {announcement.get('progressText', '0%')}")
                 context_parts.append(f"- Trạng thái đợt thu: {announcement.get('status', 'Đang diễn ra')}")
 
-            # Danh bạ sinh viên lớp K57 (Class Roster - CHỈ DÀNH CHO BCS VÀ CỐ VẤN)
-            viewer_role = onchain_data.get("viewerRole", "student")
-            is_privileged_viewer = viewer_role in ["advisor", "bcs"]
-
-            roster = onchain_data.get("roster", [])
-            if roster and is_privileged_viewer:
-                context_parts.append("\n--- DANH BẠ SINH VIÊN LỚP K57 (QUẢN TRỊ NỘI BỘ BCS & CỐ VẤN) ---")
-                context_parts.append(f"- Tổng số sinh viên trong danh bạ: {len(roster)} thành viên.")
-                for st in roster:
-                    mssv = st.get("mssv", "N/A")
-                    name = st.get("name", "N/A")
-                    wallet = st.get("wallet", "N/A")
-                    role_title = st.get("roleTitle", "Sinh viên")
-                    context_parts.append(f"  • {name} (MSSV: {mssv}) | Ví: {wallet} | Vai trò: {role_title}")
-
-        viewer_role = (onchain_data or {}).get("viewerRole", "student")
-        is_privileged_viewer = viewer_role in ["advisor", "bcs"]
-
         context_parts.append("\n--- HƯỚNG DẪN BẮT BUỘC KHI TRẢ LỜI ---")
-
-        if not is_privileged_viewer:
-            context_parts.append("★ CHÍNH SÁCH BẢO VỆ QUYỀN RIÊNG TƯ & ẨN DANH NGƯỜI NỘP QUỸ (BẮT BUỘC):")
-            context_parts.append("1. Người dùng đang trò chuyện là SINH VIÊN HOẶC KHÁCH VÃNG LAI (không phải Ban cán sự hay Cố vấn).")
-            context_parts.append("2. ẨN DANH DANH TÍNH HOÀN TOÀN: Khi trả lời về số lượng người nộp quỹ hoặc danh sách những người đã nộp ('Ai đã nộp rồi?', 'Có ai nộp chưa?', 'Ví 0x... là của ai?'):")
-            context_parts.append("   - BÁO RÕ số lượng sinh viên đã nộp ({depositors_count} sinh viên) và tổng số tiền {total_deposited_eth} ETH.")
-            context_parts.append("   - CHỈ ĐƯỢC PHÉP LIỆT KÊ ĐỊA CHỈ VÍ ETHEREUM on-chain (ví dụ: 0x7856...159a) kèm số ETH đã nộp.")
-            context_parts.append("   - TUYỆT ĐỐI KHÔNG ĐƯỢC TIẾT LỘ HỌ TÊN HOẶC MSSV CỦA BẤT KỲ SINH VIÊN NÀO ĐÃ NỘP HAY CHƯA NỘP.")
-            context_parts.append("   - GIẢI THÍCH CHUẨN MỰC: 'Để đảm bảo quyền riêng tư tài chính cho sinh viên, hệ thống ẩn danh danh tính người nộp và chỉ hiển thị địa chỉ ví on-chain. Việc đối chiếu địa chỉ ví với danh bạ sinh viên chỉ dành riêng cho Cố vấn học tập và Ban cán sự để phục vụ công tác đối soát quỹ.'")
-            context_parts.append("   - Nếu người dùng hỏi về ví của chính họ (ví dụ: 'Ví của tôi 0x... đã nộp chưa?'): Kiểm tra xem địa chỉ ví đó có trong danh sách ví đã nộp on-chain hay không và trả lời.")
-        else:
-            context_parts.append("★ QUYỀN TRUY XUẤT BAN CÁN SỰ & CỐ VẤN HỌC TẬP (ĐỐI SOÁT NỘI BỘ):")
-            context_parts.append("1. Bạn đang trò chuyện với Ban cán sự hoặc Cố vấn học tập đã được phân quyền xác thực.")
-            context_parts.append("2. Được phép hỗ trợ đối chiếu danh bạ nội bộ giữa ví on-chain và sinh viên (Họ tên, MSSV) phục vụ công tác ghi sổ và đối soát quỹ.")
+        context_parts.append("★ CHÍNH SÁCH BẢO VỆ QUYỀN RIÊNG TƯ & ẨN DANH NGƯỜI NỘP QUỸ (BẮT BUỘC TUÂN THỦ 100%):")
+        context_parts.append("1. Trợ lý AI CHỈ giải đáp thông tin tổng hợp về quỹ (tổng số dư, số lượng người nộp tổng quát, các khoản chi on-chain, quy tắc SPEC.md).")
+        context_parts.append("2. TUYỆT ĐỐI TỪ CHỐI các câu hỏi truy vấn danh tính cá nhân:")
+        context_parts.append("   - Không xác nhận hay phủ nhận việc một cá nhân/MSSV/ví cụ thể đã nộp quỹ hay chưa (ví dụ: 'Sinh viên Nguyễn Văn A đã nộp quỹ chưa?').")
+        context_parts.append("   - Không liệt kê danh sách ai đã nộp, ai chưa nộp, không cung cấp Họ tên, MSSV hoặc địa chỉ ví của sinh viên.")
+        context_parts.append("   - Mẫu phản hồi chuẩn khi gặp câu hỏi này:")
+        context_parts.append("     'Vì lý do bảo mật và bảo vệ quyền riêng tư cá nhân theo quy định, Trợ lý AI không xác nhận hay phủ nhận trạng thái đóng góp của từng cá nhân cụ thể, cũng như không cung cấp danh sách sinh viên đã nộp/chưa nộp, Họ tên, MSSV hoặc địa chỉ ví cá nhân. Bạn có thể theo dõi tiến độ đóng góp tổng hợp chung trên Dashboard hoặc liên hệ Ban cán sự / Cố vấn học tập để được hỗ trợ đối soát.'")
+        context_parts.append("3. TUYỆT ĐỐI KHÔNG BỊA SỐ LIỆU: Nếu hợp đồng chưa kết nối hoặc chưa có số liệu on-chain, phải nêu rõ chưa có dữ liệu on-chain, không tự suy đoán.")
 
         context_parts.append("2. KHI ĐƯỢC HỎI VỀ SỐ LƯỢNG NGƯỜI NỘP QUỸ:")
         context_parts.append("   - Trả lời rõ ràng, dứt khoát số lượng người đã nộp ({depositors_count} sinh viên) với tổng số tiền đã nộp ({total_deposited_eth} ETH).")
@@ -327,38 +303,38 @@ class AIAssistantService:
                 + disclaimer
             )
 
+        # 1b. Phát hiện truy vấn định danh cá nhân, MSSV hoặc danh sách chưa nộp (Chính sách Bảo vệ Quyền riêng tư Đợt 3B.1)
+        personal_patterns = [
+            r"phương\s*dung", r"trần\s*hoàng\s*phương\s*dung", r"tâm\s*phúc", r"võ\s*ngọc\s*tâm\s*phúc",
+            r"yến\s*nhi", r"phan\s*thị\s*yến\s*nhi", r"bình\s*dương", r"trần\s*thị\s*bình\s*dương",
+            r"kim\s*chi", r"nguyễn\s*thị\s*kim\s*chi", r"mssv", r"mã\s*sinh\s*viên", r"mã\s*số\s*sinh\s*viên",
+            r"chưa\s*nộp", r"ai\s*chưa\s*nộp", r"danh\s*sách\s*chưa\s*nộp",
+            r"liệt\s*kê.*sinh\s*viên", r"danh\s*sách\s*sinh\s*viên", r"kèm\s*mssv", r"kèm\s*ví",
+            r"ví\s*của\s*bạn", r"bạn.*đã\s*nộp\s*chưa"
+        ]
+        if any(re.search(p, q, re.IGNORECASE) for p in personal_patterns):
+            return (
+                "🛡️ **Bảo vệ quyền riêng tư cá nhân sinh viên:**\n"
+                "Vì lý do bảo mật và bảo vệ dữ liệu cá nhân theo quy định, Trợ lý AI không xác nhận, "
+                "phủ nhận trạng thái đóng góp của từng cá nhân cụ thể, cũng như không cung cấp danh sách "
+                "sinh viên đã nộp/chưa nộp, Họ tên, MSSV hoặc địa chỉ ví cá nhân.\n\n"
+                "Bạn có thể theo dõi tiến độ đóng góp tổng hợp chung trên Dashboard hoặc liên hệ Ban cán sự / "
+                "Cố vấn học tập để được hỗ trợ đối soát."
+                + disclaimer
+            )
+
         # 2. Tra cứu người nộp quỹ & Ẩn danh danh tính sinh viên
         is_depositors_query = any(k in q for k in [
             "ai nộp", "ai đã nộp", "bao nhiêu người", "bao nhiêu bạn", "danh sách nộp", 
-            "người nộp", "đóng quỹ", "nộp quỹ", "đã nộp chưa", "nộp rồi", "nộp tiền"
+            "người nộp", "đóng quỹ", "nộp quỹ", "nộp rồi", "nộp tiền", "tình hình nộp"
         ])
         if is_depositors_query:
-            found_addr_match = re.search(r"0x[a-fA-F0-9]{4,40}", user_question)
-            specific_addr = found_addr_match.group(0).lower() if found_addr_match else None
-            if not specific_addr and ("ví của tôi" in q or "tôi đã nộp chưa" in q) and user_address:
-                specific_addr = user_address
-
-            if specific_addr:
-                is_paid = False
-                paid_amount = "0"
-                for dep in depositors_list:
-                    addr_in_list = (dep.get("fullAddress") or dep.get("address") or "").lower()
-                    if specific_addr in addr_in_list or addr_in_list in specific_addr:
-                        is_paid = True
-                        paid_amount = dep.get("amountEth", "0")
-                        break
-                if is_paid:
-                    return (
-                        f"✅ **Xác nhận nộp quỹ:** Địa chỉ ví `{specific_addr}` ĐÃ HOÀN THÀNH đóng góp quỹ lớp "
-                        f"với số tiền **{paid_amount} ETH** on-chain."
-                        + disclaimer
-                    )
-                else:
-                    return (
-                        f"ℹ️ **Chưa ghi nhận:** Địa chỉ ví `{specific_addr}` hiện chưa có giao dịch nộp quỹ trên Smart Contract. "
-                        f"Bạn có thể kết nối ví MetaMask và nộp quỹ tại giao diện chính."
-                        + disclaimer
-                    )
+            if not is_connected:
+                return (
+                    "⚠️ **Chưa kết nối hợp đồng:** Hiện tại hệ thống chưa kết nối với Smart Contract trên mạng Sepolia "
+                    "nên chưa có số liệu nộp quỹ thời gian thực. Vui lòng kết nối ví MetaMask hoặc kiểm tra địa chỉ hợp đồng trên giao diện."
+                    + disclaimer
+                )
 
             lines = []
             if depositors_count == 0:
@@ -371,28 +347,14 @@ class AIAssistantService:
                 lines.append(f"- Tổng số tiền đã đóng góp vào quỹ: **{total_deposited_eth} ETH**.")
                 lines.append(f"- Phân bổ theo quy tắc R2: Quỹ lớp giữ 99% ({class_fund_eth} ETH), Quỹ dịch vụ cố vấn giữ 1% ({admin_fee_eth} ETH).")
 
-                if is_privileged:
-                    lines.append("\n📋 **Danh sách chi tiết (Quản trị nội bộ Cố vấn & BCS):**")
-                    for idx, dep in enumerate(depositors_list, start=1):
-                        d_addr = dep.get("fullAddress") or dep.get("address", "0x...")
-                        amt = dep.get("amountEth", "0")
-                        match_st = None
-                        for st in roster:
-                            if st.get("wallet", "").lower() == d_addr.lower():
-                                match_st = st
-                                break
-                        if match_st:
-                            lines.append(f"  {idx}. **{match_st.get('name')}** (MSSV: {match_st.get('mssv')}) - `{d_addr[:10]}...{d_addr[-4:]}`: {amt} ETH")
-                        else:
-                            lines.append(f"  {idx}. Ví `{d_addr}`: {amt} ETH (Chưa gắn tên trong danh bạ)")
-                else:
+                if depositors_list:
                     lines.append("\n📋 **Danh sách các ví đã nộp on-chain:**")
                     for idx, dep in enumerate(depositors_list[:15], start=1):
                         d_addr = dep.get("address", "0x...")
                         amt = dep.get("amountEth", "0")
                         lines.append(f"  {idx}. `{d_addr}`: **{amt} ETH**")
-                    lines.append("\n🛡️ **Chính sách bảo vệ quyền riêng tư & ẩn danh sinh viên:**")
-                    lines.append("Để đảm bảo quyền riêng tư tài chính cho sinh viên, hệ thống ẩn danh danh tính cá nhân (Họ tên, MSSV) và chỉ hiển thị địa chỉ ví on-chain. Việc đối chiếu địa chỉ ví với danh bạ sinh viên chỉ dành riêng cho Cố vấn học tập và Ban cán sự để phục vụ công tác đối soát quỹ.")
+                lines.append("\n🛡️ **Chính sách bảo vệ quyền riêng tư & ẩn danh sinh viên:**")
+                lines.append("Để đảm bảo quyền riêng tư tài chính cho sinh viên, hệ thống ẩn danh danh tính cá nhân (Họ tên, MSSV) và chỉ hiển thị địa chỉ ví on-chain. Việc đối chiếu địa chỉ ví với danh bạ sinh viên chỉ dành riêng cho Cố vấn học tập và Ban cán sự để phục vụ công tác đối soát quỹ.")
 
             return "\n".join(lines) + disclaimer
 

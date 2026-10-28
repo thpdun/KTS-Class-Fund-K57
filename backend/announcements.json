@@ -1,10 +1,36 @@
 {
-  "title": "Kêu gọi nộp Quỹ Lớp Học kỳ 2",
-  "targetAmountEth": "0.005",
-  "deadline": "23:59 ngày 20/11/2026",
-  "classSize": 5,
-  "purpose": "Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề",
-  "status": "Đang diễn ra",
-  "updatedBy": "0x36fd4887e9d1eca4ae5062a745cc2c6182b77060",
-  "updatedAt": null
+  "active": {
+    "id": "ann-20261028045521",
+    "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+    "targetAmountEth": "0.0100",
+    "deadline": "23:59 ngày 30/11/2026",
+    "deadlineTimestamp": 1796057940.0,
+    "classSize": 7,
+    "purpose": "Học tập và sinh hoạt chuyên đề K57",
+    "status": "active",
+    "autoCloseOnTarget": false,
+    "createdAt": "2026-10-28T04:55:21.500488+00:00",
+    "endedAt": null,
+    "endReason": null,
+    "updatedBy": "0x85ac8f0ca75f2e3fda073bc566659c011208da74",
+    "updatedAt": "2026-10-28T04:55:21.500652+00:00"
+  },
+  "history": [
+    {
+      "id": "ann-k57-hk1",
+      "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+      "targetAmountEth": "0.0100",
+      "deadline": "23:59 ngày 30/11/2026",
+      "deadlineTimestamp": 1796057940.0,
+      "classSize": 7,
+      "purpose": "Học tập và sinh hoạt chuyên đề K57",
+      "status": "archived",
+      "autoCloseOnTarget": false,
+      "createdAt": "2026-10-28T04:55:21.500173+00:00",
+      "endedAt": "2026-10-28T04:55:21.500348+00:00",
+      "endReason": "Thay thế bởi đợt thu mới",
+      "updatedBy": "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2",
+      "updatedAt": null
+    }
+  ]
 }

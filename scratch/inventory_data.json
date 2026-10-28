@@ -1,0 +1,846 @@
+{
+  "sections": [
+    {
+      "tag": "aside",
+      "id": "appSidebar",
+      "title": ""
+    },
+    {
+      "tag": "section",
+      "id": "hero",
+      "title": "KTS CLASS FUND — Minh bạch hóa quản lý quỹ lớp bằng Blockchain"
+    },
+    {
+      "tag": "section",
+      "id": "dapp-workspace",
+      "title": "Chọn Vai Trò Để Thao Tác"
+    },
+    {
+      "tag": "section",
+      "id": "about",
+      "title": "Tại sao chúng tôi xây dựng KTS-Class-Fund?"
+    },
+    {
+      "tag": "section",
+      "id": "workflow",
+      "title": "Hai Quy Trình Quản Lý Quỹ Lớp"
+    },
+    {
+      "tag": "section",
+      "id": "governance",
+      "title": "Khi Nào Một Đề Xuất Được Thông Qua?"
+    },
+    {
+      "tag": "section",
+      "id": "economics",
+      "title": "Quy Tắc Phân Bổ 99% / 1% & Cơ Chế Phí Gas"
+    },
+    {
+      "tag": "section",
+      "id": "blockchain",
+      "title": "Blockchain & Hợp Đồng Thông Minh Là Gì?"
+    },
+    {
+      "tag": "section",
+      "id": "faq",
+      "title": "Câu Hỏi Thường Gặp (FAQ)"
+    },
+    {
+      "tag": "section",
+      "id": "transparency",
+      "title": "Cấu Hình Hợp Đồng & Nhật Ký On-chain"
+    },
+    {
+      "tag": "div",
+      "id": "walletModal",
+      "title": "Thông báo hệ thống"
+    },
+    {
+      "tag": "div",
+      "id": "announcementModal",
+      "title": "📢 Cập nhật thông báo Quỹ lớp K57"
+    },
+    {
+      "tag": "div",
+      "id": "rosterModal",
+      "title": ""
+    }
+  ],
+  "total_unique_html_ids": 150,
+  "html_ids": [
+    "about",
+    "advisorFeePoolBalance",
+    "annAmount",
+    "annClassSize",
+    "annDeadline",
+    "annProgressBar",
+    "annProgressText",
+    "annPurpose",
+    "annStatusTag",
+    "annStatusText",
+    "annTitle",
+    "announcementModal",
+    "appSidebar",
+    "bcsRefundTableBody",
+    "bcsSpendTableBody",
+    "blockchain",
+    "btnApplyContractAddress",
+    "btnBannerQuickDeposit",
+    "btnCancelEditRoster",
+    "btnCloseRosterHeader",
+    "btnConnectWallet",
+    "btnCreateRefundAction",
+    "btnCreateSpendAction",
+    "btnDepositAction",
+    "btnDisconnectWallet",
+    "btnOpenAnnModal",
+    "btnOpenRosterModal",
+    "btnQuickDisconnect",
+    "btnQuickSwitch",
+    "btnResetConfigContract",
+    "btnResetQuickContract",
+    "btnRoleAdvisor",
+    "btnRoleBCS",
+    "btnRoleHistory",
+    "btnRoleStudent",
+    "btnSaveAnnouncementModal",
+    "btnSaveQuickContract",
+    "btnSaveRosterEntry",
+    "btnSetBcsAction",
+    "btnSwitchWallet",
+    "btnToggleAllFaq",
+    "btnToggleFaqLength",
+    "btnToggleNav",
+    "btnWithdrawFeeAction",
+    "calcAdminFee",
+    "calcClassFund",
+    "calcInputEth",
+    "calcMaxRefund",
+    "classAnnouncementCard",
+    "configContractAddress",
+    "dapp-workspace",
+    "economics",
+    "faq",
+    "faqAccordionContainer",
+    "faqCategoryPills",
+    "faqSearchInput",
+    "faqShowMoreWrapper",
+    "flowBalAdminFee",
+    "flowBalClassFund",
+    "flowBalExecutedCount",
+    "flowBalExecutedSpend",
+    "flowBalReserved",
+    "flowFilterGroup",
+    "flowLedgerTableBody",
+    "flowLinkEtherscan",
+    "formAnnAmount",
+    "formAnnClassSize",
+    "formAnnDeadline",
+    "formAnnPurpose",
+    "formAnnStatus",
+    "formAnnTitle",
+    "formRosterMssv",
+    "formRosterName",
+    "formRosterRole",
+    "formRosterWallet",
+    "governance",
+    "guestWarningBanner",
+    "hero",
+    "inputBcsAddress",
+    "inputDepositAmount",
+    "inputRefundAmount",
+    "inputRefundReason",
+    "inputSpendAmount",
+    "inputSpendDesc",
+    "inputSpendRecipient",
+    "inputWithdrawFeeAmount",
+    "itemRosterModalBtn",
+    "linkEtherscanContract",
+    "metricActiveBCS",
+    "metricActiveBCSNote",
+    "metricAdminFee",
+    "metricAdminFeeNote",
+    "metricClassFund",
+    "metricClassFundNote",
+    "metricDepositorsCount",
+    "metricDepositorsNote",
+    "metricRefundCount",
+    "metricSpendCount",
+    "modalBody",
+    "modalFooter",
+    "modalTitle",
+    "myAvailableRefund",
+    "myPendingRefund",
+    "myTotalContribution",
+    "navLinks",
+    "networkBadge",
+    "networkDot",
+    "networkText",
+    "panelAdvisor",
+    "panelBCS",
+    "panelHistory",
+    "panelStudent",
+    "quickContractAddress",
+    "quickNetworkStatus",
+    "quickRoleBadge",
+    "quickStudentIdentity",
+    "quickWalletAccount",
+    "rfFilterAll",
+    "rfFilterBcs",
+    "rfFilterPaid",
+    "rfFilterStudent",
+    "rfFilterUnpaid",
+    "roleDetailContainer",
+    "roleDetailHint",
+    "rosterAdminSection",
+    "rosterBcsViewNote",
+    "rosterCountBadge",
+    "rosterFooterSummary",
+    "rosterFormTitle",
+    "rosterModal",
+    "rosterSearchInput",
+    "rosterStatBcs",
+    "rosterStatPaid",
+    "rosterStatStudents",
+    "rosterStatTotal",
+    "rosterTableBody",
+    "selectBcsStatus",
+    "sidebarBackdrop",
+    "sidebarRoleBadge",
+    "sidebarRosterBadge",
+    "sidebarUserIdentity",
+    "sidebarWalletShort",
+    "studentRefundTableBody",
+    "terminalLog",
+    "textContractConfigStatus",
+    "thRosterAction",
+    "transparency",
+    "walletBtnText",
+    "walletModal",
+    "workflow"
+  ],
+  "total_js_ids": 135,
+  "js_accessed_ids": [
+    "advisorFeePoolBalance",
+    "aiBtnClose",
+    "aiBtnSend",
+    "aiChatBody",
+    "aiChatDrawer",
+    "aiFabToggle",
+    "aiStatusIndicator",
+    "aiStatusText",
+    "aiTypingIndicator",
+    "aiUserInput",
+    "annAmount",
+    "annClassSize",
+    "annDeadline",
+    "annProgressBar",
+    "annProgressText",
+    "annPurpose",
+    "annStatusText",
+    "annTitle",
+    "announcementModal",
+    "appSidebar",
+    "bcsRefundTableBody",
+    "bcsSpendTableBody",
+    "btnApplyContractAddress",
+    "btnBannerQuickDeposit",
+    "btnCancelEditRoster",
+    "btnConnectWallet",
+    "btnCreateRefundAction",
+    "btnCreateSpendAction",
+    "btnDepositAction",
+    "btnDisconnectWallet",
+    "btnOpenAnnModal",
+    "btnQuickDisconnect",
+    "btnQuickSwitch",
+    "btnRoleAdvisor",
+    "btnRoleBCS",
+    "btnRoleHistory",
+    "btnRoleStudent",
+    "btnSaveAnnouncementModal",
+    "btnSaveQuickContract",
+    "btnSaveRosterEntry",
+    "btnSetBcsAction",
+    "btnSwitchWallet",
+    "btnToggleAllFaq",
+    "btnToggleFaqLength",
+    "btnToggleNav",
+    "btnWithdrawFeeAction",
+    "calcAdminFee",
+    "calcClassFund",
+    "calcInputEth",
+    "calcMaxRefund",
+    "configContractAddress",
+    "faqAccordionContainer",
+    "faqSearchInput",
+    "faqShowMoreWrapper",
+    "flowBalAdminFee",
+    "flowBalClassFund",
+    "flowBalExecutedCount",
+    "flowBalExecutedSpend",
+    "flowBalReserved",
+    "flowLedgerTableBody",
+    "flowLinkEtherscan",
+    "formAnnAmount",
+    "formAnnClassSize",
+    "formAnnDeadline",
+    "formAnnPurpose",
+    "formAnnStatus",
+    "formAnnTitle",
+    "formRosterMssv",
+    "formRosterName",
+    "formRosterRole",
+    "formRosterWallet",
+    "guestWarningBanner",
+    "inputBcsAddress",
+    "inputDepositAmount",
+    "inputModalContract",
+    "inputRefundAmount",
+    "inputRefundReason",
+    "inputSpendAmount",
+    "inputSpendDesc",
+    "inputSpendRecipient",
+    "inputWithdrawFeeAmount",
+    "itemRosterModalBtn",
+    "linkEtherscanContract",
+    "metricActiveBCS",
+    "metricActiveBCSNote",
+    "metricAdminFee",
+    "metricClassFund",
+    "metricClassFundNote",
+    "metricDepositorsCount",
+    "metricDepositorsNote",
+    "metricRefundCount",
+    "metricSpendCount",
+    "modalBody",
+    "modalFooter",
+    "modalTitle",
+    "myAvailableRefund",
+    "myPendingRefund",
+    "myTotalContribution",
+    "networkDot",
+    "networkText",
+    "panelAdvisor",
+    "panelBCS",
+    "panelHistory",
+    "panelStudent",
+    "quickContractAddress",
+    "quickNetworkStatus",
+    "quickRoleBadge",
+    "quickStudentIdentity",
+    "quickWalletAccount",
+    "roleDetailContainer",
+    "roleDetailHint",
+    "roleViewStudent",
+    "rosterAdminSection",
+    "rosterBcsViewNote",
+    "rosterCountBadge",
+    "rosterFooterSummary",
+    "rosterFormTitle",
+    "rosterModal",
+    "rosterSearchInput",
+    "rosterStatBcs",
+    "rosterStatPaid",
+    "rosterStatStudents",
+    "rosterStatTotal",
+    "rosterTableBody",
+    "selectBcsStatus",
+    "sidebarBackdrop",
+    "sidebarRoleBadge",
+    "sidebarRosterBadge",
+    "sidebarUserIdentity",
+    "sidebarWalletShort",
+    "studentRefundTableBody",
+    "terminalLog",
+    "textContractConfigStatus",
+    "walletBtnText",
+    "walletModal"
+  ],
+  "ids_in_html_not_in_js": [
+    "about",
+    "annStatusTag",
+    "blockchain",
+    "btnCloseRosterHeader",
+    "btnOpenRosterModal",
+    "btnResetConfigContract",
+    "btnResetQuickContract",
+    "classAnnouncementCard",
+    "dapp-workspace",
+    "economics",
+    "faq",
+    "faqCategoryPills",
+    "flowFilterGroup",
+    "governance",
+    "hero",
+    "metricAdminFeeNote",
+    "navLinks",
+    "networkBadge",
+    "rfFilterAll",
+    "rfFilterBcs",
+    "rfFilterPaid",
+    "rfFilterStudent",
+    "rfFilterUnpaid",
+    "thRosterAction",
+    "transparency",
+    "workflow"
+  ],
+  "ids_in_js_not_in_html": [
+    "aiBtnClose",
+    "aiBtnSend",
+    "aiChatBody",
+    "aiChatDrawer",
+    "aiFabToggle",
+    "aiStatusIndicator",
+    "aiStatusText",
+    "aiTypingIndicator",
+    "aiUserInput",
+    "inputModalContract",
+    "roleViewStudent"
+  ],
+  "onclicks": [
+    {
+      "tag": "a",
+      "id": "(no id)",
+      "onclick": "selectRoleView('student')"
+    },
+    {
+      "tag": "a",
+      "id": "(no id)",
+      "onclick": "selectRoleView('bcs')"
+    },
+    {
+      "tag": "a",
+      "id": "(no id)",
+      "onclick": "selectRoleView('advisor')"
+    },
+    {
+      "tag": "a",
+      "id": "(no id)",
+      "onclick": "selectRoleView('history')"
+    },
+    {
+      "tag": "a",
+      "id": "(no id)",
+      "onclick": "openRosterModal()"
+    },
+    {
+      "tag": "button",
+      "id": "btnSwitchWallet",
+      "onclick": "switchAccount()"
+    },
+    {
+      "tag": "button",
+      "id": "btnDisconnectWallet",
+      "onclick": "disconnectWallet()"
+    },
+    {
+      "tag": "button",
+      "id": "btnQuickSwitch",
+      "onclick": "switchAccount()"
+    },
+    {
+      "tag": "button",
+      "id": "btnQuickDisconnect",
+      "onclick": "disconnectWallet()"
+    },
+    {
+      "tag": "button",
+      "id": "btnOpenRosterModal",
+      "onclick": "openRosterModal()"
+    },
+    {
+      "tag": "button",
+      "id": "btnResetQuickContract",
+      "onclick": "resetToDefaultContract()"
+    },
+    {
+      "tag": "button",
+      "id": "btnRoleStudent",
+      "onclick": "selectRoleView('student')"
+    },
+    {
+      "tag": "button",
+      "id": "btnRoleBCS",
+      "onclick": "selectRoleView('bcs')"
+    },
+    {
+      "tag": "button",
+      "id": "btnRoleAdvisor",
+      "onclick": "selectRoleView('advisor')"
+    },
+    {
+      "tag": "button",
+      "id": "btnRoleHistory",
+      "onclick": "selectRoleView('history')"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeRoleDetail()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeRoleDetail()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeRoleDetail()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeRoleDetail()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "filterFlowLedger('all', this)"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "filterFlowLedger('spend', this)"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "filterFlowLedger('refund', this)"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "filterFlowLedger('executed', this)"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "filterFlowLedger('pending', this)"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "setFaqCategory('all')"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "setFaqCategory('Tổng quan')"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "setFaqCategory('Ví và kết nối')"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "setFaqCategory('Đóng góp và phí')"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "setFaqCategory('Đề xuất và biểu quyết')"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "setFaqCategory('Hoàn tiền và lỗi giao dịch')"
+    },
+    {
+      "tag": "button",
+      "id": "btnToggleAllFaq",
+      "onclick": "toggleAllFaq()"
+    },
+    {
+      "tag": "button",
+      "id": "btnToggleFaqLength",
+      "onclick": "toggleFaqLength()"
+    },
+    {
+      "tag": "button",
+      "id": "btnResetConfigContract",
+      "onclick": "resetToDefaultContract()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "clearTerminal()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeModal()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeModal()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeAnnModal()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeAnnModal()"
+    },
+    {
+      "tag": "div",
+      "id": "rosterModal",
+      "onclick": "if(event.target === this) closeRosterModal()"
+    },
+    {
+      "tag": "button",
+      "id": "btnCloseRosterHeader",
+      "onclick": "closeRosterModal()"
+    },
+    {
+      "tag": "button",
+      "id": "rfFilterAll",
+      "onclick": "setRosterFilter('all')"
+    },
+    {
+      "tag": "button",
+      "id": "rfFilterBcs",
+      "onclick": "setRosterFilter('bcs')"
+    },
+    {
+      "tag": "button",
+      "id": "rfFilterStudent",
+      "onclick": "setRosterFilter('student')"
+    },
+    {
+      "tag": "button",
+      "id": "rfFilterPaid",
+      "onclick": "setRosterFilter('paid')"
+    },
+    {
+      "tag": "button",
+      "id": "rfFilterUnpaid",
+      "onclick": "setRosterFilter('unpaid')"
+    },
+    {
+      "tag": "button",
+      "id": "btnSaveRosterEntry",
+      "onclick": "saveRosterEntry()"
+    },
+    {
+      "tag": "button",
+      "id": "btnCancelEditRoster",
+      "onclick": "cancelEditRoster()"
+    },
+    {
+      "tag": "button",
+      "id": "(no id)",
+      "onclick": "closeRosterModal()"
+    }
+  ],
+  "listeners": [
+    {
+      "element": "input",
+      "event": "input",
+      "handler": "("
+    },
+    {
+      "element": "window",
+      "event": "DOMContentLoaded",
+      "handler": "("
+    },
+    {
+      "element": "searchBox",
+      "event": "input",
+      "handler": "(e"
+    },
+    {
+      "element": "btnToggle",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "backdropEl",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "link",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "btnConnectWallet",
+      "event": "click",
+      "handler": "connectWallet"
+    },
+    {
+      "element": "btnDepositAction",
+      "event": "click",
+      "handler": "doDeposit"
+    },
+    {
+      "element": "btnCreateRefundAction",
+      "event": "click",
+      "handler": "doCreateRefund"
+    },
+    {
+      "element": "btnCreateSpendAction",
+      "event": "click",
+      "handler": "doCreateSpend"
+    },
+    {
+      "element": "btnSetBcsAction",
+      "event": "click",
+      "handler": "doSetBCS"
+    },
+    {
+      "element": "btnWithdrawFeeAction",
+      "event": "click",
+      "handler": "doWithdrawFee"
+    },
+    {
+      "element": "btnSaveQuickContract",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "btnApplyContractAddress",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "window",
+      "event": "keydown",
+      "handler": "(e"
+    },
+    {
+      "element": "window",
+      "event": "ethereum#initialized",
+      "handler": "("
+    },
+    {
+      "element": "fabBtn",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "closeBtn",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "sendBtn",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "input",
+      "event": "keydown",
+      "handler": "(e"
+    },
+    {
+      "element": "btnOpen",
+      "event": "click",
+      "handler": "openAnnModal"
+    },
+    {
+      "element": "btnSave",
+      "event": "click",
+      "handler": "("
+    },
+    {
+      "element": "btnQuickDep",
+      "event": "click",
+      "handler": "("
+    }
+  ],
+  "faq_questions": [],
+  "js_functions": [
+    "appendAIMessage",
+    "applyContractAddress",
+    "applyFaqFilter",
+    "askAIPrompt",
+    "cancelEditRoster",
+    "checkAIStatus",
+    "checkMyStudentIdentity",
+    "clearTerminal",
+    "closeAnnModal",
+    "closeModal",
+    "closeRoleDetail",
+    "closeRosterModal",
+    "connectWallet",
+    "copyRosterWallet",
+    "disconnectWallet",
+    "doCreateRefund",
+    "doCreateSpend",
+    "doDeposit",
+    "doSetBCS",
+    "doSwitchSepolia",
+    "doWithdrawFee",
+    "editRosterStudent",
+    "escapeHtml",
+    "executeRefund",
+    "executeSpend",
+    "fallbackCopyText",
+    "filterFlowLedger",
+    "filterRosterTable",
+    "formatAIReply",
+    "formatEth",
+    "getAnnouncementData",
+    "getDynamicClassSize",
+    "getInitials",
+    "getMetaMaskProvider",
+    "getOnchainSnapshot",
+    "getRosterAvatarGradient",
+    "getStatusBadge",
+    "handleAccountChange",
+    "handleDisconnect",
+    "handleUserSend",
+    "initAIChatbot",
+    "initAnnouncementSystem",
+    "initContractInstance",
+    "initWeb3",
+    "loadCashFlowLedger",
+    "loadClassRoster",
+    "loadRefundRequests",
+    "loadSpendRequests",
+    "logToTerminal",
+    "lookupStudent",
+    "openAnnModal",
+    "openRosterModal",
+    "promptContractConfig",
+    "promptSwitchSepoliaModal",
+    "refreshContractData",
+    "removeTypingIndicator",
+    "renderAnnouncementUI",
+    "renderFaq",
+    "renderFlowLedgerTable",
+    "renderRosterTable",
+    "resetToDefaultContract",
+    "saveAnnouncementData",
+    "saveContractFromModal",
+    "saveKnownDepositor",
+    "saveRosterEntry",
+    "selectRoleView",
+    "setFaqCategory",
+    "setRosterFilter",
+    "setWorkspaceView",
+    "setupCalculator",
+    "shortenAddress",
+    "showModal",
+    "showTypingIndicator",
+    "switchAccount",
+    "syncAnnouncementFromServer",
+    "syncDepositorsData",
+    "toggleAllFaq",
+    "toggleFaq",
+    "toggleFaqLength",
+    "updateAnnouncementProgress",
+    "updateRoleDisplay",
+    "voteRefund",
+    "voteSpend"
+  ]
+}
