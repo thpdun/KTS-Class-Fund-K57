@@ -407,13 +407,21 @@ class AIAssistantService:
             "thông báo", "đợt thu", "hạn chót", "deadline", "mức đóng", "mức nộp", "mục đích thu", "sĩ số", "kế hoạch"
         ])
         if is_announcement_query:
-            title = announcement.get("title", "Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57")
+            status = announcement.get("status", "none")
+            title = announcement.get("title", "")
+            if status in ["none", "archived"] or not title or "chưa có" in title.lower() or "không có" in title.lower():
+                return (
+                    "📢 **THÔNG BÁO THU QUỸ LỚP:**\n"
+                    "- Hiện tại Ban cán sự lớp K57 **chưa phát động đợt thu quỹ mới**.\n"
+                    "- Khi có thông báo thu quỹ chính thức từ Ban cán sự hoặc Cố vấn học tập, thông tin chi tiết về mức nộp, hạn chót và mục đích sẽ được công bố công khai tại thanh thông báo đầu trang."
+                    + disclaimer
+                )
+
             target = announcement.get("targetAmountEth", "0.01")
-            deadline = announcement.get("deadline", "23:59 ngày 15/11/2026")
-            class_size = announcement.get("classSize", 5)
-            purpose = announcement.get("purpose", "Kinh phí phục vụ tài liệu học tập và các hoạt động chuyên đề.")
+            deadline = announcement.get("deadline", "Chưa xác định")
+            class_size = announcement.get("classSize", 7)
+            purpose = announcement.get("purpose", "Kinh phí phục vụ hoạt động lớp.")
             progress = announcement.get("progressText", f"{depositors_count}/{class_size} bạn đã nộp")
-            status = announcement.get("status", "Đang diễn ra")
 
             lines = [
                 "📢 **THÔNG BÁO THU QUỸ LỚP HIỆN HÀNH:**",

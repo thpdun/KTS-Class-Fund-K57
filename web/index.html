@@ -4205,7 +4205,7 @@
             <div class="ann-tag-group">
               <span class="ann-badge-pill">📢 THÔNG BÁO QUỸ LỚP</span>
               <span class="ann-status-tag" id="annStatusTag"><span class="ann-dot-pulse"></span> <span
-                  id="annStatusText">Đang diễn ra</span></span>
+                  id="annStatusText">Chưa có đợt thu</span></span>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button class="btn btn-sm btn-outline-light" id="btnToggleAnnHistory" type="button"
@@ -4220,18 +4220,17 @@
           </div>
 
           <div class="ann-body">
-            <h2 class="ann-title" id="annTitle">Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số</h2>
-            <p class="ann-purpose" id="annPurpose">Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại
-              khóa và quỹ dự phòng hỗ trợ sinh viên K57.</p>
+            <h2 class="ann-title" id="annTitle">Hiện chưa có thông báo kêu gọi nộp quỹ</h2>
+            <p class="ann-purpose" id="annPurpose">Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.</p>
 
             <div class="ann-meta-grid">
               <div class="ann-meta-item">
                 <span class="ann-meta-label">💰 Mức đóng quy định:</span>
-                <span class="ann-meta-val" id="annAmount">0.0100 ETH / bạn</span>
+                <span class="ann-meta-val" id="annAmount">0 ETH</span>
               </div>
               <div class="ann-meta-item">
                 <span class="ann-meta-label">⏳ Hạn chót nộp:</span>
-                <span class="ann-meta-val" id="annDeadline">23:59 ngày 15/11/2026</span>
+                <span class="ann-meta-val" id="annDeadline">Không có</span>
               </div>
               <div class="ann-meta-item">
                 <span class="ann-meta-label">👥 Sĩ số lớp:</span>
@@ -4262,11 +4261,10 @@
           </div>
 
           <div class="ann-footer">
-            <button class="btn btn-primary" id="btnBannerQuickDeposit">
-              ⚡ Nộp quỹ ngay (0.01 ETH)
+            <button class="btn btn-primary" id="btnBannerQuickDeposit" style="display: none;">
+              ⚡ Nộp quỹ ngay
             </button>
-            <span class="ann-tip">💡 Sinh viên có thể bấm nộp trực tiếp hoặc hỏi Trợ lý AI để tra cứu thông tin chi tiết
-              về đợt thu này.</span>
+            <span class="ann-tip">💡 Sinh viên có thể nộp quỹ khi Ban cán sự mở đợt thu hoặc hỏi Trợ lý AI để tra cứu thông tin chi tiết.</span>
           </div>
         </div>
 
@@ -4753,6 +4751,76 @@
                   <button class="btn btn-success" id="btnWithdrawFeeAction" style="width: 100%;">
                     Rút quỹ phí về ví Cố vấn
                   </button>
+                </div>
+
+                <!-- 3. Giám sát giao dịch và tình hình đóng quỹ từng sinh viên -->
+                <div id="sectionAdvisorStudentMonitor"
+                  style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-top: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                    <div>
+                      <h4 style="font-size: 1.05rem; margin: 0 0 4px 0; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+                        <span>🎓</span> 3. Giám sát tình hình nộp quỹ &amp; giao dịch từng sinh viên K57
+                      </h4>
+                      <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">
+                        Cố vấn theo dõi chi tiết từng sinh viên, đối soát số ETH nạp on-chain và lịch sử giao dịch Etherscan.
+                      </p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <span id="advisorLastUpdatedText" style="font-size: 0.78rem; color: var(--text-muted); font-style: italic;">Chưa đồng bộ</span>
+                      <button class="btn btn-sm btn-outline" id="btnRefreshAdvisorMonitor" onclick="refreshAdvisorStudentData(true)" style="padding: 5px 12px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 4px;">
+                        🔄 Làm mới
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Thông báo phạm vi quét lịch sử -->
+                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.8rem; color: #166534; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                      ℹ️ <strong>Phạm vi quét lịch sử:</strong> Quét 5 chunks (~45.000 blocks gần nhất). 
+                      <span style="color: #15803d;">Tổng số tiền đóng góp tích lũy được bảo đảm chính xác 100% từ trạng thái Smart Contract.</span>
+                    </div>
+                    <span id="advisorChunkScanBadge" style="background: #dcfce7; padding: 2px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; border: 1px solid #86efac;">Sepolia: Đang kết nối...</span>
+                  </div>
+
+                  <!-- Toolbar tìm kiếm & lọc trạng thái -->
+                  <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; justify-content: space-between;">
+                    <div style="position: relative; flex: 1; min-width: 240px;">
+                      <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.85rem;">🔍</span>
+                      <input type="text" id="advisorStudentSearchInput" class="form-control" placeholder="Tìm theo Họ tên hoặc MSSV..." oninput="filterAdvisorStudentMonitor()" style="padding-left: 32px; font-size: 0.85rem;">
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="advisorFilterButtons">
+                      <button class="flow-filter-btn active" id="advFilterAll" onclick="setAdvisorMonitorFilter('all')">Tất cả</button>
+                      <button class="flow-filter-btn" id="advFilterPaid" onclick="setAdvisorMonitorFilter('paid')">✅ Đã nộp</button>
+                      <button class="flow-filter-btn" id="advFilterUnpaid" onclick="setAdvisorMonitorFilter('unpaid')">⏳ Chưa nộp</button>
+                      <button class="flow-filter-btn" id="advFilterUnlinked" onclick="setAdvisorMonitorFilter('unlinked')">⚠️ Chưa liên kết ví</button>
+                      <button class="flow-filter-btn" id="advFilterUnverified" onclick="setAdvisorMonitorFilter('unverified')">⚪ Chưa xác minh</button>
+                    </div>
+                  </div>
+
+                  <!-- Bảng giám sát sinh viên -->
+                  <div class="data-table-container">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th style="width: 50px; text-align: center;">STT</th>
+                          <th style="min-width: 170px;">Sinh viên</th>
+                          <th style="width: 110px;">MSSV</th>
+                          <th style="width: 120px;">Vai trò</th>
+                          <th style="min-width: 200px;">Địa chỉ ví</th>
+                          <th style="width: 130px;">Tổng đóng góp</th>
+                          <th style="width: 140px;">Trạng thái</th>
+                          <th style="width: 100px; text-align: center;">Chi tiết</th>
+                        </tr>
+                      </thead>
+                      <tbody id="advisorStudentMonitorTableBody">
+                        <tr>
+                          <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            Đang tải danh bạ và đồng bộ trạng thái đóng góp on-chain...
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -5896,6 +5964,109 @@
           style="padding: 7px 18px; font-weight: 600; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
           ✕ Đóng danh bạ
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL CHI TIẾT GIAO DỊCH SINH VIÊN (DÀNH CHO CỐ VẤN)         -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="advisorStudentDetailModal" onclick="if(event.target === this) closeAdvisorStudentDetail()">
+    <div class="modal-box" style="max-width: 780px;">
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div id="advModalAvatar" class="roster-avatar" style="width: 44px; height: 44px; font-size: 1.1rem; background: linear-gradient(135deg, #2563eb, #3b82f6);">SV</div>
+          <div>
+            <h3 id="advModalName" style="margin: 0; color: #0f172a; font-size: 1.2rem; font-weight: 700;">Họ và Tên</h3>
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; font-size: 0.82rem; color: #64748b;">
+              <span>MSSV: <strong id="advModalMssv" style="color: #0f172a;">23K4300...</strong></span>
+              <span>&bull;</span>
+              <span id="advModalRoleBadge" class="status-pill">Sinh viên</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="closeAdvisorStudentDetail()" style="padding: 4px 12px; font-size: 0.85rem; border-radius: 6px;">✕ Đóng</button>
+      </div>
+
+      <!-- Scrollable content -->
+      <div style="overflow-y: auto; max-height: 70vh; padding-right: 4px;">
+        <!-- Wallet & Contribution Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 16px;">
+          <!-- Card 1: Địa chỉ ví -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.72rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Địa chỉ ví (MetaMask):</div>
+            <div id="advModalWallet" style="font-family: monospace; font-size: 0.82rem; word-break: break-all; color: #0f172a; font-weight: 600;">--</div>
+            <div id="advModalWalletLinks" style="margin-top: 6px; display: flex; gap: 8px;"></div>
+          </div>
+
+          <!-- Card 2: Tổng đã nộp -->
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.72rem; color: #166534; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Tổng nộp on-chain:</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #047857;" id="advModalTotalContrib">0.0000 ETH</div>
+            <div style="font-size: 0.72rem; color: #15803d; margin-top: 2px;" id="advModalTotalContribWei">0 wei</div>
+          </div>
+
+          <!-- Card 3: Trạng thái đối soát -->
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.72rem; color: #1e40af; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Trạng thái đối soát:</div>
+            <div id="advModalStatusBadge">--</div>
+            <div style="font-size: 0.72rem; color: #3b82f6; margin-top: 4px;" id="advModalStatusNote">Xác thực từ Smart Contract</div>
+          </div>
+        </div>
+
+        <!-- Section 1: Lịch sử từng lần nộp tiền -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <h4 style="font-size: 0.95rem; color: #0f172a; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: flex; align-items: center; gap: 6px;">📥 Lịch sử từng lần nộp tiền (Event FundDeposited)</span>
+            <span id="advModalDepositCountBadge" style="font-size: 0.72rem; background: #ecfdf5; color: #047857; padding: 2px 8px; border-radius: 12px; font-weight: 700; border: 1px solid #a7f3d0;">0 giao dịch</span>
+          </h4>
+          <div class="data-table-container" style="max-height: 200px; overflow-y: auto;">
+            <table class="data-table" style="font-size: 0.82rem;">
+              <thead>
+                <tr>
+                  <th style="width: 45px; text-align: center;">STT</th>
+                  <th>Số tiền</th>
+                  <th>Thời gian</th>
+                  <th>Block #</th>
+                  <th>Transaction Hash</th>
+                </tr>
+              </thead>
+              <tbody id="advModalDepositTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Yêu cầu hoàn tiền -->
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px;">
+          <h4 style="font-size: 0.95rem; color: #0f172a; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: flex; align-items: center; gap: 6px;">🔄 Yêu cầu hoàn tiền (Refund Requests)</span>
+            <span id="advModalRefundCountBadge" style="font-size: 0.72rem; background: #fff7ed; color: #c2410c; padding: 2px 8px; border-radius: 12px; font-weight: 700; border: 1px solid #fed7aa;">0 đơn</span>
+          </h4>
+          <div class="data-table-container" style="max-height: 180px; overflow-y: auto;">
+            <table class="data-table" style="font-size: 0.82rem;">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">Mã</th>
+                  <th>Số tiền</th>
+                  <th>Lý do</th>
+                  <th>Thời gian nộp</th>
+                  <th>Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody id="advModalRefundTableBody">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+        <button class="btn btn-secondary btn-sm" onclick="closeAdvisorStudentDetail()" style="padding: 6px 16px; border-radius: 6px; font-weight: 600;">Đóng cửa sổ</button>
       </div>
     </div>
   </div>
@@ -7713,16 +7884,19 @@
       // 3. Phân hệ Cố vấn học tập (panelAdvisor)
       const secAdvBcs = document.getElementById("sectionAdvisorManageBcs");
       const secAdvFee = document.getElementById("sectionAdvisorWithdrawFee");
+      const secAdvMonitor = document.getElementById("sectionAdvisorStudentMonitor");
       const noticeAdv = document.getElementById("noticeAdvisorRestricted");
       const noticeAdvContent = document.getElementById("noticeAdvisorRestrictedContent");
 
       if (verifiedRole === "advisor") {
         if (secAdvBcs) secAdvBcs.style.display = "block";
         if (secAdvFee) secAdvFee.style.display = "block";
+        if (secAdvMonitor) secAdvMonitor.style.display = "block";
         if (noticeAdv) noticeAdv.style.display = "none";
       } else {
         if (secAdvBcs) secAdvBcs.style.display = "none";
         if (secAdvFee) secAdvFee.style.display = "none";
+        if (secAdvMonitor) secAdvMonitor.style.display = "none";
         if (noticeAdv) noticeAdv.style.display = "block";
         if (noticeAdvContent) {
           if (verifiedRole === "none") {
@@ -7807,6 +7981,9 @@
         if (btnAdvisor) btnAdvisor.classList.add("active");
         if (pAdvisor) pAdvisor.style.display = "flex";
         if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Cố Vấn Học Tập</strong> (Bấm lại nút để thu gọn)</span>';
+        if (typeof renderAdvisorStudentMonitorTable === "function") {
+          renderAdvisorStudentMonitorTable();
+        }
       } else if (role === "history") {
         if (btnHistory) btnHistory.classList.add("active");
         if (pHistory) {
@@ -8694,6 +8871,49 @@
     let currentRosterFilter = "all";
     const rosterContribCache = new Map();
 
+    // Biến trạng thái phân hệ Giám sát sinh viên dành cho Cố vấn học tập
+    let currentAdvisorMonitorFilter = "all";
+    let advisorLastUpdated = null;
+    let allRefundRequestsCache = [];
+    const studentDepositEventsMap = new Map(); // key: studentAddressLower -> Array of { txHash, blockNumber, amountWei, amountEth }
+    const blockTimestampCache = new Map(); // key: blockNumber -> timestamp (seconds)
+
+    async function getBlockTimestamp(blockNum) {
+      if (!blockNum) return null;
+      if (blockTimestampCache.has(blockNum)) {
+        return blockTimestampCache.get(blockNum);
+      }
+      try {
+        if (provider) {
+          const b = await provider.getBlock(blockNum);
+          if (b && b.timestamp) {
+            blockTimestampCache.set(blockNum, b.timestamp);
+            return b.timestamp;
+          }
+        }
+      } catch (e) {
+        console.warn("Không lấy được block timestamp cho block #", blockNum, e);
+      }
+      return null;
+    }
+
+    function formatTimestampVi(tsSeconds) {
+      if (!tsSeconds) return "--";
+      try {
+        const d = new Date(Number(tsSeconds) * 1000);
+        const pad = (n) => String(n).padStart(2, "0");
+        const hh = pad(d.getHours());
+        const mm = pad(d.getMinutes());
+        const ss = pad(d.getSeconds());
+        const day = pad(d.getDate());
+        const mon = pad(d.getMonth() + 1);
+        const yyyy = d.getFullYear();
+        return `${hh}:${mm}:${ss} ${day}/${mon}/${yyyy}`;
+      } catch (e) {
+        return "--";
+      }
+    }
+
     function invalidateRosterContribCache(wallet = null) {
       if (wallet && typeof wallet === "string") {
         rosterContribCache.delete(wallet.toLowerCase().trim());
@@ -8989,9 +9209,12 @@
           : `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;">🎓 ${s.roleTitle || 'Sinh viên'}</span>`;
 
         const canEditStudent = isAdvisor || isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs");
+        const detailBtn = isAdvisor
+          ? `<button class="btn btn-sm btn-outline" onclick="openAdvisorStudentDetail('${s.mssv}')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; color: #059669; border: 1px solid #a7f3d0; background: #ecfdf5; font-weight: 600; margin-right: 4px;" title="Xem chi tiết giao dịch và đóng góp">👁️ Xem</button>`
+          : '';
         const actionBtn = canEditStudent
-          ? `<button class="btn btn-sm btn-outline" onclick="editRosterStudent('${s.mssv}')" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; color: #0284c7; border: 1px solid #bae6fd; background: #f0f9ff; font-weight: 600;" title="Chỉnh sửa thông tin, vai trò hoặc địa chỉ ví của sinh viên này">✏️ Sửa</button>`
-          : '<span style="color: #94a3b8; font-size: 0.75rem;">--</span>';
+          ? `${detailBtn}<button class="btn btn-sm btn-outline" onclick="editRosterStudent('${s.mssv}')" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; color: #0284c7; border: 1px solid #bae6fd; background: #f0f9ff; font-weight: 600;" title="Chỉnh sửa thông tin, vai trò hoặc địa chỉ ví của sinh viên này">✏️ Sửa</button>`
+          : `${detailBtn || '<span style="color: #94a3b8; font-size: 0.75rem;">--</span>'}`;
 
         const avatarGrad = getRosterAvatarGradient(s.mssv || s.name);
         const initials = getInitials(s.name);
@@ -9026,6 +9249,490 @@
       }
 
       tbody.innerHTML = html;
+    }
+
+    // =========================================================================
+    // PHÂN HỆ GIÁM SÁT TÌNH HÌNH NỘP QUỸ & GIAO DỊCH SINH VIÊN (DÀNH CHO CỐ VẤN)
+    // =========================================================================
+
+    function setAdvisorMonitorFilter(filterName) {
+      currentAdvisorMonitorFilter = filterName;
+      const btnMap = {
+        all: "advFilterAll",
+        paid: "advFilterPaid",
+        unpaid: "advFilterUnpaid",
+        unlinked: "advFilterUnlinked",
+        unverified: "advFilterUnverified"
+      };
+      Object.keys(btnMap).forEach(key => {
+        const btn = document.getElementById(btnMap[key]);
+        if (btn) {
+          if (key === filterName) btn.classList.add("active");
+          else btn.classList.remove("active");
+        }
+      });
+      renderAdvisorStudentMonitorTable();
+    }
+
+    function filterAdvisorStudentMonitor() {
+      renderAdvisorStudentMonitorTable();
+    }
+
+    async function refreshAdvisorStudentData(showToast = true) {
+      const btn = document.getElementById("btnRefreshAdvisorMonitor");
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = "⏳ Đang tải...";
+      }
+      try {
+        invalidateRosterContribCache();
+        if (contract) {
+          try {
+            const cfWei = await contract.classFundBalance();
+            const afWei = await contract.adminFeePool();
+            await syncDepositorsData(cfWei, afWei);
+          } catch (e) {
+            console.warn("Lỗi đồng bộ nộp quỹ khi refresh:", e);
+          }
+        }
+        await renderAdvisorStudentMonitorTable();
+        advisorLastUpdated = new Date();
+        const lastEl = document.getElementById("advisorLastUpdatedText");
+        if (lastEl) {
+          lastEl.textContent = `Cập nhật lúc: ${formatTimestampVi(Math.floor(advisorLastUpdated.getTime() / 1000))}`;
+        }
+        if (showToast) {
+          logToTerminal("[Cố vấn] Đã làm mới toàn bộ danh sách giám sát sinh viên và lịch sử nộp quỹ.");
+        }
+      } catch (err) {
+        console.error("Lỗi làm mới dữ liệu Cố vấn:", err);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = "🔄 Làm mới";
+        }
+      }
+    }
+
+    async function renderAdvisorStudentMonitorTable() {
+      const tbody = document.getElementById("advisorStudentMonitorTableBody");
+      if (!tbody) return;
+
+      if (!classRoster || classRoster.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 28px 16px; color: #64748b;">
+              🔒 Danh bạ sinh viên được bảo vệ dữ liệu cá nhân.<br>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">
+                ${userAddress ? (userSessionToken ? 'Đang tải danh bạ từ máy chủ bảo mật...' : 'Vui lòng nhấn nút <strong>"Ký xác thực ví"</strong> để truy cập danh bạ.') : 'Vui lòng kết nối ví để xác thực quyền Cố vấn học tập.'}
+              </span>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      // Đảm bảo số liệu on-chain cho từng sinh viên
+      for (const s of classRoster) {
+        if (!s.wallet || !ethers.isAddress(s.wallet)) continue;
+        const key = s.wallet.toLowerCase().trim();
+        if (!rosterContribCache.has(key)) {
+          if (contract) {
+            try {
+              const contrib = await contract.studentContributions(s.wallet);
+              const isPaid = contrib && contrib > 0n;
+              rosterContribCache.set(key, {
+                status: isPaid ? "paid" : "unpaid",
+                isPaid: isPaid,
+                amountWei: contrib || 0n
+              });
+            } catch (e) {
+              console.warn("Lỗi truy vấn studentContributions on-chain:", s.wallet, e);
+              // LỖI RPC HOẶC TIMEOUT: TUYỆT ĐỐI KHÔNG SUY DIỄN CHƯA NỘP
+            }
+          }
+        }
+      }
+
+      // Lọc danh sách theo từ khóa tìm kiếm và bộ lọc trạng thái
+      const searchInput = document.getElementById("advisorStudentSearchInput");
+      const keyword = (searchInput ? searchInput.value : "").toLowerCase().trim();
+
+      const filtered = classRoster.filter(s => {
+        let studentStatus = "unverified";
+        if (!s.wallet || !ethers.isAddress(s.wallet)) {
+          studentStatus = "unlinked";
+        } else {
+          const key = s.wallet.toLowerCase().trim();
+          const cached = rosterContribCache.get(key);
+          if (cached) {
+            studentStatus = cached.status;
+          } else if (!contract) {
+            studentStatus = "unverified";
+          }
+        }
+
+        if (currentAdvisorMonitorFilter === "paid" && studentStatus !== "paid") return false;
+        if (currentAdvisorMonitorFilter === "unpaid" && studentStatus !== "unpaid") return false;
+        if (currentAdvisorMonitorFilter === "unlinked" && studentStatus !== "unlinked") return false;
+        if (currentAdvisorMonitorFilter === "unverified" && studentStatus !== "unverified") return false;
+
+        if (keyword) {
+          const matchName = (s.name || "").toLowerCase().includes(keyword);
+          const matchMssv = (s.mssv || "").toLowerCase().includes(keyword);
+          const matchWallet = (s.wallet || "").toLowerCase().includes(keyword);
+          if (!matchName && !matchMssv && !matchWallet) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 32px 16px; color: #64748b;">
+              <div style="font-size: 1.8rem; margin-bottom: 6px;">🔍</div>
+              <div style="font-weight: 600; color: #0f172a; margin-bottom: 2px;">Không tìm thấy sinh viên phù hợp</div>
+              <div style="font-size: 0.8rem;">Thử nhập lại MSSV, Họ tên hoặc chọn bộ lọc "Tất cả".</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = "";
+      for (let i = 0; i < filtered.length; i++) {
+        const s = filtered[i];
+        let studentStatus = "unverified";
+        let paidAmount = null;
+
+        if (!s.wallet || !ethers.isAddress(s.wallet)) {
+          studentStatus = "unlinked";
+        } else {
+          const key = s.wallet.toLowerCase().trim();
+          const cached = rosterContribCache.get(key);
+          if (cached) {
+            studentStatus = cached.status;
+            if (cached.amountWei && cached.amountWei > 0n) {
+              paidAmount = formatEth(cached.amountWei);
+            }
+          } else if (!contract) {
+            studentStatus = "unverified";
+          }
+        }
+
+        let statusBadge = "";
+        if (studentStatus === "paid") {
+          statusBadge = `<span class="status-pill status-executed" style="font-size: 0.75rem; font-weight: 600; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;" title="Đã ghi nhận đóng góp trên Sepolia Smart Contract">✅ Đã nộp</span>`;
+        } else if (studentStatus === "unpaid") {
+          statusBadge = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;" title="Chưa có giao dịch nộp quỹ trên hợp đồng">⏳ Chưa nộp</span>`;
+        } else if (studentStatus === "unlinked") {
+          statusBadge = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #fffbeb; color: #b45309; border: 1px solid #fde68a;" title="Sinh viên chưa liên kết ví MetaMask hoặc địa chỉ ví không hợp lệ">⚠️ Chưa liên kết ví</span>`;
+        } else {
+          statusBadge = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;" title="Chưa thể xác minh số liệu on-chain do lỗi RPC hoặc hợp đồng chưa sẵn sàng">⚪ Chưa xác minh</span>`;
+        }
+
+        const roleBadge = (s.role === "bcs")
+          ? `<span class="status-pill" style="font-size: 0.72rem; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">⭐ ${s.roleTitle || 'Ban cán sự'}</span>`
+          : `<span class="status-pill" style="font-size: 0.72rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;">🎓 ${s.roleTitle || 'Sinh viên'}</span>`;
+
+        let contribText = "--";
+        if (studentStatus === "paid") {
+          contribText = `<strong style="color: #047857;">${paidAmount} ETH</strong>`;
+        } else if (studentStatus === "unpaid") {
+          contribText = `<span style="color: #64748b;">0.0000 ETH</span>`;
+        } else if (studentStatus === "unlinked") {
+          contribText = `<span style="color: #b45309; font-style: italic;">Chưa có ví</span>`;
+        } else {
+          contribText = `<span style="color: #94a3b8; font-style: italic;">Chưa xác minh</span>`;
+        }
+
+        const avatarGrad = getRosterAvatarGradient(s.mssv || s.name);
+        const initials = getInitials(s.name);
+
+        html += `
+          <tr>
+            <td style="text-align: center; font-weight: 700; color: #64748b; font-size: 0.8rem;">${i + 1}</td>
+            <td>
+              <div class="roster-student-info">
+                <span class="roster-avatar" style="background: ${avatarGrad};">${initials}</span>
+                <span class="roster-student-name" style="cursor: pointer; font-weight: 600; color: #0f172a;" onclick="openAdvisorStudentDetail('${s.mssv}')" title="Nhấn xem hồ sơ chi tiết">
+                  ${escapeHtml(s.name)}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="roster-mssv-badge">${escapeHtml(s.mssv)}</span>
+            </td>
+            <td>${roleBadge}</td>
+            <td>
+              <div class="roster-wallet-box">
+                <span class="roster-wallet-addr" title="${s.wallet || 'Chưa liên kết ví'}">${s.wallet ? shortenAddress(s.wallet) : '<em style="color:#94a3b8;">Chưa liên kết</em>'}</span>
+                ${s.wallet ? `<button class="roster-copy-btn" onclick="copyRosterWallet('${s.wallet}', this)" title="Sao chép toàn bộ địa chỉ ví">📋</button>` : ''}
+                ${s.wallet ? `<a class="roster-explorer-link" href="https://sepolia.etherscan.io/address/${s.wallet}" target="_blank" rel="noopener noreferrer" title="Mở ví trên Sepolia Etherscan">↗</a>` : ''}
+              </div>
+            </td>
+            <td>${contribText}</td>
+            <td>${statusBadge}</td>
+            <td style="text-align: center;">
+              <button class="btn btn-sm btn-outline" onclick="openAdvisorStudentDetail('${s.mssv}')" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; color: #047857; border: 1px solid #a7f3d0; background: #ecfdf5; font-weight: 600;" title="Xem chi tiết giao dịch và đóng góp của sinh viên này">👁️ Chi tiết</button>
+            </td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML = html;
+
+      // Cập nhật nhãn thời gian
+      if (!advisorLastUpdated) advisorLastUpdated = new Date();
+      const lastEl = document.getElementById("advisorLastUpdatedText");
+      if (lastEl) {
+        lastEl.textContent = `Cập nhật lúc: ${formatTimestampVi(Math.floor(advisorLastUpdated.getTime() / 1000))}`;
+      }
+    }
+
+    async function openAdvisorStudentDetail(mssv) {
+      if (!classRoster || classRoster.length === 0) {
+        alert("Chưa có dữ liệu danh bạ sinh viên. Vui lòng kết nối ví và ký xác thực.");
+        return;
+      }
+      const student = classRoster.find(s => s.mssv && s.mssv.toLowerCase().trim() === mssv.toLowerCase().trim());
+      if (!student) {
+        alert("Không tìm thấy thông tin sinh viên có MSSV: " + mssv);
+        return;
+      }
+
+      const modal = document.getElementById("advisorStudentDetailModal");
+      if (!modal) return;
+
+      // 1. Thông tin định danh cơ bản
+      const avatarEl = document.getElementById("advModalAvatar");
+      if (avatarEl) {
+        avatarEl.style.background = getRosterAvatarGradient(student.mssv || student.name);
+        avatarEl.textContent = getInitials(student.name);
+      }
+      const nameEl = document.getElementById("advModalName");
+      if (nameEl) nameEl.textContent = student.name;
+      const mssvEl = document.getElementById("advModalMssv");
+      if (mssvEl) mssvEl.textContent = student.mssv;
+
+      const roleBadgeEl = document.getElementById("advModalRoleBadge");
+      if (roleBadgeEl) {
+        if (student.role === "bcs") {
+          roleBadgeEl.className = "status-pill";
+          roleBadgeEl.style.cssText = "font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;";
+          roleBadgeEl.textContent = `⭐ ${student.roleTitle || 'Ban cán sự'}`;
+        } else {
+          roleBadgeEl.className = "status-pill";
+          roleBadgeEl.style.cssText = "font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;";
+          roleBadgeEl.textContent = `🎓 ${student.roleTitle || 'Sinh viên'}`;
+        }
+      }
+
+      // 2. Địa chỉ ví và liên kết Etherscan
+      const walletEl = document.getElementById("advModalWallet");
+      const walletLinksEl = document.getElementById("advModalWalletLinks");
+      const hasValidWallet = (student.wallet && ethers.isAddress(student.wallet));
+
+      if (walletEl) {
+        walletEl.textContent = student.wallet || "Chưa liên kết ví cá nhân";
+        walletEl.style.color = hasValidWallet ? "#0f172a" : "#b45309";
+      }
+      if (walletLinksEl) {
+        if (hasValidWallet) {
+          walletLinksEl.innerHTML = `
+            <button class="btn btn-sm btn-outline" onclick="copyRosterWallet('${student.wallet}', this)" style="padding: 2px 8px; font-size: 0.72rem; border-radius: 4px;">📋 Sao chép ví</button>
+            <a href="https://sepolia.etherscan.io/address/${student.wallet}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.72rem; border-radius: 4px; text-decoration: none; color: #0284c7; border-color: #bae6fd;">↗ Mở Sepolia Etherscan</a>
+          `;
+        } else {
+          walletLinksEl.innerHTML = `<span style="font-size: 0.75rem; color: #b45309;">⚠️ Sinh viên chưa đăng ký địa chỉ ví để nộp quỹ</span>`;
+        }
+      }
+
+      // 3. Số liệu đóng góp on-chain (truy vấn trực tiếp hoặc cache)
+      const totalEthEl = document.getElementById("advModalTotalContrib");
+      const totalWeiEl = document.getElementById("advModalTotalContribWei");
+      const statusBadgeEl = document.getElementById("advModalStatusBadge");
+      const statusNoteEl = document.getElementById("advModalStatusNote");
+
+      let currentContribWei = 0n;
+      let checkStatus = "unverified";
+
+      if (!hasValidWallet) {
+        checkStatus = "unlinked";
+        if (totalEthEl) totalEthEl.textContent = "Chưa có ví";
+        if (totalWeiEl) totalWeiEl.textContent = "0 wei";
+        if (statusBadgeEl) statusBadgeEl.innerHTML = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">⚠️ Chưa liên kết ví</span>`;
+        if (statusNoteEl) statusNoteEl.textContent = "Không thể đọc dữ liệu đóng góp khi sinh viên chưa liên kết ví";
+      } else {
+        if (contract) {
+          try {
+            const c = await contract.studentContributions(student.wallet);
+            currentContribWei = BigInt(c || 0n);
+            const isPaid = currentContribWei > 0n;
+            checkStatus = isPaid ? "paid" : "unpaid";
+            rosterContribCache.set(student.wallet.toLowerCase().trim(), {
+              status: checkStatus,
+              isPaid: isPaid,
+              amountWei: currentContribWei
+            });
+          } catch (e) {
+            console.warn("Lỗi đọc studentContributions trong modal:", e);
+            checkStatus = "unverified";
+          }
+        } else {
+          checkStatus = "unverified";
+        }
+
+        if (totalEthEl) {
+          totalEthEl.textContent = (checkStatus === "unverified") ? "Chưa xác minh" : (formatEth(currentContribWei) + " ETH");
+        }
+        if (totalWeiEl) {
+          totalWeiEl.textContent = (checkStatus === "unverified") ? "Lỗi kết nối RPC hoặc chưa kết nối hợp đồng" : `${currentContribWei.toString()} wei`;
+        }
+
+        if (statusBadgeEl) {
+          if (checkStatus === "paid") {
+            statusBadgeEl.innerHTML = `<span class="status-pill status-executed" style="font-size: 0.75rem; font-weight: 600; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">✅ Đã hoàn thành đóng quỹ</span>`;
+          } else if (checkStatus === "unpaid") {
+            statusBadgeEl.innerHTML = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">⏳ Chưa nộp quỹ</span>`;
+          } else {
+            statusBadgeEl.innerHTML = `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;">⚪ Chưa xác minh</span>`;
+          }
+        }
+
+        if (statusNoteEl) {
+          if (checkStatus === "paid") {
+            statusNoteEl.textContent = "Hợp đồng thông minh đã xác nhận nhận đủ tiền quỹ";
+            statusNoteEl.style.color = "#047857";
+          } else if (checkStatus === "unpaid") {
+            statusNoteEl.textContent = "Chưa phát sinh giao dịch deposit() từ ví này trên Sepolia";
+            statusNoteEl.style.color = "#dc2626";
+          } else {
+            statusNoteEl.textContent = "Không thể kết nối RPC hoặc hợp đồng chưa sẵn sàng để đối soát";
+            statusNoteEl.style.color = "#64748b";
+          }
+        }
+      }
+
+      // 4. Lịch sử từng lần nộp tiền (FundDeposited events)
+      const depBadgeEl = document.getElementById("advModalDepositCountBadge");
+      const depTbody = document.getElementById("advModalDepositTableBody");
+
+      const studentKey = hasValidWallet ? student.wallet.toLowerCase().trim() : "";
+      const depositEvents = studentKey ? (studentDepositEventsMap.get(studentKey) || []) : [];
+
+      if (depBadgeEl) {
+        depBadgeEl.textContent = `${depositEvents.length} giao dịch`;
+      }
+
+      if (depTbody) {
+        if (!hasValidWallet) {
+          depTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:#94a3b8;">Chưa liên kết ví, không có lịch sử nộp tiền.</td></tr>`;
+        } else if (depositEvents.length === 0) {
+          let emptyNotice = `Chưa tìm thấy sự kiện nộp tiền trong 5 chunks (~45.000 blocks gần nhất).`;
+          if (currentContribWei > 0n) {
+            emptyNotice += `<br><span style="color:#047857; font-weight:600;">Ghi chú: Sinh viên đã nộp ${formatEth(currentContribWei)} ETH trước phạm vi quét lịch sử gần nhất. Số dư on-chain là 100% chuẩn xác.</span>`;
+          } else {
+            emptyNotice += `<br><span style="color:#dc2626;">Sinh viên chưa từng thực hiện giao dịch nộp quỹ.</span>`;
+          }
+          depTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:#64748b;">${emptyNotice}</td></tr>`;
+        } else {
+          let rowsHtml = "";
+          for (let i = 0; i < depositEvents.length; i++) {
+            const ev = depositEvents[i];
+            const ts = await getBlockTimestamp(ev.blockNumber);
+            const timeStr = formatTimestampVi(ts);
+            const shortTx = shortenAddress(ev.txHash);
+            rowsHtml += `
+              <tr>
+                <td style="text-align:center; font-weight:600; color:#64748b;">${i + 1}</td>
+                <td><strong style="color:#047857;">+${ev.amountEth} ETH</strong></td>
+                <td><span style="font-size:0.75rem; color:#475569;">${timeStr}</span></td>
+                <td><span style="font-family:monospace; font-size:0.75rem; color:#64748b;">#${ev.blockNumber}</span></td>
+                <td>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <a href="https://sepolia.etherscan.io/tx/${ev.txHash}" target="_blank" rel="noopener noreferrer" style="font-family:monospace; color:#0284c7; text-decoration:none; font-weight:600; font-size:0.78rem;" title="Mở giao dịch trên Sepolia Etherscan: ${ev.txHash}">
+                      ↗ ${shortTx}
+                    </a>
+                    <button class="roster-copy-btn" onclick="copyRosterWallet('${ev.txHash}', this)" title="Sao chép toàn bộ Transaction Hash">📋</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+          depTbody.innerHTML = rowsHtml;
+        }
+      }
+
+      // 5. Yêu cầu hoàn tiền của sinh viên
+      const refBadgeEl = document.getElementById("advModalRefundCountBadge");
+      const refTbody = document.getElementById("advModalRefundTableBody");
+
+      let studentRefunds = [];
+      if (hasValidWallet) {
+        if (allRefundRequestsCache.length === 0 && contract) {
+          try {
+            const refCount = Number(await contract.refundRequestCount());
+            for (let r = 1; r <= refCount; r++) {
+              const req = await contract.getRefundRequest(r);
+              allRefundRequestsCache.push({
+                id: Number(req[0]),
+                applicant: req[1],
+                amount: formatEth(req[2]),
+                reason: req[3],
+                createdAt: req[4] ? Number(req[4]) : 0,
+                yesVotes: Number(req[5]),
+                noVotes: Number(req[6]),
+                status: Number(req[7])
+              });
+            }
+          } catch (e) {
+            console.warn("Lỗi tải refund requests trong modal:", e);
+          }
+        }
+        studentRefunds = allRefundRequestsCache.filter(r => r.applicant && r.applicant.toLowerCase().trim() === student.wallet.toLowerCase().trim());
+      }
+
+      if (refBadgeEl) {
+        refBadgeEl.textContent = `${studentRefunds.length} đơn`;
+      }
+
+      if (refTbody) {
+        if (!hasValidWallet) {
+          refTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:#94a3b8;">Chưa liên kết ví, không có yêu cầu hoàn tiền.</td></tr>`;
+        } else if (studentRefunds.length === 0) {
+          refTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:#64748b;">Sinh viên chưa tạo yêu cầu hoàn tiền nào trên hợp đồng.</td></tr>`;
+        } else {
+          let refRows = "";
+          for (const rf of studentRefunds) {
+            const timeStr = rf.createdAt > 0 ? formatTimestampVi(rf.createdAt) : "--";
+            const badge = getStatusBadge(rf.status);
+            refRows += `
+              <tr>
+                <td><strong>#${rf.id}</strong></td>
+                <td><strong style="color:#c2410c;">${rf.amount} ETH</strong></td>
+                <td style="max-width:200px; word-break:break-word;">${escapeHtml(rf.reason || '')}</td>
+                <td style="font-size:0.75rem; color:#475569;">${timeStr}</td>
+                <td>${badge}</td>
+              </tr>
+            `;
+          }
+          refTbody.innerHTML = refRows;
+        }
+      }
+
+      // Mở modal
+      modal.classList.add("open");
+      modal.classList.add("show");
+    }
+
+    function closeAdvisorStudentDetail() {
+      const modal = document.getElementById("advisorStudentDetailModal");
+      if (modal) {
+        modal.classList.remove("open");
+        modal.classList.remove("show");
+      }
     }
 
     async function saveRosterEntry() {
@@ -9424,6 +10131,7 @@
         await syncDepositorsData(classFund, adminFee);
         invalidateRosterContribCache();
         await renderRosterTable();
+        await renderAdvisorStudentMonitorTable();
 
         logToTerminal("[Dữ liệu] Hoàn tất đồng bộ dữ liệu hợp đồng và toàn bộ flow dòng tiền.");
       } catch (err) {
@@ -9526,11 +10234,13 @@
       const studentRefundTable = document.getElementById("studentRefundTableBody");
 
       if (totalCount === 0) {
+        allRefundRequestsCache = [];
         if (bcsRefundTable) bcsRefundTable.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:var(--text-muted);">Hiện chưa có yêu cầu hoàn tiền nào từ sinh viên.</td></tr>`;
         if (studentRefundTable) studentRefundTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:18px; color:var(--text-muted);">Bạn chưa tạo yêu cầu hoàn tiền nào.</td></tr>`;
         return;
       }
 
+      allRefundRequestsCache = [];
       let bcsRows = "";
       let studentRows = "";
 
@@ -9541,8 +10251,19 @@
           const applicant = req[1];
           const amount = formatEth(req[2]);
           const reason = req[3];
+          const createdAt = req[4] ? Number(req[4]) : 0;
           const yesVotes = Number(req[5]);
           const status = Number(req[7]);
+
+          allRefundRequestsCache.push({
+            id: refId,
+            applicant: applicant,
+            amount: amount,
+            reason: reason,
+            createdAt: createdAt,
+            yesVotes: yesVotes,
+            status: status
+          });
 
           const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
           const statusBadge = getStatusBadge(status);
@@ -10427,18 +11148,18 @@
     // HỆ THỐNG THÔNG BÁO NỘP QUỸ LỚP (CLASS ANNOUNCEMENT SYSTEM)
     // ============================================================
     const DEFAULT_ANNOUNCEMENT = {
-      title: "Kêu gọi nộp Quỹ Lớp Học kỳ 1 - Khóa K57 Kinh tế Số",
-      targetAmountEth: "0.01",
-      deadline: "23:59 ngày 15/11/2026",
-      classSize: 5,
-      purpose: "Kinh phí phục vụ tài liệu học tập, các buổi sinh hoạt chuyên đề ngoại khóa và quỹ dự phòng hỗ trợ sinh viên K57.",
-      status: "Đang diễn ra"
+      title: "Hiện chưa có thông báo kêu gọi nộp quỹ",
+      targetAmountEth: "0",
+      deadline: "Không có",
+      classSize: 7,
+      purpose: "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.",
+      status: "none"
     };
 
     function getDynamicClassSize(ann) {
       if (classRoster && classRoster.length > 0) return classRoster.length;
       if (ann && ann.classSize) return Number(ann.classSize);
-      return 5;
+      return 7;
     }
 
     function getAnnouncementData() {
@@ -10446,10 +11167,14 @@
         const saved = localStorage.getItem("kts_class_announcement");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (classRoster && classRoster.length > 0) {
-            parsed.classSize = classRoster.length;
+          if (parsed && (parsed.id === "ann-20261028045521" || parsed.id === "ann-k57-hk1" || parsed.updatedBy === "0x85ac8f0ca75f2e3fda073bc566659c011208da74")) {
+            localStorage.removeItem("kts_class_announcement");
+          } else {
+            if (classRoster && classRoster.length > 0) {
+              parsed.classSize = classRoster.length;
+            }
+            return parsed;
           }
-          return parsed;
         }
       } catch (e) { }
       const def = { ...DEFAULT_ANNOUNCEMENT };
@@ -10477,8 +11202,12 @@
         if (cached) {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed)) {
-            classAnnouncementHistory = parsed;
-            return parsed;
+            const cleaned = parsed.filter(item => item && item.id !== "ann-k57-hk1" && item.id !== "ann-20261028045521" && item.updatedBy !== "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2");
+            if (cleaned.length !== parsed.length) {
+              localStorage.setItem("kts_class_ann_history", JSON.stringify(cleaned));
+            }
+            classAnnouncementHistory = cleaned;
+            return cleaned;
           }
         }
       } catch (e) { }
@@ -10506,7 +11235,7 @@
       if (!history || history.length === 0) {
         container.innerHTML = `
           <div style="text-align: center; color: var(--text-muted); padding: 18px 12px; font-size: 0.88rem;">
-            Chưa có đợt thu quỹ nào được chuyển vào lịch sử lưu trữ.
+            Chưa có đợt thu quỹ nào trong lịch sử lưu trữ.
           </div>
         `;
         return;
@@ -10583,13 +11312,13 @@
           btnCloseEarly.style.display = (isBcsMember || isAdvisor) ? "inline-flex" : "none";
         }
       } else {
-        // Trạng thái không có đợt thu active: Hiển thị thông điệp lưu trữ an toàn
-        if (titleEl) titleEl.textContent = "Hiện không có đợt thu quỹ nào đang diễn ra";
-        if (purposeEl) purposeEl.textContent = "Tất cả các đợt thu trước đây đã được hoàn thành và lưu trữ an toàn trong mục Lịch sử thông báo.";
+        // Trạng thái không có đợt thu active: Hiển thị thông điệp sạch sẽ
+        if (titleEl) titleEl.textContent = "Hiện chưa có thông báo kêu gọi nộp quỹ";
+        if (purposeEl) purposeEl.textContent = "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.";
         if (amountEl) amountEl.textContent = "0 ETH";
         if (deadlineEl) deadlineEl.textContent = "Không có";
         if (classSizeEl) classSizeEl.textContent = `${currentClassSize} sinh viên`;
-        if (statusTextEl) statusTextEl.textContent = "Đã lưu trữ / Tạm nghỉ";
+        if (statusTextEl) statusTextEl.textContent = "Chưa có đợt thu";
         if (btnDeposit) {
           // BẢO MẬT: Tuyệt đối KHÔNG hiển thị nút nộp tiền cho thông báo đã hoàn thành / không active
           btnDeposit.style.display = "none";
@@ -10783,10 +11512,10 @@
             } else {
               saveAnnouncementData({
                 status: "none",
-                title: "Hiện không có đợt thu quỹ nào đang diễn ra",
+                title: "Hiện chưa có thông báo kêu gọi nộp quỹ",
                 targetAmountEth: "0",
                 deadline: "Không có",
-                purpose: "Tất cả các đợt thu trước đây đã được lưu trữ an toàn trong mục Lịch sử thông báo."
+                purpose: "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây."
               });
             }
             if (Array.isArray(res.history)) {
@@ -10803,6 +11532,19 @@
     }
 
     function initAnnouncementSystem() {
+      // Dọn dẹp cache test cũ nếu có trong localStorage
+      try {
+        const annRaw = localStorage.getItem("kts_class_announcement");
+        if (annRaw && (annRaw.includes("ann-20261028045521") || annRaw.includes("0x85ac8f0ca75f2e3fda073bc566659c011208da74") || annRaw.includes("ann-k57-hk1"))) {
+          localStorage.removeItem("kts_class_announcement");
+        }
+        const histRaw = localStorage.getItem("kts_class_ann_history");
+        if (histRaw && (histRaw.includes("ann-k57-hk1") || histRaw.includes("0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2") || histRaw.includes("ann-20261028045521"))) {
+          localStorage.removeItem("kts_class_ann_history");
+          classAnnouncementHistory = [];
+        }
+      } catch (e) {}
+
       renderAnnouncementUI();
       syncAnnouncementFromServer();
 
@@ -11605,15 +12347,19 @@
           const currentBlock = await provider.getBlockNumber();
           let toBlock = currentBlock;
           const filter = contract.filters.FundDeposited();
+          let scannedChunks = 0;
           for (let chunk = 0; chunk < 5; chunk++) {
             if (toBlock <= 0) break;
             const fromBlock = Math.max(0, toBlock - 9000);
             try {
               const events = await contract.queryFilter(filter, fromBlock, toBlock);
+              scannedChunks++;
               if (events && events.length > 0) {
                 events.forEach(ev => {
                   const student = ev.args ? (ev.args[0] || ev.args.student) : null;
                   const amt = ev.args ? (ev.args[1] || ev.args.amount) : 0n;
+                  const txHash = ev.transactionHash;
+                  const blockNumber = ev.blockNumber;
                   if (student && ethers.isAddress(student)) {
                     saveKnownDepositor(student);
                     const addrLower = student.toLowerCase();
@@ -11621,6 +12367,20 @@
                       uniqueMap.set(addrLower, {
                         address: student,
                         totalWei: BigInt(amt)
+                      });
+                    }
+
+                    // Lưu lịch sử từng lần nộp cho phân hệ Cố vấn học tập giám sát
+                    if (!studentDepositEventsMap.has(addrLower)) {
+                      studentDepositEventsMap.set(addrLower, []);
+                    }
+                    const sList = studentDepositEventsMap.get(addrLower);
+                    if (txHash && !sList.some(item => item.txHash === txHash)) {
+                      sList.push({
+                        txHash: txHash,
+                        blockNumber: blockNumber,
+                        amountWei: BigInt(amt),
+                        amountEth: formatEth(amt)
                       });
                     }
                   }
@@ -11632,8 +12392,16 @@
             }
             toBlock = fromBlock - 1;
           }
+          const scanBadge = document.getElementById("advisorChunkScanBadge");
+          if (scanBadge) {
+            scanBadge.textContent = `Sepolia: Đã quét ${scannedChunks}/5 chunks (~${scannedChunks * 9000} blocks)`;
+          }
         } catch (filterErr) {
           console.warn("RPC queryFilter warning:", filterErr);
+          const scanBadge = document.getElementById("advisorChunkScanBadge");
+          if (scanBadge) {
+            scanBadge.textContent = "Sepolia: Giới hạn RPC/Chưa quét đủ";
+          }
         }
       }
 

@@ -303,23 +303,6 @@ def load_announcements_store() -> dict:
         except Exception:
             pass
 
-    if store["active"] is None and not store["history"]:
-        store["active"] = {
-            "id": "ann-k57-hk1",
-            "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
-            "targetAmountEth": "0.0100",
-            "deadline": "23:59 ngày 30/11/2026",
-            "deadlineTimestamp": parse_deadline_to_timestamp("23:59 ngày 30/11/2026"),
-            "classSize": actual_size,
-            "purpose": "Học tập và sinh hoạt chuyên đề K57",
-            "status": "active",
-            "autoCloseOnTarget": False,
-            "createdAt": "2026-10-20T00:00:00Z",
-            "endedAt": None,
-            "endReason": None,
-            "updatedBy": "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2",
-            "updatedAt": None
-        }
 
     if store["active"]:
         store["active"]["classSize"] = actual_size
@@ -371,11 +354,11 @@ def load_announcement() -> dict:
         return store["history"][0]
     return {
         "id": None,
-        "title": "Kêu gọi nộp Quỹ Lớp K57",
-        "targetAmountEth": "0.0100",
-        "deadline": "Chưa xác định",
+        "title": "Hiện chưa có thông báo kêu gọi nộp quỹ",
+        "targetAmountEth": "0",
+        "deadline": "Không có",
         "classSize": len(load_roster()) or 7,
-        "purpose": "Hoạt động chung K57",
+        "purpose": "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.",
         "status": "none",
         "updatedAt": None,
         "updatedBy": None
@@ -510,12 +493,12 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
             active = store.get("active")
             fallback = active or (store["history"][0] if store.get("history") else {
                 "id": None,
-                "title": "Hiện không có đợt thu quỹ nào đang diễn ra",
+                "title": "Hiện chưa có thông báo kêu gọi nộp quỹ",
                 "targetAmountEth": "0",
                 "status": "none",
                 "classSize": len(load_roster()) or 7,
                 "deadline": "Không có",
-                "purpose": "Các đợt thu trước đây đã được lưu trữ trong Lịch sử thông báo."
+                "purpose": "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây."
             })
             self._send_json(200, {
                 "success": True,
