@@ -150,6 +150,9 @@ contract ProjectCore {
     /// @notice Phát ra khi đề xuất chi được thực thi giải ngân thành công (R6)
     event SpendRequestExecuted(uint256 indexed requestId, address indexed recipient, uint256 amount);
 
+    /// @notice Phát ra khi tự thực thi chi tiền thất bại do địa chỉ nhận từ chối ETH
+    event SpendExecutionFailed(uint256 indexed requestId, address indexed recipient, uint256 amount);
+
     /// @notice Phát ra khi đề xuất chi bị đánh dấu hết hạn sau 7 ngày mà chưa đạt đủ 51% (R5, R9)
     event SpendRequestExpired(uint256 indexed requestId);
 
@@ -176,6 +179,9 @@ contract ProjectCore {
 
     /// @notice Phát ra khi yêu cầu hoàn tiền được thực thi chuyển ETH thành công cho sinh viên (R7)
     event RefundRequestExecuted(uint256 indexed refundId, address indexed applicant, uint256 amount);
+
+    /// @notice Phát ra khi tự thực thi hoàn tiền thất bại do ví sinh viên từ chối ETH
+    event RefundExecutionFailed(uint256 indexed refundId, address indexed applicant, uint256 amount);
 
     /// @notice Phát ra khi yêu cầu hoàn tiền bị đánh dấu hết hạn sau 7 ngày mà chưa đạt đủ 51% phiếu thuận (R7)
     event RefundRequestExpired(uint256 indexed refundId);
@@ -508,7 +514,43 @@ contract ProjectCore {
         if (approvalBps >= PASSING_THRESHOLD_BPS && req.status == RequestStatus.Pending) {
             req.status = RequestStatus.Ready;
             emit SpendRequestReady(requestId);
+
+            // AUTO-EXECUTION: Thử tự động giải ngân ngay trong cùng giao dịch với lá phiếu cuối
+            _tryExecuteSpend(req, requestId);
         }
+    }
+
+    /// @notice Hàm nội bộ thử tự động giải ngân cho đề xuất chi tiêu khi đạt ngưỡng
+    /// @dev Áp dụng nghiêm ngặt CEI; nếu chuyển ETH thất bại, rollback trạng thái về Ready để không revert vote
+    /// @param req Con trỏ lưu trữ tới đề xuất chi
+    /// @param requestId Mã định danh của đề xuất
+    /// @return success true nếu giải ngân thành công, false nếu chuyển ETH thất bại
+    function _tryExecuteSpend(SpendRequest storage req, uint256 requestId) internal returns (bool) {
+        // Kiểm tra số dư Quỹ lớp chính
+        if (req.amount > classFundBalance) {
+            return false;
+        }
+
+        // Effects: Cập nhật toàn bộ trạng thái trước tương tác ngoại vi (CEI)
+        req.status = RequestStatus.Executed;
+        classFundBalance -= req.amount;
+        reservedSpendAmount -= req.amount;
+
+        // Interactions: Chuyển ETH cho người thụ hưởng
+        (bool success, ) = req.recipient.call{value: req.amount}("");
+        if (!success) {
+            // Rollback effects nếu thất bại, giữ trạng thái Ready cho đề xuất
+            req.status = RequestStatus.Ready;
+            classFundBalance += req.amount;
+            reservedSpendAmount += req.amount;
+
+            emit SpendExecutionFailed(requestId, req.recipient, req.amount);
+            return false;
+        }
+
+        // Chỉ phát sự kiện hoàn tất khi chuyển ETH thực sự thành công
+        emit SpendRequestExecuted(requestId, req.recipient, req.amount);
+        return true;
     }
 
     // ==========================================
@@ -516,7 +558,8 @@ contract ProjectCore {
     // ==========================================
 
     /// @notice Thực thi giải ngân cho đề xuất chi tiêu đã đạt đủ điều kiện biểu quyết >= 51% (R6)
-    /// @dev Bất kỳ thành viên BCS đang hoạt động nào cũng có thể gọi; áp dụng nghiêm ngặt CEI chống Reentrancy
+    /// @dev Bất kỳ thành viên BCS đang hoạt động nào cũng có thể gọi; áp dụng nghiêm ngặt CEI chống Reentrancy.
+    ///      Đóng vai trò cơ chế giải ngân thủ công hoặc fallback khi auto-execution trước đó thất bại.
     /// @param requestId Mã định danh của đề xuất cần giải ngân
     function executeSpendRequest(uint256 requestId) external onlyActiveBCS {
         // 1. Checks: Đề xuất tồn tại
@@ -566,13 +609,14 @@ contract ProjectCore {
         classFundBalance -= req.amount;
         reservedSpendAmount -= req.amount;
 
-        emit SpendRequestExecuted(requestId, req.recipient, req.amount);
-
         // 3. Interactions: Chuyển ETH trực tiếp cho người thụ hưởng qua low-level .call
         (bool success, ) = req.recipient.call{value: req.amount}("");
         if (!success) {
             revert ETHTransferFailed();
         }
+
+        // Chỉ phát sự kiện hoàn tất sau khi chuyển ETH thành công
+        emit SpendRequestExecuted(requestId, req.recipient, req.amount);
     }
 
     // ==========================================
@@ -589,7 +633,8 @@ contract ProjectCore {
 
         SpendRequest storage req = spendRequests[requestId];
 
-        if (req.status != RequestStatus.Pending && req.status != RequestStatus.Ready) {
+        // Chỉ đề xuất chưa đạt ngưỡng (Pending) mới được phép hết hạn sau thời hạn biểu quyết
+        if (req.status != RequestStatus.Pending) {
             revert InvalidRequestStatus(requestId);
         }
 
@@ -711,11 +756,53 @@ contract ProjectCore {
         if (approvalBps >= PASSING_THRESHOLD_BPS && req.status == RequestStatus.Pending) {
             req.status = RequestStatus.Ready;
             emit RefundRequestReady(refundId);
+
+            // AUTO-EXECUTION: Thử tự động thực thi hoàn tiền ngay trong cùng giao dịch với lá phiếu cuối
+            _tryExecuteRefund(req, refundId);
         }
     }
 
+    /// @notice Hàm nội bộ thử tự động hoàn tiền cho yêu cầu hoàn tiền khi đạt ngưỡng
+    /// @dev Áp dụng nghiêm ngặt CEI; nếu chuyển ETH thất bại, rollback trạng thái về Ready để không revert vote
+    /// @param req Con trỏ lưu trữ tới yêu cầu hoàn tiền
+    /// @param refundId Mã định danh của yêu cầu hoàn tiền
+    /// @return success true nếu hoàn tiền thành công, false nếu chuyển ETH thất bại
+    function _tryExecuteRefund(RefundRequest storage req, uint256 refundId) internal returns (bool) {
+        // Kiểm tra hạn mức đóng góp và số dư Quỹ lớp chính
+        if (req.amount > studentContributions[req.applicant] || req.amount > classFundBalance) {
+            return false;
+        }
+
+        // Effects: Cập nhật toàn bộ trạng thái trước khi tương tác ngoại vi (CEI)
+        req.status = RequestStatus.Executed;
+        reservedRefundAmount -= req.amount;
+        pendingStudentRefundAmount[req.applicant] -= req.amount;
+        studentContributions[req.applicant] -= req.amount;
+        classFundBalance -= req.amount;
+
+        // Interactions: Chuyển ETH về ví sinh viên đã tạo yêu cầu
+        (bool success, ) = req.applicant.call{value: req.amount}("");
+        if (!success) {
+            // Rollback effects nếu thất bại, giữ trạng thái Ready cho yêu cầu
+            req.status = RequestStatus.Ready;
+            reservedRefundAmount += req.amount;
+            pendingStudentRefundAmount[req.applicant] += req.amount;
+            studentContributions[req.applicant] += req.amount;
+            classFundBalance += req.amount;
+
+            emit RefundExecutionFailed(refundId, req.applicant, req.amount);
+            return false;
+        }
+
+        // Chỉ phát sự kiện hoàn tất khi chuyển ETH thực sự thành công
+        emit RefundRequestExecuted(refundId, req.applicant, req.amount);
+        emit RefundProcessed(req.applicant, req.amount);
+        return true;
+    }
+
     /// @notice Thực thi hoàn trả ETH cho yêu cầu hoàn tiền đã được Ban cán sự thông qua >= 51% (R7)
-    /// @dev Bước 3: Áp dụng nghiêm ngặt Checks-Effects-Interactions (CEI), chuyển ETH trực tiếp cho applicant
+    /// @dev Bước 3: Áp dụng nghiêm ngặt Checks-Effects-Interactions (CEI), chuyển ETH trực tiếp cho applicant.
+    ///      Đóng vai trò cơ chế hoàn tiền thủ công hoặc fallback khi auto-execution trước đó thất bại.
     /// @param refundId Mã định danh của yêu cầu hoàn tiền cần thực thi
     function executeRefundRequest(uint256 refundId) external {
         // 1. Checks: Yêu cầu tồn tại
@@ -767,14 +854,15 @@ contract ProjectCore {
         studentContributions[req.applicant] -= req.amount;
         classFundBalance -= req.amount;
 
-        emit RefundRequestExecuted(refundId, req.applicant, req.amount);
-        emit RefundProcessed(req.applicant, req.amount);
-
         // 3. Interactions: Chuyển ETH về chính ví sinh viên đã tạo yêu cầu
         (bool success, ) = req.applicant.call{value: req.amount}("");
         if (!success) {
             revert ETHTransferFailed();
         }
+
+        // Chỉ phát sự kiện hoàn tất sau khi chuyển ETH thành công
+        emit RefundRequestExecuted(refundId, req.applicant, req.amount);
+        emit RefundProcessed(req.applicant, req.amount);
     }
 
     /// @notice Đánh dấu hết hạn yêu cầu hoàn tiền quá hạn 7 ngày mà chưa đạt đủ 51% phiếu thuận (R7)
@@ -787,7 +875,8 @@ contract ProjectCore {
 
         RefundRequest storage req = refundRequests[refundId];
 
-        if (req.status != RequestStatus.Pending && req.status != RequestStatus.Ready) {
+        // Chỉ yêu cầu hoàn tiền chưa đạt ngưỡng (Pending) mới được phép hết hạn sau thời hạn biểu quyết
+        if (req.status != RequestStatus.Pending) {
             revert InvalidRefundStatus(refundId);
         }
 

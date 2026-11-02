@@ -1,0 +1,38 @@
+{
+  "solc20": {
+    "version": "0.8.20+commit.a1b79de6.Emscripten.clang",
+    "creationSize": 12428,
+    "runtimeSize": 12356,
+    "creationHash": "d90abd108f8a04f543fb421b18c75e1a7163788682099cee6a456bd044364a25",
+    "runtimeHash": "b071c35da03604494c08e72bb0648ea46eaed060ec5911d11ae1d6b9e6c739f2",
+    "abiHash": "3043fba474ac9e652b6e4ad1e687da7326a482f959453b4c56f48ef38ec89d7a",
+    "counts": {
+      "functions": 39,
+      "events": 17,
+      "errors": 25,
+      "constructor": 1,
+      "receive": 1,
+      "fallback": 0,
+      "total": 83
+    }
+  },
+  "solc26": {
+    "version": "0.8.26+commit.8a97fa7a.Emscripten.clang",
+    "creationSize": 12421,
+    "runtimeSize": 12350,
+    "creationHash": "10ec8e2914a10a90da47100b4eb647eb51e1814ae949ddf929f706380dfcf71c",
+    "runtimeHash": "21ea325838eb80caeb3d632d228f1376d64f0318c9ca1ecf5295be074f6d9013",
+    "abiHash": "3043fba474ac9e652b6e4ad1e687da7326a482f959453b4c56f48ef38ec89d7a"
+  },
+  "fix12Recorded": {
+    "abiHash": "3043fba474ac9e652b6e4ad1e687da7326a482f959453b4c56f48ef38ec89d7a",
+    "creationHash": "10ec8e2914a10a90da47100b4eb647eb51e1814ae949ddf929f706380dfcf71c",
+    "runtimeHash": "21ea325838eb80caeb3d632d228f1376d64f0318c9ca1ecf5295be074f6d9013"
+  },
+  "comparisons": {
+    "abiIdenticalToFix12": true,
+    "abiIdenticalToAudited": true,
+    "abiIdenticalToFrontend": true,
+    "runtimeBytecodeIdenticalToFix12": false
+  }
+}

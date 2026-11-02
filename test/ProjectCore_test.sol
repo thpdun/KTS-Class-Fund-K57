@@ -20,6 +20,10 @@ contract BCSActor {
         target.voteSpendRequest(requestId, support);
     }
 
+    function voteRefund(ProjectCore target, uint256 refundId, bool support) external {
+        target.voteRefundRequest(refundId, support);
+    }
+
     function execute(ProjectCore target, uint256 requestId) external {
         target.executeSpendRequest(requestId);
     }
@@ -119,6 +123,29 @@ contract MaliciousBCSRecipient {
                 }
             }
         }
+    }
+}
+
+/// @notice Hợp đồng sinh viên từ chối nhận ETH để kiểm tra fallback khi hoàn tiền
+contract RejectingStudentTestActor {
+    ProjectCore public target;
+
+    constructor(address payable _target) {
+        target = ProjectCore(_target);
+    }
+
+    function fund() external payable {}
+
+    function deposit(uint256 amount) external payable {
+        target.deposit{value: amount}();
+    }
+
+    function createRefund(uint256 amount, string memory reason) external returns (uint256) {
+        return target.createRefundRequest(amount, reason);
+    }
+
+    receive() external payable {
+        revert("RejectingStudentTestActor: refuse ETH");
     }
 }
 
@@ -496,11 +523,16 @@ contract ProjectCoreTest {
         assembly { aDouble := mload(add(rDouble, 0x20)) }
         require(aDouble == bytes4(keccak256("AlreadyVoted(uint256,address)")), "Must revert AlreadyVoted");
 
-        // bcs2 bỏ phiếu thuận (2/3 = 66% >= 51% -> Tự động Ready)
+        // bcs2 bỏ phiếu thuận (2/3 = 66% >= 51% -> Tự động Ready & Tự thực thi thành công vì recipient nhận ETH)
+        uint256 balBefore = address(this).balance;
         bcs2.vote(core, reqId, true);
+        uint256 balAfter = address(this).balance;
+
         (, , , , , , uint256 yes2, , ProjectCore.RequestStatus st2) = core.getSpendRequest(reqId);
         require(yes2 == 2, "yesVotes must be 2");
-        require(st2 == ProjectCore.RequestStatus.Ready, "Status must transition to Ready at 51%");
+        require(st2 == ProjectCore.RequestStatus.Executed, "Status must transition to Executed via auto-execution");
+        require(balAfter - balBefore == 3 ether, "Recipient must receive 3 ETH directly from decisive vote tx");
+        require(core.reservedSpendAmount() == 0, "reservedSpendAmount must clear to 0 upon auto-execution");
     }
 
     /// @notice Ca E2: Người ngoài cố tình bỏ phiếu bị từ chối
@@ -532,7 +564,7 @@ contract ProjectCoreTest {
         core.setBCSMember(address(bcs2), false);
         require(core.activeBCSCount() == 1, "activeBCSCount is now 1");
 
-        // Với 1 BCS hoạt động, 1 phiếu thuận đạt 1/1 = 100% >= 51%
+        // Với 1 BCS hoạt động, 1 phiếu thuận đạt 1/1 = 100% >= 51%, gọi execute thực thi giải ngân
         bcs1.execute(core, reqId);
         (, , , , , , , , ProjectCore.RequestStatus st2) = core.getSpendRequest(reqId);
         require(st2 == ProjectCore.RequestStatus.Executed, "Executed successfully after denominator adjustment");
@@ -558,25 +590,33 @@ contract ProjectCoreTest {
     // NHÓM F — R6: GIẢI NGÂN & AN NINH CHUYỂN TIỀN (CEI)
     // ==========================================
 
-    /// @notice Ca F1: Giải ngân thành công khi đạt >= 51% phiếu, cập nhật chính xác số dư
+    /// @notice Ca F1: Tự giải ngân thành công khi đạt >= 51% phiếu, cập nhật chính xác số dư không cần tx execute riêng
     function testGroupF1_ExecuteSuccessfulWhenThresholdMet() public payable {
         core.deposit{value: 10 ether}(); // classFund = 9.9 ETH
         core.setBCSMember(address(bcs1), true);
 
-        // 1 BCS duy nhất: 1 vote = 100% >= 51%
+        // 1 BCS duy nhất: 1 vote = 100% >= 51% -> Tự động giải ngân ngay trong vote
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(this)), 3 ether, "Tham quan hoc tap");
-        bcs1.vote(core, reqId, true);
 
         uint256 balBefore = address(this).balance;
-        bcs1.execute(core, reqId);
+        bcs1.vote(core, reqId, true);
         uint256 balAfter = address(this).balance;
 
-        require(balAfter - balBefore == 3 ether, "Recipient must receive exactly 3 ETH");
+        require(balAfter - balBefore == 3 ether, "Recipient must receive exactly 3 ETH from decisive vote tx");
         require(core.classFundBalance() == 6.9 ether, "Class fund must decrease to 6.9 ETH");
         require(core.reservedSpendAmount() == 0, "reservedSpendAmount must decrease back to 0");
 
         (, , , , , , , , ProjectCore.RequestStatus st) = core.getSpendRequest(reqId);
-        require(st == ProjectCore.RequestStatus.Executed, "Status must be Executed");
+        require(st == ProjectCore.RequestStatus.Executed, "Status must be Executed immediately without separate execute tx");
+
+        // Gọi execute thủ công sau khi đã auto-execute -> Bắt buộc Revert RequestAlreadyExecuted
+        (bool sAgain, bytes memory rAgain) = address(bcs1).call(
+            abi.encodeWithSignature("execute(address,uint256)", address(core), reqId)
+        );
+        require(!sAgain, "Subsequent manual execute must revert RequestAlreadyExecuted");
+        bytes4 aAgain;
+        assembly { aAgain := mload(add(rAgain, 0x20)) }
+        require(aAgain == bytes4(keccak256("RequestAlreadyExecuted(uint256)")), "Must revert RequestAlreadyExecuted");
     }
 
     /// @notice Ca F2: Chưa đủ ngưỡng 51% thì không được phép giải ngân
@@ -596,34 +636,46 @@ contract ProjectCoreTest {
         require(actual == bytes4(keccak256("ThresholdNotMet(uint256,uint256)")), "Must revert ThresholdNotMet");
     }
 
-    /// @notice Ca F3: Chống thực thi lặp lại (Double execution / Double spending)
+    /// @notice Ca F3: Chống thực thi lặp lại sau khi auto-execution đã thành công
     function testGroupF3_DoubleExecutionReverts() public payable {
         core.deposit{value: 5 ether}();
         core.setBCSMember(address(bcs1), true);
 
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(this)), 1 ether, "Chi 1 lan");
-        bcs1.vote(core, reqId, true);
-        bcs1.execute(core, reqId);
+        bcs1.vote(core, reqId, true); // Đã tự giải ngân thành công
 
-        // Cố thực thi lần 2
-        (bool s2, bytes memory r2) = address(bcs1).call(
+        // Cố thực thi thủ công lần 1 (sau auto-exec) -> REVERT
+        (bool s1, bytes memory r1) = address(bcs1).call(
             abi.encodeWithSignature("execute(address,uint256)", address(core), reqId)
         );
-        require(!s2, "Second execution must revert");
-        bytes4 a2;
-        assembly { a2 := mload(add(r2, 0x20)) }
-        require(a2 == bytes4(keccak256("RequestAlreadyExecuted(uint256)")), "Must revert RequestAlreadyExecuted");
+        require(!s1, "Manual execution after auto-exec must revert");
+        bytes4 a1;
+        assembly { a1 := mload(add(r1, 0x20)) }
+        require(a1 == bytes4(keccak256("RequestAlreadyExecuted(uint256)")), "Must revert RequestAlreadyExecuted");
     }
 
-    /// @notice Ca F4: Người nhận từ chối ETH thì toàn bộ giao dịch giải ngân revert và bảo toàn trạng thái (CEI)
+    /// @notice Ca F4: Người nhận từ chối ETH thì vote cuối vẫn được ghi nhận, đề xuất ở trạng thái Ready (không revert vote) và cho phép fallback execute
     function testGroupF4_ExecuteRevertsIfRecipientRefusesETH() public payable {
         core.deposit{value: 5 ether}();
         core.setBCSMember(address(bcs1), true);
 
         RejectingRecipient rejector = new RejectingRecipient();
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(rejector)), 1 ether, "Nguoi nhan tu choi");
-        bcs1.vote(core, reqId, true);
 
+        // 1. Lá phiếu vote cuối cùng vẫn thành công (KHÔNG revert giao dịch vote)
+        bcs1.vote(core, reqId, true);
+        require(core.hasMemberVoted(reqId, address(bcs1)), "Vote must be recorded even if recipient rejects ETH");
+
+        // 2. Trạng thái đề xuất được giữ ở Ready (không phải Executed)
+        (, , , , , , uint256 yesVotes, , ProjectCore.RequestStatus st) = core.getSpendRequest(reqId);
+        require(yesVotes == 1, "yesVotes must be recorded");
+        require(st == ProjectCore.RequestStatus.Ready, "Status must remain Ready for fallback");
+
+        // 3. Số dư quỹ và tiền giữ chỗ được rollback bảo toàn
+        require(core.classFundBalance() == 4.95 ether, "Class fund must remain 4.95 ETH");
+        require(core.reservedSpendAmount() == 1 ether, "Reserved spend amount must remain intact");
+
+        // 4. Khi gọi execute thủ công, do rejector vẫn từ chối ETH nên lệnh call thất bại -> Revert ETHTransferFailed
         (bool success, bytes memory returnData) = address(bcs1).call(
             abi.encodeWithSignature("execute(address,uint256)", address(core), reqId)
         );
@@ -631,14 +683,10 @@ contract ProjectCoreTest {
         bytes4 actual;
         assembly { actual := mload(add(returnData, 0x20)) }
         require(actual == bytes4(keccak256("ETHTransferFailed()")), "Must revert ETHTransferFailed()");
-
-        // Số dư và trạng thái được rollback hoàn toàn
-        require(core.classFundBalance() == 4.95 ether, "Class fund must remain 4.95 ETH");
-        require(core.reservedSpendAmount() == 1 ether, "Reserved spend amount must remain unchanged after revert");
     }
 
     /// @notice Ca F5: Chống Reentrancy khi giải ngân nhờ mô hình Checks-Effects-Interactions (CEI)
-    /// @dev Kẻ tấn công đồng thời là thành viên BCS, đảm bảo cuộc gọi tái nhập vượt qua onlyActiveBCS và thực sự kiểm tra trạng thái Executed
+    /// @dev Kẻ tấn công đồng thời là thành viên BCS, cuộc gọi tái nhập xảy ra trong lúc auto-executing vote và bị chặn bởi CEI
     function testGroupF5_ReentrancyDuringExecuteIsBlockedByCEI() public payable {
         core.deposit{value: 5 ether}();
         core.setBCSMember(address(bcs1), true);
@@ -649,12 +697,11 @@ contract ProjectCoreTest {
 
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(attackerRecipient)), 1 ether, "Ke tan cong co quyen BCS");
         bcs1.vote(core, reqId, true);
-        // Attacker bỏ phiếu thuận cho chính mình -> 2/2 = 100% >= 51%
+        // Attacker bỏ phiếu thuận cho chính mình -> 2/2 = 100% >= 51% -> TỰ THỰC THI NGAY TẠI ĐÂY!
         attackerRecipient.vote(reqId, true);
-        bcs1.execute(core, reqId);
 
-        // Xác nhận đòn tái nhập đã xảy ra
-        require(attackerRecipient.attackAttempts() == 1, "Attacker must have attempted reentrancy");
+        // Xác nhận đòn tái nhập đã xảy ra trong lúc auto-executing vote
+        require(attackerRecipient.attackAttempts() == 1, "Attacker must have attempted reentrancy during auto-exec vote");
         // Xác nhận đòn tái nhập bị chặn bởi CEI
         require(attackerRecipient.reentrancyBlocked(), "Reentrancy must be blocked by CEI");
         // Xác nhận lỗi revert từ đòn tái nhập chính là RequestAlreadyExecuted (không phải NotActiveBCS!)
@@ -664,6 +711,7 @@ contract ProjectCoreTest {
         );
         // Số dư giảm chính xác 1 lần duy nhất từ 4.95 ETH xuống 3.95 ETH
         require(core.classFundBalance() == 3.95 ether, "Class fund must decrease only once to 3.95 ETH");
+        require(address(attackerRecipient).balance == 1 ether, "Attacker must receive exactly 1 ETH without double spending");
     }
 
     // ==========================================
@@ -685,10 +733,124 @@ contract ProjectCoreTest {
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(this)), 4 ether, "Ke toan bat bien");
         require(core.classFundBalance() == core.getAvailableClassFund() + core.reservedSpendAmount(), "Invariant 3: Class fund = Available + Reserved");
 
-        // 4. Giải ngân 4 ETH
+        // 4. Giải ngân 4 ETH qua lá phiếu thuận (auto-execution)
         bcs1.vote(core, reqId, true);
-        bcs1.execute(core, reqId);
         require(core.getTotalContractBalance() == core.classFundBalance() + core.adminFeePool(), "Invariant 4: Total balance conserved after spend execution");
         require(core.reservedSpendAmount() == 0, "Invariant 5: Reserved returns to 0 after execution");
     }
+
+    // ==========================================
+    // NHÓM H — TỰ ĐỘNG THỰC THI HOÀN TIỀN (AUTO-EXECUTION REFUND)
+    // ==========================================
+
+    /// @notice Ca H1: Hoàn tiền tự động thành công khi BCS bỏ phiếu thuận đạt >= 51%, không cần gọi execute riêng
+    function testGroupH1_RefundAutoExecutesOnThreshold() public payable {
+        core.deposit{value: 5 ether}();
+        core.setBCSMember(address(bcs1), true);
+
+        // Tạo yêu cầu hoàn 2 ETH
+        uint256 refId = core.createRefundRequest(2 ether, "Hoan tien tu dong");
+        require(core.reservedRefundAmount() == 2 ether, "Reserved refund is 2 ETH");
+
+        uint256 balBefore = address(this).balance;
+        // bcs1 bỏ phiếu thuận (1/1 = 100% >= 51% -> Tự động hoàn tiền ngay)
+        bcs1.voteRefund(core, refId, true);
+        uint256 balAfter = address(this).balance;
+
+        require(balAfter - balBefore == 2 ether, "Applicant must receive 2 ETH refund directly from vote tx");
+        require(core.reservedRefundAmount() == 0, "Reserved refund cleared to 0");
+        require(core.pendingStudentRefundAmount(address(this)) == 0, "Pending student refund cleared to 0");
+        require(core.studentContributions(address(this)) == 3 ether, "Contributions decreased by 2 ETH to 3 ETH");
+        require(core.classFundBalance() == 2.95 ether, "Class fund decreased by 2 ETH to 2.95 ETH");
+
+        (, , , , , , , ProjectCore.RequestStatus st) = core.getRefundRequest(refId);
+        require(st == ProjectCore.RequestStatus.Executed, "Refund status must be Executed immediately");
+
+        // Cố gọi executeRefundRequest thủ công sau khi đã auto-execute -> Revert RefundAlreadyExecuted
+        (bool sAgain, bytes memory rAgain) = address(core).call(
+            abi.encodeWithSignature("executeRefundRequest(uint256)", refId)
+        );
+        require(!sAgain, "Subsequent executeRefundRequest must revert RefundAlreadyExecuted");
+        bytes4 aAgain;
+        assembly { aAgain := mload(add(rAgain, 0x20)) }
+        require(aAgain == bytes4(keccak256("RefundAlreadyExecuted(uint256)")), "Must revert RefundAlreadyExecuted");
+    }
+
+    /// @notice Ca H2: Sinh viên từ chối nhận ETH thì vote duyệt hoàn tiền vẫn thành công (không revert vote), fallback giữ Ready
+    function testGroupH2_RefundRejectingRecipientFallback() public payable {
+        core.setBCSMember(address(bcs1), true);
+
+        RejectingStudentTestActor rejecter = new RejectingStudentTestActor(payable(address(core)));
+        rejecter.fund{value: 5 ether}();
+
+        rejecter.deposit(3 ether);
+        uint256 refId = rejecter.createRefund(1 ether, "Rollback test");
+
+        uint256 fundBefore = core.classFundBalance();
+        uint256 contribBefore = core.studentContributions(address(rejecter));
+
+        // bcs1 bỏ phiếu thuận (1/1 = 100% >= 51%). Do rejecter từ chối ETH nên auto-execution thất bại
+        // NHƯNG giao dịch vote vẫn THÀNH CÔNG, phiếu bầu được ghi nhận đầy đủ
+        bcs1.voteRefund(core, refId, true);
+        require(core.hasMemberVotedRefund(refId, address(bcs1)), "Vote must be recorded despite transfer failure");
+
+        // Trạng thái giữ nguyên là Ready (chưa Executed) để cho phép thử lại
+        (, , , , , , , ProjectCore.RequestStatus st) = core.getRefundRequest(refId);
+        require(st == ProjectCore.RequestStatus.Ready, "Refund status must stay Ready for fallback");
+
+        // Kế toán được rollback nguyên vẹn
+        require(core.classFundBalance() == fundBefore, "Class fund must remain unchanged");
+        require(core.studentContributions(address(rejecter)) == contribBefore, "Student contribution must remain unchanged");
+        require(core.reservedRefundAmount() == 1 ether, "Reserved refund must remain intact");
+
+        // Gọi executeRefundRequest thủ công -> Revert ETHTransferFailed()
+        (bool sAgain, bytes memory rAgain) = address(core).call(
+            abi.encodeWithSignature("executeRefundRequest(uint256)", refId)
+        );
+        require(!sAgain, "Manual execute must revert when recipient refuses ETH");
+        bytes4 aAgain;
+        assembly { aAgain := mload(add(rAgain, 0x20)) }
+        require(aAgain == bytes4(keccak256("ETHTransferFailed()")), "Must revert ETHTransferFailed");
+    }
+
+    /// @notice Ca H3: Đề xuất chi đã đạt ngưỡng Ready thì KHÔNG thể bị dọn dẹp bằng expireSpendRequest
+    function testGroupH3_CannotExpireReadySpendRequest() public payable {
+        core.deposit{value: 5 ether}();
+        core.setBCSMember(address(bcs1), true);
+
+        RejectingRecipient rejector = new RejectingRecipient();
+        uint256 reqId = bcs1.createSpendRequest(core, payable(address(rejector)), 1 ether, "Ready spend");
+        bcs1.vote(core, reqId, true);
+
+        // Đề xuất đang ở Ready. Cố gọi expireSpendRequest -> Bị revert InvalidRequestStatus
+        (bool success, bytes memory returnData) = address(core).call(
+            abi.encodeWithSignature("expireSpendRequest(uint256)", reqId)
+        );
+        require(!success, "expireSpendRequest must revert on Ready request");
+        bytes4 actual;
+        assembly { actual := mload(add(returnData, 0x20)) }
+        require(actual == bytes4(keccak256("InvalidRequestStatus(uint256)")), "Must revert InvalidRequestStatus");
+    }
+
+    /// @notice Ca H4: Yêu cầu hoàn tiền đã đạt ngưỡng Ready thì KHÔNG thể bị dọn dẹp bằng expireRefundRequest
+    function testGroupH4_CannotExpireReadyRefundRequest() public payable {
+        core.setBCSMember(address(bcs1), true);
+
+        RejectingStudentTestActor rejecter = new RejectingStudentTestActor(payable(address(core)));
+        rejecter.fund{value: 5 ether}();
+
+        rejecter.deposit(3 ether);
+        uint256 refId = rejecter.createRefund(1 ether, "Ready refund");
+        bcs1.voteRefund(core, refId, true);
+
+        // Yêu cầu đang ở Ready. Cố gọi expireRefundRequest -> Bị revert InvalidRefundStatus
+        (bool success, bytes memory returnData) = address(core).call(
+            abi.encodeWithSignature("expireRefundRequest(uint256)", refId)
+        );
+        require(!success, "expireRefundRequest must revert on Ready refund");
+        bytes4 actual;
+        assembly { actual := mload(add(returnData, 0x20)) }
+        require(actual == bytes4(keccak256("InvalidRefundStatus(uint256)")), "Must revert InvalidRefundStatus");
+    }
 }
+

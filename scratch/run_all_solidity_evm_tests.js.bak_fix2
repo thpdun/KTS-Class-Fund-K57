@@ -1,0 +1,145 @@
+const fs = require('fs');
+const path = require('path');
+const npxNodeModules = 'C:\\Users\\Thao\\AppData\\Local\\npm-cache\\_npx\\fcea0c4d773c1d63\\node_modules';
+
+const { createVM } = require(path.join(npxNodeModules, '@ethereumjs/vm'));
+const { createAddressFromString, createAccount, bytesToHex, hexToBytes } = require(path.join(npxNodeModules, '@ethereumjs/util'));
+const { ethers } = require(path.join(npxNodeModules, 'ethers'));
+
+async function runTestFile(testContractName, binFileName, abiFileName) {
+  console.log(`\n===============================================================`);
+  console.log(`KHỞI CHẠY KIỂM THỬ SOLIDITY TRÊN EVM: ${testContractName}`);
+  console.log(`===============================================================`);
+
+  const vm = await createVM({ activatePrecompiles: true });
+  vm.evm.allowUnlimitedInitCodeSize = true;
+  vm.evm.allowUnlimitedContractSize = true;
+
+  const runnerAddr = createAddressFromString('0x1000000000000000000000000000000000000001');
+  await vm.stateManager.putAccount(runnerAddr, createAccount({ balance: 100000n * 10n**18n }));
+
+  const binPath = path.join(__dirname, 'solc_out', binFileName);
+  const abiPath = path.join(__dirname, 'solc_out', abiFileName);
+  const bytecode = '0x' + fs.readFileSync(binPath, 'utf8').trim();
+  const abi = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
+
+  const iface = new ethers.Interface(abi);
+
+  // Deploy test contract
+  console.log(`[EVM DEPLOY] Đang triển khai bytecode (${Math.round(bytecode.length / 2)} bytes)...`);
+  const deployRes = await vm.evm.runCall({
+    caller: runnerAddr,
+    data: hexToBytes(bytecode),
+    gasLimit: 300_000_000n,
+    value: 0n,
+  });
+
+  if (deployRes.execResult.exceptionError) {
+    console.error(`[EVM DEPLOY LỖI]:`, deployRes.execResult.exceptionError);
+    return { passed: 0, failed: 1, errors: [`Deploy failed: ${deployRes.execResult.exceptionError.error}`] };
+  }
+
+  const testAddr = deployRes.createdAddress;
+  console.log(`[EVM DEPLOY THÀNH CÔNG] Địa chỉ test contract: ${testAddr.toString()}`);
+  console.log(`[EVM GAS] Phí triển khai: ${deployRes.execResult.executionGasUsed.toString()} gas`);
+
+  // Cấp vốn 500 ETH cho test contract như Remix VM
+  const testAcc = await vm.stateManager.getAccount(testAddr);
+  testAcc.balance = 500n * 10n**18n;
+  await vm.stateManager.putAccount(testAddr, testAcc);
+
+  // Lọc tất cả các hàm test
+  const testFns = iface.fragments.filter(f => f.type === 'function' && f.name.startsWith('test'));
+  console.log(`[EVM TESTS PHÁT HIỆN]: ${testFns.length} ca kiểm thử trong contract.`);
+
+  let passed = 0;
+  let failed = 0;
+  const results = [];
+
+  for (let i = 0; i < testFns.length; i++) {
+    const fn = testFns[i];
+    const isPayable = fn.stateMutability === 'payable';
+
+    // 1. Cấp lại số dư 500 ETH cho test contract trước mỗi test
+    const curAcc = await vm.stateManager.getAccount(testAddr);
+    curAcc.balance = 500n * 10n**18n;
+    await vm.stateManager.putAccount(testAddr, curAcc);
+
+    // 2. Gọi beforeEach()
+    const beforeEachRes = await vm.evm.runCall({
+      caller: runnerAddr,
+      to: testAddr,
+      data: hexToBytes(iface.encodeFunctionData('beforeEach')),
+      gasLimit: 100_000_000n,
+      value: 0n,
+    });
+
+    if (beforeEachRes.execResult.exceptionError) {
+      console.log(`[${i + 1}/${testFns.length}] FAIL: ${fn.name} -> beforeEach revert: ${beforeEachRes.execResult.exceptionError.error}`);
+      failed++;
+      results.push({ name: fn.name, status: 'FAIL', error: 'beforeEach revert' });
+      continue;
+    }
+
+    // 3. Thực thi hàm test trên EVM
+    const testCallData = iface.encodeFunctionData(fn.name);
+    const testRes = await vm.evm.runCall({
+      caller: runnerAddr,
+      to: testAddr,
+      data: hexToBytes(testCallData),
+      gasLimit: 100_000_000n,
+      value: isPayable ? 10n * 10n**18n : 0n,
+    });
+
+    if (testRes.execResult.exceptionError) {
+      const errStr = testRes.execResult.exceptionError.error;
+      const retBytes = bytesToHex(testRes.execResult.returnValue);
+      let revertReason = '';
+      if (retBytes.length > 2) {
+        try {
+          // Thử giải mã Error(string)
+          revertReason = ethers.toUtf8String('0x' + retBytes.slice(10));
+        } catch (_) {
+          revertReason = `Revert data: ${retBytes.slice(0, 34)}...`;
+        }
+      }
+      console.log(`[${i + 1}/${testFns.length}] ❌ FAIL: ${fn.name} -> ${errStr} (${revertReason})`);
+      failed++;
+      results.push({ name: fn.name, status: 'FAIL', error: `${errStr} ${revertReason}` });
+    } else {
+      const gasUsed = testRes.execResult.executionGasUsed.toString();
+      console.log(`[${i + 1}/${testFns.length}]  PASS: ${fn.name} (EVM Gas: ${gasUsed})`);
+      passed++;
+      results.push({ name: fn.name, status: 'PASS', gas: gasUsed });
+    }
+  }
+
+  console.log(`\n---------------------------------------------------------------`);
+  console.log(`KẾT QUẢ ${testContractName}: PASS ${passed}/${testFns.length} | FAIL ${failed}/${testFns.length}`);
+  console.log(`---------------------------------------------------------------`);
+
+  return { passed, failed, total: testFns.length, results };
+}
+
+async function main() {
+  const r1 = await runTestFile(
+    'ProjectCoreTest (Unit Tests)',
+    'test_ProjectCore_test_sol_ProjectCoreTest.bin',
+    'test_ProjectCore_test_sol_ProjectCoreTest.abi'
+  );
+
+  const r2 = await runTestFile(
+    'ProjectCoreIntegrationTest (Integration Tests)',
+    'test_ProjectCore_integration_test_sol_ProjectCoreIntegrationTest.bin',
+    'test_ProjectCore_integration_test_sol_ProjectCoreIntegrationTest.abi'
+  );
+
+  console.log(`\n===============================================================`);
+  console.log(`TỔNG HỢP KIỂM THỬ SOLIDITY TRÊN MÁY ẢO EVM:`);
+  console.log(`- ProjectCoreTest: ${r1.passed}/${r1.total} PASS`);
+  console.log(`- ProjectCoreIntegrationTest: ${r2.passed}/${r2.total} PASS`);
+  console.log(`- Tổng cộng: ${r1.passed + r2.passed}/${r1.total + r2.total} PASS`);
+  console.log(`===============================================================`);
+}
+
+main().catch(console.error);

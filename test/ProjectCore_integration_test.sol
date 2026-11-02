@@ -73,6 +73,8 @@ contract RejectingStudent {
         target = ProjectCore(_target);
     }
 
+    function fund() external payable {}
+
     function deposit(uint256 amount) external payable {
         target.deposit{value: amount}();
     }
@@ -102,6 +104,8 @@ contract MaliciousRefundAttacker {
     constructor(address payable _target) {
         target = ProjectCore(_target);
     }
+
+    function fund() external payable {}
 
     function deposit(uint256 amount) external payable {
         target.deposit{value: amount}();
@@ -218,30 +222,34 @@ contract ProjectCoreIntegrationTest {
         (, , , , , , , , ProjectCore.RequestStatus sPending) = core.getSpendRequest(reqId);
         require(sPending == ProjectCore.RequestStatus.Pending, "Step 2: Status must still be Pending");
 
-        // BCS2 bỏ phiếu thuận (2/3 = 66.6% >= 51% -> Ready)
-        bcs2.voteSpend(core, reqId, true);
-        (, , , , , , uint256 yes2, , ProjectCore.RequestStatus sReady) = core.getSpendRequest(reqId);
-        require(yes2 == 2, "Step 2: Yes votes must be 2");
-        require(sReady == ProjectCore.RequestStatus.Ready, "Step 2: Status must transition to Ready");
-
-        // -------------------------------------------------------------
-        // BƯỚC 3: CHI TIỀN (EXECUTE SPEND)
-        // BCS1 gọi thực thi giải ngân 4 ETH
-        // -------------------------------------------------------------
+        // BCS2 bỏ phiếu thuận (2/3 = 66.6% >= 51% -> TỰ ĐỘNG THỰC THI CHI TIỀN NGAY TRONG GIAO DỊCH VOTE!)
         uint256 recipientBalBefore = address(recipient1).balance;
-        bcs1.executeSpend(core, reqId);
+        bcs2.voteSpend(core, reqId, true);
         uint256 recipientBalAfter = address(recipient1).balance;
 
-        require(recipientBalAfter - recipientBalBefore == 4 ether, "Step 3: Recipient must receive exact 4 ETH");
-        (, , , , , , , , ProjectCore.RequestStatus sExecuted) = core.getSpendRequest(reqId);
-        require(sExecuted == ProjectCore.RequestStatus.Executed, "Step 3: Status must be Executed");
-        require(core.reservedSpendAmount() == 0, "Step 3: Reserved spend amount must reset to 0");
-        require(core.classFundBalance() == 10.85 ether, "Step 3: Class fund must decrease by 4 ETH to 10.85 ETH");
-        require(address(core).balance == 11 ether, "Step 3: Contract balance must decrease to 11 ETH");
-        require(core.getTotalContractBalance() == core.classFundBalance() + core.adminFeePool(), "Step 3: Invariant holds");
+        (, , , , , , uint256 yes2, , ProjectCore.RequestStatus sExecuted) = core.getSpendRequest(reqId);
+        require(yes2 == 2, "Step 2: Yes votes must be 2");
+        require(sExecuted == ProjectCore.RequestStatus.Executed, "Step 2: Status must transition directly to Executed via auto-execution");
+        require(recipientBalAfter - recipientBalBefore == 4 ether, "Step 2: Recipient must receive exact 4 ETH from decisive vote tx");
+        require(core.reservedSpendAmount() == 0, "Step 2: Reserved spend amount must reset to 0 upon auto-execution");
+        require(core.classFundBalance() == 10.85 ether, "Step 2: Class fund must decrease by 4 ETH to 10.85 ETH");
+        require(address(core).balance == 11 ether, "Step 2: Contract balance must decrease to 11 ETH");
+        require(core.getTotalContractBalance() == core.classFundBalance() + core.adminFeePool(), "Step 2: Invariant holds");
 
         // -------------------------------------------------------------
-        // BƯỚC 4: HOÀN TIỀN CÓ BIỂU QUYẾT BCS (REFUND R7 NÂNG CẤP)
+        // BƯỚC 3: XÁC MINH CHỐNG THỰC THI THỦ CÔNG LẶP LẠI (EXECUTE SPEND AFTER AUTO-EXEC)
+        // BCS1 gọi executeSpend sau khi đã auto-execute -> Bắt buộc Revert RequestAlreadyExecuted
+        // -------------------------------------------------------------
+        (bool sExecAgain, bytes memory rExecAgain) = address(bcs1).call(
+            abi.encodeWithSignature("executeSpend(address,uint256)", address(core), reqId)
+        );
+        require(!sExecAgain, "Step 3: Calling manual execute after auto-exec must revert");
+        bytes4 aExecAgain;
+        assembly { aExecAgain := mload(add(rExecAgain, 0x20)) }
+        require(aExecAgain == bytes4(keccak256("RequestAlreadyExecuted(uint256)")), "Step 3: Must revert RequestAlreadyExecuted");
+
+        // -------------------------------------------------------------
+        // BƯỚC 4: HOÀN TIỀN CÓ BIỂU QUYẾT BCS VÀ TỰ ĐỘNG HOÀN TRẢ
         // 4.1. Student2 tạo yêu cầu hoàn 3 ETH do nộp thừa
         // -------------------------------------------------------------
         uint256 refundId = student2.createRefund(core, 3 ether, "Nop nham quy lop");
@@ -250,22 +258,20 @@ contract ProjectCoreIntegrationTest {
         require(core.pendingStudentRefundAmount(address(student2)) == 3 ether, "Step 4.1: Student2 pending refund must be 3 ETH");
         require(core.getAvailableClassFund() == 7.85 ether, "Step 4.1: Available fund must be 10.85 - 3 = 7.85 ETH");
 
-        // 4.2. BCS1 và BCS2 biểu quyết thông qua yêu cầu hoàn tiền (2/3 >= 51%)
+        // 4.2. BCS1 bỏ phiếu thuận (1/3 = 33.3% < 51% -> Pending)
         bcs1.voteRefund(core, refundId, true);
         (, , , , , , , ProjectCore.RequestStatus refPending) = core.getRefundRequest(refundId);
         require(refPending == ProjectCore.RequestStatus.Pending, "Step 4.2: Refund request must still be Pending with 1 vote");
 
-        bcs2.voteRefund(core, refundId, true);
-        (, , , , , uint256 refYes, , ProjectCore.RequestStatus refReady) = core.getRefundRequest(refundId);
-        require(refYes == 2, "Step 4.2: Refund yes votes must be 2");
-        require(refReady == ProjectCore.RequestStatus.Ready, "Step 4.2: Refund request must transition to Ready");
-
-        // 4.3. Thực thi hoàn tiền (Chuyển 3 ETH về ví Student2)
+        // 4.3. BCS2 bỏ phiếu thuận (2/3 = 66.6% >= 51% -> TỰ ĐỘNG HOÀN TIỀN NGAY VỀ VÍ SINH VIÊN!)
         uint256 student2BalBefore = address(student2).balance;
-        student2.executeRefund(core, refundId);
+        bcs2.voteRefund(core, refundId, true);
         uint256 student2BalAfter = address(student2).balance;
 
-        require(student2BalAfter - student2BalBefore == 3 ether, "Step 4.3: Student2 must receive exact 3 ETH refund");
+        (, , , , , uint256 refYes, , ProjectCore.RequestStatus refExecuted) = core.getRefundRequest(refundId);
+        require(refYes == 2, "Step 4.3: Refund yes votes must be 2");
+        require(refExecuted == ProjectCore.RequestStatus.Executed, "Step 4.3: Refund request must transition directly to Executed via auto-execution");
+        require(student2BalAfter - student2BalBefore == 3 ether, "Step 4.3: Student2 must receive exact 3 ETH refund from decisive vote tx");
         require(core.studentContributions(address(student2)) == 2 ether, "Step 4.3: Student2 contribution must decrease to 2 ETH");
         require(core.pendingStudentRefundAmount(address(student2)) == 0, "Step 4.3: Student2 pending refund must clear to 0");
         require(core.reservedRefundAmount() == 0, "Step 4.3: Reserved refund amount must clear to 0");
@@ -273,6 +279,15 @@ contract ProjectCoreIntegrationTest {
         require(address(core).balance == 8 ether, "Step 4.3: Contract balance must decrease to 8 ETH");
         require(core.adminFeePool() == 0.15 ether, "Step 4.3: Admin fee pool must remain untouched at 0.15 ETH");
         require(core.getTotalContractBalance() == core.classFundBalance() + core.adminFeePool(), "Step 4.3: Invariant holds");
+
+        // 4.4. Thử gọi executeRefund thủ công sau khi đã auto-execute -> Bắt buộc Revert RefundAlreadyExecuted
+        (bool sRefAgain, bytes memory rRefAgain) = address(student2).call(
+            abi.encodeWithSignature("executeRefund(address,uint256)", address(core), refundId)
+        );
+        require(!sRefAgain, "Step 4.4: Calling manual executeRefund after auto-exec must revert");
+        bytes4 aRefAgain;
+        assembly { aRefAgain := mload(add(rRefAgain, 0x20)) }
+        require(aRefAgain == bytes4(keccak256("RefundAlreadyExecuted(uint256)")), "Step 4.4: Must revert RefundAlreadyExecuted");
 
         // -------------------------------------------------------------
         // BƯỚC 5: RÚT TIỀN (WITHDRAW ADMIN FEE)
@@ -336,13 +351,12 @@ contract ProjectCoreIntegrationTest {
 
         // Quỹ lớp có 4.95 ETH (sau 1% phí). Student1 xin hoàn 4.95 ETH
         uint256 refId = student1.createRefund(core, 4.95 ether, "Exact max");
-        bcs1.voteRefund(core, refId, true);
 
         uint256 balBefore = address(student1).balance;
-        student1.executeRefund(core, refId);
+        bcs1.voteRefund(core, refId, true);
         uint256 balAfter = address(student1).balance;
 
-        require(balAfter - balBefore == 4.95 ether, "Must receive exact 4.95 ETH");
+        require(balAfter - balBefore == 4.95 ether, "Must receive exact 4.95 ETH directly from auto-exec vote");
         require(core.studentContributions(address(student1)) == 0.05 ether, "Remaining contribution must be 0.05 ETH");
         require(core.classFundBalance() == 0, "Class fund balance must be 0");
     }
@@ -388,8 +402,7 @@ contract ProjectCoreIntegrationTest {
     /// @notice Ca A7: Người nhận từ chối ETH thì revert ETHTransferFailed() và rollback toàn bộ kế toán
     function testRefund_RejectingRecipientRollsBack() public payable {
         RejectingStudent rejecter = new RejectingStudent(payable(address(core)));
-        (bool fundOk, ) = address(rejecter).call{value: 5 ether}("");
-        require(fundOk, "Funding rejecter failed");
+        rejecter.fund{value: 5 ether}();
 
         rejecter.deposit(3 ether);
         core.setBCSMember(address(bcs1), true);
@@ -414,17 +427,15 @@ contract ProjectCoreIntegrationTest {
     /// @notice Ca A8: Chống Reentrancy khi thực thi hoàn tiền nhờ CEI
     function testRefund_ReentrancyBlockedByCEI() public payable {
         MaliciousRefundAttacker attacker = new MaliciousRefundAttacker(payable(address(core)));
-        (bool fundOk, ) = address(attacker).call{value: 10 ether}("");
-        require(fundOk, "Funding attacker failed");
+        attacker.fund{value: 10 ether}();
 
         attacker.deposit(4 ether);
         core.setBCSMember(address(bcs1), true);
 
         uint256 attackRefId = attacker.applyRefund(2 ether);
+        // Ngay khi vote đạt 100% >= 51%, hợp đồng auto-execute chuyển ETH tới attacker,
+        // kích hoạt receive() cố re-enter executeRefundRequest() và bị chặn ngay lập tức bởi CEI
         bcs1.voteRefund(core, attackRefId, true);
-
-        // Attacker gọi executeRefund, trong receive() sẽ cố re-enter executeRefundRequest()
-        attacker.executeRefund();
 
         require(attacker.attackAttempts() == 1, "Attacker must have attempted reentrancy");
         require(attacker.reentrancyBlocked(), "Reentrant call must be blocked");
@@ -432,6 +443,9 @@ contract ProjectCoreIntegrationTest {
             attacker.reentrancyRevertSelector() == bytes4(keccak256("RefundAlreadyExecuted(uint256)")),
             "Reentrancy must revert RefundAlreadyExecuted"
         );
+        require(core.classFundBalance() == 1.96 ether, "Class fund must decrease exactly once to 1.96 ETH");
+        require(core.studentContributions(address(attacker)) == 2 ether, "Student contribution must decrease exactly once to 2 ETH");
+        require(address(attacker).balance == 8 ether, "Attacker balance must be exactly 10 - 4 + 2 = 8 ETH");
     }
 
     // =========================================================================
@@ -492,20 +506,19 @@ contract ProjectCoreIntegrationTest {
         require(sel == bytes4(keccak256("ThresholdNotMet(uint256,uint256)")), "Must revert ThresholdNotMet");
     }
 
-    /// @notice Ca C2: Chặn thực thi hoàn tiền hai lần (Double Execution)
+    /// @notice Ca C2: Chặn thực thi hoàn tiền hai lần (Double Execution sau auto-exec)
     function testRefundExecution_CannotExecuteTwice() public payable {
         student1.deposit(core, 5 ether);
         core.setBCSMember(address(bcs1), true);
 
         uint256 refId = student1.createRefund(core, 2 ether, "Reason");
-        bcs1.voteRefund(core, refId, true);
-        student1.executeRefund(core, refId);
+        bcs1.voteRefund(core, refId, true); // Đã auto-execute hoàn tiền thành công
 
-        // Cố thực thi lần 2
+        // Cố thực thi thủ công lần 1 (sau auto-exec) -> Revert RefundAlreadyExecuted
         (bool success, bytes memory returnData) = address(student1).call(
             abi.encodeWithSignature("executeRefund(address,uint256)", address(core), refId)
         );
-        require(!success, "Cannot execute refund twice");
+        require(!success, "Cannot execute refund after auto-exec");
         bytes4 sel;
         assembly { sel := mload(add(returnData, 0x20)) }
         require(sel == bytes4(keccak256("RefundAlreadyExecuted(uint256)")), "Must revert RefundAlreadyExecuted");
@@ -525,20 +538,19 @@ contract ProjectCoreIntegrationTest {
         require(!success, "Execute spend without threshold must revert");
     }
 
-    /// @notice Ca C4: Chặn thực thi chi tiêu hai lần
+    /// @notice Ca C4: Chặn thực thi chi tiêu hai lần (sau auto-exec)
     function testSpend_CannotExecuteTwice() public payable {
         student1.deposit(core, 10 ether);
         core.setBCSMember(address(bcs1), true);
 
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(recipient1)), 2 ether, "Chi mot lan");
-        bcs1.voteSpend(core, reqId, true);
-        bcs1.executeSpend(core, reqId);
+        bcs1.voteSpend(core, reqId, true); // Đã auto-execute giải ngân thành công
 
-        // Thử thực thi lần 2
+        // Thử thực thi thủ công lần 1 (sau auto-exec) -> Revert RequestAlreadyExecuted
         (bool success, bytes memory returnData) = address(bcs1).call(
-            abi.encodeWithSignature("execute(address,uint256)", address(core), reqId)
+            abi.encodeWithSignature("executeSpend(address,uint256)", address(core), reqId)
         );
-        require(!success, "Spend cannot be executed twice");
+        require(!success, "Spend cannot be executed after auto-exec");
         bytes4 sel;
         assembly { sel := mload(add(returnData, 0x20)) }
         require(sel == bytes4(keccak256("RequestAlreadyExecuted(uint256)")), "Must revert RequestAlreadyExecuted");
@@ -548,6 +560,7 @@ contract ProjectCoreIntegrationTest {
     function testVoting_DoubleVotingReverts() public payable {
         student1.deposit(core, 10 ether);
         core.setBCSMember(address(bcs1), true);
+        core.setBCSMember(address(bcs2), true); // 2 BCS để lá phiếu 1 (50% < 51%) giữ đề xuất ở Pending
 
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(recipient1)), 1 ether, "Test double vote");
         bcs1.voteSpend(core, reqId, true);
@@ -583,15 +596,13 @@ contract ProjectCoreIntegrationTest {
         student2.deposit(core, 10 ether);
         core.setBCSMember(address(bcs1), true);
 
-        // Tạo và chi 5 ETH
+        // Tạo và chi 5 ETH (auto-execution on decisive vote)
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(recipient1)), 5 ether, "Chi tieu");
         bcs1.voteSpend(core, reqId, true);
-        bcs1.executeSpend(core, reqId);
 
-        // Tạo và hoàn tiền 3 ETH
+        // Tạo và hoàn tiền 3 ETH (auto-execution on decisive vote)
         uint256 refId = student1.createRefund(core, 3 ether, "Hoan tien");
         bcs1.voteRefund(core, refId, true);
-        student1.executeRefund(core, refId);
 
         // Rút 0.1 ETH phí
         core.withdrawAdminFee(0.1 ether);
@@ -623,36 +634,26 @@ contract ProjectCoreIntegrationTest {
         uint256 reqId = bcs1.createSpendRequest(core, payable(address(recipient1)), 1 ether, "Do Gas de xuat");
         gasCreateSpendRequest = g2 - gasleft();
 
-        // 4. Đo Gas hàm voteSpendRequest()
+        // 4. Đo Gas hàm voteSpendRequest() có Auto-Execution
         uint256 g3 = gasleft();
         bcs1.voteSpend(core, reqId, true);
         gasVoteSpendRequest = g3 - gasleft();
 
-        // 5. Đo Gas hàm executeSpendRequest()
-        uint256 g4 = gasleft();
-        bcs1.executeSpend(core, reqId);
-        gasExecuteSpendRequest = g4 - gasleft();
-
-        // 6. Đo Gas hàm createRefundRequest()
+        // 5. Đo Gas hàm createRefundRequest()
         uint256 g5 = gasleft();
         uint256 refId = core.createRefundRequest(1 ether, "Do Gas tao refund");
         gasCreateRefundRequest = g5 - gasleft();
 
-        // 7. Đo Gas hàm voteRefundRequest()
+        // 6. Đo Gas hàm voteRefundRequest() có Auto-Execution
         uint256 g6 = gasleft();
         bcs1.voteRefund(core, refId, true);
         gasVoteRefundRequest = g6 - gasleft();
 
-        // 8. Đo Gas hàm executeRefundRequest()
-        uint256 g7 = gasleft();
-        core.executeRefundRequest(refId);
-        gasExecuteRefundRequest = g7 - gasleft();
-
-        // 9. Đo Gas hàm withdrawAdminFee()
+        // 7. Đo Gas hàm withdrawAdminFee()
         uint256 g8 = gasleft();
         core.withdrawAdminFee(0.01 ether);
         gasWithdrawAdminFee = g8 - gasleft();
 
-        require(gasDeposit > 0 && gasCreateRefundRequest > 0 && gasExecuteRefundRequest > 0, "Gas measurements must be valid");
+        require(gasDeposit > 0 && gasCreateRefundRequest > 0 && gasVoteSpendRequest > 0, "Gas measurements must be valid");
     }
 }

@@ -934,12 +934,29 @@
       overflow: hidden;
     }
 
-    .metric-card:nth-child(1) { border-top: 3px solid var(--teal-primary); }
-    .metric-card:nth-child(2) { border-top: 3px solid var(--amber-accent); }
-    .metric-card:nth-child(3) { border-top: 3px solid var(--student-color); }
-    .metric-card:nth-child(4) { border-top: 3px solid var(--bcs-color); }
-    .metric-card:nth-child(5) { border-top: 3px solid var(--warning); }
-    .metric-card:nth-child(6) { border-top: 3px solid var(--advisor-color); }
+    .metric-card:nth-child(1) {
+      border-top: 3px solid var(--teal-primary);
+    }
+
+    .metric-card:nth-child(2) {
+      border-top: 3px solid var(--amber-accent);
+    }
+
+    .metric-card:nth-child(3) {
+      border-top: 3px solid var(--student-color);
+    }
+
+    .metric-card:nth-child(4) {
+      border-top: 3px solid var(--bcs-color);
+    }
+
+    .metric-card:nth-child(5) {
+      border-top: 3px solid var(--warning);
+    }
+
+    .metric-card:nth-child(6) {
+      border-top: 3px solid var(--advisor-color);
+    }
 
     .metric-card:hover {
       transform: translateY(-2px);
@@ -2187,7 +2204,7 @@
         font-size: 0.9rem;
       }
     }
-  
+
     /* --- ENHANCED LOGO & POLISHED LAYOUT --- */
     .sidebar-logo-img {
       width: 44px;
@@ -2199,6 +2216,7 @@
       border: 1.5px solid rgba(255, 255, 255, 0.2);
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .sidebar-logo-img:hover {
       transform: scale(1.06);
     }
@@ -2212,6 +2230,7 @@
       border: 1px solid var(--border-color);
       display: none;
     }
+
     @media (max-width: 1024px) {
       .topbar-mini-logo {
         display: block;
@@ -2251,6 +2270,7 @@
       box-shadow: var(--shadow-xs) !important;
       transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
+
     .quick-status-item:hover {
       border-color: #cbd5e1 !important;
       box-shadow: var(--shadow-sm) !important;
@@ -2294,6 +2314,7 @@
       flex-wrap: wrap !important;
       margin-top: 4px !important;
     }
+
     .quick-status-actions .btn {
       padding: 3px 8px !important;
       font-size: 0.75rem !important;
@@ -2324,6 +2345,7 @@
       min-width: 290px;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
+
     .contract-input-bar:focus-within {
       border-color: var(--brand-blue);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
@@ -2348,11 +2370,13 @@
       margin-top: 14px;
       margin-bottom: 20px;
     }
+
     @media (max-width: 900px) {
       .role-buttons-group {
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
     @media (max-width: 500px) {
       .role-buttons-group {
         grid-template-columns: 1fr;
@@ -2375,29 +2399,34 @@
       color: var(--text-main);
       box-shadow: var(--shadow-xs);
     }
+
     .role-btn-item:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
       border-color: #cbd5e1;
     }
+
     .role-btn-student.active {
       border-color: var(--student-color) !important;
       background: var(--student-bg) !important;
       color: var(--student-color) !important;
       box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15) !important;
     }
+
     .role-btn-bcs.active {
       border-color: var(--bcs-color) !important;
       background: var(--bcs-bg) !important;
       color: var(--bcs-color) !important;
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15) !important;
     }
+
     .role-btn-advisor.active {
       border-color: var(--advisor-color) !important;
       background: var(--advisor-bg) !important;
       color: var(--advisor-color) !important;
       box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
     }
+
     .role-btn-history.active {
       border-color: var(--primary-navy) !important;
       background: #f1f5f9 !important;
@@ -2405,7 +2434,7 @@
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
     }
 
-  
+
     /* ============================================================ */
     /* STRICT EQUAL-DIMENSION FLOW GRIDS (4-ON-1 OR 2X2 EQUAL W/H)  */
     /* ============================================================ */
@@ -2417,11 +2446,14 @@
       gap: 16px !important;
       align-items: stretch !important;
     }
+
     @media (max-width: 1100px) {
       .flow-steps-grid {
-        grid-template-columns: repeat(2, 1fr) !important; /* 2 trên 2 dưới */
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* 2 trên 2 dưới */
       }
     }
+
     @media (max-width: 580px) {
       .flow-steps-grid {
         grid-template-columns: 1fr !important;
@@ -2448,11 +2480,14 @@
       align-items: stretch !important;
       margin-bottom: 20px !important;
     }
+
     @media (max-width: 1100px) {
       .flow-balance-grid {
-        grid-template-columns: repeat(2, 1fr) !important; /* 2 trên 2 dưới */
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* 2 trên 2 dưới */
       }
     }
+
     @media (max-width: 580px) {
       .flow-balance-grid {
         grid-template-columns: 1fr !important;
@@ -2480,11 +2515,14 @@
       margin-top: 16px !important;
       margin-bottom: 22px !important;
     }
+
     @media (max-width: 1050px) {
       .role-buttons-group {
-        grid-template-columns: repeat(2, 1fr) !important; /* 2 trên 2 dưới */
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* 2 trên 2 dưới */
       }
     }
+
     @media (max-width: 520px) {
       .role-buttons-group {
         grid-template-columns: 1fr !important;
@@ -2507,11 +2545,14 @@
       align-items: stretch !important;
       margin-bottom: 18px !important;
     }
+
     @media (max-width: 850px) {
       .roster-stats-grid {
-        grid-template-columns: repeat(2, 1fr) !important; /* 2 trên 2 dưới */
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* 2 trên 2 dưới */
       }
     }
+
     @media (max-width: 480px) {
       .roster-stats-grid {
         grid-template-columns: 1fr !important;
@@ -2527,21 +2568,27 @@
     /* 5. Metrics Grid (6 KPI cards: 6-on-1 or 3-on-top 3-below) */
     .metrics-grid {
       display: grid !important;
-      grid-template-columns: repeat(3, 1fr) !important; /* Chuẩn 3 trên 3 dưới */
+      grid-template-columns: repeat(3, 1fr) !important;
+      /* Chuẩn 3 trên 3 dưới */
       gap: 16px !important;
       align-items: stretch !important;
       margin-bottom: 28px !important;
     }
+
     @media (min-width: 1400px) {
       .metrics-grid {
-        grid-template-columns: repeat(6, 1fr) !important; /* 6 trên 1 hàng */
+        grid-template-columns: repeat(6, 1fr) !important;
+        /* 6 trên 1 hàng */
       }
     }
+
     @media (max-width: 900px) {
       .metrics-grid {
-        grid-template-columns: repeat(2, 1fr) !important; /* 2x3 */
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* 2x3 */
       }
     }
+
     @media (max-width: 550px) {
       .metrics-grid {
         grid-template-columns: 1fr !important;
@@ -2562,11 +2609,13 @@
       gap: 14px !important;
       align-items: stretch !important;
     }
+
     @media (max-width: 750px) {
       .ann-meta-grid {
         grid-template-columns: 1fr !important;
       }
     }
+
     .ann-meta-item {
       height: 100% !important;
     }
@@ -2578,12 +2627,14 @@
       gap: 20px !important;
       align-items: stretch !important;
     }
+
     @media (max-width: 768px) {
       .grid-2 {
         grid-template-columns: 1fr !important;
       }
     }
-    .grid-2 > * {
+
+    .grid-2>* {
       height: 100% !important;
     }
 
@@ -2593,17 +2644,20 @@
       gap: 20px !important;
       align-items: stretch !important;
     }
+
     @media (max-width: 950px) {
       .grid-3 {
         grid-template-columns: repeat(2, 1fr) !important;
       }
     }
+
     @media (max-width: 600px) {
       .grid-3 {
         grid-template-columns: 1fr !important;
       }
     }
-    .grid-3 > * {
+
+    .grid-3>* {
       height: 100% !important;
     }
 
@@ -2671,6 +2725,7 @@
       flex-shrink: 0 !important;
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
+
     .sidebar-logo-img:hover {
       transform: scale(1.08) !important;
     }
@@ -2685,13 +2740,14 @@
       background: transparent !important;
       display: none !important;
     }
+
     @media (max-width: 1024px) {
       .topbar-mini-logo {
         display: block !important;
       }
     }
 
-  
+
     /* ============================================================ */
     /* FAQ ACCORDION COLLAPSE & EXPAND SYSTEM                       */
     /* ============================================================ */
@@ -2704,10 +2760,12 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
     }
+
     .accordion-item:hover {
       border-color: #cbd5e1 !important;
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06) !important;
     }
+
     .accordion-item.open {
       border-color: var(--brand-blue) !important;
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.1) !important;
@@ -2726,9 +2784,11 @@
       background: #ffffff !important;
       transition: background 0.15s ease !important;
     }
+
     .accordion-header:hover {
       background: #f8fafc !important;
     }
+
     .accordion-item.open .accordion-header {
       background: #f8fafc !important;
       border-bottom: 1px solid #f1f5f9 !important;
@@ -2744,6 +2804,7 @@
       margin-left: 14px !important;
       display: inline-block !important;
     }
+
     .accordion-item.open .accordion-icon {
       transform: rotate(180deg) !important;
       color: var(--brand-blue) !important;
@@ -2751,7 +2812,8 @@
 
     /* ĐẶC BIỆT: THU GỌN MẶC ĐỊNH 100% CÂU TRẢ LỜI */
     .accordion-body {
-      display: none !important; /* MẶC ĐỊNH ẨN HOÀN TOÀN */
+      display: none !important;
+      /* MẶC ĐỊNH ẨN HOÀN TOÀN */
       padding: 18px 22px !important;
       color: #334155 !important;
       font-size: 0.92rem !important;
@@ -2759,8 +2821,10 @@
       background: #ffffff !important;
       border-top: 1px solid #f1f5f9 !important;
     }
+
     .accordion-item.open .accordion-body {
-      display: block !important; /* CHỈ HIỂN THỊ KHI CÓ CLASS .OPEN */
+      display: block !important;
+      /* CHỈ HIỂN THỊ KHI CÓ CLASS .OPEN */
       animation: faqSlideFadeIn 0.22s ease-out !important;
     }
 
@@ -2769,6 +2833,7 @@
         opacity: 0;
         transform: translateY(-6px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -2782,7 +2847,8 @@
     .site-footer {
       background: #0f172a !important;
       color: #94a3b8 !important;
-      padding: 48px 0 calc(96px + env(safe-area-inset-bottom, 0px)) 0 !important; /* Khoảng đệm an toàn không bị nút AI che */
+      padding: 48px 0 calc(96px + env(safe-area-inset-bottom, 0px)) 0 !important;
+      /* Khoảng đệm an toàn không bị nút AI che */
       border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
       margin-top: auto !important;
       position: relative !important;
@@ -2803,6 +2869,7 @@
       gap: 36px !important;
       margin-bottom: 32px !important;
     }
+
     @media (max-width: 900px) {
       .footer-grid {
         grid-template-columns: 1fr !important;
@@ -2813,7 +2880,8 @@
     .footer-bottom {
       border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
       padding-top: 22px !important;
-      padding-right: 80px !important; /* Né vị trí nút AI Fab Button ở góc phải */
+      padding-right: 80px !important;
+      /* Né vị trí nút AI Fab Button ở góc phải */
       display: flex !important;
       justify-content: space-between !important;
       align-items: center !important;
@@ -2821,6 +2889,7 @@
       flex-wrap: wrap !important;
       gap: 12px !important;
     }
+
     /* ============================================================ */
     /* STANDARDIZED SECTION RHYTHM & SPACING SYSTEM (STAGE 3B)      */
     /* ============================================================ */
@@ -2834,7 +2903,8 @@
     #faq,
     #transparency,
     section {
-      margin-bottom: 32px !important; /* Chuẩn 28–36px giữa các section chính */
+      margin-bottom: 32px !important;
+      /* Chuẩn 28–36px giữa các section chính */
     }
 
     #about,
@@ -2847,17 +2917,21 @@
       padding: 36px 0 !important;
       border-bottom: 1px solid var(--border-color);
     }
+
     #transparency {
       border-bottom: none !important;
     }
 
     .section-header {
-      margin-bottom: 16px !important; /* Chuẩn 12–16px giữa tiêu đề và nội dung */
+      margin-bottom: 16px !important;
+      /* Chuẩn 12–16px giữa tiêu đề và nội dung */
       text-align: center;
     }
+
     .section-badge {
       margin-bottom: 8px !important;
     }
+
     .section-title {
       font-size: 1.55rem !important;
       color: var(--primary-navy) !important;
@@ -2866,6 +2940,7 @@
       font-weight: 800 !important;
       line-height: 1.3 !important;
     }
+
     .section-desc {
       font-size: 0.9rem !important;
       color: var(--text-muted) !important;
@@ -2879,9 +2954,11 @@
       padding: 18px 20px !important;
       gap: 12px !important;
     }
+
     .grid-2 {
       gap: 18px !important;
     }
+
     .grid-3 {
       gap: 18px !important;
     }
@@ -2893,6 +2970,7 @@
       gap: 6px;
       margin: 0 16px;
     }
+
     .topbar-nav-link {
       display: inline-flex;
       align-items: center;
@@ -2907,17 +2985,20 @@
       white-space: nowrap;
       border: 1px solid transparent;
     }
+
     .topbar-nav-link:hover {
       background: #f1f5f9;
       color: var(--primary-navy);
       border-color: #e2e8f0;
     }
+
     .topbar-nav-link.active {
       background: rgba(37, 99, 235, 0.08);
       color: var(--brand-blue);
       border-color: rgba(37, 99, 235, 0.2);
       font-weight: 700;
     }
+
     @media (max-width: 1400px) {
       .topbar-nav {
         display: none !important;
@@ -2928,6 +3009,7 @@
     .sidebar-menu {
       padding: 6px 10px 14px 10px !important;
     }
+
     .sidebar-group-label {
       font-size: 0.65rem !important;
       font-weight: 700 !important;
@@ -2936,25 +3018,31 @@
       letter-spacing: 0.07em !important;
       margin: 10px 6px 3px 6px !important;
     }
+
     .sidebar-group-label:first-child {
       margin-top: 2px !important;
     }
+
     .sidebar-link {
       padding: 6px 10px !important;
       font-size: 0.82rem !important;
       gap: 8px !important;
       border-radius: 6px !important;
     }
+
     .sidebar-link-icon {
       font-size: 0.88rem !important;
       width: 18px !important;
     }
+
     .sidebar-details-group {
       list-style: none;
     }
+
     .sidebar-details-group summary::-webkit-details-marker {
       display: none;
     }
+
     .sidebar-summary {
       display: flex;
       align-items: center;
@@ -2962,16 +3050,19 @@
       cursor: pointer;
       list-style: none;
     }
+
     .sidebar-dropdown-arrow {
       margin-left: auto;
       font-size: 0.75rem;
       color: #64748b;
       transition: transform 0.2s ease;
     }
+
     .sidebar-details-group[open] .sidebar-dropdown-arrow {
       transform: rotate(180deg);
       color: #38bdf8;
     }
+
     .sidebar-sub-menu {
       list-style: none;
       padding-left: 10px;
@@ -2979,11 +3070,13 @@
       border-left: 1px solid rgba(255, 255, 255, 0.1);
       margin-left: 14px;
     }
+
     .sidebar-sub-link {
       padding: 4px 8px !important;
       font-size: 0.78rem !important;
       color: #94a3b8 !important;
     }
+
     .sidebar-sub-link:hover {
       color: #ffffff !important;
     }
@@ -3004,6 +3097,7 @@
       .app-content {
         padding: 24px 28px 72px 28px;
       }
+
       .metrics-grid {
         grid-template-columns: repeat(3, 1fr) !important;
         gap: var(--space-md) !important;
@@ -3015,31 +3109,39 @@
       .app-sidebar {
         transform: translateX(-100%);
       }
+
       .app-sidebar.show,
       .app-sidebar.open {
         transform: translateX(0);
       }
+
       .sidebar-backdrop.show,
       .sidebar-backdrop.open {
         display: block;
       }
+
       .app-main {
         margin-left: 0 !important;
         width: 100% !important;
       }
+
       .menu-toggle {
         display: inline-flex !important;
       }
+
       .app-topbar {
         padding: 0 20px !important;
       }
+
       .app-content {
         padding: 20px 20px 72px 20px !important;
       }
+
       .quick-status-group {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 14px !important;
       }
+
       .metrics-grid {
         grid-template-columns: repeat(2, 1fr) !important;
       }
@@ -3047,103 +3149,132 @@
 
     /* 4. Mobile Devices (<= 767px down to 390px) */
     @media (max-width: 767px) {
+
       /* Prevent any page horizontal scroll */
-      html, body {
+      html,
+      body {
         overflow-x: hidden !important;
       }
+
       .app-content {
         padding: 16px 14px 80px 14px !important;
       }
+
       .hero-banner-card {
         padding: 18px 16px !important;
         border-radius: var(--radius-md) !important;
       }
+
       .hero-title {
         font-size: 1.35rem !important;
       }
+
       .hero-desc {
         font-size: 0.85rem !important;
       }
+
       .class-announcement-card {
         padding: 18px 16px !important;
         border-radius: var(--radius-md) !important;
       }
+
       .ann-title {
         font-size: 1.15rem !important;
       }
+
       .quick-control-bar {
         padding: 14px 16px !important;
       }
+
       .quick-status-group {
         grid-template-columns: 1fr !important;
         gap: 10px !important;
       }
+
       .contract-toolbar-row {
         flex-direction: column !important;
         align-items: stretch !important;
       }
+
       .contract-input-bar {
         min-width: 0 !important;
         width: 100% !important;
       }
+
       .role-buttons-group {
         grid-template-columns: 1fr !important;
         gap: 8px !important;
       }
+
       .role-btn-item {
         min-height: 48px !important;
         padding: 12px 14px !important;
         font-size: 0.9rem !important;
       }
+
       .metrics-grid {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
+
       .metric-card {
         padding: 14px 16px !important;
       }
+
       .metric-num {
         font-size: 1.45rem !important;
       }
+
       .role-panel {
         padding: 18px 14px !important;
         border-radius: var(--radius-md) !important;
         gap: 16px !important;
       }
+
       .panel-header {
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 8px !important;
       }
+
       .btn {
-        min-height: 44px !important; /* WCAG Accessible Mobile Touch Target */
+        min-height: 44px !important;
+        /* WCAG Accessible Mobile Touch Target */
       }
+
       .section-title {
         font-size: 1.35rem !important;
       }
+
       .section-desc {
         font-size: 0.86rem !important;
       }
+
       /* Ensure modal is full width on mobile */
       .modal-box {
         padding: 18px 16px !important;
         border-radius: var(--radius-lg) !important;
         width: 100% !important;
       }
+
       #rosterModal .modal-box {
         width: 100% !important;
       }
+
       .roster-toolbar {
         flex-direction: column !important;
         align-items: stretch !important;
       }
+
       .roster-search-wrapper {
         min-width: 0 !important;
         width: 100% !important;
       }
+
       .topbar-right {
         gap: 6px !important;
       }
+
       #walletConnectBtn {
         padding: 8px 12px !important;
         font-size: 0.8rem !important;
@@ -3160,6 +3291,7 @@
       flex-direction: column;
       line-height: 1.25;
     }
+
     .topbar-brand-title {
       font-size: 0.98rem;
       font-weight: 800;
@@ -3167,12 +3299,14 @@
       letter-spacing: -0.01em;
       white-space: nowrap;
     }
+
     .topbar-brand-sub {
       font-size: 0.72rem;
       color: var(--text-muted);
       font-weight: 500;
       white-space: nowrap;
     }
+
     .topbar-mini-logo {
       width: 36px;
       height: 36px;
@@ -3181,6 +3315,7 @@
       border: 1px solid rgba(0, 0, 0, 0.08);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     }
+
     .badge-topbar-role {
       display: inline-flex;
       align-items: center;
@@ -3193,21 +3328,25 @@
       white-space: nowrap;
       transition: all 0.2s ease;
     }
+
     .badge-topbar-role.role-student {
       background: #ecfdf5;
       color: #047857;
       border: 1px solid #a7f3d0;
     }
+
     .badge-topbar-role.role-bcs {
       background: #dbeafe;
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
     }
+
     .badge-topbar-role.role-advisor {
       background: #f3e8ff;
       color: #6d28d9;
       border: 1px solid #ddd6fe;
     }
+
     .badge-topbar-role.role-guest {
       background: #fffbeb;
       color: #b45309;
@@ -3221,17 +3360,20 @@
         border-color: var(--teal-primary);
         transform: scale(1);
       }
+
       50% {
         box-shadow: 0 0 0 8px rgba(13, 148, 136, 0.25);
         border-color: var(--teal-primary);
         transform: scale(1.005);
       }
+
       100% {
         box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
         border-color: var(--border-color);
         transform: scale(1);
       }
     }
+
     .form-highlight-pulse {
       animation: formHighlightPulse 2.2s ease-in-out !important;
       border-color: var(--teal-primary) !important;
@@ -3241,6 +3383,7 @@
     .pending-actions-section {
       margin-bottom: 24px;
     }
+
     .pending-actions-card {
       background: #ffffff;
       border: 1px solid var(--border-color);
@@ -3248,6 +3391,7 @@
       padding: 20px 24px;
       box-shadow: var(--shadow-sm);
     }
+
     .pending-actions-header {
       display: flex;
       justify-content: space-between;
@@ -3258,30 +3402,36 @@
       flex-wrap: wrap;
       gap: 12px;
     }
+
     .pending-header-title {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .pending-header-icon {
       font-size: 1.4rem;
     }
+
     .pending-title {
       font-size: 1.12rem;
       font-weight: 700;
       color: var(--primary-navy);
       margin: 0;
     }
+
     .pending-subtitle {
       font-size: 0.8rem;
       color: var(--text-muted);
       margin: 2px 0 0 0;
     }
+
     .pending-header-actions {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .pending-count-badge {
       display: inline-flex;
       align-items: center;
@@ -3292,21 +3442,25 @@
       font-weight: 700;
       white-space: nowrap;
     }
+
     .pending-count-badge.has-tasks {
       background: #fef2f2;
       color: #dc2626;
       border: 1px solid #fecaca;
     }
+
     .pending-count-badge.all-clear {
       background: #ecfdf5;
       color: #047857;
       border: 1px solid #a7f3d0;
     }
+
     .pending-actions-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+
     .pending-task-item {
       display: flex;
       align-items: center;
@@ -3318,27 +3472,33 @@
       gap: 16px;
       transition: all 0.2s ease;
     }
+
     .pending-task-item:hover {
       background: #ffffff;
       box-shadow: var(--shadow-sm);
       border-color: #cbd5e1;
     }
+
     .pending-task-item.status-action {
       border-left: 4px solid var(--amber-accent);
       background: #fffcf2;
     }
+
     .pending-task-item.status-ready {
       border-left: 4px solid var(--teal-primary);
       background: #f0fdfa;
     }
+
     .pending-task-item.status-pending {
       border-left: 4px solid #3b82f6;
       background: #eff6ff;
     }
+
     .pending-task-item.status-completed {
       border-left: 4px solid #10b981;
       background: #f0fdf4;
     }
+
     .pending-task-left {
       display: flex;
       align-items: flex-start;
@@ -3346,15 +3506,18 @@
       flex: 1;
       min-width: 0;
     }
+
     .task-icon {
       font-size: 1.3rem;
       line-height: 1;
       margin-top: 2px;
     }
+
     .task-info {
       flex: 1;
       min-width: 0;
     }
+
     .task-header-row {
       display: flex;
       align-items: center;
@@ -3362,11 +3525,13 @@
       margin-bottom: 4px;
       flex-wrap: wrap;
     }
+
     .task-title {
       font-size: 0.92rem;
       font-weight: 700;
       color: var(--primary-navy);
     }
+
     .task-badge {
       font-size: 0.72rem;
       font-weight: 700;
@@ -3374,45 +3539,54 @@
       border-radius: var(--radius-full);
       white-space: nowrap;
     }
+
     .task-badge.status-action {
       background: #fef3c7;
       color: #b45309;
       border: 1px solid #fde68a;
     }
+
     .task-badge.status-ready {
       background: #ccfbf1;
       color: #0f766e;
       border: 1px solid #99f6e4;
     }
+
     .task-badge.status-pending {
       background: #dbeafe;
       color: #1e40af;
       border: 1px solid #bfdbfe;
     }
+
     .task-badge.status-completed {
       background: #d1fae5;
       color: #065f46;
       border: 1px solid #a7f3d0;
     }
+
     .task-badge.status-unverified {
       background: #f1f5f9;
       color: #475569;
       border: 1px solid #e2e8f0;
     }
+
     .task-badge.status-unlinked {
       background: #fef3c7;
       color: #92400e;
       border: 1px solid #fde68a;
     }
+
     .task-desc {
       font-size: 0.83rem;
       color: var(--text-muted);
       margin: 0;
       line-height: 1.4;
     }
+
     .pending-task-right {
       flex-shrink: 0;
     }
+
     .pending-all-clear {
       display: flex;
       align-items: center;
@@ -3422,14 +3596,17 @@
       border: 1px solid #bbf7d0;
       border-radius: var(--radius-md);
     }
+
     .all-clear-icon {
       font-size: 1.8rem;
     }
+
     .all-clear-content h4 {
       margin: 0 0 3px 0;
       color: #166534;
       font-size: 0.95rem;
     }
+
     .all-clear-content p {
       margin: 0;
       color: #15803d;
@@ -3440,253 +3617,297 @@
       .topbar-brand-sub {
         display: none;
       }
+
       .badge-topbar-role {
         font-size: 0.7rem;
         padding: 4px 8px;
       }
+
       .pending-task-item {
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
       }
+
       .pending-task-right {
         align-self: flex-end;
       }
-    /* ============================================================ */
-    /* UI LAYOUT OPTIMIZATION & ANTI-OBSCURATION SYSTEM              */
-    /* ============================================================ */
 
-    /* 1. Universal Modal Viewport & Internal Scroll Protection */
-    .modal-overlay {
-      padding: 16px !important;
-      overflow-y: auto;
-    }
-    .modal-box {
-      max-height: calc(100vh - 32px) !important;
-      display: flex !important;
-      flex-direction: column !important;
-      overflow: hidden !important;
-      box-sizing: border-box !important;
-    }
-    .modal-header,
-    .roster-modal-header,
-    .modal-footer,
-    #modalFooter,
-    .ann-modal-footer,
-    .roster-modal-footer {
-      flex-shrink: 0 !important;
-    }
-    .modal-body-scrollable,
-    .roster-modal-body,
-    #modalBody {
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-      flex: 1 1 auto !important;
-      min-height: 0 !important;
-    }
+      /* ============================================================ */
+      /* UI LAYOUT OPTIMIZATION & ANTI-OBSCURATION SYSTEM              */
+      /* ============================================================ */
 
-    /* 2. Topbar Navigation & Sticky Clearance */
-    section[id],
-    .role-panel[id],
-    div[id].class-announcement-card,
-    .pending-actions-section {
-      scroll-margin-top: calc(var(--topbar-height) + 24px) !important;
-    }
-    .app-topbar {
-      min-height: var(--topbar-height) !important;
-      height: auto !important;
-      flex-wrap: wrap !important;
-      gap: 10px !important;
-    }
-    .topbar-right {
-      display: flex !important;
-      align-items: center !important;
-      flex-wrap: wrap !important;
-      gap: 8px !important;
-      justify-content: flex-end !important;
-      margin-left: auto !important;
-    }
-    .topbar-right .btn {
-      flex-shrink: 0 !important;
-    }
+      /* 1. Universal Modal Viewport & Internal Scroll Protection */
+      .modal-overlay {
+        padding: 16px !important;
+        overflow-y: auto;
+      }
 
-    /* 3. Data Tables Anti-Crush & Horizontal Scrolling */
-    .data-table-container,
-    .roster-table-wrapper {
-      width: 100% !important;
-      overflow-x: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-    }
-    .data-table {
-      min-width: 680px !important;
-    }
-    .roster-table {
-      min-width: 760px !important;
-    }
-    .data-table td .btn + .btn {
-      margin-left: 6px !important;
-    }
-    .data-table td:has(.btn),
-    .data-table td:last-child {
-      white-space: nowrap !important;
-    }
-
-    /* 4. AI Floating Chat Widget Safe Clearances */
-    .app-content {
-      padding-bottom: 96px !important;
-    }
-    .site-footer {
-      padding-bottom: 72px !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
-    .ai-fab-container {
-      position: fixed !important;
-      bottom: 24px !important;
-      right: 24px !important;
-      z-index: 1050 !important;
-    }
-    .ai-chat-drawer {
-      max-height: calc(100vh - 100px) !important;
-      overflow: hidden !important;
-    }
-    .ai-chat-body {
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-    }
-    .ai-prompt-chip {
-      white-space: normal !important;
-      text-align: left !important;
-      line-height: 1.35 !important;
-    }
-
-    /* 5. Responsive Breakpoint: Tablet & Medium Screens (<= 1023px) */
-    @media (max-width: 1023px) {
-      .app-topbar {
-        padding: 8px 16px !important;
-      }
-      .app-content {
-        padding: 16px 16px 90px 16px !important;
-      }
-      .ai-chat-drawer {
-        width: 360px !important;
-        max-width: calc(100vw - 32px) !important;
-      }
-    }
-
-    /* 6. Responsive Breakpoint: Mobile Devices (<= 767px down to 390px) */
-    @media (max-width: 767px) {
-      .app-topbar {
-        padding: 8px 12px !important;
-      }
-      .topbar-left {
-        gap: 8px !important;
-      }
-      .topbar-brand-sub {
-        display: none !important;
-      }
-      .topbar-right {
-        gap: 6px !important;
-      }
-      .badge-network {
-        padding: 4px 8px !important;
-        font-size: 0.72rem !important;
-      }
-      .topbar-right .btn-sm {
-        padding: 6px 10px !important;
-        font-size: 0.78rem !important;
-      }
-      .app-content {
-        padding: 14px 12px 110px 12px !important;
-      }
-      .ai-fab-container {
-        bottom: 16px !important;
-        right: 16px !important;
-      }
-      .ai-fab-btn {
-        padding: 10px 16px !important;
-        font-size: 0.82rem !important;
-      }
-      .ai-chat-drawer {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 74px !important;
-        left: 12px !important;
-        right: 12px !important;
-        width: auto !important;
-        max-width: none !important;
-        max-height: calc(100vh - 90px) !important;
-        border-radius: var(--radius-lg) !important;
-      }
-      .contract-toolbar-row .btn,
-      .contract-toolbar-row .quick-status-item-btn,
-      .contract-toolbar-row .quick-status-item-btn .btn {
-        width: 100% !important;
-        justify-content: center !important;
-        margin-left: 0 !important;
-      }
-      .ann-form-grid-2,
-      .roster-form-grid-2 {
-        grid-template-columns: 1fr !important;
-        gap: 10px !important;
-      }
-      .ann-modal-footer {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-      }
-      .ann-modal-footer > button,
-      .ann-modal-footer > div {
-        width: 100% !important;
-        margin-left: 0 !important;
-      }
-      .ann-modal-footer > div {
+      .modal-box {
+        max-height: calc(100vh - 32px) !important;
         display: flex !important;
-        gap: 8px !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
       }
-      .ann-modal-footer > div > button {
-        flex: 1 !important;
-        justify-content: center !important;
-      }
+
+      .modal-header,
+      .roster-modal-header,
+      .modal-footer,
+      #modalFooter,
+      .ann-modal-footer,
       .roster-modal-footer {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 8px !important;
+        flex-shrink: 0 !important;
       }
-      .roster-modal-footer > button {
-        width: 100% !important;
-        justify-content: center !important;
+
+      .modal-body-scrollable,
+      .roster-modal-body,
+      #modalBody {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
       }
-      .ann-header {
-        flex-direction: column !important;
-        align-items: flex-start !important;
+
+      /* 2. Topbar Navigation & Sticky Clearance */
+      section[id],
+      .role-panel[id],
+      div[id].class-announcement-card,
+      .pending-actions-section {
+        scroll-margin-top: calc(var(--topbar-height) + 24px) !important;
+      }
+
+      .app-topbar {
+        min-height: var(--topbar-height) !important;
+        height: auto !important;
+        flex-wrap: wrap !important;
         gap: 10px !important;
       }
-      .ann-header > div:last-child {
-        width: 100% !important;
+
+      .topbar-right {
         display: flex !important;
-        gap: 8px !important;
+        align-items: center !important;
         flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: flex-end !important;
+        margin-left: auto !important;
       }
-      .ann-header > div:last-child .btn {
-        flex: 1 1 140px !important;
-        justify-content: center !important;
-        text-align: center !important;
+
+      .topbar-right .btn {
+        flex-shrink: 0 !important;
       }
-      .ann-footer {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-      }
-      .ann-footer .btn {
+
+      /* 3. Data Tables Anti-Crush & Horizontal Scrolling */
+      .data-table-container,
+      .roster-table-wrapper {
         width: 100% !important;
-        justify-content: center !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
       }
-      #annHistoryCard > div:first-child {
-        flex-wrap: wrap !important;
-        gap: 8px !important;
+
+      .data-table {
+        min-width: 680px !important;
       }
-    }
+
+      .roster-table {
+        min-width: 760px !important;
+      }
+
+      .data-table td .btn+.btn {
+        margin-left: 6px !important;
+      }
+
+      .data-table td:has(.btn),
+      .data-table td:last-child {
+        white-space: nowrap !important;
+      }
+
+      /* 4. AI Floating Chat Widget Safe Clearances */
+      .app-content {
+        padding-bottom: 96px !important;
+      }
+
+      .site-footer {
+        padding-bottom: 72px !important;
+        position: relative !important;
+        z-index: 10 !important;
+      }
+
+      .ai-fab-container {
+        position: fixed !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        z-index: 1050 !important;
+      }
+
+      .ai-chat-drawer {
+        max-height: calc(100vh - 100px) !important;
+        overflow: hidden !important;
+      }
+
+      .ai-chat-body {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      .ai-prompt-chip {
+        white-space: normal !important;
+        text-align: left !important;
+        line-height: 1.35 !important;
+      }
+
+      /* 5. Responsive Breakpoint: Tablet & Medium Screens (<= 1023px) */
+      @media (max-width: 1023px) {
+        .app-topbar {
+          padding: 8px 16px !important;
+        }
+
+        .app-content {
+          padding: 16px 16px 90px 16px !important;
+        }
+
+        .ai-chat-drawer {
+          width: 360px !important;
+          max-width: calc(100vw - 32px) !important;
+        }
+      }
+
+      /* 6. Responsive Breakpoint: Mobile Devices (<= 767px down to 390px) */
+      @media (max-width: 767px) {
+        .app-topbar {
+          padding: 8px 12px !important;
+        }
+
+        .topbar-left {
+          gap: 8px !important;
+        }
+
+        .topbar-brand-sub {
+          display: none !important;
+        }
+
+        .topbar-right {
+          gap: 6px !important;
+        }
+
+        .badge-network {
+          padding: 4px 8px !important;
+          font-size: 0.72rem !important;
+        }
+
+        .topbar-right .btn-sm {
+          padding: 6px 10px !important;
+          font-size: 0.78rem !important;
+        }
+
+        .app-content {
+          padding: 14px 12px 110px 12px !important;
+        }
+
+        .ai-fab-container {
+          bottom: 16px !important;
+          right: 16px !important;
+        }
+
+        .ai-fab-btn {
+          padding: 10px 16px !important;
+          font-size: 0.82rem !important;
+        }
+
+        .ai-chat-drawer {
+          position: fixed !important;
+          top: auto !important;
+          bottom: 74px !important;
+          left: 12px !important;
+          right: 12px !important;
+          width: auto !important;
+          max-width: none !important;
+          max-height: calc(100vh - 90px) !important;
+          border-radius: var(--radius-lg) !important;
+        }
+
+        .contract-toolbar-row .btn,
+        .contract-toolbar-row .quick-status-item-btn,
+        .contract-toolbar-row .quick-status-item-btn .btn {
+          width: 100% !important;
+          justify-content: center !important;
+          margin-left: 0 !important;
+        }
+
+        .ann-form-grid-2,
+        .roster-form-grid-2 {
+          grid-template-columns: 1fr !important;
+          gap: 10px !important;
+        }
+
+        .ann-modal-footer {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 10px !important;
+        }
+
+        .ann-modal-footer>button,
+        .ann-modal-footer>div {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+
+        .ann-modal-footer>div {
+          display: flex !important;
+          gap: 8px !important;
+        }
+
+        .ann-modal-footer>div>button {
+          flex: 1 !important;
+          justify-content: center !important;
+        }
+
+        .roster-modal-footer {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 8px !important;
+        }
+
+        .roster-modal-footer>button {
+          width: 100% !important;
+          justify-content: center !important;
+        }
+
+        .ann-header {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 10px !important;
+        }
+
+        .ann-header>div:last-child {
+          width: 100% !important;
+          display: flex !important;
+          gap: 8px !important;
+          flex-wrap: wrap !important;
+        }
+
+        .ann-header>div:last-child .btn {
+          flex: 1 1 140px !important;
+          justify-content: center !important;
+          text-align: center !important;
+        }
+
+        .ann-footer {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 10px !important;
+        }
+
+        .ann-footer .btn {
+          width: 100% !important;
+          justify-content: center !important;
+        }
+
+        #annHistoryCard>div:first-child {
+          flex-wrap: wrap !important;
+          gap: 8px !important;
+        }
+      }
   </style>
   <link rel="icon" type="image/png" href="logo1.png">
 </head>
@@ -3782,7 +4003,8 @@
 
       <li class="sidebar-group-label">Trợ Lý AI &amp; Hướng Dẫn</li>
       <li class="sidebar-link-item">
-        <a href="javascript:void(0)" onclick="document.getElementById('aiFabToggle').click()" class="sidebar-link" style="color: #38bdf8;">
+        <a href="javascript:void(0)" onclick="document.getElementById('aiFabToggle').click()" class="sidebar-link"
+          style="color: #38bdf8;">
           <span class="sidebar-link-icon">✨</span>
           <span style="font-weight: 600;">Trợ lý AI Quỹ Lớp</span>
         </a>
@@ -3795,11 +4017,16 @@
             <span class="sidebar-dropdown-arrow">▾</span>
           </summary>
           <ul class="sidebar-sub-menu">
-            <li><a href="#workflow" class="sidebar-link sidebar-sub-link"><span class="sidebar-link-icon">🔄</span><span>Quy trình thu chi</span></a></li>
-            <li><a href="#governance" class="sidebar-link sidebar-sub-link"><span class="sidebar-link-icon">⚖️</span><span>Biểu quyết 51%</span></a></li>
-            <li><a href="#economics" class="sidebar-link sidebar-sub-link"><span class="sidebar-link-icon">💰</span><span>Phân bổ 99/1 &amp; Gas</span></a></li>
-            <li><a href="#blockchain" class="sidebar-link sidebar-sub-link"><span class="sidebar-link-icon">💡</span><span>Cẩm nang 101</span></a></li>
-            <li><a href="#faq" class="sidebar-link sidebar-sub-link"><span class="sidebar-link-icon">❓</span><span>Câu hỏi thường gặp</span></a></li>
+            <li><a href="#workflow" class="sidebar-link sidebar-sub-link"><span
+                  class="sidebar-link-icon">🔄</span><span>Quy trình thu chi</span></a></li>
+            <li><a href="#governance" class="sidebar-link sidebar-sub-link"><span
+                  class="sidebar-link-icon">⚖️</span><span>Biểu quyết 51%</span></a></li>
+            <li><a href="#economics" class="sidebar-link sidebar-sub-link"><span
+                  class="sidebar-link-icon">💰</span><span>Phân bổ 99/1 &amp; Gas</span></a></li>
+            <li><a href="#blockchain" class="sidebar-link sidebar-sub-link"><span
+                  class="sidebar-link-icon">💡</span><span>Cẩm nang 101</span></a></li>
+            <li><a href="#faq" class="sidebar-link sidebar-sub-link"><span class="sidebar-link-icon">❓</span><span>Câu
+                  hỏi thường gặp</span></a></li>
           </ul>
         </details>
       </li>
@@ -3813,8 +4040,9 @@
       </div>
       <div class="sidebar-footer-row">
         <span>Smart Contract:</span>
-        <a href="https://sepolia.etherscan.io/address/0xe3e1db1da1cae10e92337c36bb13004bf984ee91" target="_blank"
-          style="color: #38bdf8; font-family: monospace; font-size: 0.72rem;">0xe3e1...ee91 ↗</a>
+        <a href="https://sepolia.etherscan.io/address/0x90948699FF04bC9cF159a39e200F09885439503D" target="_blank"
+          style="color: #38bdf8; font-family: monospace; font-size: 0.72rem;"
+          title="Hợp đồng Sepolia hiện tại (bản cũ, chưa có auto-execution)">0x9094...503D (cũ) ↗</a>
       </div>
     </div>
   </aside>
@@ -3841,10 +4069,13 @@
       <nav class="topbar-nav" id="topbarNav">
         <a href="#hero" class="topbar-nav-link active"><span>📊</span> Tổng quan</a>
         <a href="#pendingActionsSection" class="topbar-nav-link"><span>📌</span> Việc cần xử lý</a>
-        <a href="#dapp-workspace" onclick="selectRoleView('student')" class="topbar-nav-link"><span>🎓</span> Đóng góp &amp; Hoàn tiền</a>
-        <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="topbar-nav-link"><span>👥</span> Quản lý chi tiêu</a>
+        <a href="#dapp-workspace" onclick="selectRoleView('student')" class="topbar-nav-link"><span>🎓</span> Đóng góp
+          &amp; Hoàn tiền</a>
+        <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="topbar-nav-link"><span>👥</span> Quản lý chi
+          tiêu</a>
         <a href="javascript:void(0)" onclick="openRosterModal()" class="topbar-nav-link"><span>📋</span> Quản trị</a>
-        <a href="javascript:void(0)" onclick="document.getElementById('aiFabToggle').click()" class="topbar-nav-link"><span>✨</span> Trợ lý AI</a>
+        <a href="javascript:void(0)" onclick="document.getElementById('aiFabToggle').click()"
+          class="topbar-nav-link"><span>✨</span> Trợ lý AI</a>
       </nav>
 
       <div class="topbar-right">
@@ -3853,7 +4084,10 @@
           <span id="networkText">Chưa kết nối ví</span>
         </div>
         <span class="badge-topbar-role" id="topbarRoleBadge" style="display:none;"></span>
-        <button class="btn btn-warning btn-sm" id="btnVerifyWalletAuth" style="display:none; padding:4px 10px; font-size:0.8rem;" onclick="authenticateWalletSession(true)" title="Ký thông điệp xác thực bảo mật để mở khóa vai trò BCS/Cố vấn và bảo vệ thông tin sinh viên">🔑 Ký xác thực</button>
+        <button class="btn btn-warning btn-sm" id="btnVerifyWalletAuth"
+          style="display:none; padding:4px 10px; font-size:0.8rem;" onclick="authenticateWalletSession(true)"
+          title="Ký thông điệp xác thực bảo mật để mở khóa vai trò BCS/Cố vấn và bảo vệ thông tin sinh viên">🔑 Ký xác
+          thực</button>
         <button class="btn btn-primary btn-sm" id="btnConnectWallet" title="Bấm để kết nối hoặc đổi tài khoản">
           <svg style="width:16px;height:16px;fill:currentColor;" viewBox="0 0 24 24">
             <path
@@ -3894,12 +4128,13 @@
             <div class="quick-status-item">
               <span class="quick-status-label">Địa chỉ ví đang kết nối</span>
               <div class="quick-status-body">
-                <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối ví</span>
+                <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối
+                  ví</span>
                 <div class="quick-status-actions">
-                  <button class="btn btn-sm btn-outline" id="btnQuickSwitch"
-                    style="display:none;" onclick="switchAccount()">🔄 Đổi ví</button>
-                  <button class="btn btn-sm btn-outline" id="btnQuickDisconnect"
-                    style="display:none;" onclick="disconnectWallet()">Đăng xuất</button>
+                  <button class="btn btn-sm btn-outline" id="btnQuickSwitch" style="display:none;"
+                    onclick="switchAccount()">🔄 Đổi ví</button>
+                  <button class="btn btn-sm btn-outline" id="btnQuickDisconnect" style="display:none;"
+                    onclick="disconnectWallet()">Đăng xuất</button>
                 </div>
               </div>
             </div>
@@ -3934,7 +4169,8 @@
               </svg>
               <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
             </div>
-            <button class="btn btn-sm btn-primary" id="btnSaveQuickContract" title="Lưu và tải hợp đồng">Lưu &amp; Tải</button>
+            <button class="btn btn-sm btn-primary" id="btnSaveQuickContract" title="Lưu và tải hợp đồng">Lưu &amp;
+              Tải</button>
             <button class="btn btn-sm btn-outline" id="btnResetQuickContract" onclick="resetToDefaultContract()"
               title="Khôi phục địa chỉ hợp đồng mặc định của dự án">🔄 Đặt lại</button>
 
@@ -4020,7 +4256,8 @@
                 <span style="font-weight: 600; color: var(--primary-navy);">👤 Nghĩa vụ cá nhân:</span>
                 <span id="annPersonalStatusBadge" class="task-badge status-unverified">Chưa kết nối ví</span>
               </div>
-              <span id="annPersonalStatusDesc" style="font-size: 0.82rem; color: var(--text-muted);">Kết nối ví MetaMask để kiểm tra trạng thái đóng góp của bạn</span>
+              <span id="annPersonalStatusDesc" style="font-size: 0.82rem; color: var(--text-muted);">Kết nối ví MetaMask
+                để kiểm tra trạng thái đóng góp của bạn</span>
             </div>
           </div>
 
@@ -4034,9 +4271,12 @@
         </div>
 
         <!-- MỤC LỊCH SỬ THÔNG BÁO THU QUỸ ĐÃ HOÀN THÀNH / LƯU TRỮ -->
-        <div class="class-announcement-card" id="annHistoryCard" style="display: none; margin-top: 14px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-            <h3 style="margin: 0; font-size: 1.05rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+        <div class="class-announcement-card" id="annHistoryCard"
+          style="display: none; margin-top: 14px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px 20px;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+            <h3
+              style="margin: 0; font-size: 1.05rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
               📁 Lịch sử các đợt kêu gọi nộp Quỹ Lớp K57
             </h3>
             <button class="btn btn-sm btn-secondary" id="btnCloseAnnHistory" type="button">✖ Đóng</button>
@@ -4089,12 +4329,14 @@
               <span class="pending-header-icon">📌</span>
               <div>
                 <h3 class="pending-title">Việc cần xử lý &amp; Trạng thái của bạn</h3>
-                <p class="pending-subtitle">Tác vụ theo thời gian thực dựa trên trạng thái hợp đồng thông minh và vai trò đã xác thực</p>
+                <p class="pending-subtitle">Tác vụ theo thời gian thực dựa trên trạng thái hợp đồng thông minh và vai
+                  trò đã xác thực</p>
               </div>
             </div>
             <div class="pending-header-actions">
               <span class="pending-count-badge all-clear" id="pendingCountBadge">0 việc cần xử lý</span>
-              <button class="btn btn-sm btn-outline" onclick="refreshContractData()" title="Làm mới tác vụ on-chain">🔄 Cập nhật</button>
+              <button class="btn btn-sm btn-outline" onclick="refreshContractData()" title="Làm mới tác vụ on-chain">🔄
+                Cập nhật</button>
             </div>
           </div>
           <div class="pending-actions-list" id="pendingActionsList">
@@ -4192,11 +4434,14 @@
                 <div id="noticeStudentNeedWallet" class="role-notice-banner"
                   style="display: none; background: var(--amber-light); border: 1px solid var(--amber-border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 16px; text-align: center;">
                   <div style="font-size: 1.5rem; margin-bottom: 6px;">🔐</div>
-                  <h4 style="color: var(--amber-accent); font-size: 1.05rem; margin-bottom: 6px;">Yêu cầu kết nối ví MetaMask</h4>
+                  <h4 style="color: var(--amber-accent); font-size: 1.05rem; margin-bottom: 6px;">Yêu cầu kết nối ví
+                    MetaMask</h4>
                   <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Để nộp tiền vào quỹ lớp hoặc gửi yêu cầu hoàn tiền, bạn cần kết nối ví MetaMask chứa tài khoản Sinh viên K57.
+                    Để nộp tiền vào quỹ lớp hoặc gửi yêu cầu hoàn tiền, bạn cần kết nối ví MetaMask chứa tài khoản Sinh
+                    viên K57.
                   </p>
-                  <button class="btn btn-warning" onclick="connectWallet()" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+                  <button class="btn btn-warning" onclick="connectWallet()"
+                    style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
                     🦊 Kết nối ví MetaMask ngay
                   </button>
                 </div>
@@ -4204,11 +4449,13 @@
                 <!-- Thông báo tài khoản ngoài danh bạ -->
                 <div id="noticeStudentGuest" class="role-notice-banner"
                   style="display: none; background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px;">
-                  <h4 style="color: #b91c1c; font-size: 1.05rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                  <h4
+                    style="color: #b91c1c; font-size: 1.05rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
                     ⚠️ Ví chưa có trong danh bạ sinh viên K57
                   </h4>
                   <p style="font-size: 0.88rem; color: #475569; margin-bottom: 8px;">
-                    Địa chỉ ví của bạn chưa được liên kết với hồ sơ sinh viên K57. Chức năng nộp quỹ và xin hoàn tiền chỉ áp dụng cho tài khoản đã được xác thực danh tính.
+                    Địa chỉ ví của bạn chưa được liên kết với hồ sơ sinh viên K57. Chức năng nộp quỹ và xin hoàn tiền
+                    chỉ áp dụng cho tài khoản đã được xác thực danh tính.
                   </p>
                   <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
                     Vui lòng liên hệ Ban cán sự lớp hoặc Cố vấn học tập để cập nhật địa chỉ ví vào danh bạ lớp.
@@ -4219,7 +4466,8 @@
                 <div id="noticeStudentAdvisorView" class="role-notice-banner"
                   style="display: none; background: var(--advisor-bg); border: 1px solid var(--advisor-border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 16px;">
                   <span style="font-size: 0.88rem; color: var(--advisor-color);">
-                    ℹ️ <strong>Chế độ giám sát Cố vấn học tập:</strong> Bạn đang theo dõi dữ liệu sinh viên ở chế độ đọc. Chức năng nộp quỹ và xin hoàn tiền chỉ dành cho sinh viên.
+                    ℹ️ <strong>Chế độ giám sát Cố vấn học tập:</strong> Bạn đang theo dõi dữ liệu sinh viên ở chế độ
+                    đọc. Chức năng nộp quỹ và xin hoàn tiền chỉ dành cho sinh viên.
                   </span>
                 </div>
 
@@ -4236,7 +4484,8 @@
                     <label for="inputDepositAmount">Số ETH muốn đóng góp:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputDepositAmount"
                       placeholder="Ví dụ: 0.05">
-                    <div class="form-helper-tip">💡 Gợi ý: 0.01 – 0.05 ETH. Quy tắc phân bổ: 99% vào Quỹ lớp chính, 1% vào Quỹ phí vận hành bù đắp gas.</div>
+                    <div class="form-helper-tip">💡 Gợi ý: 0.01 – 0.05 ETH. Quy tắc phân bổ: 99% vào Quỹ lớp chính, 1%
+                      vào Quỹ phí vận hành bù đắp gas.</div>
                   </div>
                   <button class="btn btn-success" id="btnDepositAction" style="width: 100%;">
                     Xác nhận nộp quỹ qua MetaMask
@@ -4256,7 +4505,8 @@
                     <label for="inputRefundAmount">Số ETH xin hoàn lại:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputRefundAmount"
                       placeholder="Không vượt quá hạn mức khả dụng">
-                    <div class="form-helper-tip">💡 Chỉ nộp đơn trong phạm vi hạn mức đóng góp khả dụng của bạn. Yêu cầu cần Ban cán sự bỏ phiếu ≥ 51%.</div>
+                    <div class="form-helper-tip">💡 Chỉ nộp đơn trong phạm vi hạn mức đóng góp khả dụng của bạn. Yêu cầu
+                      cần Ban cán sự bỏ phiếu ≥ 51%.</div>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
                     <label for="inputRefundReason">Lý do nộp nhầm:</label>
@@ -4339,13 +4589,15 @@
                   <div class="form-group" style="margin-bottom: 8px;">
                     <label for="inputSpendRecipient">Địa chỉ ví người nhận tiền:</label>
                     <input type="text" class="form-control" id="inputSpendRecipient" placeholder="0x...">
-                    <div class="form-helper-tip">💡 Địa chỉ ví người thụ hưởng nhận giải ngân (42 ký tự, bắt đầu bằng 0x).</div>
+                    <div class="form-helper-tip">💡 Địa chỉ ví người thụ hưởng nhận giải ngân (42 ký tự, bắt đầu bằng
+                      0x).</div>
                   </div>
                   <div class="form-group" style="margin-bottom: 8px;">
                     <label for="inputSpendAmount">Số ETH đề nghị chi:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputSpendAmount"
                       placeholder="Ví dụ: 0.1">
-                    <div class="form-helper-tip">💡 Không được vượt quá số dư khả dụng của quỹ. Số tiền này sẽ được tạm giữ chỗ trên hợp đồng.</div>
+                    <div class="form-helper-tip">💡 Không được vượt quá số dư khả dụng của quỹ. Số tiền này sẽ được tạm
+                      giữ chỗ trên hợp đồng.</div>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
                     <label for="inputSpendDesc">Mục đích chi tiêu:</label>
@@ -4455,12 +4707,14 @@
                     1. Quản lý nhân sự Ban cán sự
                   </h4>
                   <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Đặc quyền Cố vấn: Kích hoạt hoặc thu hồi quyền hạn thành viên Ban cán sự. Mẫu số biểu quyết 51% sẽ tự động cập nhật.
+                    Đặc quyền Cố vấn: Kích hoạt hoặc thu hồi quyền hạn thành viên Ban cán sự. Mẫu số biểu quyết 51% sẽ
+                    tự động cập nhật.
                   </p>
                   <div class="form-group" style="margin-bottom: 8px;">
                     <label for="inputBcsAddress">Địa chỉ ví thành viên:</label>
                     <input type="text" class="form-control" id="inputBcsAddress" placeholder="0x...">
-                    <div class="form-helper-tip">💡 Ví thành viên sinh viên K57 được trao quyền tạo đề xuất và biểu quyết chi tiêu.</div>
+                    <div class="form-helper-tip">💡 Ví thành viên sinh viên K57 được trao quyền tạo đề xuất và biểu
+                      quyết chi tiêu.</div>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
                     <label for="selectBcsStatus">Trạng thái phân quyền:</label>
@@ -4486,13 +4740,15 @@
                   <div
                     style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:0.85rem; color:var(--text-muted);">Số dư Quỹ phí hiện có:</span>
-                    <strong style="color:var(--warning); font-size:1.1rem;" id="advisorFeePoolBalance">0.0000 ETH</strong>
+                    <strong style="color:var(--warning); font-size:1.1rem;" id="advisorFeePoolBalance">0.0000
+                      ETH</strong>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
                     <label for="inputWithdrawFeeAmount">Số ETH muốn rút:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputWithdrawFeeAmount"
                       placeholder="Không vượt quá số dư quỹ phí">
-                    <div class="form-helper-tip">💡 Rút từ Quỹ phí vận hành (adminFeePool) để bù đắp chi phí Gas mạng lưới cho quản trị viên.</div>
+                    <div class="form-helper-tip">💡 Rút từ Quỹ phí vận hành (adminFeePool) để bù đắp chi phí Gas mạng
+                      lưới cho quản trị viên.</div>
                   </div>
                   <button class="btn btn-success" id="btnWithdrawFeeAction" style="width: 100%;">
                     Rút quỹ phí về ví Cố vấn
@@ -5253,24 +5509,31 @@
               placeholder="Nhập từ khóa tìm kiếm (ví dụ: hoàn tiền, gas, 51%, ví...)">
           </div>
 
-          <div class="faq-controls-bar" style="max-width: 860px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <div class="faq-controls-bar"
+            style="max-width: 860px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
             <div class="faq-category-pills" id="faqCategoryPills">
               <button type="button" class="faq-cat-btn active" onclick="setFaqCategory('all')">Tất cả (25)</button>
               <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Tổng quan')">Tổng quan (5)</button>
               <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Ví và kết nối')">Ví & Mạng (5)</button>
-              <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Đóng góp và phí')">Nộp quỹ & Phí (6)</button>
-              <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Đề xuất và biểu quyết')">Biểu quyết 51% (6)</button>
-              <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Hoàn tiền và lỗi giao dịch')">Hoàn tiền (3)</button>
+              <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Đóng góp và phí')">Nộp quỹ & Phí
+                (6)</button>
+              <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Đề xuất và biểu quyết')">Biểu quyết 51%
+                (6)</button>
+              <button type="button" class="faq-cat-btn" onclick="setFaqCategory('Hoàn tiền và lỗi giao dịch')">Hoàn tiền
+                (3)</button>
             </div>
             <div class="faq-action-btns" style="display: flex; gap: 8px;">
-              <button type="button" class="btn btn-sm btn-outline" id="btnToggleAllFaq" onclick="toggleAllFaq()">Mở rộng tất cả ▾</button>
+              <button type="button" class="btn btn-sm btn-outline" id="btnToggleAllFaq" onclick="toggleAllFaq()">Mở rộng
+                tất cả ▾</button>
             </div>
           </div>
 
           <div id="faqAccordionContainer" style="max-width: 860px; margin: 0 auto;"></div>
 
-          <div id="faqShowMoreWrapper" style="text-align: center; margin-top: 18px; max-width: 860px; margin-left: auto; margin-right: auto;">
-            <button type="button" class="btn btn-outline" id="btnToggleFaqLength" onclick="toggleFaqLength()" style="padding: 9px 24px; font-weight: 600; border-radius: 20px; box-shadow: var(--shadow-xs);">
+          <div id="faqShowMoreWrapper"
+            style="text-align: center; margin-top: 18px; max-width: 860px; margin-left: auto; margin-right: auto;">
+            <button type="button" class="btn btn-outline" id="btnToggleFaqLength" onclick="toggleFaqLength()"
+              style="padding: 9px 24px; font-weight: 600; border-radius: 20px; box-shadow: var(--shadow-xs);">
               <span>Xem thêm câu hỏi khác ▾</span>
             </button>
           </div>
@@ -5304,7 +5567,7 @@
                   class="btn btn-outline btn-sm">Xem trên Sepolia Etherscan &rarr;</a>
               </div>
               <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-                
+
                 <strong>Trạng thái:</strong> <span id="textContractConfigStatus"
                   style="color: var(--warning); font-weight: 600;">Chưa cấu hình địa chỉ hợp đồng</span><br>
                 <strong>Ghi chú:</strong> Hệ thống tự động lưu địa chỉ hợp đồng vào trình duyệt của bạn sau khi bấm Áp
@@ -5377,8 +5640,12 @@
         <h3 id="modalTitle">Thông báo hệ thống</h3>
         <button class="modal-close" onclick="closeModal()">&times;</button>
       </div>
-      <div id="modalBody" class="modal-body-scrollable" style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main); overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px;"></div>
-      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; text-align: right; flex-shrink: 0;" id="modalFooter">
+      <div id="modalBody" class="modal-body-scrollable"
+        style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main); overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px;">
+      </div>
+      <div
+        style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; text-align: right; flex-shrink: 0;"
+        id="modalFooter">
         <button class="btn btn-primary btn-sm" onclick="closeModal()">Đóng lại</button>
       </div>
     </div>
@@ -5393,7 +5660,8 @@
         <h3 style="margin: 0; color: #0f172a;">📢 Cập nhật thông báo Quỹ lớp K57</h3>
         <button class="modal-close" onclick="closeAnnModal()">&times;</button>
       </div>
-      <div class="ann-modal-body modal-body-scrollable" style="font-size: 0.92rem; line-height: 1.6; color: var(--text-main); margin-top: 10px; overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px;">
+      <div class="ann-modal-body modal-body-scrollable"
+        style="font-size: 0.92rem; line-height: 1.6; color: var(--text-main); margin-top: 10px; overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px;">
         <p style="color: #64748b; margin-bottom: 16px;">
           Quyền hạn: Dành riêng cho <strong>Cố vấn học tập</strong> và <strong>Ban cán sự</strong> để thông báo lịch thu
           quỹ và tiến độ cho cả lớp.
@@ -5405,7 +5673,8 @@
             placeholder="Ví dụ: Đợt thu Quỹ Lớp Học kỳ 1 - K57">
         </div>
 
-        <div class="ann-form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="ann-form-grid-2"
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
           <div class="form-group">
             <label style="font-weight: 600; display: block; margin-bottom: 4px;">Mức đóng (ETH/bạn):</label>
             <input type="number" step="0.001" min="0.001" class="form-control" id="formAnnAmount" style="width: 100%;"
@@ -5422,7 +5691,8 @@
           </div>
         </div>
 
-        <div class="ann-form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div class="ann-form-grid-2"
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
           <div class="form-group">
             <label style="font-weight: 600; display: block; margin-bottom: 4px;">Hạn chót nộp:</label>
             <input type="text" class="form-control" id="formAnnDeadline" style="width: 100%;"
@@ -5444,7 +5714,8 @@
             placeholder="Nêu rõ mục đích thu quỹ (tài liệu học tập, các hoạt động ngoại khóa, teambuilding...)"></textarea>
         </div>
       </div>
-      <div class="ann-modal-footer" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; flex-shrink: 0;">
+      <div class="ann-modal-footer"
+        style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; flex-shrink: 0;">
         <button class="btn btn-danger btn-sm" id="btnCloseAnnouncementEarly" type="button" style="display: none;">
           🛑 Kết thúc đợt thu này (Chuyển sang Lịch sử)
         </button>
@@ -5570,7 +5841,8 @@
             style="margin: 0 0 12px 0; color: #0f172a; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
             <span>➕</span> Đăng ký / Cập nhật liên kết ví sinh viên (Dành riêng cho Cố vấn học tập)
           </h4>
-          <div class="roster-form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="roster-form-grid-2"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div>
               <label style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Mã
                 số sinh viên (MSSV):</label>
@@ -5584,7 +5856,8 @@
                 style="width: 100%; font-size: 0.85rem; border-radius: 8px;">
             </div>
           </div>
-          <div class="roster-form-grid-2" style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div class="roster-form-grid-2"
+            style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div>
               <label
                 style="font-size: 0.8rem; font-weight: 600; color: #334155; display: block; margin-bottom: 4px;">Địa chỉ
@@ -5637,12 +5910,1490 @@
       chainIdHex: "0xaa36a7",
       chainName: "Ethereum Sepolia Testnet",
       blockExplorer: "https://sepolia.etherscan.io",
-      defaultContractAddress: "0xe3e1db1da1cae10e92337c36bb13004bf984ee91",
-      contractAddress: "0xe3e1db1da1cae10e92337c36bb13004bf984ee91"
+      // Ghi chú: Địa chỉ dưới đây là hợp đồng cũ đang chạy trên Sepolia (chưa có cơ chế auto-execution).
+      // Khi triển khai hợp đồng mới với tính năng auto-execution, cần cập nhật địa chỉ đã xác minh vào đây.
+      defaultContractAddress: "0x90948699FF04bC9cF159a39e200F09885439503D",
+      contractAddress: "0x90948699FF04bC9cF159a39e200F09885439503D"
     };
 
     // Full ProjectCore ABI
-    const CONTRACT_ABI = [{ "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "internalType": "address", "name": "voter", "type": "address" }], "name": "AlreadyVoted", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "internalType": "address", "name": "voter", "type": "address" }], "name": "AlreadyVotedRefund", "type": "error" }, { "inputs": [], "name": "ETHTransferFailed", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientAdminFee", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientAvailableFund", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientContribution", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requested", "type": "uint256" }, { "internalType": "uint256", "name": "available", "type": "uint256" }], "name": "InsufficientFund", "type": "error" }, { "inputs": [], "name": "InvalidAddress", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "InvalidRefundStatus", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "InvalidRequestStatus", "type": "error" }, { "inputs": [], "name": "NoActiveBCS", "type": "error" }, { "inputs": [], "name": "NotActiveBCS", "type": "error" }, { "inputs": [], "name": "NotAdvisor", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundAlreadyExecuted", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundExpired", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundRequestNotFound", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundVotingPeriodEnded", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundVotingStillActive", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "RequestAlreadyExecuted", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "RequestExpired", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "RequestNotFound", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "activeBCSCount", "type": "uint256" }], "name": "ThresholdNotMet", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "VotingPeriodEnded", "type": "error" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "VotingStillActive", "type": "error" }, { "inputs": [], "name": "ZeroAmount", "type": "error" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "student", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "feeAmount", "type": "uint256" }], "name": "AdminFeeCollected", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "advisor", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "AdminFeeWithdrawn", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "member", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "status", "type": "bool" }], "name": "BCSMemberUpdated", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "student", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "FundDeposited", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "student", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "RefundProcessed", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "applicant", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "string", "name": "reason", "type": "string" }, { "indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256" }], "name": "RefundRequestCreated", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "applicant", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "RefundRequestExecuted", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundRequestExpired", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "RefundRequestReady", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "voter", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "support", "type": "bool" }, { "indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256" }], "name": "RefundRequestVoted", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "creator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "string", "name": "description", "type": "string" }, { "indexed": false, "internalType": "uint256", "name": "createdAt", "type": "uint256" }], "name": "SpendRequestCreated", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "SpendRequestExecuted", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "SpendRequestExpired", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "SpendRequestReady", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "voter", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "support", "type": "bool" }, { "indexed": false, "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "noVotes", "type": "uint256" }], "name": "SpendRequestVoted", "type": "event" }, { "inputs": [], "name": "BPS_DENOMINATOR", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "FEE_BPS", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "PASSING_THRESHOLD_BPS", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "VOTING_PERIOD", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "activeBCSCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "adminFeePool", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "advisor", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "classFundBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "reason", "type": "string" }], "name": "createRefundRequest", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address payable", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "description", "type": "string" }], "name": "createSpendRequest", "outputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "deposit", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "executeRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "executeSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "expireRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "expireSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "getAvailableClassFund", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getFundBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }], "name": "getRefundRequest", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "applicant", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "reason", "type": "string" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }], "name": "getSpendRequest", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "description", "type": "string" }, { "internalType": "address", "name": "creator", "type": "address" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "student", "type": "address" }], "name": "getStudentAvailableContribution", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "student", "type": "address" }], "name": "getStudentContribution", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getTotalContractBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "internalType": "address", "name": "member", "type": "address" }], "name": "hasMemberVoted", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "internalType": "address", "name": "member", "type": "address" }], "name": "hasMemberVotedRefund", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }, { "internalType": "address", "name": "", "type": "address" }], "name": "hasVoted", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }, { "internalType": "address", "name": "", "type": "address" }], "name": "hasVotedRefund", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "isBCSMember", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "pendingStudentRefundAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "refundRequestCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "refundRequests", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address payable", "name": "applicant", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "reason", "type": "string" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "reservedRefundAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "reservedSpendAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "member", "type": "address" }, { "internalType": "bool", "name": "status", "type": "bool" }], "name": "setBCSMember", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "spendRequestCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "spendRequests", "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "address payable", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "string", "name": "description", "type": "string" }, { "internalType": "address", "name": "creator", "type": "address" }, { "internalType": "uint256", "name": "createdAt", "type": "uint256" }, { "internalType": "uint256", "name": "yesVotes", "type": "uint256" }, { "internalType": "uint256", "name": "noVotes", "type": "uint256" }, { "internalType": "enum ProjectCore.RequestStatus", "name": "status", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "studentContributions", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "refundId", "type": "uint256" }, { "internalType": "bool", "name": "support", "type": "bool" }], "name": "voteRefundRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "requestId", "type": "uint256" }, { "internalType": "bool", "name": "support", "type": "bool" }], "name": "voteSpendRequest", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }], "name": "withdrawAdminFee", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "stateMutability": "payable", "type": "receive" }];
+    const CONTRACT_ABI = [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "voter",
+            "type": "address"
+          }
+        ],
+        "name": "AlreadyVoted",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "voter",
+            "type": "address"
+          }
+        ],
+        "name": "AlreadyVotedRefund",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "ETHTransferFailed",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "available",
+            "type": "uint256"
+          }
+        ],
+        "name": "InsufficientAdminFee",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "available",
+            "type": "uint256"
+          }
+        ],
+        "name": "InsufficientAvailableFund",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "available",
+            "type": "uint256"
+          }
+        ],
+        "name": "InsufficientContribution",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "available",
+            "type": "uint256"
+          }
+        ],
+        "name": "InsufficientFund",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidAddress",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "InvalidRefundStatus",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "InvalidRequestStatus",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NoActiveBCS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotActiveBCS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAdvisor",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundAlreadyExecuted",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundExpired",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundRequestNotFound",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundVotingPeriodEnded",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundVotingStillActive",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RequestAlreadyExecuted",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RequestExpired",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RequestNotFound",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "activeBCSCount",
+            "type": "uint256"
+          }
+        ],
+        "name": "ThresholdNotMet",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "VotingPeriodEnded",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "VotingStillActive",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "ZeroAmount",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "student",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeAmount",
+            "type": "uint256"
+          }
+        ],
+        "name": "AdminFeeCollected",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "advisor",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "AdminFeeWithdrawn",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
+          }
+        ],
+        "name": "BCSMemberUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "student",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "FundDeposited",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "applicant",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundExecutionFailed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "student",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundProcessed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "applicant",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundRequestCreated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "applicant",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundRequestExecuted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundRequestExpired",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundRequestReady",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "voter",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "support",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "noVotes",
+            "type": "uint256"
+          }
+        ],
+        "name": "RefundRequestVoted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "SpendExecutionFailed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          }
+        ],
+        "name": "SpendRequestCreated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "SpendRequestExecuted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "SpendRequestExpired",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "SpendRequestReady",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "voter",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "support",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "noVotes",
+            "type": "uint256"
+          }
+        ],
+        "name": "SpendRequestVoted",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "BPS_DENOMINATOR",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "FEE_BPS",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "PASSING_THRESHOLD_BPS",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "VOTING_PERIOD",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "activeBCSCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "adminFeePool",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "advisor",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "classFundBalance",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          }
+        ],
+        "name": "createRefundRequest",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address payable",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          }
+        ],
+        "name": "createSpendRequest",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "executeRefundRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "executeSpendRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "expireRefundRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "expireSpendRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getAvailableClassFund",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getFundBalance",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getRefundRequest",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "applicant",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectCore.RequestStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getSpendRequest",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectCore.RequestStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "student",
+            "type": "address"
+          }
+        ],
+        "name": "getStudentAvailableContribution",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "student",
+            "type": "address"
+          }
+        ],
+        "name": "getStudentContribution",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getTotalContractBalance",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "hasMemberVoted",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "hasMemberVotedRefund",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "hasVoted",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "hasVotedRefund",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "isBCSMember",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "pendingStudentRefundAmount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "refundRequestCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "refundRequests",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "applicant",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectCore.RequestStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "reservedRefundAmount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "reservedSpendAmount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
+          }
+        ],
+        "name": "setBCSMember",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "spendRequestCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "spendRequests",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yesVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "noVotes",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum ProjectCore.RequestStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "studentContributions",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "refundId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "support",
+            "type": "bool"
+          }
+        ],
+        "name": "voteRefundRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requestId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "support",
+            "type": "bool"
+          }
+        ],
+        "name": "voteSpendRequest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "withdrawAdminFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "stateMutability": "payable",
+        "type": "receive"
+      }
+    ];
 
     // --- 2. FAQ DATA ---
     const FAQ_DATA = [
@@ -5730,7 +7481,7 @@
     // BẢO VỆ DỮ LIỆU CÁ NHÂN (ĐỢT 3B.4):
     // Tuyệt đối không lưu danh bạ đầy đủ (Họ tên, MSSV, Ví) trong localStorage.
     // Dữ liệu danh bạ chỉ lưu trong bộ nhớ tạm thời khi đã xác thực mật mã.
-    try { localStorage.removeItem("kts_class_roster"); } catch (e) {}
+    try { localStorage.removeItem("kts_class_roster"); } catch (e) { }
     let classRoster = [];
     let userSessionToken = null;
 
@@ -6163,8 +7914,8 @@
       }
 
       if (keyword) {
-        list = list.filter(item => 
-          item.q.toLowerCase().includes(keyword) || 
+        list = list.filter(item =>
+          item.q.toLowerCase().includes(keyword) ||
           item.a.toLowerCase().includes(keyword) ||
           item.cat.toLowerCase().includes(keyword)
         );
@@ -6422,8 +8173,8 @@
           fetch("http://localhost:8000/api/auth/logout", {
             method: "POST",
             headers: { "Authorization": `Bearer ${userSessionToken}` }
-          }).catch(() => {});
-        } catch (e) {}
+          }).catch(() => { });
+        } catch (e) { }
       }
       userSessionToken = null;
 
@@ -6432,7 +8183,7 @@
       myStudentProfile = null;
       isAdvisor = false;
       isBcsMember = false;
-      try { localStorage.removeItem("kts_class_roster"); } catch (e) {}
+      try { localStorage.removeItem("kts_class_roster"); } catch (e) { }
       if (typeof invalidateRosterContribCache === "function") {
         invalidateRosterContribCache();
       }
@@ -7715,7 +9466,7 @@
               if (userAddress) {
                 try {
                   alreadyVoted = await contract.hasVoted(reqId, userAddress);
-                } catch(e) {}
+                } catch (e) { }
               }
               if (alreadyVoted) {
                 voteActionHtml = `<span class="status-pill status-ready" style="font-size:0.75rem;">Đã bỏ phiếu</span>`;
@@ -7807,7 +9558,7 @@
               if (userAddress) {
                 try {
                   alreadyVotedRefund = await contract.hasVotedRefund(refId, userAddress);
-                } catch(e) {}
+                } catch (e) { }
               }
               if (alreadyVotedRefund) {
                 bcsVoteHtml = `<span class="status-pill status-ready" style="font-size:0.75rem;">Đã bỏ phiếu</span>`;
@@ -8163,8 +9914,39 @@
       try {
         logToTerminal(`[Biểu quyết hoàn tiền] Đang bỏ phiếu ${support ? 'ĐỒNG Ý' : 'KHÔNG ĐỒNG Ý'} cho Yêu cầu #${refundId}...`);
         const tx = await contract.voteRefundRequest(refundId, support);
-        await tx.wait();
-        logToTerminal(`[Thành công] Đã bỏ phiếu thành công cho Yêu cầu hoàn tiền #${refundId}!`);
+        const receipt = await tx.wait();
+
+        // Bóc tách event từ receipt để phát hiện trạng thái auto-execution
+        let autoExecSuccess = false;
+        let autoExecFailed = false;
+        let isReady = false;
+
+        if (receipt && receipt.logs) {
+          for (const log of receipt.logs) {
+            try {
+              const parsed = contract.interface.parseLog(log);
+              if (parsed) {
+                if (parsed.name === "RefundRequestExecuted") autoExecSuccess = true;
+                if (parsed.name === "RefundExecutionFailed") autoExecFailed = true;
+                if (parsed.name === "RefundRequestReady") isReady = true;
+              }
+            } catch (_) { }
+          }
+        }
+
+        if (autoExecSuccess) {
+          logToTerminal(`[Thành công] Đã biểu quyết đạt ngưỡng và TỰ ĐỘNG HOÀN TIỀN thành công cho Yêu cầu #${refundId}! Mã tx: ${tx.hash}`);
+          alert(`Biểu quyết thành công! Yêu cầu hoàn tiền #${refundId} đã đạt ngưỡng và được tự động hoàn tiền về ví sinh viên.`);
+        } else if (autoExecFailed) {
+          logToTerminal(`[Cảnh báo] Phiếu biểu quyết đã được ghi nhận và yêu cầu #${refundId} đã thông qua. Tuy nhiên tự động chuyển ETH thất bại (ví nhận từ chối ETH hoặc lỗi gas). Yêu cầu chuyển sang trạng thái Sẵn sàng (Ready). Sinh viên hoặc Ban cán sự có thể bấm nút 'Hoàn tiền' / 'Nhận tiền hoàn' thủ công để thử lại.`);
+          alert(`Đã ghi nhận phiếu biểu quyết! Yêu cầu hoàn tiền #${refundId} đã thông qua nhưng chuyển ETH tự động thất bại (ví người nhận từ chối ETH). Đề xuất đã chuyển sang trạng thái 'Sẵn sàng'. Ban cán sự hoặc sinh viên có thể bấm nút 'Hoàn tiền' để thử lại.`);
+        } else if (isReady) {
+          logToTerminal(`[Thông báo] Biểu quyết thành công! Yêu cầu hoàn tiền #${refundId} đã đạt ngưỡng và chuyển sang trạng thái Sẵn sàng (Ready).`);
+          alert(`Biểu quyết thành công! Yêu cầu hoàn tiền #${refundId} đã đạt ngưỡng và ở trạng thái Sẵn sàng hoàn tiền.`);
+        } else {
+          logToTerminal(`[Thành công] Đã ghi nhận phiếu biểu quyết cho Yêu cầu hoàn tiền #${refundId}!`);
+        }
+
         await refreshContractData();
       } catch (err) {
         logToTerminal(`[Lỗi bỏ phiếu hoàn tiền] ${err.shortMessage || err.message}`);
@@ -8271,8 +10053,39 @@
       try {
         logToTerminal(`[Biểu quyết chi] Đang bỏ phiếu ${support ? 'ĐỒNG Ý' : 'KHÔNG ĐỒNG Ý'} cho Đề xuất #${requestId}...`);
         const tx = await contract.voteSpendRequest(requestId, support);
-        await tx.wait();
-        logToTerminal(`[Thành công] Đã ghi nhận phiếu biểu quyết cho Đề xuất #${requestId}!`);
+        const receipt = await tx.wait();
+
+        // Bóc tách event từ receipt để phát hiện trạng thái auto-execution
+        let autoExecSuccess = false;
+        let autoExecFailed = false;
+        let isReady = false;
+
+        if (receipt && receipt.logs) {
+          for (const log of receipt.logs) {
+            try {
+              const parsed = contract.interface.parseLog(log);
+              if (parsed) {
+                if (parsed.name === "SpendRequestExecuted") autoExecSuccess = true;
+                if (parsed.name === "SpendExecutionFailed") autoExecFailed = true;
+                if (parsed.name === "SpendRequestReady") isReady = true;
+              }
+            } catch (_) { }
+          }
+        }
+
+        if (autoExecSuccess) {
+          logToTerminal(`[Thành công] Đã biểu quyết đạt ngưỡng và TỰ ĐỘNG GIẢI NGÂN thành công cho Đề xuất #${requestId}! Mã tx: ${tx.hash}`);
+          alert(`Biểu quyết thành công! Đề xuất #${requestId} đã đạt ngưỡng và được tự động giải ngân thành công.`);
+        } else if (autoExecFailed) {
+          logToTerminal(`[Cảnh báo] Phiếu biểu quyết đã được ghi nhận và đề xuất #${requestId} đã thông qua. Tuy nhiên tự động chuyển ETH thất bại (người nhận từ chối ETH hoặc lỗi gas). Đề xuất chuyển sang trạng thái Sẵn sàng (Ready). Ban cán sự có thể bấm nút 'Giải ngân' thủ công để thử lại.`);
+          alert(`Đã ghi nhận phiếu biểu quyết! Đề xuất #${requestId} đã đủ điều kiện nhưng tự động chuyển ETH thất bại (người nhận từ chối ETH). Đề xuất hiện ở trạng thái 'Sẵn sàng'. Ban cán sự có thể bấm nút 'Giải ngân' để thử lại.`);
+        } else if (isReady) {
+          logToTerminal(`[Thông báo] Biểu quyết thành công! Đề xuất #${requestId} đã đạt ngưỡng và chuyển sang trạng thái Sẵn sàng (Ready).`);
+          alert(`Biểu quyết thành công! Đề xuất #${requestId} đã đạt ngưỡng và ở trạng thái Sẵn sàng giải ngân.`);
+        } else {
+          logToTerminal(`[Thành công] Đã ghi nhận phiếu biểu quyết cho Đề xuất #${requestId}!`);
+        }
+
         await refreshContractData();
       } catch (err) {
         logToTerminal(`[Lỗi bỏ phiếu chi] ${err.shortMessage || err.message}`);
@@ -8387,8 +10200,8 @@
         searchBox.addEventListener("input", (e) => {
           const keyword = e.target.value.toLowerCase().trim();
           // Filter via applyFaqFilter
-        applyFaqFilter(); return;
-        const filtered = FAQ_DATA.filter(item => item.q.toLowerCase().includes(keyword) || item.a.toLowerCase().includes(keyword));
+          applyFaqFilter(); return;
+          const filtered = FAQ_DATA.filter(item => item.q.toLowerCase().includes(keyword) || item.a.toLowerCase().includes(keyword));
           renderFaq(filtered);
         });
       }
@@ -8425,7 +10238,7 @@
 
       // Active state for topbar navigation links
       document.querySelectorAll(".topbar-nav-link").forEach(link => {
-        link.addEventListener("click", function() {
+        link.addEventListener("click", function () {
           document.querySelectorAll(".topbar-nav-link").forEach(l => l.classList.remove("active"));
           this.classList.add("active");
         });
