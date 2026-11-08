@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 artifacts/
 cache/
+__pycache__/
+*.pyc
+*.bak*
+*.lock

@@ -83,8 +83,8 @@ Sau đợt nâng cấp toàn diện **Lab 15** theo tài liệu `docs/CHANGE_PLA
 - **EVM version:** `shanghai` (khai báo tường minh cho cả trình biên dịch và `networks.hardhat.hardfork` trong `hardhat.config.js`).
 - **Optimizer:** Bật (`enabled: true`, `runs: 200`).
 - **Kích thước Deployed Bytecode thực tế:**
-  - `deployedBytecode`: **20,767 bytes** (Đạt **84.50%** ngưỡng trần 24,576 bytes của EIP-170, biên an toàn còn **3,809 bytes**).
-  - `initcode`: **20,860 bytes** (Nằm sâu dưới giới hạn 49,152 bytes của Shanghai hardfork).
+  - `deployedBytecode`: **22,045 bytes** (Đạt **89.70%** ngưỡng trần 24,576 bytes của EIP-170, biên an toàn còn **2,531 bytes**).
+  - `initcode`: **22,139 bytes** (Nằm sâu dưới giới hạn 49,152 bytes của Shanghai hardfork).
 
 > [!WARNING]  
 > **Lưu ý khi biên dịch/deploy bằng Remix IDE:** Phải chọn đúng **Compiler `0.8.20`**, **EVM Version `shanghai`**, và bật **Enable optimization** với `runs = 200`. Nếu tắt optimizer, kích thước `deployedBytecode` sẽ vượt quá giới hạn **24.576 byte** của chuẩn EIP-170 và giao dịch deploy sẽ thất bại.
@@ -95,34 +95,40 @@ Sau đợt nâng cấp toàn diện **Lab 15** theo tài liệu `docs/CHANGE_PLA
   ```
 
 > [!NOTE]  
-> **Lưu ý quan trọng về môi trường kiểm chứng:** Hợp đồng `ProjectCore.sol` tính đến hết Lab 15 **CHƯA ĐƯỢC TRIỂN KHAI (DEPLOY) LÊN MẠNG SEPOLIA TESTNET**. Mọi kết quả hoạt động hiện tại được kiểm chứng trên môi trường giả lập Python cục bộ (`test/test_economic_rules.py`), Hardhat test suite (`test/hardhat/baseline.test.js`), trình biên dịch `solc 0.8.20`, và các kiểm thử Solidity (`test/ProjectCore_test.sol` & `test/ProjectCore_integration_test.sol`). Các tệp kiểm thử Solidity ở trạng thái: **ĐÃ BIÊN DỊCH THÀNH CÔNG (CHƯA CHẠY TRÊN REMIX)**.
+> **Lưu ý quan trọng về môi trường kiểm chứng:** Hợp đồng `ProjectCore.sol` tính đến hết Lab 15 **CHƯA ĐƯỢC TRIỂN KHAI (DEPLOY) LÊN MẠNG SEPOLIA TESTNET**. Mọi kết quả hoạt động hiện tại được kiểm chứng trên môi trường giả lập Python cục bộ (`test/test_economic_rules.py`), Hardhat test suite (`test/hardhat/ProjectCore.*.test.js`), trình biên dịch `solc 0.8.20`, và các kiểm thử Solidity (`test/ProjectCore_test.sol` & `test/ProjectCore_integration_test.sol`). Các tệp kiểm thử Solidity ở trạng thái: **ĐÃ BIÊN DỊCH THÀNH CÔNG (CHƯA CHẠY TRÊN REMIX)**.
 
 ---
 
 ## 3. Hướng dẫn kiểm tra và Chạy thử nghiệm thực tế
 
 ### 3.1. Phương thức 1: Chạy kiểm thử tự động bằng Hardhat
-- **Tệp kiểm thử:** `test/hardhat/baseline.test.js`
-- **Mục đích:** Kiểm thử toàn diện 38 kịch bản tự động trên mạng Hardhat Shanghai, thao túng thời gian thực tế bằng `time.increase` (kiểm tra hoãn 3 ngày, hết hạn 7 ngày), kiểm thử giá gas tùy chỉnh EIP-1559, kiểm tra giới hạn kích thước bytecode EIP-170, và kịch bản tấn công giả mạo cử tri.
+- **Tệp kiểm thử:** Bộ kiểm thử `test/hardhat/` gồm:
+  - `ProjectCore.baseline.test.js`: Kiểm thử đường cơ sở chức năng cốt lõi.
+  - `ProjectCore.phase1.test.js`: Kiểm thử hạch toán Net 99%, làm tròn số nguyên, và chống gian lận rút quỹ.
+  - `ProjectCore.phase2.test.js`: Kiểm thử snapshot voterBase, độ trễ 3 ngày, xung đột lợi ích, tự động bác bỏ đề xuất chi / hoàn tiền (`Rejected`) khi phiếu chống chiếm đa số, và giới hạn `MAX_OPEN_SPEND_PER_CREATOR = 3`.
+  - `ProjectCore.phase3.test.js`: Kiểm thử danh bạ sinh viên on-chain, băm danh bạ, và phát hiện ETH chuyển ép.
+  - `ProjectCore.phase4.test.js`: Kiểm thử đợt thu on-chain, nạp theo đợt, và tự động đóng đợt thu quá hạn khi tạo đợt mới.
+  - `ProjectCore.phase5.test.js`: Kiểm thử điều chuyển phí dư, tự động hoàn gas, bảo vệ chống tái nhập và bỏ qua hoàn gas khi trạng thái BCS không đổi.
+- **Mục đích:** Kiểm thử toàn diện 41 kịch bản tự động trên mạng Hardhat Shanghai, thao túng thời gian thực tế bằng `time.increase` (kiểm tra hoãn 3 ngày, hết hạn 7 ngày), kiểm thử giá gas tùy chỉnh EIP-1559, kiểm tra giới hạn kích thước bytecode EIP-170, và kịch bản tấn công giả mạo cử tri.
 - **Lệnh thực thi:**
   ```powershell
   npx hardhat test
   ```
-- **Kết quả thực tế quan sát được (38/38 ca ĐẠT):**
+- **Kết quả thực tế quan sát được (41/41 ca ĐẠT):**
   ```text
-  38 passing (11s)
+  41 passing (10s)
   ```
 
 ### 3.2. Phương thức 2: Chạy kiểm thử mô phỏng kinh tế bằng Python
 - **Tệp kiểm thử:** `test/test_economic_rules.py`
-- **Mục đích:** Kiểm tra tự động 100% logic kinh tế 7 nhóm thay đổi A–G: hạch toán Net 99%, bảo toàn wei lẻ, hoãn 3 ngày, snapshot voterBase, xung đột lợi ích, whitelist danh bạ, đợt thu on-chain, cơ chế hoàn gas và chuyển phí dư sang Quỹ lớp.
+- **Mục đích:** Kiểm tra tự động 100% logic kinh tế 7 nhóm thay đổi A–G và 3 bản sửa lỗi: hạch toán Net 99%, bảo toàn wei lẻ, hoãn 3 ngày, snapshot voterBase, xung đột lợi ích, whitelist danh bạ, đợt thu on-chain, tự đóng đợt quá hạn, bác bỏ đề xuất khi No chiếm đa số, giới hạn 3 đề xuất mở, cơ chế hoàn gas và chuyển phí dư sang Quỹ lớp.
 - **Lệnh thực thi:**
   ```powershell
   python test/test_economic_rules.py
   ```
-- **Kết quả thực tế quan sát được (58/58 ca ĐẠT):**
+- **Kết quả thực tế quan sát được (61/61 ca ĐẠT):**
   ```text
-  Ran 58 tests in 0.015s
+  Ran 61 tests in 0.014s
 
   OK
   ```

@@ -276,4 +276,49 @@ describe("Phase 5 (Section F - Operating Fee, Automatic Gas Refund & Pool Transf
     const expectedSelector = ethers.id("ReentrancyGuardReentrantCall()").slice(0, 10);
     expect(await reentrantActor.reentrancyRevertSelector()).to.equal(expectedSelector);
   });
+
+  it("Issue 3: setBCSMember does not refund gas when status is unchanged (isBCSMember[member] == status)", async function () {
+    const { core, advisor, student1 } = await deployFixture();
+
+    // Nạp tiền để adminFeePool có số dư
+    await core.connect(student1).deposit({ value: ethers.parseEther("10") });
+    const poolInitial = await core.adminFeePool();
+    expect(poolInitial).to.equal(ethers.parseEther("0.1")); // 1% của 10 ETH
+
+    // Đăng ký 1 sinh viên làm sinh viên hợp lệ
+    const strangerSigner = (await ethers.getSigners())[6];
+    await core.connect(advisor).setStudents([strangerSigner.address], true);
+
+    // 1. Thêm làm BCS lần đầu (false -> true): trạng thái thay đổi -> có hoàn gas
+    const tx1 = await core.connect(advisor).setBCSMember(strangerSigner.address, true);
+    const receipt1 = await tx1.wait();
+    const refunded1 = receipt1.logs.some((l) => {
+      try { return core.interface.parseLog(l)?.name === "GasRefunded"; } catch { return false; }
+    });
+    expect(refunded1).to.be.true;
+    const poolAfterChange = await core.adminFeePool();
+    expect(poolAfterChange).to.be.lessThan(poolInitial);
+
+    // 2. Gọi lại setBCSMember với true khi đã là true (true -> true): trạng thái KHÔNG đổi
+    // Bỏ qua hoàn gas (_skipGasRefund), không phát GasRefunded, và không trừ adminFeePool!
+    const tx2 = await core.connect(advisor).setBCSMember(strangerSigner.address, true);
+    const receipt2 = await tx2.wait();
+    const refunded2 = receipt2.logs.some((l) => {
+      try { return core.interface.parseLog(l)?.name === "GasRefunded"; } catch { return false; }
+    });
+    expect(refunded2).to.be.false;
+    expect(await core.adminFeePool()).to.equal(poolAfterChange);
+
+    // 3. Gọi setBCSMember với false khi đang là false cho một địa chỉ khác chưa từng là BCS (false -> false)
+    const nonBcsSigner = (await ethers.getSigners())[7];
+    expect(await core.isBCSMember(nonBcsSigner.address)).to.be.false;
+
+    const tx3 = await core.connect(advisor).setBCSMember(nonBcsSigner.address, false);
+    const receipt3 = await tx3.wait();
+    const refunded3 = receipt3.logs.some((l) => {
+      try { return core.interface.parseLog(l)?.name === "GasRefunded"; } catch { return false; }
+    });
+    expect(refunded3).to.be.false;
+    expect(await core.adminFeePool()).to.equal(poolAfterChange);
+  });
 });

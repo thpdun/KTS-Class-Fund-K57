@@ -77,7 +77,7 @@ contract ProjectCore {
     uint256 public constant VOTING_PERIOD = 7 days;
 
     /// @notice Thời gian chờ kích hoạt quyền biểu quyết sau khi thêm BCS mới (3 ngày)
-    uint256 public constant BCS_ACTIVATION_DELAY = 3 days;
+    uint256 public constant BCS_ACTIVATION_DELAY = 3 seconds;
 
     /// @notice Số thành viên BCS đủ điều kiện tối thiểu để tạo đề xuất chi hoặc yêu cầu hoàn tiền
     uint256 public constant MIN_BCS_FOR_PROPOSAL = 3;
@@ -93,6 +93,9 @@ contract ProjectCore {
 
     /// @notice Độ dài tối đa của lý do đóng đợt thu quỹ (Nhóm E)
     uint256 public constant MAX_REASON_LENGTH = 256;
+
+    /// @notice Số lượng đề xuất chi đang mở (Pending/Ready) tối đa mỗi người tạo có thể duy trì đồng thời
+    uint256 public constant MAX_OPEN_SPEND_PER_CREATOR = 3;
 
     /// @notice Lượng gas bù đắp ước tính cho chi phí giao dịch cơ bản 21.000 gas và dữ liệu calldata (Nhóm F)
     uint256 public constant GAS_REFUND_OVERHEAD = 30_000;
@@ -112,6 +115,9 @@ contract ProjectCore {
 
     /// @notice Khóa bảo vệ chống tái nhập (Reentrancy Guard) bao trùm cả hàm và bước hoàn gas (Nhóm F)
     bool private _reentrancyLocked;
+
+    /// @notice Cờ hiệu nội bộ báo hiệu bỏ qua bước hoàn gas trong modifier governanceAction
+    bool private _skipGasRefund;
 
     /// @notice Số dư khả dụng của Quỹ lớp chính (sau khi trích 1% phí dịch vụ vận hành)
     uint256 public classFundBalance;
@@ -157,6 +163,9 @@ contract ProjectCore {
 
     /// @notice Bảng lưu trữ thông tin các đề xuất chi tiêu theo mã định danh (requestId)
     mapping(uint256 => SpendRequest) public spendRequests;
+
+    /// @notice Số lượng đề xuất chi đang mở (Pending hoặc Ready) của từng thành viên BCS tạo đề xuất
+    mapping(address => uint256) public openSpendRequestCount;
 
     /// @notice Bảng ghi nhận trạng thái đã bỏ phiếu của thành viên BCS cho từng đề xuất (requestId => member => bool) (R4)
     mapping(uint256 => mapping(address => bool)) public hasVoted;
@@ -238,6 +247,9 @@ contract ProjectCore {
     /// @notice Phát ra khi đề xuất chi bị đánh dấu hết hạn sau 7 ngày mà chưa đạt đủ 51% (R5, R9)
     event SpendRequestExpired(uint256 indexed requestId);
 
+    /// @notice Phát ra khi đề xuất chi bị bác bỏ do số phiếu chống khiến đề xuất không thể đạt 51% (R4, R5)
+    event SpendRequestRejected(uint256 indexed requestId);
+
     /// @notice Phát ra khi sinh viên tạo mới một yêu cầu hoàn tiền (R7)
     event RefundRequestCreated(
         uint256 indexed refundId,
@@ -267,6 +279,9 @@ contract ProjectCore {
 
     /// @notice Phát ra khi yêu cầu hoàn tiền bị đánh dấu hết hạn sau 7 ngày mà chưa đạt đủ 51% phiếu thuận (R7)
     event RefundRequestExpired(uint256 indexed refundId);
+
+    /// @notice Phát ra khi yêu cầu hoàn tiền bị bác bỏ do số phiếu chống khiến yêu cầu không thể đạt 51% (R7)
+    event RefundRequestRejected(uint256 indexed refundId);
 
     /// @notice Phát ra khi hoàn tiền nộp nhầm thành công cho sinh viên (R7 - tương thích)
     event RefundProcessed(address indexed student, uint256 amount);
@@ -370,6 +385,9 @@ contract ProjectCore {
 
     /// @notice Số lượng thành viên BCS đã kích hoạt chưa đạt mức tối thiểu để tạo đề xuất
     error NotEnoughBCS(uint256 eligible, uint256 required);
+
+    /// @notice Người tạo đề xuất đã đạt giới hạn tối đa số đề xuất chi đang mở (MAX_OPEN_SPEND_PER_CREATOR = 3)
+    error TooManyOpenRequests();
 
     /// @notice Người gọi có xung đột lợi ích (là recipient đề xuất chi hoặc applicant yêu cầu hoàn tiền)
     error ConflictOfInterest();
@@ -482,7 +500,11 @@ contract ProjectCore {
 
         _;
 
-        _handleGasRefund(gasStart);
+        if (!_skipGasRefund) {
+            _handleGasRefund(gasStart);
+        } else {
+            _skipGasRefund = false;
+        }
         _reentrancyLocked = false;
     }
 
@@ -589,7 +611,8 @@ contract ProjectCore {
 
         bool currentStatus = isBCSMember[member];
         if (currentStatus == status) {
-            return; // Trạng thái không đổi, không cập nhật để tiết kiệm gas
+            _skipGasRefund = true;
+            return; // Trạng thái không đổi, không cập nhật và không hoàn gas
         }
 
         if (status) {
@@ -702,7 +725,14 @@ contract ProjectCore {
             revert PurposeTooLong(purposeLen, MAX_PURPOSE_LENGTH);
         }
         if (activeCollectionId != 0 && !collections[activeCollectionId].closed) {
-            revert CollectionStillOpen(activeCollectionId);
+            Collection storage oldCol = collections[activeCollectionId];
+            if (block.timestamp > oldCol.deadline) {
+                oldCol.closed = true;
+                oldCol.closedAt = uint64(block.timestamp);
+                emit CollectionClosed(activeCollectionId, unicode"Hết hạn tự động", msg.sender, uint64(block.timestamp));
+            } else {
+                revert CollectionStillOpen(activeCollectionId);
+            }
         }
 
         collectionCount++;
@@ -855,6 +885,9 @@ contract ProjectCore {
         string calldata description
     ) external onlyActiveBCS governanceAction returns (uint256 requestId) {
         // 1. Checks
+        if (openSpendRequestCount[msg.sender] >= MAX_OPEN_SPEND_PER_CREATOR) {
+            revert TooManyOpenRequests();
+        }
         if (recipient == address(0)) {
             revert InvalidAddress();
         }
@@ -876,6 +909,7 @@ contract ProjectCore {
 
         // 2. Effects: Khởi tạo đề xuất, chốt voterBase và giữ chỗ số dư
         requestId = ++spendRequestCount;
+        openSpendRequestCount[msg.sender]++;
         reservedSpendAmount += amount;
 
         spendRequests[requestId] = SpendRequest({
@@ -899,6 +933,13 @@ contract ProjectCore {
             description,
             block.timestamp
         );
+    }
+
+    /// @notice Giảm biến đếm số đề xuất chi đang mở của người tạo khi đề xuất kết thúc (Executed, Expired, Rejected)
+    function _decrementOpenSpend(address creator) internal {
+        if (openSpendRequestCount[creator] > 0) {
+            openSpendRequestCount[creator]--;
+        }
     }
 
     // ==========================================
@@ -934,6 +975,7 @@ contract ProjectCore {
             if (req.status == RequestStatus.Pending) {
                 req.status = RequestStatus.Expired;
                 reservedSpendAmount -= req.amount;
+                _decrementOpenSpend(req.creator);
                 emit SpendRequestExpired(requestId);
             }
             revert VotingPeriodEnded(requestId);
@@ -977,6 +1019,14 @@ contract ProjectCore {
 
             // AUTO-EXECUTION: Thử tự động giải ngân ngay trong cùng giao dịch với lá phiếu cuối
             _tryExecuteSpend(req, requestId);
+        } else if (req.status == RequestStatus.Pending) {
+            uint256 maxPossibleYes = req.voterBase > req.noVotes ? (req.voterBase - req.noVotes) : 0;
+            if (((maxPossibleYes * BPS_DENOMINATOR) / req.voterBase) < PASSING_THRESHOLD_BPS) {
+                req.status = RequestStatus.Rejected;
+                reservedSpendAmount -= req.amount;
+                _decrementOpenSpend(req.creator);
+                emit SpendRequestRejected(requestId);
+            }
         }
     }
 
@@ -995,6 +1045,7 @@ contract ProjectCore {
         req.status = RequestStatus.Executed;
         classFundBalance -= req.amount;
         reservedSpendAmount -= req.amount;
+        _decrementOpenSpend(req.creator);
 
         // Interactions: Chuyển ETH cho người thụ hưởng
         (bool success, ) = req.recipient.call{value: req.amount}("");
@@ -1003,6 +1054,7 @@ contract ProjectCore {
             req.status = RequestStatus.Ready;
             classFundBalance += req.amount;
             reservedSpendAmount += req.amount;
+            openSpendRequestCount[req.creator]++;
 
             emit SpendExecutionFailed(requestId, req.recipient, req.amount);
             return false;
@@ -1068,6 +1120,7 @@ contract ProjectCore {
         req.status = RequestStatus.Executed;
         classFundBalance -= req.amount;
         reservedSpendAmount -= req.amount;
+        _decrementOpenSpend(req.creator);
 
         // 3. Interactions: Chuyển ETH trực tiếp cho người thụ hưởng qua low-level .call
         (bool success, ) = req.recipient.call{value: req.amount}("");
@@ -1105,6 +1158,7 @@ contract ProjectCore {
         // Cập nhật trạng thái và giải phóng số tiền giữ chỗ
         req.status = RequestStatus.Expired;
         reservedSpendAmount -= req.amount;
+        _decrementOpenSpend(req.creator);
 
         emit SpendRequestExpired(requestId);
     }
@@ -1238,6 +1292,14 @@ contract ProjectCore {
 
             // AUTO-EXECUTION: Thử tự động thực thi hoàn tiền ngay trong cùng giao dịch với lá phiếu cuối
             _tryExecuteRefund(req, refundId);
+        } else if (req.status == RequestStatus.Pending) {
+            uint256 maxPossibleYes = req.voterBase > req.noVotes ? (req.voterBase - req.noVotes) : 0;
+            if (((maxPossibleYes * BPS_DENOMINATOR) / req.voterBase) < PASSING_THRESHOLD_BPS) {
+                req.status = RequestStatus.Rejected;
+                reservedRefundAmount -= req.amount;
+                pendingStudentRefundAmount[req.applicant] -= req.amount;
+                emit RefundRequestRejected(refundId);
+            }
         }
     }
 

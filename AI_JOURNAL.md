@@ -272,6 +272,32 @@ Thực hiện toàn diện 7 nhóm thay đổi kiến trúc (A–G) theo kế ho
 
 > [!NOTE]  
 > **Xác nhận tính toàn vẹn của hợp đồng và các test Solidity:**  
-> - Hợp đồng `ProjectCore.sol` được giữ nguyên vẹn 100% trong Phase 6, không phát sinh chỉnh sửa.  
+> - Hợp đồng `ProjectCore.sol` được duy trì tuân thủ cấu hình `solc 0.8.20`, EVM `shanghai`, optimizer `runs: 200`.  
+> - Kích thước deployed bytecode thực tế: **22,045 bytes / 24,576 bytes** (89.70%, biên an toàn **2,531 bytes**).  
 > - Các bộ kiểm thử Solidity `ProjectCore_test.sol` và `ProjectCore_integration_test.sol` ở trạng thái: **ĐÃ BIÊN DỊCH THÀNH CÔNG (CHƯA CHẠY TRÊN REMIX)**.  
 > - Chưa thực hiện deploy lên mạng thử nghiệm Sepolia theo đúng quy định.
+
+---
+
+## 5. Bổ sung Hoàn thiện 3 Vấn đề An toàn & Tối ưu Tài nguyên On-chain
+
+### 5.1. Vấn đề 1: Tự động đóng đợt thu quá hạn trong `createCollection`
+- **Thiết kế:** Khi `activeCollectionId != 0` và đợt đó chưa đóng, kiểm tra `block.timestamp > oldCol.deadline`. Nếu đã quá hạn, tự động đánh dấu `closed = true`, `closedAt = now`, emit `CollectionClosed(activeCollectionId, unicode"Hết hạn tự động", msg.sender, now)`, rồi tiếp tục tạo đợt thu mới. Chỉ revert `CollectionStillOpen` khi đợt thu cũ vẫn còn trong hạn.
+- **Kiểm thử:** Thêm test Hardhat trong `ProjectCore.phase4.test.js` và test case 59 trong `test/test_economic_rules.py`.
+
+### 5.2. Vấn đề 2: Bác bỏ sớm khi phiếu chống chiếm đa số & Giới hạn 3 đề xuất chi mở
+- **Thiết kế Bác bỏ sớm:** Khi số phiếu chống (`noVotes`) khiến số phiếu thuận tối đa có thể đạt được $(\text{voterBase} - \text{noVotes})$ không thể đạt 51% của `voterBase`:
+  $$\frac{(\text{voterBase} - \text{noVotes}) \times 10,000}{\text{voterBase}} < 5,100$$
+  Trạng thái đề xuất chi / hoàn tiền chuyển ngay sang `RequestStatus.Rejected`, nhả toàn bộ tiền giữ chỗ (`reservedSpendAmount` hoặc `reservedRefundAmount` + `pendingStudentRefundAmount`), emit `SpendRequestRejected` hoặc `RefundRequestRejected`. Các hàm `vote`, `execute`, `expire` từ chối xử lý khi trạng thái là `Rejected` để chống giải phóng tiền hai lần.
+- **Thiết kế Giới hạn đề xuất chi mở:** Bổ sung hằng số `MAX_OPEN_SPEND_PER_CREATOR = 3` và lỗi `TooManyOpenRequests()`. `openSpendRequestCount[creator]` được tăng khi tạo và giảm khi đề xuất kết thúc (`Executed`, `Expired`, `Rejected`).
+- **Kiểm thử:** Thêm test Hardhat trong `ProjectCore.phase2.test.js` và test case 60 trong `test/test_economic_rules.py`.
+
+### 5.3. Vấn đề 3: Bỏ qua hoàn gas khi trạng thái Ban cán sự không thay đổi trong `setBCSMember`
+- **Thiết kế:** Trong `setBCSMember(member, status)`, nếu `isBCSMember[member] == status`, đặt cờ `_skipGasRefund = true` và dừng xử lý (`return`). Modifier `governanceAction` kiểm tra cờ này để bỏ qua `_handleGasRefund`, không emit `GasRefunded` và không khấu trừ `adminFeePool`.
+- **Kiểm thử:** Thêm test Hardhat trong `ProjectCore.phase5.test.js` và test case 61 trong `test/test_economic_rules.py`.
+
+### 5.4. Đồng bộ Dữ liệu & Độc lập Hóa Môi trường Kiểm thử
+- Xuất lại `CONTRACT_ABI` bằng trình biên dịch `solc 0.8.20` và cập nhật trực tiếp vào `web/index.html`.
+- Độc lập hóa `test/test_announcement_lifecycle.py` bằng fixture JSON cô lập trong thư mục tạm, không phụ thuộc vào trạng thái runtime của `backend/announcements.json`.
+- Thêm các mẫu `__pycache__/`, `*.pyc`, `*.bak*`, `*.lock` vào `.gitignore` và kiểm kê 62 tệp đang được Git theo dõi để phục vụ gỡ bỏ cache.
+- Toàn bộ 41 kiểm thử Hardhat, 61 kiểm thử mô phỏng kinh tế, và các kiểm thử indexer/auto-execution đều vượt qua 100% với Exit code 0.

@@ -190,3 +190,25 @@ Sau đợt nâng cấp Lab 15 (theo tài liệu kế hoạch `docs/CHANGE_PLAN_L
   - Bảng Cố vấn học tập chuyển phí vận hành dư sang Quỹ lớp chính.
   - Bảng Cố vấn học tập quản lý sinh viên on-chain và đối soát khớp mã hash danh bạ giữa on-chain và backend.
 - **Đồng bộ Backend:** Khắc phục lỗi hiển thị thông báo quá hạn vẫn mang trạng thái "active", bảo đảm tính nhất quán dữ liệu thời gian thực.
+
+### 8.7. Các Cải tiến An toàn & Kiểm soát Tài nguyên Bổ sung
+
+1. **Tự động đóng đợt thu quá hạn khi mở đợt mới (`createCollection`):**
+   - Nếu `activeCollectionId != 0` và đợt đó chưa đóng, hệ thống kiểm tra `block.timestamp > deadline`.
+   - Nếu đã quá hạn: tự động đóng đợt cũ với lý do `"Hết hạn tự động"` (`CollectionClosed`), sau đó tiếp tục tạo đợt thu mới mà không cần thêm một giao dịch đóng thủ công.
+   - Chỉ revert lỗi `CollectionStillOpen` khi đợt thu cũ vẫn còn trong thời hạn nộp.
+
+2. **Cơ chế bác bỏ sớm (`Rejected`) cho Đề xuất chi và Yêu cầu hoàn tiền:**
+   - Khi số phiếu chống (`noVotes`) khiến số phiếu thuận tối đa có thể đạt được không thể vượt qua ngưỡng 51% của `voterBase`:
+     $$\frac{(\text{voterBase} - \text{noVotes}) \times 10,000}{\text{voterBase}} < 5,100$$
+   - Yêu cầu lập tức chuyển trạng thái sang `RequestStatus.Rejected`, nhả ngay lập tức số tiền giữ chỗ (`reservedSpendAmount` hoặc `reservedRefundAmount` + `pendingStudentRefundAmount`), phát sự kiện `SpendRequestRejected(requestId)` hoặc `RefundRequestRejected(refundId)`.
+   - Các hàm `vote`, `execute`, `expire` đều kiểm tra trạng thái và từ chối nếu yêu cầu đã `Rejected` (`InvalidRequestStatus` / `InvalidRefundStatus`), bảo đảm tuyệt đối không giải phóng số dư hai lần.
+
+3. **Giới hạn số đề xuất chi đang mở (`MAX_OPEN_SPEND_PER_CREATOR = 3`):**
+   - Mỗi người tạo đề xuất chỉ được phép duy trì tối đa 03 đề xuất chi ở trạng thái mở (`Pending` hoặc `Ready`) đồng thời.
+   - Khi tạo đề xuất thứ 4, hợp đồng lập tức revert với `TooManyOpenRequests()`.
+   - Biến đếm `openSpendRequestCount[creator]` được giảm an toàn khi đề xuất kết thúc vòng đời: `Executed`, `Expired`, hoặc `Rejected`.
+
+4. **Bỏ qua hoàn gas khi trạng thái quản trị không đổi (`setBCSMember`):**
+   - Khi Cố vấn học tập gọi `setBCSMember(member, status)` mà `isBCSMember[member] == status`, hàm phát hiện trạng thái không thay đổi, kích hoạt cờ hiệu `_skipGasRefund = true` và dừng xử lý.
+   - Modifier `governanceAction` bỏ qua bước gọi `_handleGasRefund`, không phát sự kiện `GasRefunded` và không khấu trừ chi phí từ `adminFeePool`.

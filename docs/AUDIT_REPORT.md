@@ -380,6 +380,9 @@ Sau đợt rà soát và thực hiện kế hoạch nâng cấp Lab 15 (`docs/CH
 | **SEC-12** | Đóng góp giữa các đợt thu bị lẫn lộn hoặc tràn sang nhau | Accounting / Isolation | **MEDIUM** | **ĐÃ KHẮC PHỤC** (Phase 4: Đợt thu on-chain độc lập, chỉ 1 đợt mở, hoàn thành khi `paidInCollection >= targetWei`) |
 | **SEC-13** | CVHT rút cạn phí vận hành làm BCS không có gas thực thi | Fund Drain / Governance | **HIGH** | **ĐÃ KHẮC PHỤC** (Phase 5: Xóa `withdrawAdminFee`, tự động hoàn gas qua `governanceAction`, chuyển phí dư `moveFeeToClassFund`) |
 | **SEC-14** | Tấn công Reentrancy hoặc tắc nghẽn khi hoàn gas thất bại | Security / Reentrancy | **HIGH** | **ĐÃ KHẮC PHỤC** (Phase 5: Kiểm tra reentrancy trong `governanceAction`, xử lý shortfall an toàn, fallback `GasRefundFailed` không revert) |
+| **SEC-15** | Đợt thu cũ quá hạn làm nghẽn tạo đợt mới khi chưa gọi close thủ công | Denial of Service | **MEDIUM** | **ĐÃ KHẮC PHỤC** (Kiểm tra deadline trong `createCollection`, tự động đóng đợt cũ với lý do "Hết hạn tự động") |
+| **SEC-16** | Tiền giữ chỗ bị giam cầm khi phiếu chống chiếm đa số & Spam đề xuất | Resource Exhaustion | **HIGH** | **ĐÃ KHẮC PHỤC** (Chuyển `Rejected` & nhả tiền ngay khi No chiếm đa số, giới hạn `MAX_OPEN_SPEND_PER_CREATOR = 3`) |
+| **SEC-17** | Thất thoát phí vận hành khi gọi hàm quản trị không thay đổi trạng thái | Fund Waste / No-op | **LOW** | **ĐÃ KHẮC PHỤC** (Bỏ qua hoàn gas `_skipGasRefund = true` khi `isBCSMember[member] == status` trong `setBCSMember`) |
 
 ### 13.2. Phân tích An toàn Checks-Effects-Interactions của Modifier `governanceAction`
 - **Đo Gas và Giới hạn Chi phí:**
@@ -388,20 +391,21 @@ Sau đợt rà soát và thực hiện kế hoạch nâng cấp Lab 15 (`docs/CH
   - Giới hạn gas hoàn tối đa `500,000` gas units; giá gas tính theo `min(tx.gasprice, block.basefee + 2 gwei)`.
 - **An toàn Reentrancy & Bảo toàn kế toán:**
   - Toàn bộ thay đổi trạng thái của hàm quản trị chính được ghi nhận xong trước khi bước vào đoạn tương tác chuyển ETH hoàn gas.
-  - Sử dụng cờ khóa reentrancy nội bộ `_governanceLocked`.
+  - Sử dụng cờ khóa reentrancy nội bộ `_reentrancyLocked`.
+  - Cờ `_skipGasRefund` cho phép các hàm không thay đổi trạng thái (như `setBCSMember` gọi lại cùng trạng thái) bỏ qua bước hoàn gas để bảo toàn `adminFeePool`.
   - Nếu số dư `adminFeePool` không đủ, hợp đồng chuyển hết số dư hiện có và ghi nhận thiếu hụt vào `gasRefundShortfall`, tuyệt đối không revert giao dịch quản trị.
   - Nếu ví người gọi từ chối ETH (ví dụ Contract không có `receive`), phát sự kiện `GasRefundFailed`, hoàn trả lại số dư vào `adminFeePool`, bảo toàn tính toàn vẹn 100% của hệ thống.
 
 ### 13.3. Kiểm soát Kích thước Deployed Bytecode (Giới hạn EIP-170)
 - **Cấu hình biên dịch chuẩn:** Solidity `0.8.20`, EVM `shanghai`, Optimizer bật với `runs: 200`.
 - **Kích thước đo lường thực tế:**
-  - `deployedBytecode`: **20,767 bytes** (Đạt **84.50%** ngưỡng trần 24,576 bytes của EIP-170, biên an toàn còn **3,809 bytes**).
-  - `initcode`: **20,860 bytes** (Nằm sâu dưới giới hạn 49,152 bytes của Shanghai hardfork).
+  - `deployedBytecode`: **22,045 bytes** (Đạt **89.70%** ngưỡng trần 24,576 bytes của EIP-170, biên an toàn còn **2,531 bytes**).
+  - `initcode`: **22,139 bytes** (Nằm sâu dưới giới hạn 49,152 bytes của Shanghai hardfork).
 - **Cảnh báo triển khai trên Remix IDE:** Bắt buộc phải bật optimizer `runs = 200` và chọn EVM `shanghai` để tránh lỗi vượt kích thước bytecode (Oversized Data).
 
 ### 13.4. Tổng hợp Kết quả Kiểm chứng Thực tế
-- **Hardhat Test Suite (`test/hardhat/baseline.test.js`):** **38/38 tests PASS**.
-- **Mô phỏng Kinh tế Python (`test/test_economic_rules.py`):** **58/58 test cases PASS**.
+- **Hardhat Test Suite (`test/hardhat/ProjectCore.*.test.js`):** **41/41 tests PASS** (100% pass trên cả 6 tệp test suite).
+- **Mô phỏng Kinh tế Python (`test/test_economic_rules.py`):** **61/61 test cases PASS**.
 - **Biên dịch Solc (`npx solc 0.8.20`):** 3 hợp đồng (`ProjectCore.sol`, `ProjectCore_test.sol`, `ProjectCore_integration_test.sol`) biên dịch thành công 100%, 0 lỗi, 0 cảnh báo.
 - **Bộ kiểm thử Tích hợp Backend & Indexer:**
   - `test_blockchain_indexer.py`: 32/32 PASS.

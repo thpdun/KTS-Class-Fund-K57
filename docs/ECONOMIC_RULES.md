@@ -63,6 +63,19 @@
   - BCS là người thụ hưởng tiền giải ngân không được bỏ phiếu cho đề xuất chi đó.
   - Mẫu số tự động trừ 1 (`voterBase - 1`) và bắt buộc phải có tối thiểu 2 phiếu thuận (`yesVotes >= 2`) để được thông qua.
 
+* **Cơ chế bác bỏ sớm khi No chiếm đa số (Early Rejection Defense):**
+  - Khi số phiếu chống khiến số phiếu thuận không thể đạt ngưỡng 51% của `voterBase` ($(\text{voterBase} - \text{noVotes}) \times 10,000 / \text{voterBase} < 5,100$), đề xuất chi hoặc hoàn tiền lập tức chuyển sang trạng thái `Rejected`.
+  - Toàn bộ tiền giữ chỗ (`reservedSpendAmount` hoặc `reservedRefundAmount` + `pendingStudentRefundAmount`) được giải phóng ngay lập tức về Quỹ khả dụng.
+  - Chống giải phóng hai lần: các hàm `vote`, `execute`, `expire` đều kiểm tra và từ chối nếu yêu cầu đã `Rejected`.
+
+* **Giới hạn đề xuất chi mở đồng thời (Open Spend Requests Cap):**
+  - Mỗi thành viên BCS chỉ được phép duy trì tối đa 03 đề xuất chi ở trạng thái mở (`Pending` hoặc `Ready`) đồng thời (`MAX_OPEN_SPEND_PER_CREATOR = 3`).
+  - Đề xuất thứ 4 bị revert với `TooManyOpenRequests()`.
+  - Biến đếm được giảm an toàn khi đề xuất kết thúc (`Executed`, `Expired`, `Rejected`).
+
+* **Tự động đóng đợt thu quá hạn (Auto-close Expired Collection):**
+  - Khi mở đợt thu mới qua `createCollection`, nếu đợt thu hiện tại đã quá hạn (`block.timestamp > deadline`), hợp đồng tự động đóng đợt cũ với lý do `"Hết hạn tự động"` và tiếp tục mở đợt mới.
+
 ---
 
 ## 4. Cơ chế Hoàn Gas Tự động & Xử lý Thiếu hụt (Gas Refund Mechanism)
@@ -70,6 +83,9 @@
 * **Công thức hoàn Gas EIP-1559:**
   $$\text{gasRefund} = \min(\text{gasUsed}, 500,000) \times \min(\text{tx.gasprice}, \text{block.basefee} + 2\text{ gwei})$$
   - Áp dụng tự động cho 10 hàm quản trị của CVHT và BCS qua modifier `governanceAction`.
+
+* **Bỏ qua hoàn gas khi trạng thái không đổi (No-Op Gas Refund Skip):**
+  - Khi `setBCSMember` được gọi với trạng thái trùng với trạng thái hiện tại (`isBCSMember[member] == status`), hệ thống kích hoạt `_skipGasRefund = true` và không hoàn gas, tránh thất thoát `adminFeePool` cho các giao dịch không tạo ra thay đổi trạng thái thực sự.
 
 * **Xử lý khi Quỹ dịch vụ cạn (Shortfall Handling):**
   - Nếu `adminFeePool < gasRefund`, hợp đồng chuyển toàn bộ số dư còn lại của pool và ghi nhận khoản thiếu hụt vào biến `gasRefundShortfall`.

@@ -353,4 +353,90 @@ describe("Phase 2 (Sections B & C - Governance Snapshot, Delay, Quorum & Conflic
     await core.connect(bcs2).voteSpendRequest(3, true);
     expect((await core.spendRequests(3)).yesVotes).to.be.greaterThanOrEqual(2n);
   });
+
+  it("Issue 2: Majority No-votes rejects proposal, releases reserved fund immediately, prevents double-release, and enforces open spend proposal limit (MAX_OPEN_SPEND_PER_CREATOR = 3)", async function () {
+    const { core, advisor, bcs1, bcs2, bcs3, studentA, recipient } = await deployFixture();
+    await setupActiveBCS(core, advisor, [bcs1, bcs2, bcs3]);
+    await core.connect(studentA).deposit({ value: ethers.parseEther("10") }); // 9.9 ETH net class fund
+
+    expect(await core.MAX_OPEN_SPEND_PER_CREATOR()).to.equal(3n);
+    expect(await core.openSpendRequestCount(bcs1.address)).to.equal(0n);
+
+    // 1. (c) Gian lận: 1 BCS tạo 4 đề xuất chi mở đồng thời -> đề xuất thứ 4 bị revert với TooManyOpenRequests
+    await core.connect(bcs1).createSpendRequest(recipient.address, ethers.parseEther("1"), "Spend 1");
+    await core.connect(bcs1).createSpendRequest(recipient.address, ethers.parseEther("1"), "Spend 2");
+    await core.connect(bcs1).createSpendRequest(recipient.address, ethers.parseEther("1"), "Spend 3");
+    expect(await core.openSpendRequestCount(bcs1.address)).to.equal(3n);
+
+    await expect(
+      core.connect(bcs1).createSpendRequest(recipient.address, ethers.parseEther("1"), "Spend 4 - Exceeds limit")
+    ).to.be.revertedWithCustomError(core, "TooManyOpenRequests");
+
+    // 2. (a) BCS bỏ phiếu chống chiếm đa số:
+    // Với Spend 1 (voterBase = 3): cần 51% (ít nhất 2 phiếu thuận).
+    // Nếu bcs1 vote No, bcs2 vote No -> max possible Yes = 1 < 2 -> Chuyển sang Rejected ngay lập tức!
+    const reservedBefore = await core.reservedSpendAmount();
+    expect(reservedBefore).to.equal(ethers.parseEther("3"));
+
+    await core.connect(bcs1).voteSpendRequest(1, false); // 1 No, maxYes = 2 -> still Pending
+    expect((await core.spendRequests(1)).status).to.equal(0n); // Pending
+
+    await expect(core.connect(bcs2).voteSpendRequest(1, false)) // 2 No, maxYes = 1 < 2 -> REJECTED!
+      .to.emit(core, "SpendRequestRejected")
+      .withArgs(1n);
+
+    const req1 = await core.spendRequests(1);
+    expect(req1.status).to.equal(3n); // RequestStatus.Rejected (0=Pending, 1=Ready, 2=Executed, 3=Rejected, 4=Expired, 5=Cancelled)
+    expect(await core.reservedSpendAmount()).to.equal(reservedBefore - ethers.parseEther("1"));
+    expect(await core.openSpendRequestCount(bcs1.address)).to.equal(2n); // Giảm biến đếm open spend!
+
+    // (b) Sau đó gọi tiếp không thể nhả tiền lần hai:
+    // bcs3 thử vote -> revert InvalidRequestStatus
+    await expect(core.connect(bcs3).voteSpendRequest(1, false))
+      .to.be.revertedWithCustomError(core, "InvalidRequestStatus")
+      .withArgs(1n);
+
+    // executeSpendRequest -> revert InvalidRequestStatus
+    await expect(core.connect(bcs2).executeSpendRequest(1))
+      .to.be.revertedWithCustomError(core, "InvalidRequestStatus")
+      .withArgs(1n);
+
+    // expireSpendRequest -> revert InvalidRequestStatus
+    await time.increase(7 * 24 * 60 * 60 + 10);
+    await expect(core.expireSpendRequest(1))
+      .to.be.revertedWithCustomError(core, "InvalidRequestStatus")
+      .withArgs(1n);
+
+    // Số tiền reserved vẫn giữ nguyên (không bị trừ lần hai)
+    expect(await core.reservedSpendAmount()).to.equal(ethers.parseEther("2"));
+
+    // Vì count đã giảm về 2, bcs1 giờ có thể tạo thêm đề xuất mới thành công
+    await core.connect(bcs1).createSpendRequest(recipient.address, ethers.parseEther("1"), "Spend 4 after reject");
+    expect(await core.openSpendRequestCount(bcs1.address)).to.equal(3n);
+
+    // 3. Kiểm tra tương tự đối với RefundRequest:
+    // Sinh viên A xin hoàn 2 ETH -> reservedRefund = 2 ETH, pendingStudentRefund = 2 ETH
+    await core.connect(studentA).createRefundRequest(ethers.parseEther("2"), "Refund request");
+    expect(await core.reservedRefundAmount()).to.equal(ethers.parseEther("2"));
+    expect(await core.pendingStudentRefundAmount(studentA.address)).to.equal(ethers.parseEther("2"));
+
+    // 2 No votes trên voterBase 3 -> Rejected
+    await core.connect(bcs1).voteRefundRequest(1, false);
+    await expect(core.connect(bcs2).voteRefundRequest(1, false))
+      .to.emit(core, "RefundRequestRejected")
+      .withArgs(1n);
+
+    const ref1 = await core.refundRequests(1);
+    expect(ref1.status).to.equal(3n); // RequestStatus.Rejected
+    expect(await core.reservedRefundAmount()).to.equal(0n);
+    expect(await core.pendingStudentRefundAmount(studentA.address)).to.equal(0n);
+
+    // Gọi expire / execute trên Refund đã Rejected đều bị revert InvalidRefundStatus
+    await expect(core.executeRefundRequest(1))
+      .to.be.revertedWithCustomError(core, "InvalidRefundStatus")
+      .withArgs(1n);
+    await expect(core.expireRefundRequest(1))
+      .to.be.revertedWithCustomError(core, "InvalidRefundStatus")
+      .withArgs(1n);
+  });
 });

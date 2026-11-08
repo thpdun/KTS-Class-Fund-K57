@@ -159,6 +159,43 @@ describe("Phase 4 (Section E - On-chain Fund Collections & Per-Collection Deposi
     expect(await core.activeCollectionId()).to.equal(2n);
   });
 
+  it("Issue 1: createCollection auto-closes unclosed expired collection when past deadline, reverts while still within deadline", async function () {
+    const { core, bcs1, bcs2 } = await deployFixture();
+
+    const now = await time.latest();
+    const deadline1 = now + 1000;
+
+    await core.connect(bcs1).createCollection(ethers.parseEther("1.0"), deadline1, "Dot thu sap het han");
+    expect(await core.activeCollectionId()).to.equal(1n);
+
+    // 1. Khi còn trong hạn (block.timestamp <= deadline): vẫn revert CollectionStillOpen
+    await expect(
+      core.connect(bcs2).createCollection(ethers.parseEther("2.0"), deadline1 + 5000, "Dot thu moi bi chan")
+    ).to.be.revertedWithCustomError(core, "CollectionStillOpen").withArgs(1n);
+
+    // 2. Tăng thời gian vượt qua deadline1 (block.timestamp > deadline1)
+    await time.increaseTo(deadline1 + 10);
+
+    // 3. Gọi createCollection mới: tự động đóng đợt 1 với lý do "Hết hạn tự động", emit CollectionClosed và tạo đợt 2 thành công
+    const newDeadline = (await time.latest()) + SEVEN_DAYS;
+    const tx = await core.connect(bcs2).createCollection(ethers.parseEther("2.0"), newDeadline, "Dot thu 2 sau khi dot 1 het han");
+    await expect(tx)
+      .to.emit(core, "CollectionClosed")
+      .withArgs(1n, "Hết hạn tự động", bcs2.address, await time.latest());
+    await expect(tx)
+      .to.emit(core, "CollectionCreated")
+      .withArgs(2n, ethers.parseEther("2.0"), newDeadline, "Dot thu 2 sau khi dot 1 het han", bcs2.address, 5n);
+
+    // Kiểm tra trạng thái đợt cũ đã được đóng
+    const col1 = await core.getCollection(1);
+    expect(col1.closed).to.be.true;
+    expect(col1.closedAt).to.be.greaterThan(0n);
+
+    // Đợt mới hiện đang active
+    expect(await core.activeCollectionId()).to.equal(2n);
+    expect(await core.getActiveCollectionId()).to.equal(2n);
+  });
+
   it("Section E3: depositToCollection enforces whitelist, fee split, and thresholds for 'Đã nộp'", async function () {
     const { core, bcs1, student1, student2, stranger } = await deployFixture();
 

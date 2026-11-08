@@ -68,9 +68,51 @@ from eth_account.messages import encode_defunct
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-REAL_ANNOUNCEMENT_PATH = PROJECT_ROOT / "backend" / "announcements.json"
+FIXTURE_V1_JSON = """{
+  "active": {
+    "id": "ann-20261102114233",
+    "title": "Kêu gọi nộp quỹ lớp Kỳ 1",
+    "targetAmountEth": "0.01",
+    "deadline": "23:59 ngày 2/11/2026",
+    "deadlineTimestamp": 1793638740.0,
+    "classSize": 5,
+    "purpose": "Kinh phí cho các hoạt động ngoại khóa, học tập",
+    "status": "active",
+    "autoCloseOnTarget": false,
+    "createdAt": "2026-11-02T11:42:33.691211+00:00",
+    "endedAt": null,
+    "endReason": null,
+    "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
+    "updatedAt": "2026-11-02T11:42:33.691235+00:00"
+  },
+  "history": [
+    {
+      "id": "ann-k57-hk1",
+      "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+      "targetAmountEth": "0.0100",
+      "deadline": "23:59 ngày 30/11/2026",
+      "deadlineTimestamp": 1796057940.0,
+      "classSize": 5,
+      "purpose": "Học tập và sinh hoạt chuyên đề K57",
+      "status": "archived",
+      "autoCloseOnTarget": false,
+      "createdAt": "2026-10-20T00:00:00Z",
+      "endedAt": "2026-11-02T11:42:33.687398+00:00",
+      "endReason": "Thay thế bởi đợt thu mới",
+      "updatedBy": "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2",
+      "updatedAt": null
+    }
+  ]
+}"""
+
+_FIXTURE_DIR_OBJ = tempfile.TemporaryDirectory(prefix="kts_fixture_ann_")
+FIXTURE_ANNOUNCEMENT_PATH = Path(_FIXTURE_DIR_OBJ.name) / "announcements_fixture.json"
+FIXTURE_ANNOUNCEMENT_PATH.write_text(FIXTURE_V1_JSON, encoding="utf-8")
+
+# Không đọc/ghi trực tiếp vào backend/announcements.json thật để tránh làm vỡ môi trường runtime
+REAL_ANNOUNCEMENT_PATH = FIXTURE_ANNOUNCEMENT_PATH
 REAL_ROSTER_PATH = PROJECT_ROOT / "backend" / "class_roster.json"
-REAL_PRE_V4_BAK_PATH = PROJECT_ROOT / "backend" / "announcements.pre_v4_migration.bak"
+REAL_PRE_V4_BAK_PATH = FIXTURE_ANNOUNCEMENT_PATH
 
 
 class IsolatedTempServerTestCase(unittest.TestCase):

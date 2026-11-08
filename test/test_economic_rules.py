@@ -38,6 +38,7 @@ MAX_BCS = 15                           # Tối đa 15 BCS
 MAX_BATCH = 100                        # Tối đa 100 địa chỉ trong 1 lượt setStudents (Mục D)
 MAX_PURPOSE_LENGTH = 256               # Giới hạn độ dài mục đích đợt thu (Mục E)
 MAX_REASON_LENGTH = 256                # Giới hạn độ dài lý do đóng đợt thu (Mục E)
+MAX_OPEN_SPEND_PER_CREATOR = 3         # Số lượng đề xuất chi đang mở tối đa mỗi người tạo
 GAS_REFUND_OVERHEAD = 30_000           # Gas overhead bù đắp 21.000 giao dịch cơ bản + calldata (Mục F)
 MAX_REFUND_GAS_UNITS = 500_000         # Giới hạn gas units hoàn tối đa (Mục F)
 MAX_GAS_PRICE_PREMIUM = 2 * 10**9      # 2 gwei trần phụ phí gas (Mục F)
@@ -228,6 +229,10 @@ class ReentrancyGuardReentrantCallError(CustomError):
     pass
 
 
+class TooManyOpenRequestsError(CustomError):
+    pass
+
+
 class ProjectCoreSimulator:
     """
     Lớp mô phỏng chính xác logic nghiệp vụ của hợp đồng ProjectCore.sol
@@ -248,6 +253,7 @@ class ProjectCoreSimulator:
         self.member_since: Dict[str, int] = {}
         self.active_bcs_count = 0
         self.spend_request_count = 0
+        self.open_spend_request_count: Dict[str, int] = {}
         self.spend_requests: Dict[int, Dict[str, Any]] = {}
         self.has_voted: Dict[int, Dict[str, bool]] = {}
         self.refund_request_count = 0
@@ -309,7 +315,7 @@ class ProjectCoreSimulator:
 
         current_status = self.is_bcs_member.get(member, False)
         if current_status == status:
-            return
+            return False
 
         if status:
             if not self.is_student.get(member, False):
@@ -337,6 +343,7 @@ class ProjectCoreSimulator:
             self.active_bcs_count = len(self.bcs_list)
 
         self.emitted_events.append(("BCSMemberUpdated", member, status))
+        return True
 
     def is_eligible_voter_at(self, member: str, at_timestamp: int) -> bool:
         return (
@@ -397,7 +404,13 @@ class ProjectCoreSimulator:
         if purpose_len > MAX_PURPOSE_LENGTH:
             raise PurposeTooLongError("Revert: PurposeTooLong()")
         if self.active_collection_id != 0 and not self.collections[self.active_collection_id]["closed"]:
-            raise CollectionStillOpenError(f"Revert: CollectionStillOpen({self.active_collection_id})")
+            old_col = self.collections[self.active_collection_id]
+            if current_time > old_col["deadline"]:
+                old_col["closed"] = True
+                old_col["closed_at"] = current_time
+                self.emitted_events.append(("CollectionClosed", self.active_collection_id, "Hết hạn tự động", caller, current_time))
+            else:
+                raise CollectionStillOpenError(f"Revert: CollectionStillOpen({self.active_collection_id})")
 
         self.collection_count += 1
         cid = self.collection_count
@@ -546,7 +559,13 @@ class ProjectCoreSimulator:
             return 0
         return contrib - pending
 
+    def _decrement_open_spend(self, creator: str):
+        if self.open_spend_request_count.get(creator, 0) > 0:
+            self.open_spend_request_count[creator] -= 1
+
     def create_spend_request(self, caller: str, recipient: str, amount_wei: int, description: str, current_time: int) -> int:
+        if self.open_spend_request_count.get(caller, 0) >= MAX_OPEN_SPEND_PER_CREATOR:
+            raise TooManyOpenRequestsError("Revert: TooManyOpenRequests()")
         if not self.is_eligible_voter_at(caller, current_time):
             raise NotActiveBCSError("Revert: NotActiveBCS()")
         if not recipient or recipient == "0x0" or recipient == "0x0000000000000000000000000000000000000000":
@@ -566,6 +585,7 @@ class ProjectCoreSimulator:
 
         self.spend_request_count += 1
         req_id = self.spend_request_count
+        self.open_spend_request_count[caller] = self.open_spend_request_count.get(caller, 0) + 1
         self.reserved_spend_amount += amount_wei
 
         self.spend_requests[req_id] = {
@@ -601,6 +621,7 @@ class ProjectCoreSimulator:
             if req["status"] == "Pending":
                 req["status"] = "Expired"
                 self.reserved_spend_amount -= req["amount"]
+                self._decrement_open_spend(req["creator"])
                 self.emitted_events.append(("SpendRequestExpired", req_id))
             raise VotingPeriodEndedError("Revert: VotingPeriodEnded()")
 
@@ -626,6 +647,13 @@ class ProjectCoreSimulator:
         if approval_bps >= PASSING_THRESHOLD_BPS and req["status"] == "Pending":
             req["status"] = "Ready"
             self.emitted_events.append(("SpendRequestReady", req_id))
+        elif req["status"] == "Pending":
+            max_possible_yes = max(0, req["voter_base"] - req["no_votes"])
+            if (max_possible_yes * BPS_DENOMINATOR) // req["voter_base"] < PASSING_THRESHOLD_BPS:
+                req["status"] = "Rejected"
+                self.reserved_spend_amount -= req["amount"]
+                self._decrement_open_spend(req["creator"])
+                self.emitted_events.append(("SpendRequestRejected", req_id))
 
     # --- R6: Thực thi giải ngân ---
     def execute_spend_request(self, caller: str, req_id: int, current_time: int = BCS_ACTIVATION_DELAY + 1):
@@ -651,6 +679,7 @@ class ProjectCoreSimulator:
         req["status"] = "Executed"
         self.class_fund_balance -= req["amount"]
         self.reserved_spend_amount -= req["amount"]
+        self._decrement_open_spend(req["creator"])
 
         self.emitted_events.append(("SpendRequestExecuted", req_id, req["recipient"], req["amount"]))
 
@@ -665,6 +694,7 @@ class ProjectCoreSimulator:
             raise CustomError("Revert: VotingStillActive()")
         req["status"] = "Expired"
         self.reserved_spend_amount -= req["amount"]
+        self._decrement_open_spend(req["creator"])
         self.emitted_events.append(("SpendRequestExpired", req_id))
 
     # --- R7: Hoàn tiền có biểu quyết Ban cán sự ---
@@ -746,6 +776,13 @@ class ProjectCoreSimulator:
         if approval_bps >= PASSING_THRESHOLD_BPS and req["status"] == "Pending":
             req["status"] = "Ready"
             self.emitted_events.append(("RefundRequestReady", refund_id))
+        elif req["status"] == "Pending":
+            max_possible_yes = max(0, req["voter_base"] - req["no_votes"])
+            if (max_possible_yes * BPS_DENOMINATOR) // req["voter_base"] < PASSING_THRESHOLD_BPS:
+                req["status"] = "Rejected"
+                self.reserved_refund_amount -= req["amount"]
+                self.pending_student_refund_amount[req["applicant"]] -= req["amount"]
+                self.emitted_events.append(("RefundRequestRejected", refund_id))
 
     def execute_refund_request(self, caller: str, refund_id: int):
         if refund_id not in self.refund_requests:
@@ -2077,6 +2114,110 @@ class TestProjectCoreEconomicRules(unittest.TestCase):
         self.assertEqual(shortfall, owed)
         self.assertEqual(self.contract.admin_fee_pool, initial_pool) # Pool không bị thất thoát
         self.assertIn(("GasRefundFailed", self.bcs_1, owed), self.contract.emitted_events)
+
+    def test_case_59_issue1_create_collection_auto_close_expired(self):
+        """Vấn đề 1: create_collection tự động đóng đợt cũ đã quá hạn và tạo đợt mới thành công; đợt còn hạn vẫn revert"""
+        ready_t = self._setup_3_active_bcs(added_at=0)
+        cid1 = self.contract.create_collection(
+            caller=self.bcs_1,
+            target_wei=1 * WEI_PER_ETH,
+            deadline=ready_t + 1000,
+            purpose="Dot thu 1",
+            current_time=ready_t,
+        )
+        self.assertEqual(cid1, 1)
+        self.assertEqual(self.contract.active_collection_id, 1)
+
+        # 1. Khi còn trong hạn: revert CollectionStillOpenError
+        with self.assertRaises(CollectionStillOpenError):
+            self.contract.create_collection(
+                caller=self.bcs_2,
+                target_wei=2 * WEI_PER_ETH,
+                deadline=ready_t + 5000,
+                purpose="Dot thu 2 bi chan",
+                current_time=ready_t + 500,
+            )
+
+        # 2. Khi đã quá hạn (current_time > deadline): tự đóng đợt 1 và tạo đợt 2 thành công
+        cid2 = self.contract.create_collection(
+            caller=self.bcs_2,
+            target_wei=2 * WEI_PER_ETH,
+            deadline=ready_t + 10000,
+            purpose="Dot thu 2 thanh cong",
+            current_time=ready_t + 1001,
+        )
+        self.assertEqual(cid2, 2)
+        self.assertEqual(self.contract.active_collection_id, 2)
+        self.assertTrue(self.contract.collections[1]["closed"])
+        self.assertEqual(self.contract.collections[1]["closed_at"], ready_t + 1001)
+        self.assertIn(("CollectionClosed", 1, "Hết hạn tự động", self.bcs_2, ready_t + 1001), self.contract.emitted_events)
+
+    def test_case_60_issue2_proposal_rejection_no_double_release_and_max_open_limit(self):
+        """Vấn đề 2: Đề xuất chi và hoàn tiền bị Rejected khi No chiếm đa số, nhả tiền giữ chỗ ngay, chống nhả 2 lần, và giới hạn MAX_OPEN_SPEND_PER_CREATOR = 3"""
+        self.contract.deposit(self.student_a, 10 * WEI_PER_ETH)
+        ready_t = self._setup_3_active_bcs(added_at=0)
+
+        # 1. Giới hạn MAX_OPEN_SPEND_PER_CREATOR = 3
+        req1 = self.contract.create_spend_request(self.bcs_1, self.student_b, 1 * WEI_PER_ETH, "Spend 1", ready_t)
+        req2 = self.contract.create_spend_request(self.bcs_1, self.student_b, 1 * WEI_PER_ETH, "Spend 2", ready_t)
+        req3 = self.contract.create_spend_request(self.bcs_1, self.student_b, 1 * WEI_PER_ETH, "Spend 3", ready_t)
+        self.assertEqual(self.contract.open_spend_request_count[self.bcs_1], 3)
+
+        # Đề xuất thứ 4 bị revert với TooManyOpenRequestsError
+        with self.assertRaises(TooManyOpenRequestsError):
+            self.contract.create_spend_request(self.bcs_1, self.student_b, 1 * WEI_PER_ETH, "Spend 4", ready_t)
+
+        # 2. Bỏ phiếu chống chiếm đa số khiến proposal bị Rejected ngay
+        # voter_base = 3. Cần 51% (>= 2 yes). Nếu 2 no -> max possible yes = 1 < 2 -> Rejected
+        self.contract.vote_spend_request(self.bcs_1, req1, False, ready_t)
+        self.assertEqual(self.contract.spend_requests[req1]["status"], "Pending")
+
+        self.contract.vote_spend_request(self.bcs_2, req1, False, ready_t)
+        self.assertEqual(self.contract.spend_requests[req1]["status"], "Rejected")
+        # Nhả tiền giữ chỗ và giảm open_spend_request_count
+        self.assertEqual(self.contract.reserved_spend_amount, 2 * WEI_PER_ETH)
+        self.assertEqual(self.contract.open_spend_request_count[self.bcs_1], 2)
+        self.assertIn(("SpendRequestRejected", req1), self.contract.emitted_events)
+
+        # Không thể nhả tiền lần hai khi gọi tiếp
+        with self.assertRaises(CustomError):
+            self.contract.vote_spend_request(self.bcs_3, req1, False, ready_t)
+        with self.assertRaises(CustomError):
+            self.contract.expire_spend_request(req1, ready_t + 8 * 86400)
+        self.assertEqual(self.contract.reserved_spend_amount, 2 * WEI_PER_ETH)
+
+        # BCS 1 tạo lại đề xuất thứ 4 thành công vì count đã giảm về 2
+        req4 = self.contract.create_spend_request(self.bcs_1, self.student_b, 1 * WEI_PER_ETH, "Spend 4 ok", ready_t)
+        self.assertEqual(self.contract.open_spend_request_count[self.bcs_1], 3)
+
+        # 3. Yêu cầu hoàn tiền bị Rejected khi No chiếm đa số
+        ref1 = self.contract.create_refund_request(self.student_a, 2 * WEI_PER_ETH, "Refund A", ready_t)
+        self.assertEqual(self.contract.reserved_refund_amount, 2 * WEI_PER_ETH)
+        self.assertEqual(self.contract.pending_student_refund_amount[self.student_a], 2 * WEI_PER_ETH)
+
+        self.contract.vote_refund_request(self.bcs_1, ref1, False, ready_t)
+        self.contract.vote_refund_request(self.bcs_2, ref1, False, ready_t)
+        self.assertEqual(self.contract.refund_requests[ref1]["status"], "Rejected")
+        self.assertEqual(self.contract.reserved_refund_amount, 0)
+        self.assertEqual(self.contract.pending_student_refund_amount[self.student_a], 0)
+        self.assertIn(("RefundRequestRejected", ref1), self.contract.emitted_events)
+
+    def test_case_61_issue3_set_bcs_member_unchanged_status_skips_gas_refund(self):
+        """Vấn đề 3: set_bcs_member khi trạng thái không đổi (isBCSMember[member] == status) bỏ qua bước hoàn gas"""
+        # Thêm mới sinh viên
+        self.contract.set_students(self.advisor, ["0xStrangerStudent"], True)
+
+        # Lần 1: Thay đổi trạng thái (False -> True) -> trả về True (thực hiện hoàn gas)
+        changed1 = self.contract.set_bcs_member(self.advisor, "0xStrangerStudent", True)
+        self.assertTrue(changed1)
+
+        # Lần 2: Gọi lại với True (True -> True) -> trả về False (bỏ qua hoàn gas, _skipGasRefund)
+        changed2 = self.contract.set_bcs_member(self.advisor, "0xStrangerStudent", True)
+        self.assertFalse(changed2)
+
+        # Lần 3: Gọi với False cho một người đang là False (False -> False) -> trả về False (bỏ qua hoàn gas)
+        changed3 = self.contract.set_bcs_member(self.advisor, "0xAnotherPerson", False)
+        self.assertFalse(changed3)
 
 
 if __name__ == "__main__":
