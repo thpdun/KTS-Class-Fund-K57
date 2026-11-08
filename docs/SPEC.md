@@ -42,14 +42,15 @@ Hệ thống KTS-Class-Fund là hợp đồng thông minh quản lý quỹ lớp
 * **Hủy chủ động**: Cố vấn học tập (CVHT) hoặc người tạo yêu cầu CHỈ CÓ QUYỀN gọi hàm Hủy (Cancel) khi yêu cầu chưa đạt 51% (đang Pending). Khi đã đạt 51% (chuyển sang Ready), quyền Hủy bị vô hiệu hóa.
 * **Dọn dẹp quá hạn**: Nếu một yêu cầu chi tồn tại quá 7 ngày kể từ lúc tạo mà vẫn chưa được giải ngân thành công, BẤT KỲ TÀI KHOẢN NÀO cũng có thể gọi hàm "Đánh dấu hết hạn" (Expire) để dọn dẹp, giải phóng hệ thống cho yêu cầu chi mới.
 * **R10**: Sinh viên có quyền tự Hủy (Cancel) yêu cầu hoàn tiền đang ở trạng thái 'Đang chờ duyệt' của chính mình. Yêu cầu xin hoàn tiền KHÔNG bị áp dụng cơ chế tự động dọn dẹp sau 7 ngày để bảo vệ tài sản của người nộp nhầm.
-* **R11**: Chỉ Cố vấn học tập (Owner) mới có quyền gọi hàm rút tiền (`withdrawAdminFee`) từ Quỹ dịch vụ vận hành (`adminFeePool`) về ví cá nhân nhằm mục đích bù đắp chi phí Gas.
+* **R11**: (Thay thế sau Lab 15) Quyền rút phí vận hành tùy ý (`withdrawAdminFee`) bị loại bỏ hoàn toàn để chống lạm quyền. Thay vào đó, hệ thống hỗ trợ CVHT chuyển phí vận hành dư sang Quỹ lớp chính (`moveFeeToClassFund`) và tự động hoàn trả phí Gas mạng lưới cho người khởi tạo giao dịch thuộc 10 hàm quản trị thông qua modifier `governanceAction`.
 
 ## 4. Đầu ra
 
 * **Tài sản chuyển giao (ETH Transfer):**
 * Chuyển số ETH giải ngân tương ứng tới địa chỉ ví thụ hưởng (`recipient`) khi yêu cầu chi được thực thi thành công.
 * Chuyển số ETH hoàn trả về địa chỉ ví của sinh viên khi yêu cầu xin hoàn tiền được Ban cán sự phê duyệt.
-* Chuyển số ETH từ `adminFeePool` về ví CVHT khi có lệnh rút phí quản lý.
+* Tự động hoàn trả phí Gas mạng lưới trực tiếp về ví của người gọi 10 hàm quản trị từ `adminFeePool`.
+* Chuyển số ETH phí vận hành dư sang Quỹ lớp chính khi CVHT gọi `moveFeeToClassFund`.
 
 
 * **Trạng thái lưu trữ trên hợp đồng (State):**
@@ -132,3 +133,60 @@ Hệ thống KTS-Class-Fund là hợp đồng thông minh quản lý quỹ lớp
    - Khoản tiền hoàn trả trích 100% từ Quỹ lớp chính (`classFundBalance`).
    - Khoản phí dịch vụ vận hành 1% đã trích vào `adminFeePool` tại thời điểm nộp quỹ được giữ nguyên (sinh viên chịu khoản phí vận hành này để bù đắp chi phí Gas mạng lưới).
    - Tuyệt đối không tồn tại bất kỳ hàm `refund()` công khai nào cho phép sinh viên rút tiền trực tiếp bỏ qua biểu quyết của BCS.
+
+---
+
+## 8. Phụ lục Lab 15: Nâng cấp Toàn diện Quản trị & Hạch toán On-chain (Phases 1–6)
+
+Sau đợt nâng cấp Lab 15 (theo tài liệu kế hoạch `docs/CHANGE_PLAN_LAB15.md`), hệ thống đã hoàn thiện 7 nhóm thay đổi kiến trúc trọng yếu (A–G):
+
+### 8.1. Nhóm A — Hạch toán Hoàn tiền Net 99% (Phase 1)
+- **Tách bạch số dư nộp và hạn mức hoàn:**
+  - `studentContributions[student]` chỉ lưu **99% net** (phần tiền thực tế vào Quỹ lớp chính).
+  - `studentTotalDeposited[student]` lưu **100% gross** phục vụ hiển thị lịch sử nộp quỹ minh bạch.
+- **Bảo vệ tài sản tập thể:** Khi hoàn tiền tối đa, sinh viên chỉ được nhận lại phần 99% net đã đóng góp, triệt tiêu lỗ hổng thâm hụt tài sản do lấy tiền của sinh viên khác bù vào 1% phí vận hành đã trích.
+
+### 8.2. Nhóm B & C — Chống Thao túng Quản trị & Xung đột Lợi ích (Phase 2)
+- **Hoãn kích hoạt BCS 3 ngày (`BCS_ACTIVATION_DELAY = 3 days`):** Thành viên BCS mới được bổ nhiệm phải sau đủ 3 ngày mới có quyền tạo đề xuất hoặc bỏ phiếu. Chặn việc CVHT bổ nhiệm tức thời ví ma để lũng đoạn biểu quyết.
+- **Snapshot `voterBase` tại thời điểm tạo yêu cầu:** Số cử tri đủ điều kiện được ghi nhận cố định tại thời điểm tạo đề xuất chi hoặc hoàn tiền. Mọi hành vi thêm/bớt BCS giữa chừng không làm thay đổi mẫu số biểu quyết của các đề xuất đang chạy.
+- **Ràng buộc quy mô Ban cán sự:**
+  - `MIN_BCS_FOR_PROPOSAL = 3`: Phải có tối thiểu 3 BCS đủ điều kiện hoạt động mới được phép tạo đề xuất chi hoặc yêu cầu hoàn tiền.
+  - `MAX_BCS = 15`: Giới hạn danh sách cử tri để bảo toàn chi phí gas và hiệu năng tính toán.
+  - Mảng động `bcsList` quản lý O(1) qua kỹ thuật Swap-and-Pop.
+- **Chặn xung đột lợi ích (Conflict of Interest):**
+  - Sinh viên xin hoàn tiền nếu đồng thời là BCS sẽ bị tước quyền biểu quyết trên chính yêu cầu của mình (`ConflictOfInterestApplicantCannotVote`).
+  - BCS là người thụ hưởng nhận tiền giải ngân (`recipient`) bị tước quyền biểu quyết trên đề xuất chi đó (`ConflictOfInterestRecipientCannotVote`).
+  - Khi có xung đột lợi ích, mẫu số tính tỷ lệ đồng thuận tự động trừ đi 1 cử tri (`voterBase - 1`), đồng thời yêu cầu bắt buộc phải có ít nhất 2 phiếu thuận (`yesVotes >= 2`) để được phê chuẩn.
+
+### 8.3. Nhóm D — Quản lý Danh sách Sinh viên On-chain & Bảo vệ PII (Phase 3)
+- **Whitelist nạp tiền:** Chỉ các địa chỉ ví sinh viên nằm trong danh bạ on-chain (`isStudent[wallet] == true`) mới được gọi `deposit()` hoặc chuyển ETH qua `receive()`. Người ngoài gửi tiền bị từ chối với lỗi `NotEnrolledStudent()`.
+- **Thành viên BCS bắt buộc là sinh viên:** Hàm `setBCSMember(true)` yêu cầu địa chỉ ví phải là sinh viên đã đăng ký trước (`onlyStudent`).
+- **Cam kết Hash danh bạ (`commitRoster`):** Hợp đồng chỉ lưu trữ mã băm SHA-256 chuẩn hóa (`rosterHash`) của toàn bộ danh bạ. Tên, MSSV và thông tin cá nhân (PII) được lưu trữ ngoài chuỗi (off-chain) để bảo vệ quyền riêng tư theo GDPR/Nghị định 13.
+- **Hàm kế toán độc lập:** Cung cấp `getUnaccountedBalance()` để phát hiện các khoản ETH bị ép chuyển vào hợp đồng (qua `selfdestruct`) mà không làm sai lệch sổ sách kế toán.
+
+### 8.4. Nhóm E — Quản lý Đợt thu Quỹ On-chain (Phase 4)
+- **Đợt thu độc lập:** Ban cán sự có thể mở các đợt thu quỹ cụ thể (`createCollection`) với mục tiêu (`targetWei`), thời hạn (`deadline`) và nội dung chi tiết.
+- **Quy tắc đợt thu:**
+  - Tại một thời điểm chỉ cho phép tồn tại tối đa 01 đợt thu đang mở (`OnlyOneActiveCollectionAllowed`).
+  - Sinh viên nộp quỹ vào đợt thu qua hàm riêng `depositToCollection(collectionId)`.
+  - Tiêu chí "Đã nộp": Sinh viên được ghi nhận hoàn thành khi `paidInCollection >= targetWei` của đúng đợt thu đó, không tính dồn từ các đợt khác.
+  - Đợt thu không có hàm sửa sau khi tạo; chỉ có thể đóng sớm bằng `closeCollection(collectionId, reason)`.
+
+### 8.5. Nhóm F — Bỏ Rút Phí, Hoàn Gas Tự động & Chuyển Phí Dư (Phase 5)
+- **Loại bỏ `withdrawAdminFee`:** Xóa bỏ hoàn toàn hàm rút phí vận hành về ví cá nhân và sự kiện `AdminFeeWithdrawn`.
+- **Tự động hoàn Gas (`governanceAction`):** 10 hàm quản trị của CVHT và BCS được tự động hoàn trả phí gas từ `adminFeePool` ngay khi hoàn tất giao dịch theo công thức EIP-1559:
+  $$\text{gasRefund} = \min(\text{gasUsed}, 500,000) \times \min(\text{tx.gasprice}, \text{block.basefee} + 2\text{ gwei})$$
+- **Xử lý thiếu hụt (Shortfall):** Nếu `adminFeePool` không đủ, hợp đồng chuyển toàn bộ số dư còn lại và ghi nhận khoản thiếu hụt (`gasRefundShortfall`), tuyệt đối không làm revert giao dịch quản trị chính.
+- **Rollback khi nhận gas thất bại:** Nếu ví người gọi từ chối nhận ETH hoàn gas, phát sự kiện `GasRefundFailed`, hoàn trả số dư vào `adminFeePool` và không làm hỏng giao dịch chính.
+- **Chuyển phí dư sang Quỹ lớp:** Hàm `moveFeeToClassFund(uint256 amount)` cho phép CVHT chuyển bớt số dư từ `adminFeePool` sang `classFundBalance` để phục vụ các hoạt động lớp.
+
+### 8.6. Nhóm G — Tích hợp Toàn diện Giao diện DApp & Đồng bộ Backend (Phase 6)
+- **Xuất ABI tự động:** Cập nhật `CONTRACT_ABI` trong `web/index.html` trực tiếp từ đầu ra của `solc 0.8.20`.
+- **Giao diện DApp đầy đủ tính năng mới:**
+  - Banner giải thích cơ chế tự động hoàn Gas.
+  - Hiển thị hạn mức hoàn tiền tối đa chuẩn xác `getStudentMaxRefund`.
+  - Giao diện sinh viên tham gia nộp tiền vào đợt thu on-chain.
+  - Bảng quản trị mở/đóng đợt thu dành cho Ban cán sự.
+  - Bảng Cố vấn học tập chuyển phí vận hành dư sang Quỹ lớp chính.
+  - Bảng Cố vấn học tập quản lý sinh viên on-chain và đối soát khớp mã hash danh bạ giữa on-chain và backend.
+- **Đồng bộ Backend:** Khắc phục lỗi hiển thị thông báo quá hạn vẫn mang trạng thái "active", bảo đảm tính nhất quán dữ liệu thời gian thực.

@@ -1,28 +1,17 @@
 {
-  "active": {
-    "id": "ann-20261102114233",
-    "title": "Kêu gọi nộp quỹ lớp Kỳ 1",
-    "targetAmountEth": "0.01",
-    "deadline": "23:59 ngày 2/11/2026",
-    "deadlineTimestamp": 1793638740.0,
-    "classSize": 5,
-    "purpose": "Kinh phí cho các hoạt động ngoại khóa, học tập",
-    "status": "active",
-    "autoCloseOnTarget": false,
-    "createdAt": "2026-11-02T11:42:33.691211+00:00",
-    "endedAt": null,
-    "endReason": null,
-    "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
-    "updatedAt": "2026-11-02T11:42:33.691235+00:00"
-  },
-  "history": [
+  "schemaVersion": 3,
+  "schemaName": "kts-notifications",
+  "revision": 3,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "processedRequests": {},
+  "notifications": [
     {
       "id": "ann-k57-hk1",
       "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
       "targetAmountEth": "0.0100",
       "deadline": "23:59 ngày 30/11/2026",
       "deadlineTimestamp": 1796057940.0,
-      "classSize": 5,
+      "classSize": 7,
       "purpose": "Học tập và sinh hoạt chuyên đề K57",
       "status": "archived",
       "autoCloseOnTarget": false,
@@ -30,7 +19,298 @@
       "endedAt": "2026-11-02T11:42:33.687398+00:00",
       "endReason": "Thay thế bởi đợt thu mới",
       "updatedBy": "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2",
-      "updatedAt": null
+      "updatedAt": null,
+      "expiresAtTimestamp": 1796057940,
+      "expiresAt": "2026-11-30T23:59:00+07:00",
+      "targetAmountWei": "10000000000000000",
+      "createdBy": null,
+      "statusHistory": []
+    },
+    {
+      "id": "ann-20261102114233",
+      "title": "Kêu gọi nộp quỹ lớp Kỳ 1",
+      "targetAmountEth": "0.01",
+      "deadline": "23:59 ngày 2/11/2026",
+      "deadlineTimestamp": 1793638740.0,
+      "classSize": 7,
+      "purpose": "Kinh phí cho các hoạt động ngoại khóa, học tập",
+      "status": "expired",
+      "autoCloseOnTarget": false,
+      "createdAt": "2026-11-02T11:42:33.691211+00:00",
+      "endedAt": "2026-11-02T23:59:00+07:00",
+      "endReason": "Đã hết hạn nộp (Quá thời hạn quy định)",
+      "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
+      "updatedAt": "2026-11-02T11:42:33.691235+00:00",
+      "expiresAtTimestamp": 1793638740,
+      "expiresAt": "2026-11-02T23:59:00+07:00",
+      "targetAmountWei": "10000000000000000",
+      "createdBy": null,
+      "statusHistory": [
+        {
+          "from": "active",
+          "to": "expired",
+          "at": "2026-11-02T23:59:00+07:00",
+          "by": "system:auto-expire",
+          "reason": "Đã hết hạn nộp (Quá thời hạn quy định)"
+        }
+      ],
+      "finalProgress": {
+        "notificationId": "ann-20261102114233",
+        "isFrozen": true,
+        "frozenAt": "2026-11-04T16:39:40+07:00",
+        "reason": "Đã hết hạn nộp (Quá thời hạn quy định)",
+        "raisedEth": "0.0000",
+        "raisedWei": "0",
+        "contributingWalletsCount": 0,
+        "classSize": 7,
+        "headcountPercent": 0,
+        "hasFinancialTarget": false,
+        "targetAmountEth": null,
+        "financialPercent": null,
+        "totalTransactionsCount": 0,
+        "allocatedTxHashes": []
+      },
+      "expiredAt": "2026-11-02T23:59:00+07:00",
+      "statusChangedBy": "system:auto-expire"
+    },
+    {
+      "id": "ann-20261108195413",
+      "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+      "targetAmountEth": "0.0100",
+      "deadline": "23:59 ngày 30/11/2026",
+      "purpose": "Học tập và sinh hoạt chuyên đề K57",
+      "classSize": 7,
+      "autoCloseOnTarget": false,
+      "status": "active",
+      "createdAt": "2026-11-08T19:54:13.095082+07:00",
+      "createdBy": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+      "updatedAt": "2026-11-08T19:54:13.095082+07:00",
+      "updatedBy": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+      "endedAt": null,
+      "endReason": null,
+      "deadlineTimestamp": 1796057940.0,
+      "expiresAtTimestamp": 1796057940,
+      "expiresAt": "2026-11-30T23:59:00+07:00",
+      "targetAmountWei": "10000000000000000",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "active",
+          "at": "2026-11-08T19:54:13.095082+07:00",
+          "by": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+          "reason": "Tạo thông báo"
+        }
+      ]
+    }
+  ],
+  "auditLog": [
+    {
+      "eventId": "evt-000001",
+      "type": "MIGRATED_FROM_V1",
+      "notificationId": "ann-k57-hk1",
+      "statusAfter": "archived",
+      "actor": "system:migration",
+      "at": "2026-11-08T19:52:52.007586+07:00",
+      "notificationSnapshotSha256": "8d0698702fa5eaf179fe8e320c8a4dc60e0676e1dab7e6f5c0a7b0ab2173d19f",
+      "details": {
+        "legacyStatus": null,
+        "status": "archived"
+      },
+      "seq": 1,
+      "previousRecordHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+      "recordSha256": "3c55bcf9a6596bc1e4fa45147ee2539a5bf5d97d2994fbf1707a4c54355d5560"
+    },
+    {
+      "eventId": "evt-000002",
+      "type": "MIGRATED_FROM_V1",
+      "notificationId": "ann-20261102114233",
+      "statusAfter": "active",
+      "actor": "system:migration",
+      "at": "2026-11-08T19:52:52.007586+07:00",
+      "notificationSnapshotSha256": "afb1c02717e07973a7e8a14f117b28b3da67597cb3e537beb5dce72ea1703093",
+      "details": {
+        "legacyStatus": null,
+        "status": "active"
+      },
+      "seq": 2,
+      "previousRecordHash": "3c55bcf9a6596bc1e4fa45147ee2539a5bf5d97d2994fbf1707a4c54355d5560",
+      "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+      "recordSha256": "b848c78188482e883995085bf0eaef219461de8690ee71b80b41715bc48978f6"
+    },
+    {
+      "eventId": "evt-000003",
+      "type": "AUTO_EXPIRED",
+      "notificationId": "ann-20261102114233",
+      "statusAfter": "expired",
+      "actor": "system:auto-expire",
+      "at": "2026-11-02T23:59:00+07:00",
+      "notificationSnapshotSha256": "973015095d46970e091be2e3467d7226050040df00fd970c6107e709ac88e389",
+      "details": {
+        "expiresAt": "2026-11-02T23:59:00+07:00"
+      },
+      "seq": 3,
+      "previousRecordHash": "b848c78188482e883995085bf0eaef219461de8690ee71b80b41715bc48978f6",
+      "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+      "recordSha256": "a5902a8e566aa7c72afc58019b53c890da07e168b92b137afe00381eec938f04"
+    },
+    {
+      "eventId": "evt-000004",
+      "type": "CREATED",
+      "notificationId": "ann-20261108195413",
+      "statusAfter": "active",
+      "actor": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+      "at": "2026-11-08T19:54:13.095082+07:00",
+      "notificationSnapshotSha256": "76cc3f7c74191167be67ca39dcb32b8ccf44f3eeebb0f1aba1893a020daac51d",
+      "details": {},
+      "seq": 4,
+      "previousRecordHash": "a5902a8e566aa7c72afc58019b53c890da07e168b92b137afe00381eec938f04",
+      "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+      "recordSha256": "f887256e41fc25a69bd996ae7741aa403e01366cedbe49a1832a3443cbc6220a"
+    }
+  ],
+  "migration": {
+    "fromSchema": "v1",
+    "toSchemaVersion": 3,
+    "migratedAt": "2026-11-08T19:52:52.007586+07:00",
+    "sourceNotificationCount": 2,
+    "resultNotificationCount": 2,
+    "duplicateIdsResolved": []
+  },
+  "auditMeta": {
+    "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+    "tailHash": "f887256e41fc25a69bd996ae7741aa403e01366cedbe49a1832a3443cbc6220a",
+    "length": 4
+  },
+  "active": {
+    "id": "ann-20261108195413",
+    "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+    "targetAmountEth": "0.0100",
+    "deadline": "23:59 ngày 30/11/2026",
+    "purpose": "Học tập và sinh hoạt chuyên đề K57",
+    "classSize": 7,
+    "autoCloseOnTarget": false,
+    "status": "active",
+    "createdAt": "2026-11-08T19:54:13.095082+07:00",
+    "createdBy": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+    "updatedAt": "2026-11-08T19:54:13.095082+07:00",
+    "updatedBy": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+    "endedAt": null,
+    "endReason": null,
+    "deadlineTimestamp": 1796057940.0,
+    "expiresAtTimestamp": 1796057940,
+    "expiresAt": "2026-11-30T23:59:00+07:00",
+    "targetAmountWei": "10000000000000000",
+    "statusHistory": [
+      {
+        "from": null,
+        "to": "active",
+        "at": "2026-11-08T19:54:13.095082+07:00",
+        "by": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+        "reason": "Tạo thông báo"
+      }
+    ]
+  },
+  "history": [
+    {
+      "id": "ann-20261102114233",
+      "title": "Kêu gọi nộp quỹ lớp Kỳ 1",
+      "targetAmountEth": "0.01",
+      "deadline": "23:59 ngày 2/11/2026",
+      "deadlineTimestamp": 1793638740.0,
+      "classSize": 7,
+      "purpose": "Kinh phí cho các hoạt động ngoại khóa, học tập",
+      "status": "expired",
+      "autoCloseOnTarget": false,
+      "createdAt": "2026-11-02T11:42:33.691211+00:00",
+      "endedAt": "2026-11-02T23:59:00+07:00",
+      "endReason": "Đã hết hạn nộp (Quá thời hạn quy định)",
+      "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
+      "updatedAt": "2026-11-02T11:42:33.691235+00:00",
+      "expiresAtTimestamp": 1793638740,
+      "expiresAt": "2026-11-02T23:59:00+07:00",
+      "targetAmountWei": "10000000000000000",
+      "createdBy": null,
+      "statusHistory": [
+        {
+          "from": "active",
+          "to": "expired",
+          "at": "2026-11-02T23:59:00+07:00",
+          "by": "system:auto-expire",
+          "reason": "Đã hết hạn nộp (Quá thời hạn quy định)"
+        }
+      ],
+      "finalProgress": {
+        "notificationId": "ann-20261102114233",
+        "isFrozen": true,
+        "frozenAt": "2026-11-04T16:39:40+07:00",
+        "reason": "Đã hết hạn nộp (Quá thời hạn quy định)",
+        "raisedEth": "0.0000",
+        "raisedWei": "0",
+        "contributingWalletsCount": 0,
+        "classSize": 7,
+        "headcountPercent": 0,
+        "hasFinancialTarget": false,
+        "targetAmountEth": null,
+        "financialPercent": null,
+        "totalTransactionsCount": 0,
+        "allocatedTxHashes": []
+      },
+      "expiredAt": "2026-11-02T23:59:00+07:00",
+      "statusChangedBy": "system:auto-expire"
+    },
+    {
+      "id": "ann-k57-hk1",
+      "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+      "targetAmountEth": "0.0100",
+      "deadline": "23:59 ngày 30/11/2026",
+      "deadlineTimestamp": 1796057940.0,
+      "classSize": 7,
+      "purpose": "Học tập và sinh hoạt chuyên đề K57",
+      "status": "archived",
+      "autoCloseOnTarget": false,
+      "createdAt": "2026-10-20T00:00:00Z",
+      "endedAt": "2026-11-02T11:42:33.687398+00:00",
+      "endReason": "Thay thế bởi đợt thu mới",
+      "updatedBy": "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2",
+      "updatedAt": null,
+      "expiresAtTimestamp": 1796057940,
+      "expiresAt": "2026-11-30T23:59:00+07:00",
+      "targetAmountWei": "10000000000000000",
+      "createdBy": null,
+      "statusHistory": []
+    }
+  ],
+  "auditChain": [],
+  "activeNotifications": [
+    {
+      "id": "ann-20261108195413",
+      "title": "Kêu gọi nộp Quỹ Lớp K57 Học kỳ 1 (Auth Verified)",
+      "targetAmountEth": "0.0100",
+      "deadline": "23:59 ngày 30/11/2026",
+      "purpose": "Học tập và sinh hoạt chuyên đề K57",
+      "classSize": 7,
+      "autoCloseOnTarget": false,
+      "status": "active",
+      "createdAt": "2026-11-08T19:54:13.095082+07:00",
+      "createdBy": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+      "updatedAt": "2026-11-08T19:54:13.095082+07:00",
+      "updatedBy": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+      "endedAt": null,
+      "endReason": null,
+      "deadlineTimestamp": 1796057940.0,
+      "expiresAtTimestamp": 1796057940,
+      "expiresAt": "2026-11-30T23:59:00+07:00",
+      "targetAmountWei": "10000000000000000",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "active",
+          "at": "2026-11-08T19:54:13.095082+07:00",
+          "by": "0xf4c5a481f06776aaa95f9a973de9070b07a6d89a",
+          "reason": "Tạo thông báo"
+        }
+      ]
     }
   ]
 }

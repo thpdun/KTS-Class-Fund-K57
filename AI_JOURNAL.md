@@ -174,3 +174,104 @@
 - Sinh viên nộp 10 ETH $\rightarrow$ 9.9 ETH vào `classFundBalance`, 0.1 ETH vào `adminFeePool`.
 - Hoàn tiền trích 100% từ `classFundBalance`.
 - Quỹ phí vận hành 1% (`adminFeePool`) được giữ nguyên, không hoàn trả, nhằm bù đắp chi phí Gas mạng lưới cho quản trị viên theo chính sách nhóm đã chốt.
+
+---
+
+# NHẬT KÝ LÀM VIỆC VỚI AI — LAB 15: NÂNG CẤP TOÀN DIỆN QUẢN TRỊ ON-CHAIN, HẠCH TOÁN NET 99% VÀ TỰ ĐỘNG HOÀN GAS (PHASES 0–6)
+
+**Môn học:** ECO2432 – Tiền điện tử & Hợp đồng thông minh  
+**Dự án:** KTS-Class-Fund-K57  
+**Thời gian thực hiện:** Tháng 11/2026  
+**Thành viên thực hiện:**
+- Trần Hoàng Phương Dung (MSSV: 23K4300004) - Trưởng nhóm / Smart Contract Developer
+- Võ Ngọc Tâm Phúc (MSSV: 23K4300015) - QA & Tester
+- Antigravity AI Assistant - Hỗ trợ thiết kế và kiểm chứng kỹ thuật
+
+---
+
+## 1. Mục tiêu và Kế hoạch Nâng cấp Lab 15
+
+Thực hiện toàn diện 7 nhóm thay đổi kiến trúc (A–G) theo kế hoạch chuẩn `docs/CHANGE_PLAN_LAB15.md`:
+1. **Phase 0:** Dựng môi trường Hardhat tối thiểu làm mốc đối chiếu, kiểm soát bytecode EIP-170 và kịch bản test thời gian/gas.
+2. **Phase 1 (Nhóm A):** Hạch toán hoàn tiền Net 99% (`studentContributions` lưu 99% net, `studentTotalDeposited` lưu 100% gross).
+3. **Phase 2 (Nhóm B & C):** Chống thao túng quản trị bằng snapshot `voterBase`, trễ kích hoạt 3 ngày (`BCS_ACTIVATION_DELAY = 3 days`), giới hạn 3–15 BCS và chặn xung đột lợi ích.
+4. **Phase 3 (Nhóm D):** Quản lý danh sách sinh viên on-chain (`setStudents`), chặn người ngoài nộp tiền (`NotEnrolledStudent`), cam kết mã hash danh bạ on-chain (`commitRoster`), bảo vệ dữ liệu định danh PII ngoài chuỗi.
+5. **Phase 4 (Nhóm E):** Quản lý đợt thu on-chain (`createCollection`, `closeCollection`, `depositToCollection`), theo dõi tiến độ nộp theo đợt độc lập.
+6. **Phase 5 (Nhóm F):** Loại bỏ quyền rút phí vận hành (`withdrawAdminFee`), tự động hoàn gas cho 10 hàm quản trị (`governanceAction`), và chuyển phí vận hành dư sang Quỹ lớp (`moveFeeToClassFund`).
+7. **Phase 6 (Nhóm G):** Đồng bộ ABI từ trình biên dịch sang DApp `web/index.html`, tích hợp giao diện người dùng đầy đủ, xử lý tương thích ngược backend announcements và kiểm chứng toàn diện toàn bộ các bộ test.
+
+---
+
+## 2. Quyết định Kiến trúc & Cấu hình Biên dịch
+
+- **Trình biên dịch:** `solc 0.8.20`, pragma `^0.8.20`.
+- **EVM version:** `shanghai` (khai báo tường minh trong cả `hardhat.config.js` và `solc`).
+- **Trình tối ưu hóa (Optimizer):** Bật `{ enabled: true, runs: 200 }`.
+- **Giới hạn EIP-170:** Giới hạn 24,576 bytes cho deployed bytecode. Bắt buộc Remix IDE phải bật cùng cấu hình optimizer runs 200 và EVM shanghai để biên dịch thành công.
+
+### Bảng theo dõi tiến độ kích thước Deployed Bytecode qua các Phase:
+| Giai đoạn (Phase) | Nội dung thay đổi cốt lõi | Deployed Bytecode (bytes) | Tỷ lệ / 24,576 bytes | Dung lượng còn trống |
+| :---: | :--- | :---: | :---: | :---: |
+| **Phase 0** | Baseline hiện tại (Bật optimizer runs 200) | 20,447 | 83.20% | 4,129 bytes |
+| **Phase 1** | Hạch toán Net 99% & View getters | 20,457 | 83.24% | 4,119 bytes |
+| **Phase 2** | Governance Snapshot, Hoãn 3 ngày, Conflict of Interest | 20,551 | 83.62% | 4,025 bytes |
+| **Phase 3** | Danh sách sinh viên on-chain & Commit Roster Hash | 20,634 | 83.96% | 3,942 bytes |
+| **Phase 4** | Đợt thu on-chain & Nộp theo đợt | 20,705 | 84.25% | 3,871 bytes |
+| **Phase 5** | Bỏ rút phí, Hoàn Gas tự động & Chuyển phí dư | 20,767 | 84.50% | 3,809 bytes |
+| **Phase 6** | Frontend & Backend đồng bộ (Hợp đồng giữ nguyên) | **20,767** | **84.50%** | **3,809 bytes** |
+
+---
+
+## 3. Các Vấn đề Kỹ thuật Phát hiện và Cách Giải quyết
+
+1. **Lỗi Line Endings khi vá giao diện Frontend `web/index.html`:**
+   - *Hiện tượng:* Tệp `web/index.html` sử dụng định dạng dòng Windows CRLF (`\r\n`). Khi dùng string replacement thông thường với `\n`, quá trình patch không tìm thấy đoạn target.
+   - *Khắc phục:* Viết script patch xử lý chuẩn xác ký tự `\r\n`, sau đó kiểm tra cú pháp toàn vẹn bằng Node.js `vm.Script` trước khi lưu.
+2. **Lỗi đứt kết nối (Remote Disconnected) tại endpoint `/api/roster/check`:**
+   - *Hiện tượng:* Khi sinh viên hoặc BCS đã xác thực gọi tra cứu danh bạ, máy chủ backend đóng kết nối mà không trả về phản hồi.
+   - *Nguyên nhân:* Trong quá trình bổ sung các endpoint mới ở các giai đoạn trước, đoạn code trả về JSON cho kết quả tra cứu của chính mình và của BCS bị bỏ sót, dẫn đến nhánh `if is_self or is_manager` rơi vào khoảng trống không có lệnh return/send.
+   - *Khắc phục:* Khôi phục đầy đủ logic `find_student_by_wallet` và gửi kết quả JSON 200 kèm cấu trúc định danh chuẩn mực.
+3. **Lỗi bảo vệ dữ liệu thật (HTTP 503) trong test an ninh Stage 3B.4:**
+   - *Hiện tượng:* `test_07_authorized_bcs_operations_succeed` bị lỗi 503 khi gửi `POST /api/announcement`.
+   - *Nguyên nhân:* Backend tích hợp cơ chế bảo vệ nguyên tử chống ghi đè dữ liệu thật trong `announcements.json` nếu biến môi trường `ALLOW_REAL_DATA_MUTATION` chưa được bật.
+   - *Khắc phục:* Bật cờ `$env:ALLOW_REAL_DATA_MUTATION="1"` khi khởi động máy chủ phục vụ kiểm thử.
+4. **Phân định rõ ràng về kết quả của `test_independent_audit.py`:**
+   - *Hiện tượng:* Chạy `test_independent_audit.py` có 2 ca thất bại (Failures: 2).
+   - *Nguyên nhân:* Tệp test này được thiết kế ở Stage 3B.3 nhằm **chứng minh sự tồn tại của lỗ hổng** (kỳ vọng backend không có chữ ký mật mã và cho phép query không cần auth). Khi Stage 3B.4 đã khắc phục triệt để lỗ hổng này (tích hợp `eth_account`, challenge-response signature và chặn query không auth), các assertion mong đợi lỗ hổng sẽ không còn đúng. Đây là hành vi đúng bản chất an ninh.
+
+---
+
+## 4. Tổng hợp Kết quả Kiểm thử Toàn diện
+
+1. **Hardhat Test Suite (`test/hardhat/baseline.test.js`):** **38/38 tests PASS** (Bao gồm đầy đủ test kích thước bytecode, hoãn kích hoạt 3 ngày qua `time.increase`, snapshot voterBase, xung đột lợi ích, whitelist sinh viên, đợt thu on-chain, và tự động hoàn gas).
+2. **Mô phỏng Kinh tế Python (`test/test_economic_rules.py`):** **58/58 test cases PASS** (Kiểm tra 100% logic kinh tế và bất biến số dư của toàn bộ 7 nhóm A–G).
+3. **Biên dịch Solc (`npx solc 0.8.20`):** Cả 3 tệp `.sol` (`ProjectCore.sol`, `ProjectCore_test.sol`, `ProjectCore_integration_test.sol`) biên dịch thành công tuyệt đối (Exit code 0).
+4. **Bộ kiểm thử Tích hợp Backend & Khôi phục Dữ liệu:**
+   - `test_blockchain_indexer.py`: 32/32 PASS.
+   - `test_auto_execution.py`: 18/18 PASS.
+   - `test_roster_hash.py`: 10/10 PASS.
+   - `test_announcement_lifecycle.py`: 30/30 PASS.
+   - `test_campaign_progress.py`: 13/13 PASS.
+   - `test_v454_roster_and_progress.py`: 5/5 PASS.
+   - `test_layout_responsiveness.py`: 5/5 PASS.
+   - `test_logo1_verification.py`: 1/1 PASS.
+   - `test_ai_privacy.py`: 6/6 PASS (1 skip).
+5. **Bộ kiểm thử Giao diện Người dùng (JS Tests):**
+   - `test_metamask_and_ui_verification.js`: 4/4 PASS.
+   - `test_stage2_roles.js`: 14/14 PASS.
+   - `test_frontend_multiple_progress.js`: 4/4 PASS.
+   - `test_announcement_modal_behavior.js`: 4/4 PASS.
+   - `test_frontend_dom_cleanup.js`: 30/30 PASS.
+   - `test_roster_status.js`: 7/7 PASS.
+6. **Bộ kiểm thử An ninh Backend:**
+   - `test_stage3b3_security.py`: 10/10 PASS.
+   - `test_stage3b4_security.py`: 7/7 PASS.
+   - `test_stage3b45_regression.py`: 8/8 PASS.
+   - `test_cors_security.py`: 6/6 PASS.
+   - `test_independent_audit.py`: 4/6 PASS (2 ca phát hiện lỗ hổng cũ như đã giải trình).
+
+> [!NOTE]  
+> **Xác nhận tính toàn vẹn của hợp đồng và các test Solidity:**  
+> - Hợp đồng `ProjectCore.sol` được giữ nguyên vẹn 100% trong Phase 6, không phát sinh chỉnh sửa.  
+> - Các bộ kiểm thử Solidity `ProjectCore_test.sol` và `ProjectCore_integration_test.sol` ở trạng thái: **ĐÃ BIÊN DỊCH THÀNH CÔNG (CHƯA CHẠY TRÊN REMIX)**.  
+> - Chưa thực hiện deploy lên mạng thử nghiệm Sepolia theo đúng quy định.

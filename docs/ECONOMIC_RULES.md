@@ -1,38 +1,87 @@
-**QUY TẮC KINH TẾ - KTS-CLASS-FUND**
+# QUY TẮC KINH TẾ - KTS-CLASS-FUND (BẢN CẬP NHẬT LAB 15)
 
 ## 1. Dòng tiền và Quyền lợi (Cash Flow & Incentives)
 
-* **Dòng tiền vào:** Nguồn vốn của hệ thống đến từ việc sinh viên nộp ETH (đơn vị: wei) vào địa chỉ Hợp đồng thông minh. Khi nhận tiền, hợp đồng tự động phân bổ:
-* **99%** cộng vào Quỹ lớp chính để phục vụ các hoạt động tập thể.
-* **1% (100 basis points)** trích tự động vào Quỹ dịch vụ vận hành (`adminFeePool`).
-* **Dòng tiền ra:** ETH chỉ rời khỏi hợp đồng qua ba đường:
-1. Chuyển đến ví của **Người thụ hưởng** khi một "Yêu cầu chi" được thông qua và thực thi (trích từ Quỹ lớp chính).
-2. Hoàn trả về ví của **Sinh viên** khi "Yêu cầu hoàn tiền" được phê duyệt (trích từ Quỹ lớp chính).
-3. Chuyển về ví của **Cố vấn học tập** khi thực hiện lệnh rút phí vận hành (trích riêng từ Quỹ dịch vụ vận hành).
+* **Dòng tiền vào:**
+  - Nguồn vốn xuất phát từ việc sinh viên trong danh sách ghi danh (`isStudent[wallet] == true`) nộp ETH vào Hợp đồng thông minh (qua hàm nộp chung `deposit()`, gửi trực tiếp `receive()`, hoặc nộp vào đợt thu cụ thể `depositToCollection()`).
+  - Phân bổ tự động:
+    - **99% (Basis points: 9,900)** phân bổ vào Quỹ lớp chính (`classFundBalance`) để phục vụ các hoạt động của lớp.
+    - **1% (Basis points: 100)** trích tự động vào Quỹ dịch vụ vận hành (`adminFeePool`) để tài trợ chi phí Gas cho các thao tác quản trị.
+  - Hạch toán tách bạch: `studentContributions[student]` lưu hạn mức đóng góp khả dụng **99% net**; `studentTotalDeposited[student]` lưu tổng số tiền **100% gross** đã nộp.
+
+* **Dòng tiền ra:** ETH chỉ rời khỏi hợp đồng qua 4 kênh chính ngạch:
+  1. Chuyển đến ví **Người thụ hưởng** khi một "Yêu cầu chi" được BCS thông qua và giải ngân (trích từ Quỹ lớp chính).
+  2. Hoàn trả về ví **Sinh viên** khi "Yêu cầu hoàn tiền" được BCS phê duyệt (trích từ Quỹ lớp chính theo hạn mức Net 99%).
+  3. **Tự động hoàn Gas (Gas Refund):** Hoàn trả ETH trực tiếp về ví người thực thi 10 hàm quản trị thông qua modifier `governanceAction` (trích từ `adminFeePool`).
+  4. **Chuyển phí dư sang Quỹ lớp:** Chuyển ETH từ `adminFeePool` sang `classFundBalance` qua hàm `moveFeeToClassFund()` do Cố vấn học tập gọi.
+  *(Quyền rút phí vận hành tùy ý về ví cá nhân `withdrawAdminFee` đã bị xóa bỏ hoàn toàn)*.
+
 * **Quyền lợi và Động lực (Incentives):**
-* **Sinh viên:** Được bảo vệ tài sản nhờ cơ chế minh bạch 100% on-chain, ngăn chặn tình trạng lạm dụng quỹ.
-* **Ban cán sự & CVHT:** Được hỗ trợ chi trả phí Gas mạng lưới thông qua Quỹ dịch vụ vận hành, loại bỏ rào cản tài chính cá nhân khi tham gia quản trị; các quyết định chi tiêu mang tính tập thể, phân tán trách nhiệm.
-## 2. Giới hạn chống lạm dụng (Anti-abuse Limits)
+  - **Sinh viên:** Tài sản được bảo vệ 100% on-chain, hạn mức hoàn tiền net công bằng, dòng tiền minh bạch, thông tin cá nhân (PII) được bảo vệ tuyệt đối ngoài chuỗi.
+  - **Ban cán sự & CVHT:** Được hoàn gas tự động tức thời ngay trong giao dịch theo giá thị trường EIP-1559, xóa bỏ hoàn toàn gánh nặng ứng trước gas cá nhân khi quản trị lớp.
 
-* **Chống rút cạn quỹ (Over-spending Prevention):** Yêu cầu chi hay hoàn tiền có giá trị lớn hơn số dư khả dụng của Quỹ lớp chính đều bị hệ thống chặn lại (revert). Quỹ dịch vụ vận hành được tách biệt hoàn toàn khỏi số dư này.
-* **Chống bỏ phiếu kép (Double Voting):** Một địa chỉ ví thuộc BCS chỉ được phép ghi nhận 1 phiếu (đồng ý hoặc bác bỏ) cho mỗi mã định danh yêu cầu. Không thể bỏ phiếu lại.
-* **Chống thực thi lặp (Double-spending):** Khi một "Yêu cầu chi" đã được giải ngân thành công, trạng thái chuyển thành `Executed`. Bất kỳ ai cố tình gọi lại hàm thực thi sẽ bị từ chối.
-* **Chống xả rác yêu cầu hoàn tiền (Spam/Fraudulent Refunds):** Sinh viên không thể tạo yêu cầu hoàn lại số tiền lớn hơn tổng số tiền họ đã thực tế đóng góp tính đến thời điểm hiện tại.
+---
 
-## 3. Quyền quản trị (Governance Rights)
+## 2. Giới hạn chống lạm dụng và Bất biến kinh tế (Anti-abuse Limits & Invariants)
 
-* **Quyền nhân sự tối cao (Owner/Admin):** Cố vấn học tập (CVHT) là người duy nhất nắm quyền thêm mới, tạm khóa, hoặc xóa thành viên BCS.
-* **Quyền rút quỹ dịch vụ:** CVHT là địa chỉ duy nhất có quyền gọi hàm `withdrawAdminFee()` để rút số dư từ `adminFeePool` về ví nhằm trang trải chi phí Gas cho các thao tác quản trị. CVHT bị cấm hoàn toàn việc tự ý rút tiền từ Quỹ lớp chính.
-* **Cơ chế đồng thuận đa số (Majority Consensus):** Trọng số phiếu bầu của mọi thành viên BCS là ngang nhau (1 người = 1 phiếu). Yêu cầu chi chỉ "Sẵn sàng thực thi" khi đạt $\ge$ 51% (5100 basis points) trên tổng số BCS hiện hành.
-* **Phân tán quyền thực thi (Decentralized Execution):** Khi yêu cầu chi đã đủ điều kiện (đạt 51% phiếu HOẶC hết thời gian chờ 7 ngày), bất kỳ thành viên BCS nào cũng có thể gọi hàm thực thi. Người thực thi trả trước phí Gas và được CVHT hoàn bù lại từ Quỹ dịch vụ vận hành.
+* **Bất biến số dư tổng thể (Accounting Conservation):**
+  $$\text{address(this).balance} \ge \text{classFundBalance} + \text{adminFeePool}$$
+  *(Phần chênh lệch nếu có do nhận ETH cưỡng bức qua `selfdestruct` được theo dõi riêng qua `getUnaccountedBalance()`)*.
 
-## 4. Tình huống người dùng bị thiệt (User Disadvantage Scenarios)
+* **Hạn mức hoàn tiền tối đa (Net Refund Cap):**
+  Sinh viên chỉ được yêu cầu hoàn số tiền tối đa:
+  $$\text{maxRefund} = \min(\text{getStudentAvailableContribution(student)}, \text{getAvailableClassFund()})$$
+  Triệt tiêu rủi ro lấy tiền của sinh viên khác bù vào 1% phí vận hành đã trích.
 
-* **Rủi ro mất khóa quản trị:** Nếu CVHT làm mất Private Key của ví Owner, lớp sẽ vĩnh viễn mất khả năng cập nhật danh sách BCS và không thể rút Quỹ dịch vụ vận hành. (Chấp nhận trong v0.1).
-* **Tiền bị khóa vĩnh viễn (Deadlocked Funds):** Nếu BCS đình công không bỏ phiếu và không ai chịu trả phí Gas để gọi hàm thực thi sau 7 ngày, ETH sẽ kẹt vĩnh viễn trong hợp đồng.
-* **Rủi ro chuyển nhầm từ Sàn giao dịch (CEX):** Nếu sinh viên nộp bằng cách chuyển trực tiếp từ sàn (Binance/OKX) thay vì ví cá nhân (MetaMask), khi được duyệt hoàn tiền, tiền sẽ bị trả về ví tổng của sàn và nguy cơ mất trắng. Đây là rủi ro nghiệp vụ bắt buộc cảnh báo trên giao diện khi Mainnet.
-* **Rủi ro tỷ giá (Price Volatility):** Do lưu trữ bằng ETH thay vì Stablecoin, sức mua của quỹ lớp tính theo VNĐ sẽ biến động. Giải pháp tối ưu cho tương lai là hỗ trợ ERC-20 Token (USDT/USDC).
-* **Rủi ro lạm quyền từ Cố vấn học tập (Admin Trust Assumption):** CVHT có thể thay đổi nhân sự BCS ngay lập tức kể cả khi đang có yêu cầu chi chờ duyệt để thao túng tỷ lệ 51%. Tập thể lớp phải giám sát lịch sử thay đổi trên chuỗi.
-* **Rủi ro BCS ưu tiên chi tiêu để chặn hoàn tiền (Front-running Refund) — Đã khắc phục trong Lab 14:** Khi sinh viên tạo yêu cầu hoàn tiền (`createRefundRequest`), hệ thống tự động khóa giữ chỗ số dư (`reservedRefundAmount`) trên Quỹ lớp chính. Đề xuất chi tiêu phát sinh sau không thể xâm phạm ngân sách đang giữ chỗ này, loại bỏ rủi ro front-running rút cạn quỹ.
-* **Rủi ro tấn công Sybil xả rác:** Kẻ gian có thể dùng nhiều ví gửi 1 wei để tạo hàng loạt yêu cầu hoàn tiền rác. BCS sẽ phải bỏ qua các yêu cầu này bằng mắt thường trên giao diện.
-* **Rủi ro nghẽn biểu quyết do BCS ngừng hoạt động:** Tỷ lệ 51% luôn tính trên tổng số thành viên BCS được ghi nhận. Nếu nhiều thành viên mất ví, yêu cầu sẽ không thể đạt 51%. CVHT phải chủ động dùng quyền quản trị để xóa "thành viên ma", hạ mức trần của tỷ lệ 51% xuống thực tế.
+* **Cơ chế Giữ chỗ Kép (Dual-layer Reservation):**
+  - Khi tạo yêu cầu chi: Giữ chỗ trên quỹ lớp (`reservedSpendAmount`).
+  - Khi tạo yêu cầu hoàn: Giữ chỗ đồng thời trên quỹ lớp (`reservedRefundAmount`) và trên hạn mức sinh viên (`pendingStudentRefundAmount[student]`).
+  - Chống chi vượt ngân sách, chống hoàn tiền kép và chống front-running giữa chi tiêu và hoàn tiền.
+
+* **Bảo vệ đợt thu on-chain (Collection Isolation):**
+  - Chỉ cho phép tối đa 01 đợt thu đang mở tại một thời điểm.
+  - Trạng thái hoàn thành đợt thu dựa trên `paidInCollection >= targetWei` của đúng đợt đó, không xâm lấn hoặc lẫn lộn giữa các đợt thu khác nhau.
+
+---
+
+## 3. Cơ chế Quản trị Dân chủ & Chống Lũng đoạn (Governance Architecture)
+
+* **Chống tạo cử tri ma (3-Day Activation Delay):**
+  - Thành viên BCS mới được bổ nhiệm bắt buộc phải trải qua thời gian chờ `BCS_ACTIVATION_DELAY = 3 days` mới có hiệu lực hoạt động.
+  - Vô hiệu hóa âm mưu của Cố vấn học tập tự ý thêm ví phụ vào biểu quyết tức thời để lật ngược kết quả biểu quyết.
+
+* **Bảo toàn mẫu số biểu quyết (Snapshot `voterBase`):**
+  - Mẫu số cử tri được chốt cố định tại thời điểm tạo đề xuất chi hoặc hoàn tiền.
+  - Mọi thay đổi nhân sự BCS sau đó không làm thay đổi tỷ lệ đồng thuận $\ge 51\%$ của các đề xuất đang trong thời gian bỏ phiếu.
+
+* **Ràng buộc quy mô cử tri:**
+  - `MIN_BCS_FOR_PROPOSAL = 3`: Bắt buộc phải có tối thiểu 3 BCS đủ điều kiện mới được phép tạo đề xuất hoặc yêu cầu hoàn tiền.
+  - `MAX_BCS = 15`: Giới hạn tối đa 15 thành viên BCS để bảo vệ hiệu năng và gas mạng lưới.
+
+* **Chặn xung đột lợi ích (Conflict of Interest Defense):**
+  - Sinh viên xin hoàn tiền không được bỏ phiếu cho chính yêu cầu của mình.
+  - BCS là người thụ hưởng tiền giải ngân không được bỏ phiếu cho đề xuất chi đó.
+  - Mẫu số tự động trừ 1 (`voterBase - 1`) và bắt buộc phải có tối thiểu 2 phiếu thuận (`yesVotes >= 2`) để được thông qua.
+
+---
+
+## 4. Cơ chế Hoàn Gas Tự động & Xử lý Thiếu hụt (Gas Refund Mechanism)
+
+* **Công thức hoàn Gas EIP-1559:**
+  $$\text{gasRefund} = \min(\text{gasUsed}, 500,000) \times \min(\text{tx.gasprice}, \text{block.basefee} + 2\text{ gwei})$$
+  - Áp dụng tự động cho 10 hàm quản trị của CVHT và BCS qua modifier `governanceAction`.
+
+* **Xử lý khi Quỹ dịch vụ cạn (Shortfall Handling):**
+  - Nếu `adminFeePool < gasRefund`, hợp đồng chuyển toàn bộ số dư còn lại của pool và ghi nhận khoản thiếu hụt vào biến `gasRefundShortfall`.
+  - Giao dịch quản trị chính vẫn hoàn tất thành công 100%, không bị revert do cạn quỹ gas.
+
+* **An toàn chuyển tiền hoàn gas (Fallback Defense):**
+  - Nếu ví người gọi từ chối nhận ETH hoàn gas, phát sự kiện `GasRefundFailed`, hoàn trả số dư vào `adminFeePool` và không làm rollback giao dịch quản trị chính.
+
+---
+
+## 5. Rủi ro Còn lại và Biện pháp Giảm thiểu (Residual Risks)
+
+* **Rủi ro đình công biểu quyết BCS:** Nếu BCS không bỏ phiếu trong vòng 7 ngày, đề xuất tự động hết hạn (`expireSpendRequest` / `expireRefundRequest`) để giải phóng toàn bộ số tiền giữ chỗ về quỹ khả dụng.
+* **Rủi ro biến động tỷ giá ETH/VNĐ:** Quỹ lớp lưu trữ bằng ETH nên sức mua VNĐ biến động theo thị trường. Khuyến nghị trong tương lai mở rộng hỗ trợ Stablecoin (USDT/USDC).
+* **Rủi ro chuyển tiền từ Sàn tập trung (CEX):** Cần nộp qua ví cá nhân (MetaMask) nằm trong danh bạ sinh viên on-chain để bảo đảm nhận hoàn tiền an toàn.

@@ -4,4 +4,4 @@
 > Tài liệu đặc tả nghiệp vụ chính thức và đầy đủ của dự án KTS-Class-Fund được lưu trữ và duy trì tại:
 > [docs/SPEC.md](docs/SPEC.md)
 
-Vui lòng tham khảo tệp `docs/SPEC.md` để xem toàn bộ 11 quy tắc nghiệp vụ (R1–R11), mô hình phân quyền Cố vấn học tập / Ban cán sự, luồng biểu quyết dân chủ $\ge 51\%$, và quy trình hoàn tiền có biểu quyết BCS (R7 nâng cấp sau Lab 14).
+Vui lòng tham khảo tệp `docs/SPEC.md` để xem toàn bộ các quy tắc nghiệp vụ (R1–R11), mô hình phân quyền Cố vấn học tập / Ban cán sự, luồng biểu quyết dân chủ $\ge 51\%$, quy trình hoàn tiền có biểu quyết BCS (R7 nâng cấp sau Lab 14), cùng Phụ lục Lab 15 về nâng cấp toàn diện quản trị on-chain, hạch toán Net 99%, snapshot voterBase, whitelist danh bạ, đợt thu on-chain và cơ chế hoàn gas tự động.

@@ -4179,7 +4179,7 @@
               <button class="btn btn-sm btn-outline" id="btnOpenRosterModal" onclick="openRosterModal()"
                 style="font-size:0.8rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px; background:#ffffff; color:var(--primary-navy); border-color:var(--border-color);"
                 title="Chỉ Ban cán sự và Cố vấn học tập mới có quyền mở">
-                <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">7</span>)
+                <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">--</span>)
               </button>
             </div>
           </div>
@@ -4214,38 +4214,15 @@
               </button>
               <button class="btn btn-sm btn-outline-light" id="btnOpenAnnModal" style="display: none;"
                 title="Chỉ Ban cán sự mới có quyền sửa">
-                ✏️ Quản trị thông báo (BCS)
+                ➕ Tạo đợt thu mới (BCS)
               </button>
             </div>
           </div>
 
           <div class="ann-body">
-            <h2 class="ann-title" id="annTitle">Hiện chưa có thông báo kêu gọi nộp quỹ</h2>
-            <p class="ann-purpose" id="annPurpose">Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.</p>
-
-            <div class="ann-meta-grid">
-              <div class="ann-meta-item">
-                <span class="ann-meta-label">💰 Mức đóng quy định:</span>
-                <span class="ann-meta-val" id="annAmount">0 ETH</span>
-              </div>
-              <div class="ann-meta-item">
-                <span class="ann-meta-label">⏳ Hạn chót nộp:</span>
-                <span class="ann-meta-val" id="annDeadline">Không có</span>
-              </div>
-              <div class="ann-meta-item">
-                <span class="ann-meta-label">👥 Sĩ số lớp:</span>
-                <span class="ann-meta-val" id="annClassSize">-- sinh viên</span>
-              </div>
-            </div>
-
-            <div class="ann-progress-section">
-              <div class="ann-progress-header">
-                <span>Tiến độ thu quỹ toàn lớp:</span>
-                <strong id="annProgressText">0/-- bạn đã nộp (0%)</strong>
-              </div>
-              <div class="ann-progress-track">
-                <div class="ann-progress-fill" id="annProgressBar" style="width: 0%;"></div>
-              </div>
+            <!-- CONTAINER TIẾN ĐỘ ĐA THÔNG BÁO (MULTIPLE PROGRESS CARDS) -->
+            <div id="activeProgressCardsContainer" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px;">
+              <!-- Được render động bởi renderMultipleProgressCards() -->
             </div>
 
             <!-- Phân biệt rạch ròi: Trạng thái cá nhân vs Trạng thái cả lớp (Đợt 3B.3) -->
@@ -4294,7 +4271,7 @@
           <div class="metric-card">
             <div class="metric-title">Quỹ phí vận hành (1%)</div>
             <div class="metric-num" id="metricAdminFee">- ETH</div>
-            <div class="metric-note" id="metricAdminFeeNote">Bù đắp gas cho Cố vấn học tập</div>
+            <div class="metric-note" id="metricAdminFeeNote">Hoàn gas tự động &amp; chuyển sổ Cố vấn</div>
           </div>
           <div class="metric-card">
             <div class="metric-title">Sinh viên đã nộp quỹ</div>
@@ -4316,6 +4293,13 @@
             <div class="metric-num" id="metricActiveBCS">-</div>
             <div class="metric-note" id="metricActiveBCSNote">Cố vấn học tập quản trị (R1)</div>
           </div>
+        </div>
+        <!-- Banner cơ chế hoàn gas tự động EIP-1559 -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 16px; margin-top: 14px; font-size: 0.82rem; color: #166534; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div>
+            ⚡ <strong>Cơ chế hoàn Gas tự động:</strong> 10 hành động quản trị (BCS &amp; Cố vấn) được hoàn trả chi phí gas trực tiếp từ Quỹ phí (adminFeePool) ngay trong giao dịch (trần basefee + 2 gwei, tối đa 500.000 gas units). Phí dư được Cố vấn chuyển sang Quỹ lớp.
+          </div>
+          <span style="background: #dcfce7; padding: 2px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; border: 1px solid #86efac;">EIP-1559 Active</span>
         </div>
       </section>
 
@@ -4426,6 +4410,10 @@
                     <span style="font-size:0.85rem; color:var(--text-muted);">Hạn mức hoàn khả dụng:</span>
                     <strong style="color:var(--success);" id="myAvailableRefund">0.0000 ETH</strong>
                   </div>
+                  <div style="display:flex; justify-content:space-between; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border-color);">
+                    <span style="font-size:0.85rem; color:var(--text-muted);">Hoàn tối đa thực nhận:</span>
+                    <strong style="color:var(--success);" id="myMaxNetRefund">0.0000 ETH</strong>
+                  </div>
                 </div>
 
                 <!-- Thông báo yêu cầu kết nối ví sinh viên -->
@@ -4467,6 +4455,32 @@
                     ℹ️ <strong>Chế độ giám sát Cố vấn học tập:</strong> Bạn đang theo dõi dữ liệu sinh viên ở chế độ
                     đọc. Chức năng nộp quỹ và xin hoàn tiền chỉ dành cho sinh viên.
                   </span>
+                </div>
+
+                <!-- 0. Đợt thu on-chain đang diễn ra & nộp theo đợt -->
+                <div id="sectionStudentOnchainCollection"
+                  style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-bottom: 16px;">
+                  <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy); display: flex; align-items: center; justify-content: space-between;">
+                    <span>📢 Đợt thu on-chain đang diễn ra</span>
+                    <span id="studentColStatusBadge" class="badge bg-secondary" style="font-size: 0.72rem; padding: 4px 8px;">Đang tải...</span>
+                  </h4>
+                  <div id="studentColInfoBox" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Đang đồng bộ dữ liệu đợt thu từ Smart Contract...
+                  </div>
+                  <div id="studentColActionBox" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 12px 14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                      <span style="font-size:0.82rem; color:#166534;">Trạng thái đóng của bạn:</span>
+                      <strong id="studentColPaymentStatus" style="color:#15803d; font-size:0.9rem;">Chưa nộp</strong>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                      <label for="inputDepositToColAmount" style="font-size:0.82rem; color:#166534;">Số ETH nộp vào đợt này:</label>
+                      <input type="number" step="0.001" min="0.001" class="form-control" id="inputDepositToColAmount" placeholder="Số ETH">
+                      <div class="form-helper-tip">💡 Tự động phân bổ 99% Quỹ lớp, 1% Quỹ phí và ghi nhận tiến độ vào đợt thu on-chain.</div>
+                    </div>
+                    <button class="btn btn-success" id="btnDepositToOnchainCol" style="width: 100%;">
+                      ⚡ Nộp vào đợt thu on-chain (depositToCollection)
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Form nộp quỹ -->
@@ -4666,6 +4680,56 @@
                     </table>
                   </div>
                 </div>
+
+                <!-- 4. Quản lý đợt thu quỹ on-chain -->
+                <div id="sectionBcsManageCollection"
+                  style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-top: 16px;">
+                  <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                    4. Quản lý đợt thu quỹ on-chain (createCollection / closeCollection)
+                  </h4>
+                  <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Ban cán sự phát động đợt thu quỹ có thời hạn và mục tiêu cụ thể trên Smart Contract. Hợp đồng quy định chỉ có duy nhất 1 đợt thu được mở tại một thời điểm.
+                  </p>
+
+                  <!-- Trạng thái đợt thu on-chain hiện tại -->
+                  <div id="bcsCurrentCollectionStatus" style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 14px;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Đang đồng bộ dữ liệu đợt thu on-chain...</div>
+                  </div>
+
+                  <!-- Form tạo đợt thu mới -->
+                  <div id="formCreateCollectionWrapper" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px;">
+                    <h5 style="font-size: 0.92rem; color: var(--brand-blue); margin-bottom: 8px;">Tạo đợt thu on-chain mới:</h5>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                      <div>
+                        <label for="inputColTargetEth" style="font-size:0.82rem;">Mức thu mỗi SV (ETH):</label>
+                        <input type="number" step="0.001" min="0.001" class="form-control" id="inputColTargetEth" placeholder="Ví dụ: 0.01">
+                      </div>
+                      <div>
+                        <label for="inputColDeadlineDays" style="font-size:0.82rem;">Thời hạn nộp (số ngày):</label>
+                        <input type="number" step="1" min="1" max="90" class="form-control" id="inputColDeadlineDays" placeholder="Ví dụ: 14">
+                      </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                      <label for="inputColPurpose" style="font-size:0.82rem;">Mục đích đợt thu:</label>
+                      <input type="text" class="form-control" id="inputColPurpose" placeholder="Ví dụ: Quỹ hoạt động thực hành Lab 15">
+                    </div>
+                    <button class="btn btn-purple" id="btnCreateCollectionAction" style="width: 100%;">
+                      🚀 Tạo đợt thu mới on-chain
+                    </button>
+                  </div>
+
+                  <!-- Form đóng đợt thu đang mở -->
+                  <div id="formCloseCollectionWrapper" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px; display: none;">
+                    <h5 style="font-size: 0.92rem; color: var(--danger); margin-bottom: 8px;">Đóng đợt thu hiện tại:</h5>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                      <label for="inputCloseColReason" style="font-size:0.82rem;">Lý do kết thúc/đóng đợt thu:</label>
+                      <input type="text" class="form-control" id="inputCloseColReason" placeholder="Ví dụ: Đã đạt mục tiêu ngân sách hoặc hết hạn">
+                    </div>
+                    <button class="btn btn-danger" id="btnCloseCollectionAction" style="width: 100%;">
+                      🛑 Đóng đợt thu on-chain (closeCollection)
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -4726,14 +4790,14 @@
                   </button>
                 </div>
 
-                <!-- Rút quỹ phí vận hành -->
+                <!-- 2. Chuyển phí vận hành dư sang Quỹ lớp chính -->
                 <div id="sectionAdvisorWithdrawFee"
                   style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
                   <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
-                    2. Rút quỹ phí vận hành bù đắp gas
+                    2. Chuyển phí vận hành dư sang Quỹ lớp chính
                   </h4>
                   <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Cố vấn được rút số dư từ Quỹ phí (1% trích từ tiền nạp) về ví để trang trải chi phí gas mạng lưới.
+                    Cố vấn có quyền chuyển số dư từ Quỹ phí (1% trích từ tiền nạp) sang Quỹ lớp chính. Thao tác này chuyển sổ nội bộ trên Smart Contract, bảo toàn 100% tài sản và không có ETH ra khỏi hợp đồng.
                   </p>
                   <div
                     style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
@@ -4742,18 +4806,64 @@
                       ETH</strong>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="inputWithdrawFeeAmount">Số ETH muốn rút:</label>
+                    <label for="inputWithdrawFeeAmount">Số ETH muốn chuyển sang Quỹ lớp:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputWithdrawFeeAmount"
                       placeholder="Không vượt quá số dư quỹ phí">
-                    <div class="form-helper-tip">💡 Rút từ Quỹ phí vận hành (adminFeePool) để bù đắp chi phí Gas mạng
-                      lưới cho quản trị viên.</div>
+                    <div class="form-helper-tip">💡 Chuyển từ Quỹ phí vận hành (adminFeePool) sang Quỹ lớp chính (classFundBalance) qua hàm moveFeeToClassFund.</div>
                   </div>
                   <button class="btn btn-success" id="btnWithdrawFeeAction" style="width: 100%;">
-                    Rút quỹ phí về ví Cố vấn
+                    Chuyển phí dư vào Quỹ lớp chính
                   </button>
                 </div>
 
-                <!-- 3. Giám sát giao dịch và tình hình đóng quỹ từng sinh viên -->
+                <!-- 3. Quản lý danh sách sinh viên on-chain & Roster Hash -->
+                <div id="sectionAdvisorManageStudents"
+                  style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-top: 16px;">
+                  <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
+                    3. Quản lý danh sách sinh viên on-chain &amp; Roster Hash
+                  </h4>
+                  <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Cố vấn ghi nhận danh sách ví sinh viên được phép nộp quỹ vào Smart Contract (setStudents) và cam kết mã băm danh bạ bảo mật (commitRoster).
+                  </p>
+                  
+                  <div class="form-group" style="margin-bottom: 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <label for="inputStudentAddresses" style="margin-bottom:0;">Danh sách địa chỉ ví sinh viên:</label>
+                      <button class="btn btn-xs btn-outline" id="btnFillRosterAddresses" style="font-size:0.75rem; padding:2px 8px;">
+                        📋 Điền nhanh từ Danh bạ lớp
+                      </button>
+                    </div>
+                    <textarea class="form-control" id="inputStudentAddresses" rows="3" placeholder="0x123..., 0x456... (mỗi địa chỉ một dòng hoặc cách nhau bởi dấu phẩy)"></textarea>
+                    <div class="form-helper-tip">💡 Danh sách ví hợp lệ của sinh viên K57. Tối đa 100 ví mỗi giao dịch.</div>
+                  </div>
+                  
+                  <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                    <button class="btn btn-purple" id="btnSetStudentsAction" style="flex: 1;">
+                      ✍️ Ghi danh sách sinh viên on-chain
+                    </button>
+                    <button class="btn btn-outline" id="btnCommitRosterHashAction" style="flex: 1;">
+                      🔒 Commit Roster Hash lên chuỗi
+                    </button>
+                  </div>
+
+                  <!-- So khớp Roster Hash On-chain vs Backend -->
+                  <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; font-size: 0.82rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                      <strong style="color:var(--primary-navy);">Đối soát toàn vẹn Danh bạ (Roster Hash):</strong>
+                      <span id="rosterHashMatchBadge" class="badge bg-secondary" style="font-size:0.72rem; padding:3px 8px;">Đang đối soát...</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-family:monospace; font-size:0.78rem;">
+                      <span style="color:var(--text-muted);">Hash trên Blockchain:</span>
+                      <span id="onchainRosterHashText" style="color:var(--primary-navy); word-break:break-all;">Đang đọc...</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-family:monospace; font-size:0.78rem;">
+                      <span style="color:var(--text-muted);">Hash chuẩn từ Backend:</span>
+                      <span id="backendRosterHashText" style="color:var(--primary-navy); word-break:break-all;">Đang đọc...</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Giám sát giao dịch và tình hình đóng quỹ từng sinh viên -->
                 <div id="sectionAdvisorStudentMonitor"
                   style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-top: 16px;">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
@@ -6089,1482 +6199,2524 @@
 
     // Full ProjectCore ABI
     const CONTRACT_ABI = [
-      {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "inputs": [
           {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
           },
           {
-            "internalType": "address",
-            "name": "voter",
-            "type": "address"
-          }
-        ],
-        "name": "AlreadyVoted",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
+            "inputs": [],
+            "name": "AdvisorCannotBeStudent",
+            "type": "error"
           },
           {
-            "internalType": "address",
-            "name": "voter",
-            "type": "address"
-          }
-        ],
-        "name": "AlreadyVotedRefund",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "ETHTransferFailed",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requested",
-            "type": "uint256"
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+              }
+            ],
+            "name": "AlreadyVoted",
+            "type": "error"
           },
           {
-            "internalType": "uint256",
-            "name": "available",
-            "type": "uint256"
-          }
-        ],
-        "name": "InsufficientAdminFee",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requested",
-            "type": "uint256"
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+              }
+            ],
+            "name": "AlreadyVotedRefund",
+            "type": "error"
           },
           {
-            "internalType": "uint256",
-            "name": "available",
-            "type": "uint256"
-          }
-        ],
-        "name": "InsufficientAvailableFund",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requested",
-            "type": "uint256"
+            "inputs": [],
+            "name": "BCSMustBeEnrolledStudent",
+            "type": "error"
           },
           {
-            "internalType": "uint256",
-            "name": "available",
-            "type": "uint256"
-          }
-        ],
-        "name": "InsufficientContribution",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requested",
-            "type": "uint256"
+            "inputs": [],
+            "name": "BatchTooLarge",
+            "type": "error"
           },
           {
-            "internalType": "uint256",
-            "name": "available",
-            "type": "uint256"
-          }
-        ],
-        "name": "InsufficientFund",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "InvalidAddress",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "InvalidRefundStatus",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "InvalidRequestStatus",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NoActiveBCS",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NotActiveBCS",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NotAdvisor",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundAlreadyExecuted",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundExpired",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundRequestNotFound",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundVotingPeriodEnded",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundVotingStillActive",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RequestAlreadyExecuted",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RequestExpired",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RequestNotFound",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "collectionId",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionAlreadyClosed",
+            "type": "error"
           },
           {
-            "internalType": "uint256",
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "collectionId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "deadline",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "currentTimestamp",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionExpired",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "collectionId",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionIsClosed",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "collectionId",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionNotFound",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "activeCollectionId",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionStillOpen",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "ConflictOfInterest",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "ETHTransferFailed",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "EmptyPurpose",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "EmptyReason",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requested",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "available",
+                "type": "uint256"
+              }
+            ],
+            "name": "InsufficientAdminFee",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requested",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "available",
+                "type": "uint256"
+              }
+            ],
+            "name": "InsufficientAvailableFund",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requested",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "available",
+                "type": "uint256"
+              }
+            ],
+            "name": "InsufficientContribution",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requested",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "available",
+                "type": "uint256"
+              }
+            ],
+            "name": "InsufficientFund",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "InvalidAddress",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint64",
+                "name": "deadline",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "currentTimestamp",
+                "type": "uint256"
+              }
+            ],
+            "name": "InvalidDeadline",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "InvalidRefundStatus",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "InvalidRequestStatus",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "MaxBCSReached",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "NoActiveBCS",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "NotActiveBCS",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "NotAdvisor",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "eligible",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "required",
+                "type": "uint256"
+              }
+            ],
+            "name": "NotEnoughBCS",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              }
+            ],
+            "name": "NotEnrolledStudent",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "length",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxLength",
+                "type": "uint256"
+              }
+            ],
+            "name": "PurposeTooLong",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "length",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxLength",
+                "type": "uint256"
+              }
+            ],
+            "name": "ReasonTooLong",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "ReentrancyGuardReentrantCall",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundAlreadyExecuted",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundExpired",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundRequestNotFound",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundVotingPeriodEnded",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundVotingStillActive",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RequestAlreadyExecuted",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RequestExpired",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RequestNotFound",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "StudentIsBCS",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "voterBase",
+                "type": "uint256"
+              }
+            ],
+            "name": "ThresholdNotMet",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+              }
+            ],
+            "name": "VoterNotEligibleAtCreation",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "VotingPeriodEnded",
+            "type": "error"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "VotingStillActive",
+            "type": "error"
+          },
+          {
+            "inputs": [],
+            "name": "ZeroAmount",
+            "type": "error"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "feeAmount",
+                "type": "uint256"
+              }
+            ],
+            "name": "AdminFeeCollected",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "member",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "status",
+                "type": "bool"
+              }
+            ],
+            "name": "BCSMemberUpdated",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "closedBy",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "closedAt",
+                "type": "uint64"
+              }
+            ],
+            "name": "CollectionClosed",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "targetWei",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint64",
+                "name": "deadline",
+                "type": "uint64"
+              },
+              {
+                "indexed": false,
+                "internalType": "string",
+                "name": "purpose",
+                "type": "string"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "expectedPayers",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionCreated",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalPaidInCollection",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "paidCount",
+                "type": "uint256"
+              }
+            ],
+            "name": "CollectionDeposited",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "advisor",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "FeeMovedToClassFund",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "FundDeposited",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "GasRefundFailed",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "gasUnits",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "gasPrice",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "paid",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "shortfall",
+                "type": "uint256"
+              }
+            ],
+            "name": "GasRefunded",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "applicant",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundExecutionFailed",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundProcessed",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "applicant",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundRequestCreated",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "applicant",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundRequestExecuted",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundRequestExpired",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundRequestReady",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "support",
+                "type": "bool"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "noVotes",
+                "type": "uint256"
+              }
+            ],
+            "name": "RefundRequestVoted",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "bytes32",
+                "name": "rosterHash",
+                "type": "bytes32"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "committedBy",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              }
+            ],
+            "name": "RosterCommitted",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "SpendExecutionFailed",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
+              }
+            ],
+            "name": "SpendRequestCreated",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "SpendRequestExecuted",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "SpendRequestExpired",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "SpendRequestReady",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "voter",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "support",
+                "type": "bool"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "noVotes",
+                "type": "uint256"
+              }
+            ],
+            "name": "SpendRequestVoted",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": true,
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "status",
+                "type": "bool"
+              }
+            ],
+            "name": "StudentEnrollmentUpdated",
+            "type": "event"
+          },
+          {
+            "inputs": [],
+            "name": "BCS_ACTIVATION_DELAY",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "BPS_DENOMINATOR",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "FEE_BPS",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "GAS_REFUND_OVERHEAD",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MAX_BATCH",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MAX_BCS",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MAX_GAS_PRICE_PREMIUM",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MAX_PURPOSE_LENGTH",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MAX_REASON_LENGTH",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MAX_REFUND_GAS_UNITS",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "MIN_BCS_FOR_PROPOSAL",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "PASSING_THRESHOLD_BPS",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "VOTING_PERIOD",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
             "name": "activeBCSCount",
-            "type": "uint256"
-          }
-        ],
-        "name": "ThresholdNotMet",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "VotingPeriodEnded",
-        "type": "error"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "VotingStillActive",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "ZeroAmount",
-        "type": "error"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "student",
-            "type": "address"
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
           },
           {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "feeAmount",
-            "type": "uint256"
-          }
-        ],
-        "name": "AdminFeeCollected",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
+            "inputs": [],
+            "name": "activeCollectionId",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
           {
-            "indexed": true,
-            "internalType": "address",
+            "inputs": [],
+            "name": "adminFeePool",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
             "name": "advisor",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "AdminFeeWithdrawn",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "member",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "status",
-            "type": "bool"
-          }
-        ],
-        "name": "BCSMemberUpdated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "student",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "FundDeposited",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "applicant",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundExecutionFailed",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "student",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundProcessed",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "applicant",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "reason",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundRequestCreated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "applicant",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundRequestExecuted",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundRequestExpired",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundRequestReady",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "voter",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "support",
-            "type": "bool"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "noVotes",
-            "type": "uint256"
-          }
-        ],
-        "name": "RefundRequestVoted",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "SpendExecutionFailed",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "creator",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          }
-        ],
-        "name": "SpendRequestCreated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "SpendRequestExecuted",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "SpendRequestExpired",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "SpendRequestReady",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "voter",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "support",
-            "type": "bool"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "noVotes",
-            "type": "uint256"
-          }
-        ],
-        "name": "SpendRequestVoted",
-        "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "BPS_DENOMINATOR",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "FEE_BPS",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "PASSING_THRESHOLD_BPS",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "VOTING_PERIOD",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "activeBCSCount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "adminFeePool",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "advisor",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "classFundBalance",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "reason",
-            "type": "string"
-          }
-        ],
-        "name": "createRefundRequest",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address payable",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          }
-        ],
-        "name": "createSpendRequest",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "deposit",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "executeRefundRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "executeSpendRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "expireRefundRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "expireSpendRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getAvailableClassFund",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getFundBalance",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          }
-        ],
-        "name": "getRefundRequest",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "applicant",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "reason",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "noVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum ProjectCore.RequestStatus",
-            "name": "status",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          }
-        ],
-        "name": "getSpendRequest",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "creator",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "noVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum ProjectCore.RequestStatus",
-            "name": "status",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "student",
-            "type": "address"
-          }
-        ],
-        "name": "getStudentAvailableContribution",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "student",
-            "type": "address"
-          }
-        ],
-        "name": "getStudentContribution",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "getTotalContractBalance",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "member",
-            "type": "address"
-          }
-        ],
-        "name": "hasMemberVoted",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "member",
-            "type": "address"
-          }
-        ],
-        "name": "hasMemberVotedRefund",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "hasVoted",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "hasVotedRefund",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "isBCSMember",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "pendingStudentRefundAmount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "refundRequestCount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "refundRequests",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "applicant",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "reason",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "noVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum ProjectCore.RequestStatus",
-            "name": "status",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "reservedRefundAmount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "reservedSpendAmount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "member",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "status",
-            "type": "bool"
-          }
-        ],
-        "name": "setBCSMember",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "spendRequestCount",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "spendRequests",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "creator",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "yesVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "noVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum ProjectCore.RequestStatus",
-            "name": "status",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "studentContributions",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "refundId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "support",
-            "type": "bool"
-          }
-        ],
-        "name": "voteRefundRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "requestId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "support",
-            "type": "bool"
-          }
-        ],
-        "name": "voteSpendRequest",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "withdrawAdminFee",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "stateMutability": "payable",
-        "type": "receive"
-      }
-    ];
+            "outputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "name": "bcsList",
+            "outputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "classFundBalance",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+              }
+            ],
+            "name": "closeCollection",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "collectionCount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "name": "collections",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "targetWei",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "deadline",
+                "type": "uint64"
+              },
+              {
+                "internalType": "string",
+                "name": "purpose",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
+              },
+              {
+                "internalType": "uint64",
+                "name": "createdAt",
+                "type": "uint64"
+              },
+              {
+                "internalType": "bool",
+                "name": "closed",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint64",
+                "name": "closedAt",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expectedPayers",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "paidCount",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "bytes32",
+                "name": "hash",
+                "type": "bytes32"
+              }
+            ],
+            "name": "commitRoster",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "targetWei",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "deadline",
+                "type": "uint64"
+              },
+              {
+                "internalType": "string",
+                "name": "purpose",
+                "type": "string"
+              }
+            ],
+            "name": "createCollection",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+              }
+            ],
+            "name": "createRefundRequest",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address payable",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+              }
+            ],
+            "name": "createSpendRequest",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "deposit",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              }
+            ],
+            "name": "depositToCollection",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "atTimestamp",
+                "type": "uint256"
+              }
+            ],
+            "name": "eligibleBCSCount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "count",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "enrolledCount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "executeRefundRequest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "executeSpendRequest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "expireRefundRequest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "expireSpendRequest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getActiveCollectionId",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getAvailableClassFund",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getBCSList",
+            "outputs": [
+              {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              }
+            ],
+            "name": "getCollection",
+            "outputs": [
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "targetWei",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "deadline",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "purpose",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "address",
+                    "name": "creator",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "createdAt",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "closed",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint64",
+                    "name": "closedAt",
+                    "type": "uint64"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "expectedPayers",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "paidCount",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct ProjectCore.Collection",
+                "name": "",
+                "type": "tuple"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getFundBalance",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              }
+            ],
+            "name": "getRefundRequest",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "applicant",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "noVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "enum ProjectCore.RequestStatus",
+                "name": "status",
+                "type": "uint8"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              }
+            ],
+            "name": "getSpendRequest",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "noVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "enum ProjectCore.RequestStatus",
+                "name": "status",
+                "type": "uint8"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              }
+            ],
+            "name": "getStudentAvailableContribution",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              }
+            ],
+            "name": "getStudentContribution",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              }
+            ],
+            "name": "getStudentMaxRefund",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getTotalContractBalance",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getUnaccountedBalance",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "member",
+                "type": "address"
+              }
+            ],
+            "name": "hasMemberVoted",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "member",
+                "type": "address"
+              }
+            ],
+            "name": "hasMemberVotedRefund",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "student",
+                "type": "address"
+              }
+            ],
+            "name": "hasPaidInCollection",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "hasVoted",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "hasVotedRefund",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "isBCSMember",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "member",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "atTimestamp",
+                "type": "uint256"
+              }
+            ],
+            "name": "isEligibleVoterAt",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "isStudent",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "memberSince",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "moveFeeToClassFund",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "paidInCollection",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "pendingStudentRefundAmount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "refundRequestCount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "name": "refundRequests",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address payable",
+                "name": "applicant",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "noVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "enum ProjectCore.RequestStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint256",
+                "name": "voterBase",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "reservedRefundAmount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "reservedSpendAmount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "rosterHash",
+            "outputs": [
+              {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "member",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "status",
+                "type": "bool"
+              }
+            ],
+            "name": "setBCSMember",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address[]",
+                "name": "members",
+                "type": "address[]"
+              },
+              {
+                "internalType": "bool",
+                "name": "status",
+                "type": "bool"
+              }
+            ],
+            "name": "setStudents",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "spendRequestCount",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "name": "spendRequests",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address payable",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "description",
+                "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "yesVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "noVotes",
+                "type": "uint256"
+              },
+              {
+                "internalType": "enum ProjectCore.RequestStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint256",
+                "name": "voterBase",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "studentContributions",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "name": "studentTotalDeposited",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "refundId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "support",
+                "type": "bool"
+              }
+            ],
+            "name": "voteRefundRequest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "support",
+                "type": "bool"
+              }
+            ],
+            "name": "voteSpendRequest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "stateMutability": "payable",
+            "type": "receive"
+          }
+        ];
 
     // --- 2. FAQ DATA ---
     const FAQ_DATA = [
@@ -8421,9 +9573,11 @@
       const elContrib = document.getElementById("myTotalContribution");
       const elPending = document.getElementById("myPendingRefund");
       const elAvail = document.getElementById("myAvailableRefund");
+      const elMax = document.getElementById("myMaxNetRefund");
       if (elContrib) elContrib.textContent = "0.0000 ETH";
       if (elPending) elPending.textContent = "0.0000 ETH";
       if (elAvail) elAvail.textContent = "0.0000 ETH";
+      if (elMax) elMax.textContent = "0.0000 ETH";
 
       const stuRefundTable = document.getElementById("studentRefundTableBody");
       if (stuRefundTable) {
@@ -8488,6 +9642,11 @@
     async function handleAccountChange(account) {
       userAddress = account;
       signer = await provider.getSigner();
+
+      myStudentProfile = null;
+      isBcsMember = false;
+      isAdvisor = false;
+      invalidateRosterContribCache();
 
       // BẢO MẬT: Ngay lập tức xóa toàn bộ dữ liệu nhạy cảm của tài khoản trước khỏi DOM & bộ nhớ
       clearSensitiveClientData(true);
@@ -8627,8 +9786,8 @@
         const bVerify = document.getElementById("btnVerifyWalletAuth");
         if (bVerify) bVerify.style.display = "none";
 
-        const verifiedRole = loginData.session ? loginData.session.role : "guest";
-        const roleTitle = loginData.session ? loginData.session.roleTitle : "";
+        const verifiedRole = (loginData.session && loginData.session.role) || loginData.role || "guest";
+        const roleTitle = (loginData.session && loginData.session.roleTitle) || loginData.roleTitle || "";
         logToTerminal(`[Xác thực ví] ✅ Thành công! Vai trò máy chủ xác nhận: ${roleTitle} (${verifiedRole}).`);
 
         // Nạp thông tin sinh viên với phiên đã xác thực
@@ -10122,7 +11281,16 @@
           document.getElementById("myTotalContribution").textContent = formatEth(myContrib) + " ETH";
           document.getElementById("myPendingRefund").textContent = formatEth(myPending) + " ETH";
           document.getElementById("myAvailableRefund").textContent = formatEth(myAvail) + " ETH";
+          let myMaxRefund = 0n;
+          try {
+            myMaxRefund = await contract.getStudentMaxRefund(userAddress);
+          } catch (_) {}
+          const elMax = document.getElementById("myMaxNetRefund");
+          if (elMax) elMax.textContent = formatEth(myMaxRefund) + " ETH";
         }
+
+        await checkRosterHashMatch();
+        await loadOnchainCollectionData();
 
         // 4. Load Requests Data & Cash Flow Ledger
         await loadSpendRequests(Number(spendCount), Number(activeBCS));
@@ -10878,8 +12046,8 @@
       }
     }
 
-    // Cố vấn học tập rút quỹ phí vận hành bù gas
-    async function doWithdrawFee() {
+    // Cố vấn học tập chuyển phí vận hành dư sang Quỹ lớp chính (Phase 5 Mục F & Phase 6 Mục G)
+    async function doMoveFeeToClassFund() {
       if (!signer) {
         alert("Bạn chưa kết nối ví MetaMask!");
         return;
@@ -10890,7 +12058,7 @@
         return;
       }
       if (!contract) {
-        promptContractConfig("rút quỹ phí vận hành");
+        promptContractConfig("chuyển quỹ phí vận hành");
         return;
       }
 
@@ -10898,17 +12066,333 @@
       if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH muốn rút hợp lệ!");
 
       try {
-        logToTerminal(`[Rút phí Cố vấn] Đang rút ${amountStr} ETH từ quỹ phí vận hành về ví Cố vấn...`);
+        logToTerminal(`[Chuyển phí Cố vấn] Đang chuyển ${amountStr} ETH từ quỹ phí vận hành sang Quỹ lớp...`);
         const amountWei = ethers.parseEther(amountStr);
-        const tx = await contract.withdrawAdminFee(amountWei);
+        const tx = await contract.moveFeeToClassFund(amountWei);
         await tx.wait();
-        logToTerminal(`[Thành công] Đã rút thành công phí vận hành bù đắp gas! Mã giao dịch: ${tx.hash}`);
-        alert("Rút phí vận hành thành công! Mã giao dịch: " + tx.hash);
+        logToTerminal(`[Thành công] Đã chuyển thành công phí vận hành vào Quỹ lớp! Mã giao dịch: ${tx.hash}`);
+        alert("Chuyển phí vận hành vào Quỹ lớp thành công! Mã giao dịch: " + tx.hash);
         document.getElementById("inputWithdrawFeeAmount").value = "";
         await refreshContractData();
       } catch (err) {
-        logToTerminal(`[Lỗi rút phí vận hành] ${err.shortMessage || err.message}`);
-        alert("Rút phí thất bại: " + (err.shortMessage || err.message));
+        logToTerminal(`[Lỗi chuyển phí vận hành] ${err.shortMessage || err.message}`);
+        alert("Chuyển phí thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    async function doWithdrawFee() {
+      return doMoveFeeToClassFund();
+    }
+
+    // Cố vấn ghi nhận danh sách sinh viên on-chain (Phase 3 Mục D & Phase 6 Mục G)
+    async function doSetStudents() {
+      if (!signer) return alert("Bạn chưa kết nối ví MetaMask!");
+      if (!(await ensureCorrectNetwork())) return;
+      if (!isAdvisor && window.currentVerifiedRole !== "advisor") {
+        return alert("Từ chối quyền: Chỉ Cố vấn học tập mới có quyền ghi danh sách sinh viên on-chain!");
+      }
+      if (!contract) return promptContractConfig("ghi danh sách sinh viên");
+
+      const raw = document.getElementById("inputStudentAddresses").value.trim();
+      if (!raw) return alert("Vui lòng nhập danh sách địa chỉ ví sinh viên!");
+      const rawAddrs = raw.split(/[\n,;]+/).map(a => a.trim()).filter(a => Boolean(a));
+      const validAddrs = [];
+      for (const a of rawAddrs) {
+        if (ethers.isAddress(a)) {
+          validAddrs.push(ethers.getAddress(a));
+        } else {
+          return alert(`Địa chỉ ví không hợp lệ: ${a}`);
+        }
+      }
+      if (validAddrs.length === 0) return alert("Không tìm thấy địa chỉ ví hợp lệ nào!");
+      if (validAddrs.length > 100) return alert("Mỗi lần cập nhật tối đa 100 ví theo quy định hợp đồng!");
+
+      try {
+        logToTerminal(`[Cố vấn] Đang ghi nhận ${validAddrs.length} sinh viên on-chain qua setStudents...`);
+        const tx = await contract.setStudents(validAddrs, true);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã ghi danh sách sinh viên on-chain! Mã GD: ${tx.hash}`);
+        alert(`Ghi thành công ${validAddrs.length} sinh viên on-chain!`);
+        document.getElementById("inputStudentAddresses").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi setStudents] ${err.shortMessage || err.message}`);
+        alert("Ghi danh sách sinh viên thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    function fillRosterAddresses() {
+      if (!classRoster || classRoster.length === 0) {
+        return alert("Danh bạ lớp hiện đang trống hoặc chưa được tải về!");
+      }
+      const wallets = classRoster.map(s => s.walletAddress || s.address).filter(a => a && ethers.isAddress(a));
+      if (wallets.length === 0) {
+        return alert("Chưa có ví sinh viên hợp lệ nào trong danh bạ!");
+      }
+      document.getElementById("inputStudentAddresses").value = wallets.join("\n");
+      logToTerminal(`[Danh bạ] Đã điền ${wallets.length} ví sinh viên vào biểu mẫu.`);
+    }
+
+    async function doCommitRosterHash() {
+      if (!signer) return alert("Bạn chưa kết nối ví MetaMask!");
+      if (!(await ensureCorrectNetwork())) return;
+      if (!isAdvisor && window.currentVerifiedRole !== "advisor") {
+        return alert("Từ chối quyền: Chỉ Cố vấn học tập mới có quyền commit roster hash!");
+      }
+      if (!contract) return promptContractConfig("commit roster hash");
+
+      try {
+        logToTerminal("[Cố vấn] Đang lấy chuẩn băm Danh bạ từ Backend /api/roster/hash...");
+        const res = await fetch(`${AI_BACKEND_URL}/api/roster/hash`);
+        if (!res.ok) throw new Error(`Lỗi gọi API: HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.success || !data.hash) throw new Error(data.error || "Không nhận được hash từ backend");
+        const backendHash = data.hash;
+
+        logToTerminal(`[Cố vấn] Hash chuẩn: ${backendHash}. Đang gọi commitRoster...`);
+        const tx = await contract.commitRoster(backendHash);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã commit Roster Hash lên Blockchain! Mã GD: ${tx.hash}`);
+        alert("Commit Roster Hash lên chuỗi thành công! Mã GD: " + tx.hash);
+        await checkRosterHashMatch();
+      } catch (err) {
+        logToTerminal(`[Lỗi commitRoster] ${err.shortMessage || err.message}`);
+        alert("Commit Roster Hash thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    async function checkRosterHashMatch() {
+      const elOnchain = document.getElementById("onchainRosterHashText");
+      const elBackend = document.getElementById("backendRosterHashText");
+      const elBadge = document.getElementById("rosterHashMatchBadge");
+      if (!elOnchain || !elBackend || !elBadge) return;
+
+      let onchainHash = "0x0000000000000000000000000000000000000000000000000000000000000000";
+      if (contract) {
+        try {
+          onchainHash = await contract.rosterHash();
+        } catch (_) {}
+      }
+      elOnchain.textContent = onchainHash;
+
+      let backendHash = null;
+      try {
+        const res = await fetch(`${AI_BACKEND_URL}/api/roster/hash`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.hash) {
+            backendHash = data.hash;
+          }
+        }
+      } catch (_) {}
+
+      if (backendHash) {
+        elBackend.textContent = backendHash;
+        if (onchainHash.toLowerCase() === backendHash.toLowerCase() && onchainHash !== "0x0000000000000000000000000000000000000000000000000000000000000000") {
+          elBadge.className = "badge bg-success";
+          elBadge.textContent = "✅ Khớp 100% (Toàn vẹn)";
+        } else if (onchainHash === "0x0000000000000000000000000000000000000000000000000000000000000000") {
+          elBadge.className = "badge bg-warning text-dark";
+          elBadge.textContent = "⚠️ Chưa commit lên chuỗi";
+        } else {
+          elBadge.className = "badge bg-danger";
+          elBadge.textContent = "❌ Sai lệch / Cần đồng bộ";
+        }
+      } else {
+        elBackend.textContent = "Chưa kết nối backend";
+        elBadge.className = "badge bg-secondary";
+        elBadge.textContent = "Chưa đối soát";
+      }
+    }
+
+    var currentActiveCollectionId = null;
+
+    async function loadOnchainCollectionData() {
+      const bcsStatus = document.getElementById("bcsCurrentCollectionStatus");
+      const formCreate = document.getElementById("formCreateCollectionWrapper");
+      const formClose = document.getElementById("formCloseCollectionWrapper");
+      const stuBadge = document.getElementById("studentColStatusBadge");
+      const stuInfo = document.getElementById("studentColInfoBox");
+      const stuAction = document.getElementById("studentColActionBox");
+      const stuPayStatus = document.getElementById("studentColPaymentStatus");
+
+      if (!contract) return;
+
+      try {
+        const count = await contract.collectionCount();
+        const total = Number(count);
+        let activeCol = null;
+
+        for (let i = total; i >= 1; i--) {
+          const col = await contract.getCollection(i);
+          if (!col.closed) {
+            activeCol = {
+              id: Number(col.id),
+              targetWei: col.targetWei,
+              deadline: Number(col.deadline),
+              purpose: col.purpose,
+              creator: col.creator,
+              createdAt: Number(col.createdAt),
+              closed: col.closed,
+              expectedPayers: Number(col.expectedPayers),
+              paidCount: Number(col.paidCount)
+            };
+            break;
+          }
+        }
+
+        currentActiveCollectionId = activeCol ? activeCol.id : null;
+        const nowSec = Math.floor(Date.now() / 1000);
+
+        if (activeCol) {
+          const isExpired = nowSec > activeCol.deadline;
+          const targetEth = formatEth(activeCol.targetWei);
+          const deadlineDate = new Date(activeCol.deadline * 1000).toLocaleString("vi-VN");
+          const pct = activeCol.expectedPayers > 0 ? Math.round((activeCol.paidCount / activeCol.expectedPayers) * 100) : 0;
+
+          if (bcsStatus) {
+            bcsStatus.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong style="color:var(--brand-blue); font-size:0.95rem;">Đợt #${activeCol.id}: ${escapeHtml(activeCol.purpose)}</strong>
+                <span class="badge ${isExpired ? 'bg-secondary' : 'bg-success'}">${isExpired ? '⌛ ĐÃ HẾT HẠN' : '🟢 ĐANG MỞ'}</span>
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:8px; font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;">
+                <div>Mục tiêu: <strong style="color:var(--primary-navy);">${targetEth} ETH/SV</strong></div>
+                <div>Hạn nộp: <strong style="color:var(--primary-navy);">${deadlineDate}</strong></div>
+                <div>Đã nộp đủ: <strong style="color:var(--success);">${activeCol.paidCount}/${activeCol.expectedPayers} SV (${pct}%)</strong></div>
+              </div>
+            `;
+          }
+          if (formCreate) formCreate.style.display = "none";
+          if (formClose) formClose.style.display = "block";
+
+          if (stuBadge) {
+            stuBadge.className = isExpired ? "badge bg-secondary" : "badge bg-success";
+            stuBadge.textContent = isExpired ? "ĐÃ HẾT HẠN" : "ĐANG MỞ";
+          }
+          if (stuInfo) {
+            stuInfo.innerHTML = `<strong>Đợt #${activeCol.id}: ${escapeHtml(activeCol.purpose)}</strong> • Mức đóng: <strong>${targetEth} ETH</strong> • Hạn chót: <strong>${deadlineDate}</strong>`;
+          }
+
+          if (userAddress) {
+            let hasPaid = false;
+            let paidWei = 0n;
+            try {
+              hasPaid = await contract.hasPaidInCollection(activeCol.id, userAddress);
+              paidWei = await contract.paidInCollection(activeCol.id, userAddress);
+            } catch (_) {}
+
+            if (stuAction) stuAction.style.display = "block";
+            if (stuPayStatus) {
+              const paidEth = formatEth(paidWei);
+              if (hasPaid) {
+                stuPayStatus.innerHTML = `<span style="color:#15803d;">✅ ĐÃ NỘP ĐỦ (${paidEth} ETH)</span>`;
+              } else {
+                stuPayStatus.innerHTML = `<span style="color:#b45309;">⏳ Đã nộp ${paidEth} / ${targetEth} ETH</span>`;
+              }
+            }
+          }
+        } else {
+          if (bcsStatus) {
+            bcsStatus.innerHTML = `<div style="font-size:0.85rem; color:var(--text-muted);">Hiện không có đợt thu on-chain nào đang mở.</div>`;
+          }
+          if (formCreate) formCreate.style.display = "block";
+          if (formClose) formClose.style.display = "none";
+
+          if (stuBadge) {
+            stuBadge.className = "badge bg-secondary";
+            stuBadge.textContent = "Chưa mở";
+          }
+          if (stuInfo) {
+            stuInfo.textContent = "Hiện tại chưa có đợt thu on-chain nào đang mở. Bạn vẫn có thể nộp vào Quỹ chung.";
+          }
+          if (stuAction) stuAction.style.display = "none";
+        }
+      } catch (err) {
+        console.warn("Lỗi load on-chain collection:", err);
+      }
+    }
+
+    async function doCreateOnchainCollection() {
+      if (!signer) return alert("Bạn chưa kết nối ví MetaMask!");
+      if (!(await ensureCorrectNetwork())) return;
+      if (!isBcsMember && window.currentVerifiedRole !== "bcs") {
+        return alert("Từ chối quyền: Chỉ Ban cán sự hoạt động mới có quyền tạo đợt thu on-chain!");
+      }
+      if (!contract) return promptContractConfig("tạo đợt thu on-chain");
+
+      const targetEth = document.getElementById("inputColTargetEth").value.trim();
+      const daysStr = document.getElementById("inputColDeadlineDays").value.trim();
+      const purpose = document.getElementById("inputColPurpose").value.trim();
+
+      if (!targetEth || parseFloat(targetEth) <= 0) return alert("Vui lòng nhập mức đóng mục tiêu hợp lệ!");
+      if (!daysStr || parseInt(daysStr, 10) <= 0) return alert("Vui lòng nhập số ngày hạn nộp hợp lệ!");
+      if (!purpose) return alert("Vui lòng nhập mục đích đợt thu!");
+
+      try {
+        const targetWei = ethers.parseEther(targetEth);
+        const deadline = Math.floor(Date.now() / 1000) + parseInt(daysStr, 10) * 86400;
+        logToTerminal(`[BCS] Đang tạo đợt thu on-chain: "${purpose}" (${targetEth} ETH)...`);
+        const tx = await contract.createCollection(targetWei, deadline, purpose);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã tạo đợt thu on-chain! Mã GD: ${tx.hash}`);
+        alert("Tạo đợt thu on-chain thành công!");
+        document.getElementById("inputColTargetEth").value = "";
+        document.getElementById("inputColDeadlineDays").value = "";
+        document.getElementById("inputColPurpose").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi createCollection] ${err.shortMessage || err.message}`);
+        alert("Tạo đợt thu thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    async function doCloseOnchainCollection() {
+      if (!signer) return alert("Bạn chưa kết nối ví MetaMask!");
+      if (!(await ensureCorrectNetwork())) return;
+      if (!isBcsMember && window.currentVerifiedRole !== "bcs") {
+        return alert("Từ chối quyền: Chỉ Ban cán sự hoạt động mới có quyền đóng đợt thu on-chain!");
+      }
+      if (!contract) return promptContractConfig("đóng đợt thu on-chain");
+      if (!currentActiveCollectionId) return alert("Không có đợt thu nào đang mở để đóng!");
+
+      const reason = document.getElementById("inputCloseColReason").value.trim() || "Ban cán sự đóng đợt thu";
+
+      try {
+        logToTerminal(`[BCS] Đang đóng đợt thu #${currentActiveCollectionId}...`);
+        const tx = await contract.closeCollection(currentActiveCollectionId, reason);
+        await tx.wait();
+        logToTerminal(`[Thành công] Đã đóng đợt thu #${currentActiveCollectionId}! Mã GD: ${tx.hash}`);
+        alert(`Đã đóng đợt thu #${currentActiveCollectionId} thành công!`);
+        document.getElementById("inputCloseColReason").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi closeCollection] ${err.shortMessage || err.message}`);
+        alert("Đóng đợt thu thất bại: " + (err.shortMessage || err.message));
+      }
+    }
+
+    async function doDepositToCollection() {
+      if (!signer) return alert("Bạn chưa kết nối ví MetaMask!");
+      if (!(await ensureCorrectNetwork())) return;
+      if (!contract) return promptContractConfig("nộp tiền vào đợt thu");
+      if (!currentActiveCollectionId) return alert("Hiện không có đợt thu on-chain nào đang mở!");
+
+      const amountStr = document.getElementById("inputDepositToColAmount").value.trim();
+      if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH nộp hợp lệ!");
+
+      try {
+        const amountWei = ethers.parseEther(amountStr);
+        logToTerminal(`[Nộp quỹ] Đang nộp ${amountStr} ETH vào đợt thu #${currentActiveCollectionId}...`);
+        const tx = await contract.depositToCollection(currentActiveCollectionId, { value: amountWei });
+        await tx.wait();
+        logToTerminal(`[Thành công] Nộp tiền vào đợt thu #${currentActiveCollectionId} thành công! Mã GD: ${tx.hash}`);
+        alert(`Nộp tiền vào đợt thu thành công! Mã giao dịch: ${tx.hash}`);
+        document.getElementById("inputDepositToColAmount").value = "";
+        await refreshContractData();
+      } catch (err) {
+        logToTerminal(`[Lỗi depositToCollection] ${err.shortMessage || err.message}`);
+        alert("Nộp tiền vào đợt thu thất bại: " + (err.shortMessage || err.message));
       }
     }
 
@@ -10972,6 +12456,24 @@
       document.getElementById("btnCreateSpendAction").addEventListener("click", doCreateSpend);
       document.getElementById("btnSetBcsAction").addEventListener("click", doSetBCS);
       document.getElementById("btnWithdrawFeeAction").addEventListener("click", doWithdrawFee);
+
+      const btnSetStudents = document.getElementById("btnSetStudentsAction");
+      if (btnSetStudents) btnSetStudents.addEventListener("click", doSetStudents);
+
+      const btnCommitRoster = document.getElementById("btnCommitRosterHashAction");
+      if (btnCommitRoster) btnCommitRoster.addEventListener("click", doCommitRosterHash);
+
+      const btnFillRoster = document.getElementById("btnFillRosterAddresses");
+      if (btnFillRoster) btnFillRoster.addEventListener("click", fillRosterAddresses);
+
+      const btnCreateCol = document.getElementById("btnCreateCollectionAction");
+      if (btnCreateCol) btnCreateCol.addEventListener("click", doCreateOnchainCollection);
+
+      const btnCloseCol = document.getElementById("btnCloseCollectionAction");
+      if (btnCloseCol) btnCloseCol.addEventListener("click", doCloseOnchainCollection);
+
+      const btnDepositCol = document.getElementById("btnDepositToOnchainCol");
+      if (btnDepositCol) btnDepositCol.addEventListener("click", doDepositToCollection);
 
       // Contract apply buttons
       document.getElementById("btnSaveQuickContract").addEventListener("click", () => {
@@ -11151,15 +12653,43 @@
       title: "Hiện chưa có thông báo kêu gọi nộp quỹ",
       targetAmountEth: "0",
       deadline: "Không có",
-      classSize: 7,
+      classSize: 0,
       purpose: "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.",
       status: "none"
     };
 
     function getDynamicClassSize(ann) {
+      if (ann && ann.classSize && Number(ann.classSize) > 0) return Number(ann.classSize);
       if (classRoster && classRoster.length > 0) return classRoster.length;
-      if (ann && ann.classSize) return Number(ann.classSize);
-      return 7;
+      return 0;
+    }
+
+    let classActiveNotifications = [];
+    let currentAnnModalMode = "create";
+    let currentAnnModalTargetId = null;
+
+    function saveActiveNotifications(list) {
+      try {
+        classActiveNotifications = Array.isArray(list) ? list : [];
+        localStorage.setItem("kts_class_active_notifications", JSON.stringify(classActiveNotifications));
+      } catch (e) { }
+    }
+
+    function getActiveNotifications() {
+      if (classActiveNotifications && classActiveNotifications.length > 0) {
+        return classActiveNotifications;
+      }
+      try {
+        const cached = localStorage.getItem("kts_class_active_notifications");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            classActiveNotifications = parsed;
+            return parsed;
+          }
+        }
+      } catch (e) { }
+      return [];
     }
 
     function getAnnouncementData() {
@@ -11167,9 +12697,7 @@
         const saved = localStorage.getItem("kts_class_announcement");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (parsed && (parsed.id === "ann-20261028045521" || parsed.id === "ann-k57-hk1" || parsed.updatedBy === "0x85ac8f0ca75f2e3fda073bc566659c011208da74")) {
-            localStorage.removeItem("kts_class_announcement");
-          } else {
+          if (parsed && typeof parsed === "object") {
             if (classRoster && classRoster.length > 0) {
               parsed.classSize = classRoster.length;
             }
@@ -11189,7 +12717,8 @@
 
     function saveAnnouncementHistory(list) {
       try {
-        localStorage.setItem("kts_class_ann_history", JSON.stringify(list));
+        classAnnouncementHistory = Array.isArray(list) ? list : [];
+        localStorage.setItem("kts_class_ann_history", JSON.stringify(classAnnouncementHistory));
       } catch (e) { }
     }
 
@@ -11202,12 +12731,8 @@
         if (cached) {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed)) {
-            const cleaned = parsed.filter(item => item && item.id !== "ann-k57-hk1" && item.id !== "ann-20261028045521" && item.updatedBy !== "0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2");
-            if (cleaned.length !== parsed.length) {
-              localStorage.setItem("kts_class_ann_history", JSON.stringify(cleaned));
-            }
-            classAnnouncementHistory = cleaned;
-            return cleaned;
+            classAnnouncementHistory = parsed;
+            return parsed;
           }
         }
       } catch (e) { }
@@ -11221,6 +12746,53 @@
         card.style.display = forceState ? "block" : "none";
       } else {
         card.style.display = (card.style.display === "none" || !card.style.display) ? "block" : "none";
+      }
+    }
+
+    async function viewAnnouncementDetail(id) {
+      if (!id) return;
+      try {
+        const resp = await fetch(`${AI_BACKEND_URL}/api/announcement?id=${encodeURIComponent(id)}`);
+        let item = null;
+        if (resp.ok) {
+          const res = await resp.json();
+          if (res.success && res.notification) {
+            item = res.notification;
+          }
+        }
+        if (!item) {
+          const allHist = getAnnouncementHistory();
+          item = allHist.find(h => h && h.id === id);
+        }
+        if (!item) {
+          const allActive = getActiveNotifications();
+          item = allActive.find(a => a && a.id === id);
+        }
+        if (!item) {
+          alert(`Không tìm thấy chi tiết thông báo ID: ${id}`);
+          return;
+        }
+
+        const detailMsg = 
+          `📋 CHI TIẾT THÔNG BÁO QUỸ LỚP\n` +
+          `-----------------------------------------\n` +
+          `Mã ID: ${item.id || 'N/A'}\n` +
+          `Tiêu đề: ${item.title || 'N/A'}\n` +
+          `Trạng thái: ${item.status || 'N/A'}\n` +
+          `Mức đóng: ${item.targetAmountEth || '0'} ETH\n` +
+          `Sĩ số: ${getDynamicClassSize(item) || 'Chưa xác định'} sinh viên\n` +
+          `Hạn nộp: ${item.deadline || 'Không có'}\n` +
+          `Thời điểm tạo: ${item.createdAt || 'N/A'}\n` +
+          `Thời điểm kết thúc: ${item.endedAt || 'Đang diễn ra'}\n` +
+          `Lý do kết thúc: ${item.endReason || 'Không có'}\n` +
+          (item.progress ? `Tiến độ đợt thu: ${(item.progress.finalProgress ? item.progress.finalProgress.contributingWalletsCount : item.progress.contributingWalletsCount) || 0}/${(item.progress.classSize || getDynamicClassSize(item))} ví (${(item.progress.finalProgress ? item.progress.finalProgress.headcountPercent : item.progress.headcountPercent) || 0}%) • Thu: ${(item.progress.finalProgress ? item.progress.finalProgress.raisedEth : item.progress.raisedEth) || '0.0000'} ETH\n` : '') +
+          `Người cập nhật: ${item.updatedBy || 'Hệ thống'}\n` +
+          `Thời điểm cập nhật: ${item.updatedAt || 'N/A'}\n` +
+          `Mục đích: ${item.purpose || 'Không có'}\n` +
+          `-----------------------------------------`;
+        alert(detailMsg);
+      } catch (err) {
+        alert(`Lỗi tra cứu thông báo: ${err.message}`);
       }
     }
 
@@ -11243,21 +12815,46 @@
 
       let html = "";
       for (const item of history) {
-        const isCompleted = item.status === "completed";
-        const badgeLabel = isCompleted ? "✅ ĐÃ HOÀN THÀNH" : "📁 ĐÃ LƯU TRỮ";
-        const badgeBg = isCompleted ? "#dcfce7" : "#f1f5f9";
-        const badgeColor = isCompleted ? "#166534" : "#475569";
+        if (!item) continue;
+        const status = item.status || "archived";
+        let badgeLabel = "📁 ĐÃ LƯU TRỮ";
+        let badgeBg = "#f1f5f9";
+        let badgeColor = "#475569";
+        if (status === "completed") {
+          badgeLabel = "✅ ĐÃ HOÀN THÀNH";
+          badgeBg = "#dcfce7";
+          badgeColor = "#166534";
+        } else if (status === "expired") {
+          badgeLabel = "⏳ ĐÃ HẾT HẠN";
+          badgeBg = "#fef3c7";
+          badgeColor = "#b45309";
+        } else if (status === "revoked") {
+          badgeLabel = "🚫 ĐÃ HỦY / THU HỒI";
+          badgeBg = "#fee2e2";
+          badgeColor = "#b91c1c";
+        }
+
         const endedText = item.endedAt ? new Date(item.endedAt).toLocaleDateString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", year: "numeric" }) : "Đã kết thúc";
 
         html += `
-          <div class="ann-history-item" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; background: #f8fafc; transition: all 0.2s ease;">
+          <div class="ann-history-item" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; background: #f8fafc; transition: all 0.2s ease;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
-              <h4 style="margin: 0; color: #0f172a; font-size: 0.96rem; font-weight: 600;">
-                ${escapeHtml(item.title || "Đợt thu quỹ")}
-              </h4>
-              <span style="background: ${badgeBg}; color: ${badgeColor}; font-size: 0.72rem; padding: 3px 8px; border-radius: 12px; font-weight: 700; letter-spacing: 0.3px;">
-                ${badgeLabel}
-              </span>
+              <div>
+                <h4 style="margin: 0; color: #0f172a; font-size: 0.98rem; font-weight: 600;">
+                  ${escapeHtml(item.title || "Đợt thu quỹ")}
+                </h4>
+                <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
+                  Mã ID: <code>${escapeHtml(item.id || "N/A")}</code>
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <span style="background: ${badgeBg}; color: ${badgeColor}; font-size: 0.72rem; padding: 3px 8px; border-radius: 12px; font-weight: 700; letter-spacing: 0.3px;">
+                  ${badgeLabel}
+                </span>
+                <button class="btn btn-sm btn-outline-secondary" style="font-size: 0.74rem; padding: 2px 8px;" onclick="viewAnnouncementDetail('${escapeHtml(item.id)}')">
+                  🔍 Chi tiết
+                </button>
+              </div>
             </div>
             <p style="margin: 6px 0; font-size: 0.84rem; color: #64748b; line-height: 1.45;">
               ${escapeHtml(item.purpose || "Kinh phí phục vụ hoạt động lớp K57")}
@@ -11265,9 +12862,31 @@
             <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.78rem; color: #475569; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0;">
               <span>💰 Mức đóng: <strong>${escapeHtml(item.targetAmountEth || "0.01")} ETH</strong></span>
               <span>⏳ Hạn nộp: <strong>${escapeHtml(item.deadline || "Không có")}</strong></span>
-              <span>🏁 Thời điểm lưu trữ: <strong>${endedText}</strong></span>
+              <span>🏁 Thời điểm kết thúc: <strong>${endedText}</strong></span>
               ${item.endReason ? `<span style="color: #0284c7;">ℹ️ Lý do: <em>${escapeHtml(item.endReason)}</em></span>` : ''}
             </div>
+
+            ${(item.finalProgress || (item.progress && item.progress.finalProgress)) ? (() => {
+              const fp = item.finalProgress || item.progress.finalProgress;
+              const adj = item.adjustedFinalProgress || (item.progress && item.progress.adjustedFinalProgress);
+              const wCount = fp.contributingWalletsCount || 0;
+              const cSize = fp.classSize || getDynamicClassSize(item);
+              const hPct = fp.headcountPercent || 0;
+              const rEth = fp.raisedEth || "0.0000";
+              return `
+                <div style="margin-top: 8px; padding: 8px 12px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.80rem;">
+                  <div style="font-weight: 600; color: #0f172a;">
+                    📊 Kết quả chốt sổ: <strong>${wCount}/${cSize} ví đã đóng góp (${hPct}%) - Đã chốt sổ</strong> • Đã thu: <strong>${rEth} ETH</strong>
+                  </div>
+                  ${adj ? `
+                    <div style="margin-top: 5px; padding: 5px 8px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 4px; color: #92400e; font-size: 0.76rem;">
+                      ⚠️ <strong>Số liệu điều chỉnh sau kiểm toán:</strong> ${adj.contributingWalletsCount || 0}/${adj.classSize || cSize} ví (${adj.headcountPercent || 0}%) • ${adj.raisedEth || "0.0000"} ETH
+                      <br><em>Lý do: ${escapeHtml(adj.adjustmentReason || "Điều chỉnh sau kiểm toán")}</em>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            })() : ''}
           </div>
         `;
       }
@@ -11276,147 +12895,282 @@
 
     function saveAnnouncementData(data) {
       try {
-        if (classRoster && classRoster.length > 0) {
+        if (classRoster && classRoster.length > 0 && data) {
           data.classSize = classRoster.length;
         }
         localStorage.setItem("kts_class_announcement", JSON.stringify(data));
       } catch (e) { }
     }
 
-    function renderAnnouncementUI() {
-      const ann = getAnnouncementData();
-      const currentClassSize = getDynamicClassSize(ann);
-      const titleEl = document.getElementById("annTitle");
-      const purposeEl = document.getElementById("annPurpose");
-      const amountEl = document.getElementById("annAmount");
-      const deadlineEl = document.getElementById("annDeadline");
-      const classSizeEl = document.getElementById("annClassSize");
-      const statusTextEl = document.getElementById("annStatusText");
-      const btnDeposit = document.getElementById("btnBannerQuickDeposit");
-      const btnCloseEarly = document.getElementById("btnCloseAnnouncementEarly");
+    function renderMultipleProgressCards(activeList) {
+      const container = document.getElementById("activeProgressCardsContainer");
+      if (!container) return;
 
-      const isActive = ann && ann.status === "active";
+      const dynamicClassSize = (classRoster && classRoster.length > 0) ? classRoster.length : 0;
+      const isBcsOrAdvisor = isBcsMember || isAdvisor;
 
-      if (isActive) {
-        if (titleEl) titleEl.textContent = ann.title || DEFAULT_ANNOUNCEMENT.title;
-        if (purposeEl) purposeEl.textContent = ann.purpose || DEFAULT_ANNOUNCEMENT.purpose;
-        if (amountEl) amountEl.textContent = `${ann.targetAmountEth || "0.01"} ETH / bạn`;
-        if (deadlineEl) deadlineEl.textContent = ann.deadline || DEFAULT_ANNOUNCEMENT.deadline;
-        if (classSizeEl) classSizeEl.textContent = `${currentClassSize} sinh viên`;
-        if (statusTextEl) statusTextEl.textContent = "Đang diễn ra (ACTIVE)";
-        if (btnDeposit) {
-          btnDeposit.style.display = "inline-flex";
-          btnDeposit.textContent = `⚡ Nộp quỹ ngay (${ann.targetAmountEth || "0.01"} ETH)`;
-        }
-        if (btnCloseEarly) {
-          btnCloseEarly.style.display = (isBcsMember || isAdvisor) ? "inline-flex" : "none";
-        }
-      } else {
-        // Trạng thái không có đợt thu active: Hiển thị thông điệp sạch sẽ
-        if (titleEl) titleEl.textContent = "Hiện chưa có thông báo kêu gọi nộp quỹ";
-        if (purposeEl) purposeEl.textContent = "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây.";
-        if (amountEl) amountEl.textContent = "0 ETH";
-        if (deadlineEl) deadlineEl.textContent = "Không có";
-        if (classSizeEl) classSizeEl.textContent = `${currentClassSize} sinh viên`;
-        if (statusTextEl) statusTextEl.textContent = "Chưa có đợt thu";
-        if (btnDeposit) {
-          // BẢO MẬT: Tuyệt đối KHÔNG hiển thị nút nộp tiền cho thông báo đã hoàn thành / không active
-          btnDeposit.style.display = "none";
-        }
-        if (btnCloseEarly) {
-          btnCloseEarly.style.display = "none";
-        }
+      if (!activeList || activeList.length === 0) {
+        container.innerHTML = `
+          <div class="ann-progress-section" style="background: rgba(255,255,255,0.08); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 18px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="color: #ffffff; font-weight: 600; font-size: 0.95rem;">📢 Chưa có đợt thu quỹ nào đang hoạt động</span>
+              <strong style="color: #94a3b8; font-size: 0.88rem;">0% (0/0 ví)</strong>
+            </div>
+            <div class="ann-progress-track" style="background: rgba(255,255,255,0.15); height: 9px; border-radius: 6px; overflow: hidden;">
+              <div class="ann-progress-fill" style="width: 0%; height: 100%; background: #94a3b8;"></div>
+            </div>
+            <p style="color: #cbd5e1; font-size: 0.82rem; margin: 8px 0 0 0;">
+              Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Xem lại kết quả các đợt thu trước đây tại mục "📜 Lịch sử thông báo".
+            </p>
+          </div>
+        `;
+        return;
       }
 
-      // Cập nhật tiến độ
-      const depNumText = document.getElementById("metricDepositorsCount")?.textContent || "0";
-      const depCount = parseInt(depNumText) || 0;
-      updateAnnouncementProgress(depCount);
-      renderAnnouncementHistoryUI();
+      let html = "";
+      activeList.forEach((a, idx) => {
+        const nid = a.id || `ann-${idx}`;
+        const prog = a.progress || {};
+        const walletsCount = Number(prog.contributingWalletsCount) || 0;
+        const totalTx = Number(prog.totalTransactionsCount) || 0;
+        const raisedEth = prog.raisedEth || "0.0000";
+        const hasTarget = Boolean(prog.hasFinancialTarget && a.targetAmountEth && Number(a.targetAmountEth) > 0);
+        const targetEth = a.targetAmountEth || "0.00";
+        
+        // Chuẩn hóa tên gọi chỉ số: "X/Y ví đã đóng góp"
+        const classSz = Number(a.classSize) || dynamicClassSize;
+        const headcountPct = classSz > 0 ? Math.min(100, Math.round((walletsCount / classSz) * 100)) : 0;
+        
+        let financialPctText = "";
+        if (hasTarget && Number(targetEth) > 0) {
+          const finPct = Math.min(100, Math.round((parseFloat(raisedEth) / parseFloat(targetEth)) * 100));
+          financialPctText = ` • Tiền: ${raisedEth} / ${targetEth} ETH (${finPct}%)`;
+        }
+
+        const isExpired = (a.deadlineTimestamp && (Date.now() / 1000) > Number(a.deadlineTimestamp)) || a.status === 'expired';
+
+        html += `
+          <div class="active-campaign-card" id="progress-card-${escapeHtml(nid)}" data-notification-id="${escapeHtml(nid)}"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 14px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
+              <div>
+                <h3 style="margin: 0; color: #ffffff; font-size: 1.02rem; font-weight: 700;">
+                  ${idx + 1}. ${escapeHtml(a.title || "Đợt thu quỹ lớp")}
+                </h3>
+                <div style="font-size: 0.80rem; color: #cbd5e1; margin-top: 3px;">
+                  Mục đích: ${escapeHtml(a.purpose || "Kinh phí phục vụ hoạt động lớp K57")}
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                ${isExpired ? `
+                  <span class="badge bg-secondary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 12px;">⌛ ĐÃ HẾT HẠN</span>
+                ` : `
+                  <span class="badge bg-success" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 12px;">🟢 ĐANG ÁP DỤNG</span>
+                `}
+                ${isBcsOrAdvisor ? `
+                  <button class="btn btn-xs btn-outline-light" style="padding: 2px 6px; font-size: 0.75rem;" onclick="openAnnModal('${escapeHtml(nid)}', 'edit')">✏️ Sửa</button>
+                  <button class="btn btn-xs btn-danger" style="padding: 2px 6px; font-size: 0.75rem;" onclick="closeActiveAnnouncement('${escapeHtml(nid)}')">🛑 Đóng</button>
+                ` : ''}
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.78rem; color: #94a3b8; margin: 8px 0; padding: 6px 0; border-top: 1px dashed rgba(255,255,255,0.1); border-bottom: 1px dashed rgba(255,255,255,0.1);">
+              <span>💰 Mức đóng: <strong>${escapeHtml(a.targetAmountEth || "Tùy tâm")} ETH</strong></span>
+              <span>⏳ Hạn chót: <strong>${escapeHtml(a.deadline || "Không có")}</strong></span>
+              <span>👥 Sĩ số lớp: <strong>${classSz} sinh viên</strong></span>
+            </div>
+
+            <div class="ann-progress-section" style="margin-top: 8px;">
+              <div class="ann-progress-header" style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.82rem;">
+                <span style="color: #cbd5e1;">Tiến độ đợt thu:</span>
+                <strong style="color: #38bdf8;" id="prog-text-${escapeHtml(nid)}">
+                  ${walletsCount}/${classSz} ví đã đóng góp (${headcountPct}%)${financialPctText}
+                </strong>
+              </div>
+              <div class="ann-progress-track" style="height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden;">
+                <div class="ann-progress-fill" id="progress-bar-${escapeHtml(nid)}" data-bar-id="prog-bar-${escapeHtml(nid)}" style="width: ${headcountPct}%; height: 100%; background: linear-gradient(90deg, #38bdf8, #10b981); transition: width 0.3s ease;"></div>
+              </div>
+            </div>
+
+            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+              ${isExpired ? `
+                <button class="btn btn-sm btn-secondary" style="font-size: 0.82rem; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px;" disabled>
+                  ⛔ Đợt thu đã kết thúc
+                </button>
+              ` : `
+                <button class="btn btn-sm btn-primary" style="font-size: 0.82rem; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px;"
+                  onclick="initiateCampaignContribution('${escapeHtml(nid)}', '${escapeHtml(a.targetAmountEth || "0.01")}')">
+                  ⚡ Nộp quỹ cho đợt này (${escapeHtml(a.targetAmountEth || "0.01")} ETH)
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
     }
 
-    async function updateAnnouncementProgress(depositorsCount) {
-      const ann = getAnnouncementData();
-      const count = Number(depositorsCount) || 0;
-      const classSize = getDynamicClassSize(ann);
-      const percent = classSize > 0 ? Math.min(100, Math.round((count / classSize) * 100)) : 0;
+    function renderAnnouncementUI() {
+      const activeList = getActiveNotifications();
+      renderMultipleProgressCards(activeList);
+      renderAnnouncementHistoryUI();
 
-      const progTextEl = document.getElementById("annProgressText");
-      const progBarEl = document.getElementById("annProgressBar");
-      const statusTextEl = document.getElementById("annStatusText");
-
-      if (progTextEl) {
-        progTextEl.textContent = `${count}/${classSize} bạn đã nộp (${percent}%)`;
-      }
-      if (progBarEl) {
-        progBarEl.style.width = `${percent}%`;
-      }
-
-      // 1. TRẠNG THÁI TIẾN ĐỘ CHUNG CỦA LỚP
-      if (statusTextEl && ann && ann.status === "active") {
-        if (classSize > 0 && count >= classSize) {
-          statusTextEl.textContent = "Đạt mục tiêu số lượng (Đang đối soát)";
+      // Nút nộp quỹ chung bị ẩn nếu không có đợt thu nào đang hoạt động
+      const btnDeposit = document.getElementById("btnDepositAction");
+      if (btnDeposit) {
+        if (!activeList || activeList.length === 0) {
+          btnDeposit.style.display = "none";
         } else {
-          statusTextEl.textContent = "Đang diễn ra (ACTIVE)";
+          btnDeposit.style.display = "block";
         }
       }
 
-      // 2. TRẠNG THÁI CÁ NHÂN (Personal Status - Đợt 3B.3)
+      // Cập nhật trạng thái cá nhân
+      updatePersonalStatusBox();
+    }
+
+    async function updatePersonalStatusBox() {
       const pBadge = document.getElementById("annPersonalStatusBadge");
       const pDesc = document.getElementById("annPersonalStatusDesc");
-      if (pBadge && pDesc) {
-        if (!userAddress || window.currentVerifiedRole === "none") {
-          pBadge.className = "task-badge status-unverified";
-          pBadge.textContent = "Chưa kết nối ví";
-          pDesc.textContent = "Kết nối ví MetaMask để kiểm tra trạng thái đóng góp của bạn";
-        } else if (window.currentVerifiedRole === "advisor") {
-          pBadge.className = "task-badge status-ready";
-          pBadge.textContent = "Cố vấn học tập";
-          pDesc.textContent = "Tài khoản Cố vấn quản trị, không thuộc diện nộp quỹ thường niên";
-        } else if (window.currentVerifiedRole === "guest") {
-          pBadge.className = "task-badge status-unlinked";
-          pBadge.textContent = "Ví ngoài danh bạ";
-          pDesc.textContent = "Địa chỉ ví của bạn chưa được liên kết danh bạ sinh viên K57";
+      if (!pBadge || !pDesc) return;
+
+      if (!userAddress || window.currentVerifiedRole === "none") {
+        pBadge.className = "task-badge status-unverified";
+        pBadge.textContent = "Chưa kết nối ví";
+        pDesc.textContent = "Kết nối ví MetaMask để kiểm tra trạng thái đóng góp của bạn";
+      } else if (window.currentVerifiedRole === "advisor") {
+        pBadge.className = "task-badge status-ready";
+        pBadge.textContent = "Cố vấn học tập";
+        pDesc.textContent = "Tài khoản Cố vấn quản trị, không thuộc diện nộp quỹ thường niên";
+      } else if (window.currentVerifiedRole === "guest") {
+        pBadge.className = "task-badge status-unlinked";
+        pBadge.textContent = "Ví ngoài danh bạ";
+        pDesc.textContent = "Địa chỉ ví của bạn chưa được liên kết danh bạ sinh viên K57";
+      } else {
+        let myContribWei = 0n;
+        if (contract && userAddress) {
+          try {
+            myContribWei = await contract.studentContributions(userAddress);
+          } catch (e) {
+            console.warn("Lỗi đọc studentContributions cá nhân:", e);
+          }
+        }
+        const myContribEth = formatEth(myContribWei);
+        if (Number(myContribEth) > 0) {
+          pBadge.className = "task-badge status-completed";
+          pBadge.textContent = "Đã có đóng góp on-chain";
+          pDesc.textContent = `Tổng tích lũy ví đã đóng góp: ${myContribEth} ETH on-chain cho quỹ lớp K57.`;
         } else {
-          let myContribWei = 0n;
-          if (contract && userAddress) {
-            try {
-              myContribWei = await contract.studentContributions(userAddress);
-            } catch (e) {
-              console.warn("Lỗi đọc studentContributions cá nhân:", e);
-            }
-          }
-          const myContribEth = formatEth(myContribWei);
-          const targetEth = ann.targetAmountEth || "0.01";
-          if (Number(myContribEth) >= Number(targetEth) && Number(targetEth) > 0) {
-            pBadge.className = "task-badge status-completed";
-            pBadge.textContent = "Đã hoàn thành (COMPLETED)";
-            pDesc.textContent = `Bạn đã hoàn thành đóng góp ${myContribEth} ETH on-chain cho quỹ lớp K57.`;
-          } else if (Number(myContribEth) > 0) {
-            pBadge.className = "task-badge status-action";
-            pBadge.textContent = "Đã nộp một phần";
-            pDesc.textContent = `Bạn đã nộp ${myContribEth} / ${targetEth} ETH. Vui lòng đóng góp phần còn lại.`;
-          } else {
-            pBadge.className = "task-badge status-action";
-            pBadge.textContent = "Chưa nộp quỹ (OPEN)";
-            pDesc.textContent = `Nghĩa vụ cá nhân: ${targetEth} ETH theo thông báo của lớp`;
-          }
+          pBadge.className = "task-badge status-action";
+          pBadge.textContent = "Chưa có đóng góp on-chain";
+          pDesc.textContent = "Ví của bạn chưa phát sinh giao dịch đóng góp vào quỹ lớp.";
         }
       }
     }
 
-    function openAnnModal() {
-      // 1. Kiểm tra kết nối ví
+    async function initiateCampaignContribution(notificationId, targetAmountEth) {
+      if (!userAddress) {
+        alert("⚠️ Vui lòng kết nối ví MetaMask trước khi thực hiện nộp quỹ.");
+        return;
+      }
+      if (!contract) {
+        alert("⚠️ Chưa kết nối Smart Contract. Vui lòng kiểm tra lại mạng Sepolia.");
+        return;
+      }
+
+      const activeToken = localStorage.getItem("kts_auth_session_token");
+      if (!activeToken) {
+        alert("⚠️ Vui lòng đăng nhập ví (Ký Challenge-Response) để hệ thống xác thực danh tính đóng góp.");
+        return;
+      }
+
+      const cleanEth = prompt(`Nhập số lượng ETH bạn muốn nộp cho đợt thu này:`, targetAmountEth || "0.01");
+      if (!cleanEth || parseFloat(cleanEth) <= 0) return;
+
+      // 1. Tạo claimIntentId TRƯỚC KHI mở MetaMask
+      let intentId = null;
+      try {
+        const intentResp = await fetch(`${AI_BACKEND_URL}/api/contribution/intent`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${activeToken}`
+          },
+          body: JSON.stringify({ notificationId: notificationId })
+        });
+        if (intentResp.ok) {
+          const res = await intentResp.json();
+          if (res.success && res.intent) {
+            intentId = res.intent.intentId;
+          }
+        } else {
+          const errRes = await intentResp.json();
+          alert("⚠️ Lỗi tạo ý định nộp quỹ: " + (errRes.error || "Đợt thu có thể đã đóng."));
+          return;
+        }
+      } catch (intentErr) {
+        console.warn("Lỗi tạo intent:", intentErr);
+        alert("Không thể kết nối máy chủ để tạo ý định nộp quỹ. Vui lòng thử lại.");
+        return;
+      }
+
+      // 2. Mở ví MetaMask gửi giao dịch deposit()
+      try {
+        logToTerminal(`[Giao dịch] Đang gửi giao dịch nộp ${cleanEth} ETH cho đợt thu '${notificationId}'...`);
+        const valueWei = ethers.parseEther(cleanEth);
+        const tx = await contract.deposit({ value: valueWei });
+        logToTerminal(`[Blockchain] Giao dịch đã phát sóng! TxHash: ${tx.hash}. Đang chờ xác nhận trên Sepolia...`);
+        alert(`Giao dịch đã được phát sóng lên Sepolia Blockchain!
+
+TxHash: ${tx.hash}
+
+Vui lòng chờ mạng xác nhận.`);
+
+        const receipt = await tx.wait(1);
+        logToTerminal(`[Blockchain] Giao dịch thành công tại block #${receipt.blockNumber}! Đang gửi claim phân bổ...`);
+
+        // 3. Gửi claim lên Backend kèm intentId và txHash
+        const claimResp = await fetch(`${AI_BACKEND_URL}/api/contribution/claim`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${activeToken}`
+          },
+          body: JSON.stringify({
+            notificationId: notificationId,
+            txHash: tx.hash,
+            claimIntentId: intentId
+          })
+        });
+
+        if (claimResp.ok) {
+          const claimData = await claimResp.json();
+          alert(`✅ Đóng góp thành công!
+
+Số tiền: ${cleanEth} ETH
+Đợt thu: ${notificationId}
+Tiến độ đã được ghi nhận độc lập.`);
+          syncAnnouncementFromServer();
+        } else {
+          const claimErr = await claimResp.json();
+          alert("⚠️ Giao dịch on-chain thành công nhưng có cảnh báo phân bổ: " + (claimErr.error || "Vui lòng liên hệ BCS đối soát."));
+        }
+      } catch (txErr) {
+        console.error("Lỗi giao dịch MetaMask:", txErr);
+        alert("Lỗi thực hiện giao dịch: " + (txErr.message || txErr));
+      }
+    }
+
+    function openAnnModal(targetId, forceMode) {
       if (!userAddress) {
         alert(
           "⚠️ Truy cập bị từ chối!\n\n" +
-          "Bạn chưa kết nối ví MetaMask. Chức năng chỉnh sửa thông báo CHỈ DÀNH RIÊNG cho tài khoản đăng nhập là Ban cán sự lớp K57.\n\n" +
+          "Bạn chưa kết nối ví MetaMask. Chức năng quản trị thông báo CHỈ DÀNH RIÊNG cho tài khoản đăng nhập là Ban cán sự lớp K57.\n\n" +
           "Vui lòng bấm 'Kết nối ví' bằng tài khoản Ban cán sự để tiếp tục."
         );
         return;
       }
 
-      // 2. Kiểm tra phân quyền on-chain nghiêm ngặt
       if (!isBcsMember && !isAdvisor) {
         alert(
           "⚠️ Truy cập bị từ chối!\n\n" +
@@ -11426,18 +13180,43 @@
         return;
       }
 
-      const ann = getAnnouncementData();
-      const currentClassSize = getDynamicClassSize(ann);
-      document.getElementById("formAnnTitle").value = ann.title || "";
-      document.getElementById("formAnnAmount").value = ann.targetAmountEth || "0.01";
-      document.getElementById("formAnnClassSize").value = currentClassSize;
-      document.getElementById("formAnnDeadline").value = ann.deadline || "";
-      document.getElementById("formAnnPurpose").value = ann.purpose || "";
-      document.getElementById("formAnnStatus").value = ann.status === "completed" ? "Đã hoàn thành" : "Đang diễn ra";
+      const activeList = getActiveNotifications();
+      let targetAnn = null;
+      const isExplicitEdit = (forceMode === "edit" || (typeof targetId === "string" && targetId));
+      if (isExplicitEdit && targetId) {
+        targetAnn = activeList.find(a => a && a.id === targetId) || getAnnouncementHistory().find(h => h && h.id === targetId);
+      }
+
+      const modalTitleEl = document.querySelector("#announcementModal .modal-header h3");
+      const btnSaveAnn = document.getElementById("btnSaveAnnouncementModal");
+
+      if (targetAnn) {
+        currentAnnModalMode = "edit";
+        currentAnnModalTargetId = targetAnn.id;
+        document.getElementById("formAnnTitle").value = targetAnn.title || "";
+        document.getElementById("formAnnAmount").value = targetAnn.targetAmountEth || "0.01";
+        document.getElementById("formAnnClassSize").value = getDynamicClassSize(targetAnn);
+        document.getElementById("formAnnDeadline").value = targetAnn.deadline || "";
+        document.getElementById("formAnnPurpose").value = targetAnn.purpose || "";
+        document.getElementById("formAnnStatus").value = targetAnn.status === "completed" ? "Đã hoàn thành" : "Đang diễn ra";
+        if (modalTitleEl) modalTitleEl.textContent = "✏️ Chỉnh sửa thông báo đợt thu quỹ K57";
+        if (btnSaveAnn) btnSaveAnn.textContent = "Lưu thay đổi đợt thu";
+      } else {
+        currentAnnModalMode = "create";
+        currentAnnModalTargetId = null;
+        document.getElementById("formAnnTitle").value = "";
+        document.getElementById("formAnnAmount").value = "0.01";
+        document.getElementById("formAnnClassSize").value = (classRoster && classRoster.length > 0) ? classRoster.length : "";
+        document.getElementById("formAnnDeadline").value = "";
+        document.getElementById("formAnnPurpose").value = "";
+        document.getElementById("formAnnStatus").value = "Đang diễn ra";
+        if (modalTitleEl) modalTitleEl.textContent = "📢 Tạo & Phát động đợt thu quỹ mới K57";
+        if (btnSaveAnn) btnSaveAnn.textContent = "Lưu & Đăng thông báo mới";
+      }
 
       const btnCloseEarly = document.getElementById("btnCloseAnnouncementEarly");
       if (btnCloseEarly) {
-        btnCloseEarly.style.display = (ann && ann.status === "active") ? "inline-flex" : "none";
+        btnCloseEarly.style.display = (currentAnnModalMode === "edit") ? "inline-flex" : "none";
       }
 
       const modalEl = document.getElementById("announcementModal");
@@ -11453,23 +13232,28 @@
         modalEl.classList.remove("open");
         modalEl.classList.remove("show");
       }
+      currentAnnModalTargetId = null;
+      currentAnnModalMode = "create";
     }
 
-    async function closeActiveAnnouncement() {
+    async function closeActiveAnnouncement(targetId) {
       if (!userAddress || (!isBcsMember && !isAdvisor)) {
         alert("⚠️ Truy cập bị từ chối: Chỉ tài khoản Ban cán sự mới có quyền kết thúc đợt thu!");
         return;
       }
 
-      const ann = getAnnouncementData();
-      if (!ann || ann.status !== "active") {
-        alert("Hiện không có đợt thu nào đang diễn ra để kết thúc.");
+      const finalId = (typeof targetId === "string" && targetId) ? targetId : currentAnnModalTargetId;
+      const activeList = getActiveNotifications();
+      const target = finalId ? activeList.find(a => a && a.id === finalId) : (activeList.length > 0 ? activeList[0] : null);
+
+      if (!target) {
+        alert("Hiện không tìm thấy đợt thu phù hợp để kết thúc.");
         return;
       }
 
       const confirmClose = confirm(
-        `Bạn có chắc chắn muốn kết thúc đợt thu: "${ann.title}"?\n\n` +
-        "Thông báo này sẽ được chuyển ngay vào mục 'Lịch sử thông báo' và nút nộp tiền sẽ được vô hiệu hóa."
+        `Bạn có chắc chắn muốn kết thúc đợt thu: "${target.title}" (ID: ${target.id})?\n\n` +
+        "Thông báo này sẽ được chuyển ngay vào mục 'Lịch sử thông báo' mà không ảnh hưởng tới các đợt thu khác."
       );
       if (!confirmClose) return;
 
@@ -11484,11 +13268,14 @@
         const resp = await fetch(`${AI_BACKEND_URL}/api/announcement/close`, {
           method: "POST",
           headers: headers,
-          body: JSON.stringify({ reason: reason.trim() || "Ban cán sự chủ động kết thúc đợt thu" })
+          body: JSON.stringify({
+            id: target.id,
+            reason: reason.trim() || "Ban cán sự chủ động kết thúc đợt thu"
+          })
         });
         const data = await resp.json();
         if (resp.ok && data.success) {
-          logToTerminal(`[Thông báo] Đã kết thúc đợt thu và chuyển vào lịch sử thông báo.`);
+          logToTerminal(`[Thông báo] Đã kết thúc đợt thu "${target.title}" và chuyển vào lịch sử.`);
           alert("✅ Đã kết thúc đợt thu thành công! Thông báo đã được lưu trữ an toàn trong Lịch sử.");
           closeAnnModal();
           await syncAnnouncementFromServer();
@@ -11507,6 +13294,14 @@
         if (resp.ok) {
           const res = await resp.json();
           if (res.success) {
+            if (Array.isArray(res.activeNotifications)) {
+              saveActiveNotifications(res.activeNotifications);
+            } else if (res.active) {
+              saveActiveNotifications([res.active]);
+            } else {
+              saveActiveNotifications([]);
+            }
+
             if (res.active) {
               saveAnnouncementData(res.active);
             } else {
@@ -11518,12 +13313,13 @@
                 purpose: "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây."
               });
             }
+
             if (Array.isArray(res.history)) {
               classAnnouncementHistory = res.history;
               saveAnnouncementHistory(res.history);
             }
             renderAnnouncementUI();
-            logToTerminal(`[Đồng bộ] Đã tải thông báo mới nhất và lịch sử đợt thu từ máy chủ.`);
+            logToTerminal(`[Đồng bộ] Đã tải danh sách thông báo và lịch sử đợt thu từ máy chủ.`);
           }
         }
       } catch (e) {
@@ -11532,19 +13328,6 @@
     }
 
     function initAnnouncementSystem() {
-      // Dọn dẹp cache test cũ nếu có trong localStorage
-      try {
-        const annRaw = localStorage.getItem("kts_class_announcement");
-        if (annRaw && (annRaw.includes("ann-20261028045521") || annRaw.includes("0x85ac8f0ca75f2e3fda073bc566659c011208da74") || annRaw.includes("ann-k57-hk1"))) {
-          localStorage.removeItem("kts_class_announcement");
-        }
-        const histRaw = localStorage.getItem("kts_class_ann_history");
-        if (histRaw && (histRaw.includes("ann-k57-hk1") || histRaw.includes("0xe71f9ffb91a3f4ba78e25833ba48b05c0e7d9fc2") || histRaw.includes("ann-20261028045521"))) {
-          localStorage.removeItem("kts_class_ann_history");
-          classAnnouncementHistory = [];
-        }
-      } catch (e) {}
-
       renderAnnouncementUI();
       syncAnnouncementFromServer();
 
@@ -11560,31 +13343,40 @@
         btnCloseHist.addEventListener("click", () => toggleAnnHistory(false));
       }
 
-      // Nút mở modal chỉnh sửa
+      // Nút mở modal tạo / chỉnh sửa
       const btnOpen = document.getElementById("btnOpenAnnModal");
       if (btnOpen) {
-        btnOpen.addEventListener("click", openAnnModal);
+        btnOpen.addEventListener("click", () => openAnnModal());
       }
 
       // Nút kết thúc sớm trong modal
       const btnCloseEarly = document.getElementById("btnCloseAnnouncementEarly");
       if (btnCloseEarly) {
-        btnCloseEarly.addEventListener("click", closeActiveAnnouncement);
+        btnCloseEarly.addEventListener("click", () => closeActiveAnnouncement());
       }
 
       // Nút lưu thông báo trong modal
       const btnSave = document.getElementById("btnSaveAnnouncementModal");
       if (btnSave) {
-        btnSave.addEventListener("click", () => {
-          if (!userAddress || (!isBcsMember && !isAdvisor)) {
-            alert("⚠️ Truy cập bị từ chối: Chỉ tài khoản Ban cán sự mới có quyền lưu và phát thông báo!");
-            closeAnnModal();
+        btnSave.addEventListener("click", async () => {
+          if (!userAddress) {
+            alert("⚠️ Vui lòng kết nối ví MetaMask trước khi thực hiện!");
+            return;
+          }
+          if (!isBcsMember && !isAdvisor) {
+            alert("⚠️ Truy cập bị từ chối: Chỉ tài khoản Ban cán sự hoặc Cố vấn mới có quyền lưu và phát thông báo!");
+            return;
+          }
+          if (!userSessionToken) {
+            alert("⚠️ Phiên xác thực ví chưa sẵn sàng hoặc đã hết hạn.\nVui lòng bấm 'Ký xác thực ví' trên thanh công cụ để lấy phiên làm việc trước khi lưu thông báo.");
+            const bVerify = document.getElementById("btnVerifyWalletAuth");
+            if (bVerify) bVerify.style.display = "inline-flex";
             return;
           }
 
           const title = document.getElementById("formAnnTitle").value.trim();
           const amount = document.getElementById("formAnnAmount").value.trim();
-          const classSize = getDynamicClassSize(getAnnouncementData());
+          const classSize = (classRoster && classRoster.length > 0) ? classRoster.length : null;
           const deadline = document.getElementById("formAnnDeadline").value.trim();
           const purpose = document.getElementById("formAnnPurpose").value.trim();
           const status = document.getElementById("formAnnStatus").value === "Đã hoàn thành" ? "completed" : "active";
@@ -11594,50 +13386,89 @@
             return;
           }
 
-          const newAnn = {
+          const parsedAmt = parseFloat(amount);
+          if (isNaN(parsedAmt) || parsedAmt <= 0) {
+            alert("Mức nộp phải là một số lớn hơn 0 ETH!");
+            return;
+          }
+
+          const originalBtnText = btnSave.textContent;
+          btnSave.disabled = true;
+          btnSave.textContent = "⏳ Đang lưu...";
+
+          const payload = {
+            mode: currentAnnModalMode,
             title,
             targetAmountEth: amount,
             classSize,
             deadline: deadline || "Chưa xác định",
             purpose: purpose || "Kinh phí phục vụ hoạt động lớp",
-            status
+            status,
+            updatedAt: new Date().toISOString()
           };
 
-          closeAnnModal();
+          if (currentAnnModalMode === "edit" && currentAnnModalTargetId) {
+            payload.id = currentAnnModalTargetId;
+          }
+
           logToTerminal(`[Thông báo] Đang gửi thông báo đợt thu: "${title}" lên máy chủ...`);
 
-          const headers = { "Content-Type": "application/json" };
-          if (userSessionToken) {
-            headers["Authorization"] = `Bearer ${userSessionToken}`;
-          }
-          fetch(`${AI_BACKEND_URL}/api/announcement`, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-              ...newAnn,
-              updatedAt: new Date().toISOString()
-            })
-          })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                if (data.active) {
-                  saveAnnouncementData(data.active);
-                }
-                if (Array.isArray(data.history)) {
-                  classAnnouncementHistory = data.history;
-                  saveAnnouncementHistory(data.history);
-                }
-                renderAnnouncementUI();
-                logToTerminal(`[Đồng bộ] Thông báo mới đã được phát tán thành công đến tất cả thiết bị của lớp!`);
-                alert("✅ Đã lưu và phát thông báo mới tới toàn thể lớp K57!");
-              } else {
-                alert("Lỗi máy chủ khi lưu thông báo: " + (data.error || "Không được phép"));
-              }
-            })
-            .catch(err => {
-              console.warn("Lỗi đồng bộ server:", err);
+          try {
+            const headers = {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${userSessionToken}`
+            };
+
+            const res = await fetch(`${AI_BACKEND_URL}/api/announcement`, {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify(payload)
             });
+
+            let data = null;
+            try {
+              data = await res.json();
+            } catch (jsonErr) {
+              throw new Error(`Máy chủ phản hồi mã lỗi ${res.status} không đúng định dạng JSON.`);
+            }
+
+            if (!res.ok || !data.success) {
+              const errMsg = (data && data.error) ? data.error : `Mã phản hồi: ${res.status}`;
+              alert(`❌ Lưu thông báo thất bại: ${errMsg}\n\nDữ liệu của bạn được giữ nguyên trong biểu mẫu để bạn có thể thử lại.`);
+              return;
+            }
+
+            // CHỈ ĐÓNG MODAL KHI BACKEND XÁC NHẬN THÀNH CÔNG
+            closeAnnModal();
+            logToTerminal(`[Đồng bộ] Máy chủ đã ghi nhận thông báo. Đang đồng bộ giao diện...`);
+
+            // ĐỒNG BỘ GIAO DIỆN VÀ KIỂM TRA TỒN TẠI
+            let syncSuccess = false;
+            try {
+              await syncAnnouncementFromServer();
+              const activeList = getActiveNotifications();
+              const createdId = data.announcement ? data.announcement.id : null;
+              syncSuccess = activeList.some(a => a && (a.id === createdId || a.title === title));
+            } catch (syncErr) {
+              console.warn("Lỗi khi đồng bộ UI sau khi tạo thông báo:", syncErr);
+              syncSuccess = false;
+            }
+
+            if (syncSuccess) {
+              logToTerminal(`[Đồng bộ] ✅ Thông báo đã được công bố và hiển thị trên giao diện!`);
+              alert("✅ Đã cập nhật và lưu thông báo thành công!");
+            } else {
+              logToTerminal(`[Đồng bộ] ⚠️ Máy chủ đã lưu nhưng giao diện chưa cập nhật kịp.`);
+              alert("✅ Máy chủ đã lưu thông báo thành công!\n⚠️ Tuy nhiên, đồng bộ hiển thị lên giao diện chưa hoàn tất. Vui lòng nhấn F5 (Tải lại trang) để cập nhật danh sách.");
+            }
+          } catch (err) {
+            console.error("Lỗi gửi thông báo:", err);
+            logToTerminal(`[Lỗi] Không thể gửi thông báo: ${err.message}`);
+            alert(`❌ Không thể kết nối tới máy chủ hoặc đã xảy ra lỗi mạng:\n${err.message}\n\nDữ liệu biểu mẫu được giữ nguyên để bạn thử lại.`);
+          } finally {
+            btnSave.disabled = false;
+            btnSave.textContent = originalBtnText;
+          }
         });
       }
 
@@ -12436,8 +14267,10 @@
       if (depNumEl) depNumEl.textContent = `${finalCount} sinh viên`;
       if (depNoteEl) depNoteEl.textContent = `Tổng nộp: ${finalEth} ETH`;
 
-      // Cập nhật thanh tiến độ trên Bảng thông báo lớp
-      updateAnnouncementProgress(finalCount);
+      // Đồng bộ và làm mới giao diện tiến độ cho toàn bộ các chiến dịch đang hoạt động
+      if (typeof syncAnnouncementFromServer === "function") {
+        syncAnnouncementFromServer();
+      }
 
       // BẢO VỆ QUYỀN RIÊNG TƯ (ĐỢT 3B.3):
       // Tuyệt đối không gắn Họ tên / MSSV vào danh sách nộp quỹ công khai

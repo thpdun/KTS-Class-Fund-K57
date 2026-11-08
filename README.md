@@ -12,238 +12,163 @@ Hệ thống Hợp đồng thông minh Quản lý Quỹ lớp Phi tập trung d�
 
 ## 1. Giới thiệu dự án
 
-KTS-Class-Fund là giải pháp Smart Contract nhằm minh bạch hóa toàn diện dòng tiền thu chi của quỹ lớp. Hệ thống giải quyết các vấn đề tồn đọng của phương thức giữ quỹ truyền thống (tiền mặt hoặc tài khoản ngân hàng cá nhân), tự động trích quỹ dịch vụ vận hành để hỗ trợ chi phí Gas mạng lưới cho người quản trị, và lưu trữ lịch sử giao dịch bất biến trên blockchain.
+KTS-Class-Fund là giải pháp Smart Contract nhằm minh bạch hóa toàn diện dòng tiền thu chi của quỹ lớp. Hệ thống giải quyết các vấn đề tồn đọng của phương thức giữ quỹ truyền thống (tiền mặt hoặc tài khoản ngân hàng cá nhân), tự động phân bổ quỹ dịch vụ vận hành để bù đắp chi phí Gas mạng lưới cho người quản trị qua cơ chế EIP-1559, bảo vệ thông tin định danh sinh viên (PII), và lưu trữ lịch sử giao dịch bất biến trên blockchain.
 
 ### Phân quyền các vai trò người dùng (Theo `docs/SPEC.md`):
-- **Cố vấn học tập (CVHT / Owner):** Quản lý nhân sự Ban cán sự (kích hoạt/hủy quyền) và có đặc quyền rút Quỹ dịch vụ vận hành (`adminFeePool`) để bù đắp chi phí Gas.
-- **Ban cán sự lớp (BCS):** Đề xuất các khoản chi tiêu phục vụ hoạt động tập thể lớp, tham gia biểu quyết dân chủ ($\ge 51\%$) và thực thi giải ngân.
-- **Sinh viên trong lớp:** Nộp ETH vào quỹ chung, theo dõi số dư minh bạch theo thời gian thực.
+- **Cố vấn học tập (CVHT / Owner):** Quản lý nhân sự Ban cán sự, quản lý danh sách sinh viên ghi danh on-chain, cam kết mã băm danh bạ bảo vệ PII, và chuyển quỹ phí vận hành dư sang Quỹ lớp chính.
+- **Ban cán sự lớp (BCS):** Khởi tạo đợt thu quỹ on-chain, đóng đợt thu, đề xuất các khoản chi tiêu phục vụ hoạt động tập thể lớp, tham gia biểu quyết dân chủ ($\ge 51\%$) trên mẫu số snapshot cử tri, và thực thi giải ngân/hoàn tiền.
+- **Sinh viên trong lớp:** Nộp ETH vào quỹ chung hoặc đợt thu cụ thể, theo dõi số dư minh bạch theo thời gian thực, tạo yêu cầu hoàn tiền khi nộp thừa/nhầm trong hạn mức Net 99%.
 
 ---
 
-## 2. Hiện trạng mã nguồn và Phân định tính năng (Cập nhật sau Lab 14)
+## 2. Hiện trạng mã nguồn và Phân định tính năng (Cập nhật sau Lab 15)
 
-Để phản ánh chính xác tình trạng kỹ thuật sau **Lab 14 (Hoàn tiền an toàn R7 tinh giản, kiểm thử tích hợp chu trình 5 bước và tối ưu Gas)**, các tính năng được phân định rõ ràng giữa thực tế mã nguồn và lộ trình phát triển:
+Sau đợt nâng cấp toàn diện **Lab 15** theo tài liệu `docs/CHANGE_PLAN_LAB15.md`, hệ thống hoàn thiện 7 nhóm thay đổi kiến trúc (A–G) từ Smart Contract, backend đến giao diện DApp:
 
 ### 2.1. Tính năng ĐÃ TRIỂN KHAI trong mã nguồn hiện tại (`contracts/project/ProjectCore.sol`):
-- [x] **R1 — Phân quyền Quản trị CVHT & Quản lý Ban cán sự (BCS):**
+- [x] **R1 — Phân quyền Quản trị CVHT, Quản lý BCS & Chống Thao túng Biểu quyết (Nhóm B):**
   - Modifier `onlyAdvisor`: Chỉ địa chỉ ví Cố vấn học tập mới có quyền thay đổi nhân sự BCS.
-  - Hàm `setBCSMember(address member, bool status)`: Thêm mới, kích hoạt hoặc vô hiệu hóa thành viên BCS.
-  - Cập nhật số lượng BCS hoạt động linh hoạt (`activeBCSCount`) làm mẫu số động cho biểu quyết.
-  - Từ chối địa chỉ zero (`InvalidAddress()`) và chặn người ngoài can thiệp (`NotAdvisor()`).
+  - Hàm `setBCSMember(address member, bool status)`: Yêu cầu địa chỉ phải là sinh viên đã ghi danh (`onlyStudent`).
+  - **Hoãn kích hoạt 3 ngày (`BCS_ACTIVATION_DELAY = 3 days`):** Thành viên BCS mới được thêm phải đủ 3 ngày mới được tạo đề xuất hoặc bỏ phiếu, chặn việc CVHT bổ nhiệm tức thời ví ma để lũng đoạn biểu quyết.
+  - **Giới hạn quy mô BCS:** `MIN_BCS_FOR_PROPOSAL = 3` (bắt buộc tối thiểu 3 BCS hoạt động mới được tạo đề xuất), trần tối đa `MAX_BCS = 15`. Quản lý danh sách động `bcsList` qua kỹ thuật O(1) Swap-and-Pop.
+  - **Snapshot `voterBase`:** Mẫu số cử tri được chốt cố định tại thời điểm tạo đề xuất chi hoặc hoàn tiền; thay đổi nhân sự sau đó không ảnh hưởng tới các đề xuất đang biểu quyết.
   - Phát sự kiện `BCSMemberUpdated(member, status)`.
-- [x] **R2 — Nạp quỹ linh hoạt & Phân bổ 99% / 1% theo Basis Points:**
-  - Nạp qua 2 kênh: hàm `deposit()` (DApp) và hàm `receive()` (chuyển ETH trực tiếp).
-  - Trích tự động **1%** (100 basis points) vào Quỹ dịch vụ vận hành (`adminFeePool`): `(amount * FEE_BPS) / BPS_DENOMINATOR`.
-  - Phân bổ **99%** số tiền còn lại vào Quỹ lớp chính (`classFundBalance`): `amount - adminFee` (bảo toàn 100% wei lẻ do làm tròn số nguyên).
-  - Chặn giao dịch nạp 0 ETH bằng lỗi tùy biến `ZeroAmount()`.
-  - Ghi nhận đầy đủ lịch sử đóng góp gốc `studentContributions[student]`.
+- [x] **R2 — Nạp quỹ Whitelist, Phân bổ 99%/1% & Hạch toán Net 99% (Nhóm A & D):**
+  - **Whitelist nạp tiền:** Chỉ sinh viên trong danh bạ on-chain (`isStudent[wallet] == true`) mới được gọi `deposit()` hoặc chuyển ETH qua `receive()`. Người ngoài bị từ chối với lỗi `NotEnrolledStudent()`.
+  - Phân bổ tự động: **1%** vào Quỹ dịch vụ vận hành (`adminFeePool`) và **99%** vào Quỹ lớp chính (`classFundBalance`).
+  - **Hạch toán Net 99%:** `studentContributions[student]` chỉ ghi nhận 99% net (hạn mức có thể hoàn lại); `studentTotalDeposited[student]` lưu 100% gross (hiển thị lịch sử).
+  - Bảo toàn 100% wei lẻ do phép chia số nguyên, chặn nạp 0 ETH bằng `ZeroAmount()`.
   - Phát sự kiện `FundDeposited` và `AdminFeeCollected`.
-- [x] **R7 — Quy trình Hoàn tiền có Biểu quyết Ban Cán sự (Governance-Controlled Refund):**
-  - **Khắc phục triệt để lỗ hổng rút tiền trực tiếp:** Loại bỏ hoàn toàn mọi cơ chế cho phép sinh viên tự gọi rút tiền mà không có sự biểu quyết và phê chuẩn từ Ban cán sự.
-  - **Quy trình 3 bước kiểm soát nghiêm ngặt tương tự đề xuất chi tiêu:**
-    1. **Bước 1 — Tạo yêu cầu hoàn tiền:** Hàm `createRefundRequest(uint256 amount, string memory reason)` cho phép sinh viên tạo yêu cầu nhận lại khoản tiền đã nộp nhầm.
-       - Kiểm tra `amount > 0` (`ZeroAmount()`).
-       - Kiểm tra `amount <= getStudentAvailableContribution(msg.sender)` (`InsufficientContribution`): Chỉ được yêu cầu trong hạn mức đóng góp khả dụng của chính mình sau khi trừ đi các yêu cầu hoàn tiền đang chờ duyệt (`pendingStudentRefundAmount`). Người lạ hoặc người chưa nộp tiền bị chặn (`available = 0`).
-       - Kiểm tra `amount <= getAvailableClassFund()` (`InsufficientAvailableFund`): Không được yêu cầu vượt quá số dư quỹ khả dụng sau khi trừ cả khoản giữ chỗ chi tiêu lẫn hoàn tiền (`reservedSpendAmount + reservedRefundAmount`).
-       - Áp dụng cơ chế **giữ chỗ kép** (Dual-layer Reservation): Đồng thời tăng `reservedRefundAmount += amount` (khóa quỹ lớp) và `pendingStudentRefundAmount[msg.sender] += amount` (khóa hạn mức đóng góp của sinh viên). Chặn tạo nhiều yêu cầu đồng thời vượt tổng hạn mức.
-       - Không tự động chuyển ETH ra khỏi hợp đồng tại bước tạo yêu cầu.
-       - Phát sự kiện `RefundRequestCreated(requestId, applicant, amount, reason)`.
-    2. **Bước 2 — Ban cán sự biểu quyết:** Hàm `voteRefundRequest(uint256 requestId, bool support)` dành riêng cho thành viên BCS đang hoạt động (`onlyActiveBCS`).
-       - Mỗi thành viên BCS chỉ được bỏ phiếu một lần duy nhất cho mỗi yêu cầu (`AlreadyVotedRefund(requestId, voter)`).
-       - Thời hạn biểu quyết 7 ngày (`VOTING_PERIOD = 7 days`). Chặn bỏ phiếu sau 7 ngày (`RefundVotingPeriodEnded`).
-       - Tự động chuyển sang trạng thái Sẵn sàng thực thi (`Ready`) khi đạt tỷ lệ đồng ý $\ge 51\%$ (5,100 basis points) trên tổng số BCS hoạt động hiện hành.
-       - Dọn dẹp quá hạn: Hàm `expireRefundRequest(uint256 requestId)` cho phép bất kỳ ai giải phóng số tiền giữ chỗ kép về quỹ khả dụng nếu sau 7 ngày không đạt đủ 51% phiếu thuận.
-       - Phát sự kiện `RefundRequestVoted`, `RefundRequestReady`, `RefundRequestExpired`.
-    3. **Bước 3 — Thực thi hoàn tiền:** Hàm `executeRefundRequest(uint256 requestId)` giải ngân cho sinh viên.
-       - Chỉ yêu cầu ở trạng thái `Ready` mới được thực thi (`InvalidRefundStatus`).
-       - Xác minh lại hạn mức đóng góp và số dư quỹ lớp trước khi giải ngân.
-       - Tuân thủ nghiêm ngặt nguyên tắc Checks-Effects-Interactions (CEI): Cập nhật `req.status = Executed`, trừ `studentContributions[applicant]`, trừ `classFundBalance`, giải phóng `reservedRefundAmount` và `pendingStudentRefundAmount[applicant]` TRƯỚC KHI chuyển ETH.
-       - Chuyển ETH trực tiếp về chính địa chỉ của người yêu cầu (`req.applicant`) qua `.call{value: req.amount}("")`. Không ai có thể đổi địa chỉ nhận tiền.
-       - Xử lý chuyển ETH thất bại: Revert `ETHTransferFailed()` và rollback 100% kế toán.
-       - Chống Reentrancy và chống thực thi kép (`RefundAlreadyExecuted`).
-       - Phát sự kiện `RefundRequestExecuted(requestId, applicant, amount)`.
-- [x] **R11 — Rút phí dịch vụ vận hành (CVHT):**
-  - Hàm `withdrawAdminFee(uint256 amount)`: Dành riêng cho CVHT để bù đắp chi phí Gas.
-  - Áp dụng nghiêm ngặt nguyên tắc Checks-Effects-Interactions (CEI): trừ `adminFeePool` trước khi chuyển ETH bằng low-level `.call`.
-  - Chặn rút 0 ETH (`ZeroAmount()`) và chặn rút vượt quá số dư phí (`InsufficientAdminFee()`).
-  - Tuyệt đối không xâm lấn hoặc ảnh hưởng đến Quỹ lớp chính (`classFundBalance`).
-  - Phát sự kiện `AdminFeeWithdrawn(advisor, amount)`.
-- [x] **R3 — Tạo đề xuất chi tiêu & Giữ chỗ số dư (BCS):**
-  - Cấu trúc dữ liệu `SpendRequest` lưu trữ đầy đủ: người nhận, số tiền, mô tả, người tạo, thời điểm tạo, số phiếu thuận/chống, trạng thái.
-  - Hàm `createSpendRequest(recipient, amount, description)`: Chỉ BCS đang hoạt động mới được gọi (`onlyActiveBCS`).
-  - Kiểm tra số dư khả dụng thực tế qua `getAvailableClassFund()` và giữ chỗ an toàn qua biến `reservedSpendAmount` để chống chi vượt quỹ.
-  - Phát sự kiện `SpendRequestCreated`.
-- [x] **R4 & R5 — Biểu quyết dân chủ $\ge 51\%$, chống bỏ phiếu kép, thời hạn 7 ngày:**
-  - Hàm `voteSpendRequest(requestId, support)`: Dành riêng cho thành viên BCS đang hoạt động.
-  - Chống bỏ phiếu trùng (`AlreadyVoted(requestId, voter)`).
-  - Tự động chuyển sang trạng thái `Ready` khi tỷ lệ phiếu thuận đạt $\ge 51\%$ (5,100 basis points) trên tổng số BCS hoạt động hiện hành.
-  - Kiểm tra thời hạn 7 ngày (`VOTING_PERIOD = 7 days`): Chặn bỏ phiếu sau 7 ngày (`VotingPeriodEnded`).
-  - Hàm `expireSpendRequest(requestId)`: Bất kỳ ai cũng có thể gọi sau 7 ngày để đánh dấu `Expired` nếu chưa đạt 51%, giải phóng số tiền giữ chỗ.
-  - Phát sự kiện `SpendRequestVoted`, `SpendRequestReady`, `SpendRequestExpired`.
-- [x] **R6 — Thực thi giải ngân an toàn tuân thủ CEI:**
-  - Hàm `executeSpendRequest(requestId)`: Thành viên BCS gọi thực thi khi đề xuất đạt $\ge 51\%$.
-  - Cập nhật trạng thái `Executed`, trừ `classFundBalance` và `reservedSpendAmount` TRƯỚC KHI chuyển ETH bằng `.call` (Checks-Effects-Interactions).
-  - Chống thực thi lặp lại (`RequestAlreadyExecuted`).
-  - Xử lý chuyển ETH thất bại đúng cách: nếu người nhận từ chối ETH hoặc độc hại, toàn bộ giao dịch revert (`ETHTransferFailed`), bảo toàn 100% kế toán.
-  - Chống hoàn toàn Reentrancy: Trạng thái `Executed` được lưu trước khi gọi ngoài, triệt tiêu khả năng re-enter.
-  - Phát sự kiện `SpendRequestExecuted(requestId, recipient, amount)`.
+- [x] **R7 — Quy trình Hoàn tiền có Biểu quyết BCS & Chặn Xung đột Lợi ích (Nhóm A & C):**
+  - **Tạo yêu cầu hoàn tiền:** Sinh viên gọi `createRefundRequest(amount, reason)`.
+    - Hạn mức hoàn tối đa được giới hạn bởi công thức:
+      $$\text{maxRefund} = \min(\text{getStudentAvailableContribution(msg.sender)}, \text{getAvailableClassFund()})$$
+    - Giữ chỗ kép (Dual-layer Reservation): Đồng thời tăng `reservedRefundAmount` (khóa quỹ lớp) và `pendingStudentRefundAmount[msg.sender]` (khóa hạn mức đóng góp cá nhân).
+  - **Biểu quyết dân chủ $\ge 51\%$:** BCS biểu quyết qua `voteRefundRequest(requestId, support)`. Thời hạn 7 ngày.
+  - **Chặn xung đột lợi ích (Conflict of Interest):** Sinh viên xin hoàn tiền nếu là BCS thì bị chặn biểu quyết trên yêu cầu của chính mình (`ConflictOfInterestApplicantCannotVote`). Mẫu số tính ngưỡng tự động giảm 1 (`voterBase - 1`) và yêu cầu tối thiểu 2 phiếu thuận (`yesVotes >= 2`).
+  - **Thực thi hoàn tiền:** Hàm `executeRefundRequest(requestId)` tuân thủ nghiêm ngặt CEI, chuyển ETH trực tiếp về ví sinh viên qua `.call{value: req.amount}("")`. Rollback toàn bộ kế toán nếu chuyển ETH thất bại (`ETHTransferFailed`).
+- [x] **R3, R4, R5, R6 — Đề xuất Chi tiêu, Biểu quyết Snapshot & Chặn Xung đột Lợi ích (Nhóm B & C):**
+  - `createSpendRequest(recipient, amount, description)`: Chỉ BCS đủ điều kiện gọi khi `activeBCSCount >= 3`. Giữ chỗ an toàn qua `reservedSpendAmount`.
+  - `voteSpendRequest(requestId, support)`: Chặn bỏ phiếu kép, tính ngưỡng $\ge 51\%$ theo snapshot `voterBase`.
+  - **Chặn xung đột lợi ích:** BCS là người thụ hưởng tiền giải ngân (`recipient`) bị chặn biểu quyết (`ConflictOfInterestRecipientCannotVote`).
+  - `executeSpendRequest(requestId)`: Tự động hoặc gọi thủ công khi đạt $\ge 51\%$, giải ngân an toàn theo CEI.
+  - `expireSpendRequest(requestId)` / `expireRefundRequest(requestId)`: Cho phép bất kỳ ai giải phóng số tiền giữ chỗ sau 7 ngày nếu không đạt đủ 51%.
+- [x] **Mục D — Quản lý Danh sách Sinh viên On-chain & Bảo vệ PII:**
+  - `setStudents(address[] calldata students, bool status)`: CVHT cập nhật danh sách sinh viên (tối đa 100 ví/lần). Không cho phép xóa sinh viên đang là BCS (`CannotRemoveActiveBCSAsStudent`).
+  - `commitRoster(bytes32 hash)`: CVHT cam kết mã băm SHA-256 của danh bạ lên chuỗi (`rosterHash`). Toàn bộ tên, MSSV và thông tin cá nhân (PII) được lưu trữ ngoài chuỗi (off-chain).
+  - `getUnaccountedBalance()`: Phát hiện các khoản ETH bị ép chuyển vào hợp đồng (qua `selfdestruct`) mà không làm sai lệch sổ sách kế toán.
+- [x] **Mục E — Quản lý Đợt thu Quỹ On-chain:**
+  - `createCollection(targetWei, deadline, purpose)`: Chỉ BCS gọi, mở đợt thu mới khi không có đợt thu nào đang mở (`OnlyOneActiveCollectionAllowed`).
+  - `closeCollection(id, reason)`: BCS đóng sớm đợt thu.
+  - `depositToCollection(id)`: Nộp tiền vào đúng đợt thu. Tiêu chí "Đã nộp" tính theo `paidInCollection >= targetWei` của đúng đợt thu đó.
+- [x] **Mục F — Bỏ Rút Phí, Tự động Hoàn Gas & Chuyển Phí Dư:**
+  - **Xóa bỏ hoàn toàn hàm rút phí:** Xóa `withdrawAdminFee` và sự kiện `AdminFeeWithdrawn`.
+  - **Tự động hoàn Gas (`governanceAction`):** 10 hàm quản trị của CVHT và BCS được tự động hoàn phí gas theo chuẩn EIP-1559:
+    $$\text{gasRefund} = \min(\text{gasUsed}, 500,000) \times \min(\text{tx.gasprice}, \text{block.basefee} + 2\text{ gwei})$$
+  - Xử lý thiếu hụt (Shortfall): Nếu `adminFeePool` không đủ, chuyển hết số dư hiện có và ghi nhận thiếu hụt (`gasRefundShortfall`), tuyệt đối không revert giao dịch quản trị chính.
+  - Fallback an toàn: Nếu ví người gọi từ chối ETH hoàn gas, phát `GasRefundFailed`, hoàn trả pool và không revert giao dịch chính.
+  - `moveFeeToClassFund(uint256 amount)`: CVHT chuyển phí vận hành dư sang Quỹ lớp chính.
 - [x] **Hàm tra cứu minh bạch (View / Getters):**
-  - `getFundBalance()`: Số dư Quỹ lớp chính.
-  - `getAvailableClassFund()`: Số dư khả dụng thực tế để tạo đề xuất chi mới.
-  - `getTotalContractBalance()`: Tổng số dư ETH thực tế hiện có trong hợp đồng (`address(this).balance`).
-  - `getStudentContribution(address student)`: Tổng đóng góp của sinh viên.
-  - `getSpendRequest(requestId)`: Thông tin chi tiết đề xuất chi.
-  - `hasMemberVoted(requestId, member)`: Kiểm tra trạng thái đã bỏ phiếu của thành viên BCS.
+  - `getFundBalance()`, `getAvailableClassFund()`, `getTotalContractBalance()`, `getUnaccountedBalance()`.
+  - `getStudentContribution(address student)` (99% net), `studentTotalDeposited(address student)` (100% gross).
+  - `getStudentMaxRefund(address student)` = $\min(\text{availableContribution}, \text{availableClassFund})$.
+  - `getSpendRequest(requestId)`, `getRefundRequest(requestId)`, `getCollection(collectionId)`.
+  - `isStudent(address)`, `isBCSMember(address)`, `getBCSList()`, `getActiveBCSCount()`.
+
+---
+
+## Cấu hình biên dịch/deploy
+
+- **Solidity compiler:** `0.8.20` (`solc 0.8.20`, pragma `^0.8.20`).
+- **EVM version:** `shanghai` (khai báo tường minh cho cả trình biên dịch và `networks.hardhat.hardfork` trong `hardhat.config.js`).
+- **Optimizer:** Bật (`enabled: true`, `runs: 200`).
+- **Kích thước Deployed Bytecode thực tế:**
+  - `deployedBytecode`: **20,767 bytes** (Đạt **84.50%** ngưỡng trần 24,576 bytes của EIP-170, biên an toàn còn **3,809 bytes**).
+  - `initcode`: **20,860 bytes** (Nằm sâu dưới giới hạn 49,152 bytes của Shanghai hardfork).
+
+> [!WARNING]  
+> **Lưu ý khi biên dịch/deploy bằng Remix IDE:** Phải chọn đúng **Compiler `0.8.20`**, **EVM Version `shanghai`**, và bật **Enable optimization** với `runs = 200`. Nếu tắt optimizer, kích thước `deployedBytecode` sẽ vượt quá giới hạn **24.576 byte** của chuẩn EIP-170 và giao dịch deploy sẽ thất bại.
+
+- **Lệnh kiểm chứng tổng hợp (Hardhat + Python + Solc):**
+  ```powershell
+  npm run verify
+  ```
 
 > [!NOTE]  
-> **Lưu ý quan trọng về môi trường kiểm chứng:** Hợp đồng `ProjectCore.sol` tính đến hết Lab 14 **CHƯA ĐƯỢC TRIỂN KHAI (DEPLOY) LÊN MẠNG SEPOLIA TESTNET**. Mọi kết quả hoạt động hiện tại được kiểm chứng trên môi trường giả lập Python cục bộ (`test/test_economic_rules.py`), trình biên dịch `solc 0.8.37`, và máy ảo Remix VM (`test/ProjectCore_test.sol` & `test/ProjectCore_integration_test.sol`). Việc triển khai on-chain lên Sepolia Testnet là mục tiêu chính thức của **Lab 15**.
-
-### 2.2. Tính năng CHƯA TRIỂN KHAI (Kế hoạch các Lab tiếp theo):
-- [ ] **Triển khai DApp Frontend kết nối MetaMask trên Sepolia Testnet:** Kế hoạch thực hiện tại **Lab 15**.
-- [ ] **Các tính năng mở rộng v0.2 (Sau môn học):** Tải file ảnh minh chứng lên IPFS, hỗ trợ ERC-20 token (USDT/USDC).
+> **Lưu ý quan trọng về môi trường kiểm chứng:** Hợp đồng `ProjectCore.sol` tính đến hết Lab 15 **CHƯA ĐƯỢC TRIỂN KHAI (DEPLOY) LÊN MẠNG SEPOLIA TESTNET**. Mọi kết quả hoạt động hiện tại được kiểm chứng trên môi trường giả lập Python cục bộ (`test/test_economic_rules.py`), Hardhat test suite (`test/hardhat/baseline.test.js`), trình biên dịch `solc 0.8.20`, và các kiểm thử Solidity (`test/ProjectCore_test.sol` & `test/ProjectCore_integration_test.sol`). Các tệp kiểm thử Solidity ở trạng thái: **ĐÃ BIÊN DỊCH THÀNH CÔNG (CHƯA CHẠY TRÊN REMIX)**.
 
 ---
 
 ## 3. Hướng dẫn kiểm tra và Chạy thử nghiệm thực tế
 
-Dự án cung cấp tài liệu hướng dẫn cụ thể và tách biệt cho từng phương thức kiểm thử dựa trên các tệp thực tế hiện có trong repository:
+### 3.1. Phương thức 1: Chạy kiểm thử tự động bằng Hardhat
+- **Tệp kiểm thử:** `test/hardhat/baseline.test.js`
+- **Mục đích:** Kiểm thử toàn diện 38 kịch bản tự động trên mạng Hardhat Shanghai, thao túng thời gian thực tế bằng `time.increase` (kiểm tra hoãn 3 ngày, hết hạn 7 ngày), kiểm thử giá gas tùy chỉnh EIP-1559, kiểm tra giới hạn kích thước bytecode EIP-170, và kịch bản tấn công giả mạo cử tri.
+- **Lệnh thực thi:**
+  ```powershell
+  npx hardhat test
+  ```
+- **Kết quả thực tế quan sát được (38/38 ca ĐẠT):**
+  ```text
+  38 passing (11s)
+  ```
 
-### 3.1. Phương thức 1: Chạy kiểm thử tự động bằng Python
-
-Tệp kiểm thử: `test/test_economic_rules.py`  
-Mục đích: Kiểm tra tự động 100% logic kinh tế R1, R2, R11, R3, R4, R5, R6, R7 (hoàn tiền), toàn bộ chu trình 5 bước dòng tiền (Nạp → Biểu quyết → Chi → Hoàn tiền → Rút tiền), cơ chế trích phí 1%, giữ chỗ quỹ chi tiêu, biểu quyết dân chủ $\ge 51\%$, chống bỏ phiếu kép, chống double-spending và mô phỏng gian lận.
-
-- **Điều kiện môi trường cần có:**
-  - Máy tính đã cài đặt **Python 3.10+** (đã kiểm tra tương thích trên Python 3.10, 3.11, 3.12, 3.13).
-  - Sử dụng toàn bộ thư viện chuẩn của Python (`unittest`, `sys`, `typing`). **Không yêu cầu cài đặt thêm bất kỳ thư viện ngoài nào (không cần `pip install`)**.
-- **Lệnh thực thi trong Terminal / PowerShell:**
+### 3.2. Phương thức 2: Chạy kiểm thử mô phỏng kinh tế bằng Python
+- **Tệp kiểm thử:** `test/test_economic_rules.py`
+- **Mục đích:** Kiểm tra tự động 100% logic kinh tế 7 nhóm thay đổi A–G: hạch toán Net 99%, bảo toàn wei lẻ, hoãn 3 ngày, snapshot voterBase, xung đột lợi ích, whitelist danh bạ, đợt thu on-chain, cơ chế hoàn gas và chuyển phí dư sang Quỹ lớp.
+- **Lệnh thực thi:**
   ```powershell
   python test/test_economic_rules.py
   ```
-- **Kết quả thực tế quan sát được (24/24 ca ĐẠT):**
+- **Kết quả thực tế quan sát được (58/58 ca ĐẠT):**
   ```text
-  Ran 24 tests in 0.007s
+  Ran 58 tests in 0.015s
 
   OK
-
-  [Ca 1 - Nạp 1 ETH thành công]: Quỹ chính 0.99 ETH, Quỹ phí 0.01 ETH, bảo toàn số dư.
-  [Ca 2 - Chặn nạp 0 ETH]: Revert ZeroAmount() thành công.
-  [Ca 3 - Kênh nạp trực tiếp receive()]: Phân bổ 99%/1% chuẩn xác.
-  [Ca 4 - Phép chia số nguyên & bảo toàn wei]: 99 wei (phí 0), 101 wei (phí 1).
-  [Ca 5 - Kiểm tra chống gian lận & giá trị biên]: 100% giá trị biên bảo toàn số dư.
-  [Ca 6 - Negative Test: Kênh receive() nạp 0 ETH]: Revert ZeroAmount().
-  [Ca 7 - Đánh giá an toàn CEI luồng nạp]: Bất biến số dư được bảo toàn.
-  [Ca 8 - R1: Phân quyền CVHT & BCS]: Chỉ CVHT được thêm/xóa BCS, chặn outsider thành công.
-  [Ca 9 - R11: Rút phí vận hành]: CVHT rút phí thành công, Quỹ lớp 9.9 ETH được bảo toàn 100%.
-  [Ca 10 - R3: Tạo đề xuất chi]: BCS tạo hợp lệ, giữ chỗ 2 ETH, chặn người ngoài và chi vượt ngân sách.
-  [Ca 11 - R4/R5: Biểu quyết]: 1/3 (Pending), chặn double-voting, 2/3 >= 51% (Ready), chặn quá hạn 7 ngày.
-  [Ca 12 - R6: Giải ngân & Bất biến kế toán]: Giải ngân thành công, chặn double-spending, bảo toàn bất biến.
-  [Ca 13 - R11: Rollback khi chuyển phí thất bại]: adminFeePool được bảo toàn nguyên vẹn.
-  [Ca 14 - R3: Giữ chỗ đa đề xuất]: Ngăn chặn thành công việc nhiều đề xuất chi vượt ngân sách.
-  [Ca 15 - R5/R9: Đánh dấu Expired giải phóng tiền giữ chỗ]: 4 ETH giữ chỗ được giải phóng về quỹ khả dụng.
-  [Ca 16 - R7: Hoàn tiền có biểu quyết]: Tạo yêu cầu -> BCS duyệt 2/3 -> Thực thi 4 ETH thành công, bảo toàn phí 0.1 ETH.
-  [Ca 17 - R7 Negative: Hoàn tiền 0 wei]: Revert ZeroAmount() thành công.
-  [Ca 18 - R7 Negative: Hoàn vượt đóng góp]: Revert InsufficientContribution() thành công.
-  [Ca 19 - R7 Negative: Người ngoài xin hoàn tiền]: Chặn người chưa đóng góp thành công.
-  [Ca 20 - R7 Negative: Hoàn vượt quỹ khả dụng]: Chặn hoàn tiền xâm lấn ngân sách đề xuất chi thành công.
-  [Ca 21 - R7 Negative: Chặn yêu cầu kép vượt hạn mức]: Chặn tạo nhiều yêu cầu hoàn tiền vượt đóng góp thành công.
-  [Ca 22 - R7 Biểu quyết]: Chặn người ngoài vote, chặn vote kép, xử lý hết hạn 7 ngày chuẩn xác.
-  [Ca 23 - R7 Thực thi]: Chặn thực thi khi chưa đạt 51%, chặn thực thi kép thành công.
-  [Ca 24 - Integration Test: Chu trình 5 bước có biểu quyết BCS]: Hoàn thành xuất sắc 100% chu trình (Nạp -> Biểu quyết chi -> Chi -> Yêu cầu hoàn -> BCS duyệt -> Hoàn -> Rút phí), bảo toàn tuyệt đối số dư.
   ```
-
-### 3.2. Phương thức 2: Chạy kiểm thử đơn vị & tích hợp Solidity bằng Remix VM
-
-Dự án cung cấp 2 bộ kiểm thử Solidity chuyên biệt được viết cho plugin **Solidity Unit Testing** của Remix IDE:
-1. **Unit Test Suite:** `test/ProjectCore_test.sol` (27 hàm kiểm thử phân bổ qua 7 nhóm A đến G, kiểm thử chi tiết từng chức năng độc lập).
-2. **Integration Test Suite:** `test/ProjectCore_integration_test.sol` (19 hàm kiểm thử, kiểm thử toàn bộ chu trình 5 bước dòng tiền: **Nạp → Biểu quyết → Chi → Hoàn tiền → Rút tiền**, các điều kiện biên & gian lận, và đo lường Gas tiêu thụ thực tế).
-3. **Thực nghiệm Reentrancy (Lab 13):** `contracts/training/VulnerableBank.sol` và `test/VulnerableBank_test.sol`.
-
-- **Hướng dẫn từng bước thực hiện trên Remix IDE:**
-  1. Mở trình duyệt web và truy cập: [https://remix.ethereum.org](https://remix.ethereum.org).
-  2. Tại bảng điều khiển File Explorer của Remix, tải lên các tệp theo đúng cấu trúc:
-     - `contracts/project/ProjectCore.sol`
-     - `test/ProjectCore_test.sol`
-     - `test/ProjectCore_integration_test.sol`
-     - `contracts/training/VulnerableBank.sol`
-     - `test/VulnerableBank_test.sol`
-  3. Mở tab **Solidity Compiler** (icon thứ 3 ở thanh bên trái):
-     - Chọn compiler: `0.8.20` hoặc cao hơn (khuyên dùng `0.8.20` hoặc `0.8.37`).
-     - Nhấn **Compile ProjectCore.sol**. Xác nhận xuất hiện dấu tích xanh.
-  4. Mở plugin **Solidity Unit Testing**:
-     - Chọn tệp `test/ProjectCore_test.sol` hoặc `test/ProjectCore_integration_test.sol`.
-     - Nhấn nút màu xanh **Run** để thực thi bộ kiểm thử trên **Remix VM (Cancun / Shanghai)**.
-  5. **Danh mục 27 hàm kiểm thử trong `test/ProjectCore_test.sol`:**
-     - **Nhóm A — R2: Nạp tiền & Phân bổ 99%/1% (4 hàm):** `testGroupA1_Deposit1ETH_Split99_1`, `testGroupA2_DirectReceive`, `testGroupA3_ZeroAmountReverts`, `testGroupA4_IntegerMathEdgeCases`.
-     - **Nhóm B — R1: Phân quyền CVHT & Quản trị BCS (4 hàm):** `testGroupB1_AdvisorAddAndRemoveBCS`, `testGroupB2_NonAdvisorCannotSetBCS`, `testGroupB3_ZeroAddressBCSReverts`, `testGroupB4_DisabledBCSCannotAct`.
-     - **Nhóm C — R11: Rút phí vận hành (5 hàm):** `testGroupC1_AdvisorWithdrawValidFee`, `testGroupC2_NonAdvisorCannotWithdrawFee`, `testGroupC3_CannotWithdrawExceedingFeePool`, `testGroupC4_CannotWithdrawZeroFee`, `testGroupC5_RejectingAdvisorWithdrawFeeRevertsAndRollsBack`.
-     - **Nhóm D — R3: Tạo đề xuất chi tiêu & Giữ chỗ (4 hàm):** `testGroupD1_ActiveBCSCreateSpendRequest`, `testGroupD2_NonBCSCannotCreateRequest`, `testGroupD3_ZeroRecipientOrAmountOrExceedingFundReverts`, `testGroupD4_MultipleRequestsCannotExceedAvailableFund`.
-     - **Nhóm E — R4/R5: Biểu quyết & Ngưỡng 51% (4 hàm):** `testGroupE1_VoteYesAndNo_AndDoubleVotingReverts`, `testGroupE2_NonBCSCannotVote`, `testGroupE3_DynamicBCSDenominator`, `testGroupE4_ExpireBeforeVotingPeriodReverts`.
-     - **Nhóm F — R6: Giải ngân & An ninh chuyển tiền CEI (5 hàm):** `testGroupF1_ExecuteSuccessfulWhenThresholdMet`, `testGroupF2_CannotExecuteWithoutThreshold`, `testGroupF3_DoubleExecutionReverts`, `testGroupF4_ExecuteRevertsIfRecipientRefusesETH`, `testGroupF5_ReentrancyDuringExecuteIsBlockedByCEI`.
-     - **Nhóm G — Bất biến kế toán (1 hàm):** `testGroupG1_AccountingConservationAndIsolation`.
-   6. **Danh mục 19 hàm kiểm thử trong `test/ProjectCore_integration_test.sol` (Lab 14 nâng cấp):**
-      - **Chu trình dòng tiền khép kín 5 bước có biểu quyết BCS (1 hàm):**
-        - `testIntegration_FullFiveStepLifecycle`: Khảo sát toàn bộ chu trình Nạp (15 ETH) → Biểu quyết chi (đạt 2/3) → Chi giải ngân (4 ETH) → Sinh viên tạo yêu cầu hoàn tiền (3 ETH) → BCS biểu quyết thông qua (2/3) → Thực thi hoàn tiền → Rút phí vận hành (0.1 ETH). Kiểm tra đối soát mọi biến trạng thái kế toán và `address(this).balance` sau từng bước.
-      - **Nhóm A — Kiểm thử biên & Gian lận Tạo yêu cầu hoàn tiền (8 hàm):**
-        - `testRefund_ZeroAmountReverts`: Chặn yêu cầu hoàn 0 wei (`ZeroAmount()`).
-        - `testRefund_ExceedingContributionReverts`: Chặn yêu cầu hoàn vượt mức đóng góp của chính mình (`InsufficientContribution`).
-        - `testRefund_NonContributorCannotRefund`: Người lạ/chưa nộp cố tạo yêu cầu hoàn tiền bị chặn (`InsufficientContribution`).
-        - `testRefund_ExactMaximumBoundary`: Yêu cầu hoàn tiền chính xác bằng mức đóng góp tối đa đưa hạn mức khả dụng về 0.
-        - `testRefund_DoubleRefundExceedingTotalReverts`: Chặn tạo nhiều yêu cầu hoàn tiền đồng thời vượt tổng hạn mức đóng góp.
-        - `testRefund_ExceedingAvailableFundDueToReservedSpendReverts`: Chặn yêu cầu hoàn tiền xâm lấn quỹ đang giữ chỗ chi tiêu.
-        - `testRefund_RejectingRecipientRollsBack`: Địa chỉ sinh viên từ chối ETH khi thực thi thì revert `ETHTransferFailed()` và rollback 100% kế toán.
-        - `testRefund_ReentrancyBlockedByCEI`: Attacker gọi reentrancy trong lúc thực thi hoàn tiền bị triệt tiêu ngay bởi CEI.
-      - **Nhóm B & C — Kiểm thử biên Biểu quyết & Thực thi (5 hàm):**
-        - `testSpend_CannotExecuteWithoutThreshold`: Đề xuất chi chưa đủ 51% không thể giải ngân.
-        - `testSpend_CannotExecuteTwice`: Chặn giải ngân 2 lần cho cùng một đề xuất chi (`RequestAlreadyExecuted`).
-        - `testVoting_DoubleVotingReverts`: Chặn BCS bỏ phiếu lặp lại cho đề xuất chi (`AlreadyVoted`).
-        - `testRefund_VotingAndExecutionRules`: Kiểm tra biểu quyết hoàn tiền: người ngoài không được vote, chặn vote trùng, chưa đạt 51% không được thực thi.
-        - `testRefund_CannotExecuteTwice`: Chặn thực thi hoàn tiền hai lần cho cùng một yêu cầu (`RefundAlreadyExecuted`).
-      - **Nhóm D — Kiểm thử nạp & Bảo toàn số dư (2 hàm):**
-        - `testDeposit_MultipleDepositsFromSameAccountAccumulate`: Nộp nhiều lần từ cùng 1 tài khoản tích lũy chính xác cả đóng góp lẫn quỹ lớp.
-        - `testAccounting_NoWeiLossAcrossAllOperations`: Kiểm tra bất biến số dư tổng thể, không thất thoát 1 wei nào.
-      - **Đo lường Gas tiêu thụ (1 hàm):**
-        - `testGas_MeasureAllFunctions`: Đo lường chi phí Gas thực tế cho cả 8 thao tác cốt lõi gồm tạo yêu cầu hoàn tiền, biểu quyết hoàn tiền và thực thi hoàn tiền.
-> [!NOTE]
-> **Trạng thái thực tế:** Cả 2 bộ kiểm thử Solidity (`ProjectCore_test.sol` gồm 27 hàm và `ProjectCore_integration_test.sol` gồm 19 hàm) đã được biên dịch thành công 100% bằng `npx solc 0.8.37`. Do không dùng framework dòng lệnh nặng như Hardhat/Foundry, kết quả thực thi các hàm kiểm thử này được ghi nhận trực quan khi sinh viên nhấn nút **Run** trong giao diện Remix IDE.
 
 ### 3.3. Phương thức 3: Kiểm tra biên dịch cục bộ bằng trình biên dịch Solc
-
-- **Lệnh thực thi trong PowerShell / Terminal:**
+- **Lệnh thực thi:**
   ```powershell
-  npx solc --bin contracts/project/ProjectCore.sol test/ProjectCore_test.sol test/ProjectCore_integration_test.sol
+  npx --no-install solc --optimize --optimize-runs 200 --bin -o cache/solc-bin contracts/project/ProjectCore.sol test/ProjectCore_test.sol test/ProjectCore_integration_test.sol
   ```
-- **Kết quả thực tế:** Trình biên dịch `solc 0.8.37` hoàn thành với mã thoát `0` (Exit code: 0), xác nhận không có bất kỳ lỗi cú pháp nào trong hợp đồng chính `ProjectCore.sol`, tệp kiểm thử đơn vị `ProjectCore_test.sol`, và tệp kiểm thử tích hợp `ProjectCore_integration_test.sol`.
+- **Kết quả thực tế:** Biên dịch sạch sẽ 100%, Exit code 0, không có lỗi cú pháp.
+
+### 3.4. Phương thức 4: Kiểm thử Tích hợp Backend, Giao diện và An ninh
+- **Kiểm thử Indexer & Đồng bộ:** `python test/test_blockchain_indexer.py` (32 tests PASS), `python test/test_auto_execution.py` (18 tests PASS).
+- **Kiểm thử Hash Danh bạ & Tiến độ:** `python test/test_roster_hash.py` (10 tests PASS), `python test/test_campaign_progress.py` (13 tests PASS).
+- **Kiểm thử Giao diện DApp:**
+  - `node test/test_metamask_and_ui_verification.js` (4/4 PASS).
+  - `node test/test_stage2_roles.js` (14/14 PASS).
+  - `node test/test_frontend_multiple_progress.js` (4/4 PASS).
+  - `node test/test_announcement_modal_behavior.js` (4/4 PASS).
+  - `node test/test_frontend_dom_cleanup.js` (30/30 PASS).
+  - `node test/test_roster_status.js` (7/7 PASS).
+- **Kiểm thử An ninh Backend (Khi máy chủ hoạt động):**
+  - `python test/test_stage3b3_security.py` (10/10 tests PASS).
+  - `python test/test_stage3b4_security.py` (7/7 tests PASS).
+  - `python test/test_stage3b45_regression.py` (8/8 tests PASS).
+  - `python test/test_cors_security.py` (6/6 tests PASS).
 
 ---
 
-## 4. Bảng tổng hợp đối chiếu kết quả kiểm thử (Expected vs Observed)
+## 4. Bảng tổng hợp đối chiếu kết quả kiểm thử tiêu biểu
 
 | Ca kiểm thử | Quy tắc / Kịch bản | Dữ liệu đầu vào | Kết quả mong đợi (Expected) | Kết quả thực tế quan sát được (Observed) | Trạng thái |
 | :--- | :--- | :--- | :--- | :--- | :---: |
-| **Ca 1** | R2: Nạp 1 ETH | `1 ether` | Quỹ lớp tăng 0.99 ETH; `adminFeePool` tăng 0.01 ETH; đóng góp 1 ETH. | Khớp 100%: Quỹ chính: 0.99 ETH, Phí: 0.01 ETH, Đóng góp: 1.0 ETH. | **ĐẠT (PASS)** |
-| **Ca 2** | R2: Nạp 0 ETH | `0 ether` | Revert `ZeroAmount()`, không lưu vết số dư rác. | Revert đúng mã lỗi `ZeroAmount()`, trạng thái giữ nguyên hoàn toàn. | **ĐẠT (PASS)** |
-| **Ca 3** | R2: Nạp qua `receive()` | `0.5 ether` | Phân bổ 99% ($0.495$ ETH) và 1% ($0.005$ ETH). | Khớp 100%: Phân bổ đúng 0.495 ETH và 0.005 ETH. | **ĐẠT (PASS)** |
-| **Ca 4** | R2: Số nguyên biên | 99 wei & 101 wei | 99 wei: Phí 0 wei, Quỹ 99 wei; 101 wei: Phí 1 wei, Quỹ 100 wei. | Khớp 100%: Tổng số dư bảo toàn tuyệt đối, không tràn số. | **ĐẠT (PASS)** |
-| **Ca 5** | R2: Chống gian lận | 0 wei & 8 giá trị biên | Chặn gửi 0 ETH; bảo toàn 100% wei trên mọi giá trị biên. | Bị chặn bởi `ZeroAmount()`; 8 giá trị biên đều bảo toàn 100% wei. | **ĐẠT (PASS)** |
-| **Ca 6** | R2: Negative test `receive()` | `0 ether` | Revert `ZeroAmount()`. | Revert đúng `ZeroAmount()`. | **ĐẠT (PASS)** |
-| **Ca 7** | R2: An toàn CEI luồng nạp | 2 ETH | Không có external call hướng ngoại, Reentrancy bất khả thi. | Trạng thái cập nhật trước; Reentrancy bất khả thi. | **ĐẠT (PASS)** |
-| **Ca 8** | R1: Quản trị BCS | Thêm 2 BCS, xóa 1 BCS | Chỉ CVHT sửa được; chặn địa chỉ zero; chặn outsider. | Khớp 100%: `activeBCSCount` cập nhật đúng; outsider bị chặn. | **ĐẠT (PASS)** |
-| **Ca 9** | R11: Rút phí vận hành | Rút 0.04 ETH từ pool 0.1 ETH | Rút phí thành công; Quỹ lớp 9.9 ETH không đổi; chặn outsider. | Khớp 100%: `adminFeePool` giảm còn 0.06 ETH; quỹ chính giữ nguyên 9.9 ETH. | **ĐẠT (PASS)** |
-| **Ca 10** | R3: Tạo đề xuất chi | Đề xuất 2 ETH | Giữ chỗ 2 ETH (`reservedSpendAmount`), giảm quỹ khả dụng. | Khớp 100%: Giữ chỗ 2 ETH, khả dụng còn 7.9 ETH, chặn chi vượt quỹ. | **ĐẠT (PASS)** |
-| **Ca 11** | R4/R5: Biểu quyết $\ge 51\%$ | 3 BCS bỏ phiếu | Chặn double vote; 2/3 phiếu thuận $\ge 51\%$ tự động sang Ready. | Khớp 100%: Chặn double-voting; tự động chuyển sang Ready khi đủ 51%. | **ĐẠT (PASS)** |
-| **Ca 12** | R6: Giải ngân & Bất biến | Giải ngân 3 ETH khi đủ 51% | Tiền chuyển thành công; chặn double execution; bảo toàn kế toán. | Khớp 100%: Quỹ chính giảm đúng 3 ETH; chặn double-spending. | **ĐẠT (PASS)** |
-| **Ca 13** | R11: Rollback rút phí | Ví nhận từ chối ETH | Revert `ETHTransferFailed()`, `adminFeePool` rollback nguyên vẹn. | Khớp 100%: `adminFeePool` giữ nguyên 0.1 ETH sau revert. | **ĐẠT (PASS)** |
-| **Ca 14** | R3: Giữ chỗ đa đề xuất | 6 ETH + 5 ETH (vượt 9.9 ETH) | Đề xuất thứ 2 bị revert `InsufficientAvailableFund()`. | Khớp 100%: Không thể giữ chỗ vượt quỹ khả dụng. | **ĐẠT (PASS)** |
-| **Ca 15** | R5/R9: Expire sau 7 ngày | Đề xuất quá hạn 7 ngày | Chuyển `Expired`, giải phóng số tiền giữ chỗ về quỹ khả dụng. | Khớp 100%: `reservedSpendAmount` về 0, quỹ khả dụng phục hồi 100%. | **ĐẠT (PASS)** |
-| **Ca 16** | R7: Hoàn tiền có biểu quyết | Nộp 10 ETH, tạo yêu cầu 4 ETH, BCS duyệt 2/3, thực thi | Yêu cầu tạo thành công, BCS duyệt chuyển Ready, thực thi hoàn 4 ETH về ví. | Khớp 100%: Đóng góp giảm đúng 4 ETH, quỹ chính giảm đúng 4 ETH, phí giữ nguyên. | **ĐẠT (PASS)** |
-| **Ca 17** | R7 Negative: Hoàn 0 wei | Yêu cầu hoàn 0 ETH | Revert `ZeroAmount()`, không biến đổi trạng thái. | Revert đúng mã lỗi `ZeroAmount()`. | **ĐẠT (PASS)** |
-| **Ca 18** | R7 Negative: Hoàn vượt đóng góp | Nộp 10 ETH, xin hoàn 12 ETH | Revert `InsufficientContribution(12 ETH, 10 ETH)`. | Revert đúng `InsufficientContribution`, bảo vệ tài sản của quỹ. | **ĐẠT (PASS)** |
-| **Ca 19** | R7 Negative: Người ngoài xin hoàn | Người ngoài nộp 0 ETH xin hoàn 1 ETH | Revert `InsufficientContribution(1 ETH, 0 ETH)`. | Revert đúng `InsufficientContribution`, chặn kẻ gian bòn rút quỹ. | **ĐẠT (PASS)** |
-| **Ca 20** | R7 Negative: Hoàn vượt quỹ khả dụng | Đề xuất chi giữ chỗ 6 ETH, xin hoàn 5 ETH (khả dụng 3.9 ETH) | Revert `InsufficientAvailableFund()`, bảo vệ ngân sách chi tiêu đã duyệt. | Khớp 100%: Ngân sách giữ chỗ của đề xuất chi không bị xâm lấn. | **ĐẠT (PASS)** |
-| **Ca 21** | R7 Negative: Yêu cầu kép vượt mức | Nộp 10 ETH, tạo yêu cầu 1 (6 ETH) rồi tạo yêu cầu 2 (5 ETH) | Yêu cầu 1 thành công (hạn mức còn 4 ETH); Yêu cầu 2 revert `InsufficientContribution`. | Chặn thành công yêu cầu kép; ngăn dùng trùng hạn mức đang chờ duyệt. | **ĐẠT (PASS)** |
-| **Ca 22** | R7: Biểu quyết hoàn tiền | Outsider vote, vote trùng, quá hạn 7 ngày | Outsider bị revert; vote trùng revert; quá hạn 7 ngày revert và expire giải phóng giữ chỗ. | Khớp 100%: Kiểm soát biểu quyết chặt chẽ, dọn dẹp quá hạn giải phóng tiền. | **ĐẠT (PASS)** |
-| **Ca 23** | R7: Thực thi hoàn tiền | Thực thi khi chưa đủ 51%, thực thi 2 lần | Chưa đủ 51% revert `InvalidRefundStatus`; thực thi 2 lần revert `RefundAlreadyExecuted`. | Khớp 100%: Chỉ thực thi khi được BCS thông qua, chặn thực thi kép tuyệt đối. | **ĐẠT (PASS)** |
-| **Ca 24** | Integration: Chu trình 5 bước có biểu quyết BCS | Nạp (15 ETH) → Biểu quyết chi → Chi (4 ETH) → Yêu cầu hoàn (3 ETH) → BCS duyệt → Hoàn → Rút phí (0.1 ETH) | Hoàn thành toàn vẹn cả chu trình có biểu quyết BCS; bảo toàn 100% Wei không thất thoát. | Khớp 100%: Toàn bộ chu trình dòng tiền vận hành thông suốt qua biểu quyết BCS. | **ĐẠT (PASS)** |
-| **Kiểm thử Sepolia** | On-chain public testnet | Sepolia ETH | Triển khai và tương tác on-chain qua MetaMask. | **CHƯA KIỂM THỬ** (Kế hoạch thực hiện tại Lab 15). | *Kế hoạch Lab 15* |
+| **Kích thước Bytecode** | Giới hạn EIP-170 | Compiler 0.8.20 shanghai runs 200 | Deployed bytecode $\le$ 24,576 bytes. | **20,767 bytes** (84.50% giới hạn). | **ĐẠT (PASS)** |
+| **Section A1** | Hạch toán Net 99% | Nộp 10 ETH | Net 9.9 ETH, Quỹ phí 0.1 ETH, Gross 10 ETH. Hoàn tối đa 9.9 ETH. | Khớp 100%: Quỹ chính 9.9 ETH, phí 0.1 ETH, hoàn sạch đưa limit về 0. | **ĐẠT (PASS)** |
+| **Section A3** | Chống gian lận hoàn tiền | A & B mỗi người nộp 10 ETH; A xin hoàn 10 ETH | A chỉ có net 9.9 ETH; xin 10 ETH bị revert `InsufficientContribution`. | Revert `InsufficientContribution`, bảo vệ an toàn 100% tiền của B. | **ĐẠT (PASS)** |
+| **Section B1** | Hoãn kích hoạt BCS 3 ngày | Thêm BCS mới | Chưa đủ 3 ngày: không được tạo đề xuất hoặc vote (`NotActiveBCS`). | Đúng 3 ngày mới kích hoạt; thêm lại reset trễ 3 ngày. | **ĐẠT (PASS)** |
+| **Section B4** | Snapshot voterBase | Tạo đề xuất lúc có 3 BCS | `voterBase = 3` bất biến kể cả khi CVHT thêm/xóa BCS giữa chừng. | Snapshot giữ nguyên; tỷ lệ 51% tính trên mẫu số snapshot. | **ĐẠT (PASS)** |
+| **Section C1** | Chặn xung đột lợi ích | Sinh viên xin hoàn tiền đồng thời là BCS | Bị tước quyền vote trên yêu cầu của chính mình (`ConflictOfInterestApplicantCannotVote`). | Mẫu số giảm 1 (`voterBase - 1`), yêu cầu $\ge 2$ phiếu thuận. | **ĐẠT (PASS)** |
+| **Section D1** | Whitelist nạp tiền | Người ngoài chưa ghi danh nộp ETH | Revert `NotEnrolledStudent()`. | Revert chính xác `NotEnrolledStudent()`, chặn người ngoài. | **ĐẠT (PASS)** |
+| **Section D5** | Cam kết Hash danh bạ | CVHT gọi `commitRoster(hash)` | Lưu trữ mã hash SHA-256, phát `RosterCommitted`. | Lưu hash thành công; không đưa PII sinh viên lên chuỗi. | **ĐẠT (PASS)** |
+| **Section E1** | Quản lý đợt thu on-chain | BCS tạo đợt thu mới | Đợt thu mở thành công; chỉ 1 đợt thu mở tại 1 thời điểm. | Tạo đợt thu thành công; mở đợt thứ 2 bị revert `OnlyOneActiveCollectionAllowed`. | **ĐẠT (PASS)** |
+| **Section E3** | Nộp vào đợt thu | Sinh viên nộp `depositToCollection` | Phân bổ 99%/1%, cập nhật `paidInCollection`, đánh dấu "Đã nộp" khi đủ target. | Khớp 100%: Phân định rõ ràng tiến độ từng đợt thu. | **ĐẠT (PASS)** |
+| **Section F1** | Chuyển phí sang Quỹ lớp | CVHT gọi `moveFeeToClassFund(2 ETH)` | Trừ `adminFeePool` 2 ETH, tăng `classFundBalance` 2 ETH. | Chuyển thành công; bảo toàn 100% tổng số dư hợp đồng. | **ĐẠT (PASS)** |
+| **Section F2** | Tự động hoàn Gas EIP-1559 | Thực hiện hàm quản trị | Đo gas thực tế, hoàn ETH về ví người gọi, phát `GasRefunded`. | Hoàn gas thành công; giá gas bị khống chế tối đa `basefee + 2 gwei`. | **ĐẠT (PASS)** |
+| **Section F3** | Xử lý khi cạn Quỹ phí | Gọi hàm quản trị khi pool = 0 | Chuyển 0 ETH, ghi nhận `gasRefundShortfall`, hàm chính vẫn hoàn tất. | Giao dịch quản trị thành công trọn vẹn, không bị revert. | **ĐẠT (PASS)** |
+| **Section F4** | Fallback hoàn gas thất bại | Ví nhận từ chối ETH | Phát `GasRefundFailed`, trả lại số dư vào pool, hàm chính không revert. | Thao tác chính thành công, pool hoàn trả nguyên vẹn. | **ĐẠT (PASS)** |
+| **Section G** | Tích hợp DApp & ABI | Tương tác giao diện `web/index.html` | Hiển thị đầy đủ đợt thu, hoàn tiền net, hoàn gas banner, đối soát hash danh bạ. | Giao diện hoạt động mượt mà, đồng bộ 100% ABI mới. | **ĐẠT (PASS)** |
+| **Kiểm thử Sepolia** | On-chain public testnet | Sepolia ETH | Triển khai và tương tác on-chain qua MetaMask. | **CHƯA KIỂM THỬ** (Tuân thủ yêu cầu không deploy ở Phase 6). | *Chờ chỉ đạo* |

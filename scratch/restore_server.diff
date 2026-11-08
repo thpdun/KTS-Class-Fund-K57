@@ -1,0 +1,1272 @@
+diff --git a/backend/server.py b/backend/server.py
+index 540de10..63a0116 100644
+--- a/backend/server.py
++++ b/backend/server.py
+@@ -16,6 +16,7 @@ import re
+ import json
+ import secrets
+ import time
++import copy
+ import threading
+ from datetime import datetime, timezone
+ from http.server import HTTPServer, BaseHTTPRequestHandler
+@@ -60,11 +61,135 @@ try:
+ except ImportError:
+     from ai_service import AIAssistantService
+ 
++# Import module Hạch toán & Lưu trữ nguyên tử V4.4 (Phase 1)
++try:
++    from backend.accounting_engine import (
++        VN_TZ_KEY,
++        get_vn_tz,
++        parse_deadline_to_vn_timestamp,
++        DualLayerFileLock,
++        atomic_write_json,
++        safe_load_json,
++        validate_announcement_store_structure,
++        validate_concurrency_and_idempotency,
++        record_mutation_commit,
++        RevisionConflictError,
++        IdempotencyConflictError,
++        CorruptedStorageError,
++        AtomicStorageError,
++    )
++except ImportError:
++    from accounting_engine import (
++        VN_TZ_KEY,
++        get_vn_tz,
++        parse_deadline_to_vn_timestamp,
++        DualLayerFileLock,
++        atomic_write_json,
++        safe_load_json,
++        validate_announcement_store_structure,
++        validate_concurrency_and_idempotency,
++        record_mutation_commit,
++        RevisionConflictError,
++        IdempotencyConflictError,
++        CorruptedStorageError,
++        AtomicStorageError,
++    )
++
++# Import module Quản lý Thông báo đa luồng & Lịch sử Schema V3
++try:
++    from backend.notification_store import (
++        NOTIFICATION_SCHEMA_VERSION,
++        NotificationStatus,
++        normalize_notification,
++        validate_notifications_store,
++        migrate_to_notifications_store,
++        expire_due_notifications,
++        append_audit_event,
++        verify_audit_chain,
++        create_notification,
++        edit_notification,
++        transition_notification,
++        resolve_target_id,
++        build_views,
++        NotificationValidationError,
++    )
++except ImportError:
++    from notification_store import (
++        NOTIFICATION_SCHEMA_VERSION,
++        NotificationStatus,
++        normalize_notification,
++        validate_notifications_store,
++        migrate_to_notifications_store,
++        expire_due_notifications,
++        append_audit_event,
++        verify_audit_chain,
++        create_notification,
++        edit_notification,
++        transition_notification,
++        resolve_target_id,
++        build_views,
++    )
++
++# Import module Quản lý Tiến độ đóng góp & Attribution Layer (Stage 1 & 2)
++try:
++    from backend.contribution_store import (
++        create_claim_intent,
++        get_claim_intent,
++        verify_and_claim_contribution,
++        get_campaign_progress_view,
++        freeze_campaign_progress_record,
++        record_adjusted_final_progress,
++        load_contributions_store,
++        ContributionAttributionError,
++    )
++except ImportError:
++    from contribution_store import (
++        create_claim_intent,
++        get_claim_intent,
++        verify_and_claim_contribution,
++        get_campaign_progress_view,
++        freeze_campaign_progress_record,
++        record_adjusted_final_progress,
++        load_contributions_store,
++        ContributionAttributionError,
++    )
++
+ HOST = "0.0.0.0"
+ PORT = 8000
+ 
+-ANNOUNCEMENT_FILE = Path(__file__).parent / "announcements.json"
+-ROSTER_FILE = Path(__file__).parent / "class_roster.json"
++DEFAULT_ANNOUNCEMENT_FILE = (Path(__file__).parent / "announcements.json").resolve()
++DEFAULT_ROSTER_FILE = (Path(__file__).parent / "class_roster.json").resolve()
++
++ANNOUNCEMENT_FILE = Path(os.environ.get("ANNOUNCEMENT_FILE_PATH", str(DEFAULT_ANNOUNCEMENT_FILE)))
++ROSTER_FILE = Path(os.environ.get("CLASS_ROSTER_FILE_PATH", str(DEFAULT_ROSTER_FILE)))
++
++
++def get_announcement_file() -> Path:
++    """Lấy đường dẫn file thông báo hiện hành (ưu tiên biến môi trường ANNOUNCEMENT_FILE_PATH)."""
++    env_val = os.environ.get("ANNOUNCEMENT_FILE_PATH", "").strip()
++    if env_val:
++        return Path(env_val).resolve()
++    return Path(ANNOUNCEMENT_FILE).resolve()
++
++
++def get_roster_file() -> Path:
++    """Lấy đường dẫn file danh bạ hiện hành (ưu tiên biến môi trường CLASS_ROSTER_FILE_PATH)."""
++    env_val = os.environ.get("CLASS_ROSTER_FILE_PATH", "").strip()
++    if env_val:
++        return Path(env_val).resolve()
++    return Path(ROSTER_FILE).resolve()
++
++
++def _is_real_data_write_blocked(target_path: Path) -> bool:
++    """
++    Khóa bảo vệ Phase 1: Ngăn chặn tuyệt đối việc vô tình ghi đè hoặc xóa dữ liệu thật
++    trong `backend/announcements.json` và `backend/class_roster.json` trừ khi cờ
++    `ALLOW_REAL_DATA_MUTATION=1` được bật tường minh ở các giai đoạn được phép.
++    """
++    resolved = Path(target_path).resolve()
++    if resolved in (DEFAULT_ANNOUNCEMENT_FILE, DEFAULT_ROSTER_FILE):
++        return os.environ.get("ALLOW_REAL_DATA_MUTATION", "0").strip() != "1"
++    return False
+ 
+ # =============================================================================
+ # BẢO MẬT XÁC THỰC VÍ VÀ QUẢN LÝ PHIÊN (Stage 3B.4 - Session & Challenge Management)
+@@ -126,19 +251,33 @@ def generate_auth_message(address: str, nonce: str) -> str:
+     )
+ 
+ 
++def _validate_roster_structure(data) -> Tuple[bool, Optional[str]]:
++    if not isinstance(data, list):
++        return False, "Danh bạ sinh viên phải là một danh sách (list)."
++    return True, None
++
++
+ def load_roster() -> list:
+-    if ROSTER_FILE.exists():
++    roster_file = get_roster_file()
++    if roster_file.exists() or roster_file.with_name(roster_file.name + ".bak").exists():
+         try:
+-            with open(ROSTER_FILE, "r", encoding="utf-8") as f:
+-                return json.load(f)
++            data, _ = safe_load_json(roster_file, validator_fn=_validate_roster_structure)
++            if isinstance(data, list):
++                return data
++        except CorruptedStorageError:
++            raise
+         except Exception:
+             pass
+     return []
+ 
+ 
+ def save_roster(data: list):
+-    with open(ROSTER_FILE, "w", encoding="utf-8") as f:
+-        json.dump(data, f, ensure_ascii=False, indent=2)
++    roster_file = get_roster_file()
++    if _is_real_data_write_blocked(roster_file):
++        raise AtomicStorageError(
++            f"PHASE1_REAL_DATA_PROTECTED: Từ chối ghi đè file dữ liệu thật {roster_file} trong Phase 1."
++        )
++    atomic_write_json(roster_file, data, validator_fn=_validate_roster_structure)
+ 
+ 
+ def find_student_by_wallet(wallet: str) -> Optional[dict]:
+@@ -213,43 +352,24 @@ def get_authenticated_session(headers) -> Optional[dict]:
+ 
+ 
+ def parse_deadline_to_timestamp(deadline_str: str) -> Optional[float]:
+-    """Phân tích chuỗi hạn chót (tiếng Việt hoặc ISO) thành Unix timestamp float."""
+-    if not deadline_str:
+-        return None
+-    s = str(deadline_str).strip()
+-    # 1. 'HH:MM ngày DD/MM/YYYY'
+-    m = re.search(r'(\d{1,2}):(\d{1,2})\s*ngày\s*(\d{1,2})/(\d{1,2})/(\d{4})', s, re.I)
+-    if m:
+-        try:
+-            hr, mn, day, mon, yr = map(int, m.groups())
+-            return datetime(yr, mon, day, hr, mn).timestamp()
+-        except Exception:
+-            pass
+-    # 2. 'DD/MM/YYYY'
+-    m = re.search(r'(\d{1,2})/(\d{1,2})/(\d{4})', s)
+-    if m:
+-        try:
+-            day, mon, yr = map(int, m.groups())
+-            return datetime(yr, mon, day, 23, 59, 59).timestamp()
+-        except Exception:
+-            pass
+-    # 3. ISO format / standard YYYY-MM-DD
+-    try:
+-        clean_s = s.replace('Z', '+00:00')
+-        return datetime.fromisoformat(clean_s).timestamp()
+-    except Exception:
+-        pass
+-    return None
++    """
++    Phân tích chuỗi hạn chót (tiếng Việt hoặc ISO) thành Unix timestamp float
++    sử dụng múi giờ chuẩn `Asia/Ho_Chi_Minh` (+07:00).
++    """
++    ts_int = parse_deadline_to_vn_timestamp(deadline_str)
++    return float(ts_int) if ts_int is not None else None
+ 
+ 
+ def normalize_announcement_item(item: dict, default_id: str = None) -> dict:
+-    """Chuẩn hóa cấu trúc của một thông báo theo vòng đời (active | completed | archived)."""
++    """Chuẩn hóa cấu trúc của một thông báo theo vòng đời (active | expired | completed | archived)."""
+     if not isinstance(item, dict):
+         return {}
+     item_id = str(item.get("id") or default_id or f"ann-{secrets.token_hex(4)}")
+     raw_status = str(item.get("status", "active")).strip()
+     if raw_status in ["Đang diễn ra", "active", "OPEN"]:
+         status = "active"
++    elif raw_status in ["Đã hết hạn", "expired", "EXPIRED"]:
++        status = "expired"
+     elif raw_status in ["Đã hoàn thành", "completed", "COMPLETED"]:
+         status = "completed"
+     else:
+@@ -259,6 +379,9 @@ def normalize_announcement_item(item: dict, default_id: str = None) -> dict:
+     ts = item.get("deadlineTimestamp")
+     if ts is None:
+         ts = parse_deadline_to_timestamp(deadline_str)
++    else:
++        parsed_vn_ts = parse_deadline_to_timestamp(deadline_str)
++        ts = parsed_vn_ts if parsed_vn_ts is not None else float(ts)
+ 
+     return {
+         "id": item_id,
+@@ -270,7 +393,7 @@ def normalize_announcement_item(item: dict, default_id: str = None) -> dict:
+         "purpose": str(item.get("purpose", "")).strip(),
+         "status": status,
+         "autoCloseOnTarget": bool(item.get("autoCloseOnTarget", False)),
+-        "createdAt": item.get("createdAt") or datetime.now(timezone.utc).isoformat(),
++        "createdAt": item.get("createdAt") or datetime.now(get_vn_tz()).isoformat(),
+         "endedAt": item.get("endedAt"),
+         "endReason": item.get("endReason"),
+         "updatedBy": item.get("updatedBy"),
+@@ -279,70 +402,98 @@ def normalize_announcement_item(item: dict, default_id: str = None) -> dict:
+ 
+ 
+ def load_announcements_store() -> dict:
+-    """Đọc dữ liệu thông báo và lịch sử, đồng thời tự động lưu trữ thông báo hết hạn (Auto-archive)."""
++    """
++    Đọc dữ liệu thông báo và lịch sử Schema V3 qua khóa an toàn (`safe_load_json`),
++    đồng thời tự động kiểm tra và chuyển thông báo quá hạn sang `expired` một cách idempotent.
++    """
+     roster_len = len(load_roster())
+     actual_size = roster_len if roster_len > 0 else 7
++    ann_file = get_announcement_file()
++    bak_file = ann_file.with_name(ann_file.name + ".bak")
+ 
+-    store = {"active": None, "history": []}
+-    if ANNOUNCEMENT_FILE.exists():
++    store = None
++    if ann_file.exists() or bak_file.exists():
+         try:
+-            with open(ANNOUNCEMENT_FILE, "r", encoding="utf-8") as f:
+-                raw = json.load(f)
+-                if isinstance(raw, dict):
+-                    if "active" in raw or "history" in raw:
+-                        # Cấu trúc mới hỗ trợ lịch sử
+-                        if raw.get("active"):
+-                            store["active"] = normalize_announcement_item(raw["active"], "ann-active-current")
+-                        history_raw = raw.get("history", [])
+-                        if isinstance(history_raw, list):
+-                            store["history"] = [normalize_announcement_item(h) for h in history_raw if isinstance(h, dict)]
+-                    else:
+-                        # Tương thích ngược: dữ liệu đơn lẻ trước đây
+-                        store["active"] = normalize_announcement_item(raw, "ann-k57-hk1")
+-                        store["history"] = []
++            raw, _ = safe_load_json(ann_file, validator_fn=validate_notifications_store)
++            if isinstance(raw, dict) and "notifications" in raw:
++                store = raw
++            else:
++                migrated_store, _ = migrate_to_notifications_store(raw)
++                store = migrated_store
+         except Exception:
+-            pass
+-
+-
+-    if store["active"]:
+-        store["active"]["classSize"] = actual_size
+-
+-    # KIỂM TRA TỰ ĐỘNG CHUYỂN TRẠNG THÁI (AUTO-ARCHIVE RULE)
+-    modified = False
+-    active = store["active"]
+-    now = time.time()
+-    if active:
+-        dl_ts = active.get("deadlineTimestamp")
+-        # 1. Hết hạn nộp: tự động chuyển sang lưu trữ
+-        if dl_ts and now > dl_ts:
+-            active["status"] = "archived"
+-            active["endedAt"] = datetime.now(timezone.utc).isoformat()
+-            active["endReason"] = "Đã hết hạn nộp (Quá thời hạn quy định)"
+-            if not any(h.get("id") == active["id"] for h in store["history"]):
+-                store["history"].insert(0, active)
+-            store["active"] = None
+-            modified = True
+-        elif active.get("status") in ["completed", "archived"]:
+-            active["status"] = "archived"
+-            if not active.get("endedAt"):
+-                active["endedAt"] = datetime.now(timezone.utc).isoformat()
+-            if not active.get("endReason"):
+-                active["endReason"] = "Đợt thu đã hoàn thành"
+-            if not any(h.get("id") == active["id"] for h in store["history"]):
+-                store["history"].insert(0, active)
+-            store["active"] = None
+-            modified = True
+-
+-    if modified:
++            # Nếu kiểm tra Schema V3 chưa khớp, nạp raw và thực hiện migration tự động
++            try:
++                raw, _ = safe_load_json(ann_file)
++                if isinstance(raw, dict):
++                    migrated_store, _ = migrate_to_notifications_store(raw)
++                    store = migrated_store
++            except Exception:
++                store = None
++
++    if not isinstance(store, dict):
++        store = {
++            "schemaVersion": NOTIFICATION_SCHEMA_VERSION,
++            "revision": 1,
++            "timezone": VN_TZ_KEY,
++            "notifications": [],
++            "processedRequests": {},
++            "auditChain": [],
++        }
++
++    store.setdefault("schemaVersion", NOTIFICATION_SCHEMA_VERSION)
++    store.setdefault("revision", 1)
++    store.setdefault("timezone", VN_TZ_KEY)
++    store.setdefault("notifications", [])
++    store.setdefault("processedRequests", {})
++    store.setdefault("auditChain", [])
++
++    # Đồng bộ sĩ số lớp vào các thông báo
++    for item in store["notifications"]:
++        if isinstance(item, dict):
++            item["classSize"] = actual_size
++
++    # KIỂM TRA TỰ ĐỘNG CHUYỂN TRẠNG THÁI (AUTO-EXPIRE RULE THEO VN TIMEZONE)
++    expired_ids = expire_due_notifications(store)
++    if expired_ids and not _is_real_data_write_blocked(ann_file):
++        store["revision"] = int(store.get("revision", 1)) + 1
+         save_announcements_store(store)
+ 
++    # Gắn các views tương thích ngược (active, history, activeNotifications)
++    views = build_views(store)
++    store["activeNotifications"] = views["activeNotifications"]
++    store["active"] = views["active"]
++    store["history"] = views["history"]
++
+     return store
+ 
+ 
+ def save_announcements_store(store: dict):
+-    """Ghi cấu trúc thông báo và lịch sử vào tệp JSON."""
+-    with open(ANNOUNCEMENT_FILE, "w", encoding="utf-8") as f:
+-        json.dump(store, f, ensure_ascii=False, indent=2)
++    """Ghi cấu trúc thông báo Schema V3 vào tệp JSON qua Atomic Write 7 bước và File Lock."""
++    ann_file = get_announcement_file()
++    if _is_real_data_write_blocked(ann_file):
++        raise AtomicStorageError(
++            f"PHASE1_REAL_DATA_PROTECTED: Từ chối ghi đè file dữ liệu thật {ann_file} trong Phase 1."
++        )
++    if "schemaVersion" not in store:
++        store["schemaVersion"] = NOTIFICATION_SCHEMA_VERSION
++    if "revision" not in store or not isinstance(store["revision"], int) or store["revision"] < 1:
++        store["revision"] = 1
++    if "timezone" not in store:
++        store["timezone"] = VN_TZ_KEY
++    if "notifications" not in store or not isinstance(store["notifications"], list):
++        store["notifications"] = []
++    if "processedRequests" not in store or not isinstance(store["processedRequests"], dict):
++        store["processedRequests"] = {}
++    if "auditChain" not in store or not isinstance(store["auditChain"], list):
++        store["auditChain"] = []
++
++    # Cập nhật views đồng bộ trước khi lưu
++    views = build_views(store)
++    store["activeNotifications"] = views["activeNotifications"]
++    store["active"] = views["active"]
++    store["history"] = views["history"]
++
++    atomic_write_json(ann_file, store, validator_fn=validate_notifications_store)
+ 
+ 
+ def load_announcement() -> dict:
+@@ -366,20 +517,53 @@ def load_announcement() -> dict:
+ 
+ 
+ def save_announcement(data: dict):
+-    """Tương thích ngược: lưu announcement mới vào active và tự động lưu thông báo cũ vào history."""
+-    store = load_announcements_store()
+-    old_active = store.get("active")
+-    if old_active and old_active.get("status") == "active":
+-        old_active["status"] = "archived"
+-        old_active["endedAt"] = datetime.now(timezone.utc).isoformat()
+-        old_active["endReason"] = "Thay thế bởi đợt thu mới"
+-        if not any(h.get("id") == old_active["id"] for h in store["history"]):
+-            store["history"].insert(0, old_active)
++    """Tương thích ngược: tạo thông báo mới vào store mà không làm thay đổi hay đóng các thông báo khác."""
++    ann_file = get_announcement_file()
++    with DualLayerFileLock(ann_file):
++        store = load_announcements_store()
++        create_notification(store, data, actor=data.get("updatedBy", "legacy_system"))
++        save_announcements_store(store)
++
+ 
+-    norm = normalize_announcement_item(data)
+-    norm["classSize"] = len(load_roster()) or norm.get("classSize", 7)
+-    store["active"] = norm
+-    save_announcements_store(store)
++# --- BACKGROUND EXPIRATION SCANNER DAEMON ---
++_EXPIRATION_SCANNER_STOP = threading.Event()
++_EXPIRATION_SCANNER_THREAD: Optional[threading.Thread] = None
++
++
++def _expiration_scanner_loop(interval_sec: float = 30.0):
++    """Vòng lặp chạy nền tự động kiểm tra và chuyển trạng thái thông báo quá hạn sang expired."""
++    while not _EXPIRATION_SCANNER_STOP.is_set():
++        try:
++            ann_file = get_announcement_file()
++            if ann_file.exists() and not _is_real_data_write_blocked(ann_file):
++                with DualLayerFileLock(ann_file):
++                    load_announcements_store()
++        except Exception:
++            pass
++        _EXPIRATION_SCANNER_STOP.wait(interval_sec)
++
++
++def start_expiration_daemon(interval_sec: float = 30.0):
++    """Khởi động daemon thread quét hết hạn thông báo."""
++    global _EXPIRATION_SCANNER_THREAD
++    if _EXPIRATION_SCANNER_THREAD is None or not _EXPIRATION_SCANNER_THREAD.is_alive():
++        _EXPIRATION_SCANNER_STOP.clear()
++        _EXPIRATION_SCANNER_THREAD = threading.Thread(
++            target=_expiration_scanner_loop,
++            args=(interval_sec,),
++            daemon=True,
++            name="AnnouncementExpirationDaemon"
++        )
++        _EXPIRATION_SCANNER_THREAD.start()
++
++
++def stop_expiration_daemon():
++    """Dừng daemon thread quét hết hạn thông báo."""
++    global _EXPIRATION_SCANNER_THREAD
++    _EXPIRATION_SCANNER_STOP.set()
++    if _EXPIRATION_SCANNER_THREAD is not None and _EXPIRATION_SCANNER_THREAD.is_alive():
++        _EXPIRATION_SCANNER_THREAD.join(timeout=2.0)
++    _EXPIRATION_SCANNER_THREAD = None
+ 
+ 
+ # =============================================================================
+@@ -489,31 +673,119 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
+ 
+         # 4. Lấy thông báo nộp quỹ chung và lịch sử (GET /api/announcement)
+         elif path == "/api/announcement":
+-            store = load_announcements_store()
+-            active = store.get("active")
+-            fallback = active or (store["history"][0] if store.get("history") else {
++            parsed_url = urlparse(self.path)
++            query_params = parse_qs(parsed_url.query)
++            target_id = query_params.get("id", [None])[0]
++
++            try:
++                store = load_announcements_store()
++            except CorruptedStorageError as exc:
++                self._send_json(500, {
++                    "success": False,
++                    "code": "CORRUPTED_STORAGE",
++                    "error": str(exc),
++                })
++                return
++
++            views = build_views(store)
++
++            if target_id:
++                target_item = next((n for n in views["notifications"] if n.get("id") == target_id), None)
++                if not target_item:
++                    self._send_json(404, {
++                        "success": False,
++                        "error": f"Không tìm thấy thông báo có ID '{target_id}'."
++                    })
++                    return
++                audits = store.get("auditLog") or store.get("auditChain") or []
++                item_audits = [ev for ev in audits if ev.get("notificationId") == target_id or ev.get("targetId") == target_id]
++                self._send_json(200, {
++                    "success": True,
++                    "revision": int(views.get("revision", store.get("revision", 1))),
++                    "timezone": views.get("timezone", store.get("timezone", VN_TZ_KEY)),
++                    "notification": target_item,
++                    "announcement": target_item,
++                    "auditTrail": item_audits,
++                })
++                return
++
++            # Gắn tiến độ độc lập từ contribution_store vào từng thông báo active & history
++            roster_len = len(load_roster())
++            effective_class_sz = roster_len if roster_len > 0 else 7
++
++            active_notifs_with_progress = []
++            for an in views.get("activeNotifications", []):
++                an_copy = copy.deepcopy(an)
++                nid = an_copy.get("id")
++                if nid:
++                    an_copy["progress"] = get_campaign_progress_view(nid, class_size=effective_class_sz)
++                active_notifs_with_progress.append(an_copy)
++
++            history_with_progress = []
++            for hn in views.get("history", []):
++                hn_copy = copy.deepcopy(hn)
++                nid = hn_copy.get("id")
++                if nid:
++                    hn_copy["progress"] = get_campaign_progress_view(nid, class_size=effective_class_sz)
++                history_with_progress.append(hn_copy)
++
++            fallback = views["active"] or (views["history"][0] if views["history"] else {
+                 "id": None,
+                 "title": "Hiện chưa có thông báo kêu gọi nộp quỹ",
+                 "targetAmountEth": "0",
+                 "status": "none",
+-                "classSize": len(load_roster()) or 7,
++                "classSize": effective_class_sz,
+                 "deadline": "Không có",
+                 "purpose": "Ban cán sự lớp K57 chưa phát động đợt thu quỹ mới. Mọi thông tin thu quỹ chính thức sẽ được công bố tại đây."
+             })
++            valid_chain, chain_err = verify_audit_chain(store)
++            audits = store.get("auditLog") or store.get("auditChain") or []
+             self._send_json(200, {
+                 "success": True,
++                "revision": int(views.get("revision", store.get("revision", 1))),
++                "timezone": views.get("timezone", store.get("timezone", VN_TZ_KEY)),
+                 "announcement": fallback,
+-                "active": active,
+-                "history": store.get("history", [])
++                "active": active_notifs_with_progress[0] if active_notifs_with_progress else None,
++                "activeNotifications": active_notifs_with_progress,
++                "history": history_with_progress,
++                "notifications": views["notifications"],
++                "auditChainSummary": {
++                    "length": len(audits),
++                    "valid": valid_chain,
++                    "error": chain_err,
++                }
+             })
+ 
+         # 4b. Lấy riêng danh sách lịch sử thông báo (GET /api/announcement/history)
+         elif path == "/api/announcement/history":
+-            store = load_announcements_store()
++            try:
++                store = load_announcements_store()
++            except CorruptedStorageError as exc:
++                self._send_json(500, {
++                    "success": False,
++                    "code": "CORRUPTED_STORAGE",
++                    "error": str(exc),
++                })
++                return
++
++            views = build_views(store)
++            roster_len = len(load_roster())
++            effective_class_sz = roster_len if roster_len > 0 else 7
++
++            history_with_progress = []
++            for hn in views.get("history", []):
++                hn_copy = copy.deepcopy(hn)
++                nid = hn_copy.get("id")
++                if nid:
++                    hn_copy["progress"] = get_campaign_progress_view(nid, class_size=effective_class_sz)
++                history_with_progress.append(hn_copy)
++
+             self._send_json(200, {
+                 "success": True,
+-                "count": len(store.get("history", [])),
+-                "history": store.get("history", [])
++                "revision": int(views.get("revision", store.get("revision", 1))),
++                "timezone": views.get("timezone", store.get("timezone", VN_TZ_KEY)),
++                "count": len(views["history"]),
++                "history": history_with_progress
+             })
+ 
+         # 5. Danh bạ lớp có phân quyền (GET /api/roster)
+@@ -573,6 +845,34 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
+                 })
+                 return
+ 
++        # 7. Truy vấn tiến độ chiến dịch và trạng thái giao dịch (GET /api/contribution/status)
++        elif path == "/api/contribution/status":
++            target_tx = qs.get("txHash", [""])[0].strip().lower()
++            target_nid = qs.get("notificationId", [""])[0].strip()
++
++            if not target_tx and not target_nid:
++                self._send_json(400, {"success": False, "error": "Yêu cầu cung cấp txHash hoặc notificationId."})
++                return
++
++            c_store = load_contributions_store()
++            resp_payload = {"success": True}
++
++            if target_tx:
++                allocated_nid = c_store.get("claimedTxHashes", {}).get(target_tx)
++                tx_info = c_store.get("transactions", {}).get(target_tx)
++                resp_payload["txHash"] = target_tx
++                resp_payload["isAllocated"] = allocated_nid is not None
++                resp_payload["allocatedNotificationId"] = allocated_nid
++                resp_payload["transaction"] = tx_info
++
++            if target_nid:
++                roster_len = len(load_roster())
++                resp_payload["notificationId"] = target_nid
++                resp_payload["progress"] = get_campaign_progress_view(target_nid, class_size=roster_len or 7)
++
++            self._send_json(200, resp_payload)
++            return
++
+             student = find_student_by_wallet(target_addr)
+             self._send_json(200, {
+                 "success": True,
+@@ -729,15 +1029,26 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
+                 }
+                 ACTIVE_SESSIONS[token] = session_data
+ 
++            role_title = "Cố vấn học tập" if is_advisor else ("Ban cán sự" if is_bcs else ("Sinh viên" if role == "student" else "Khách vãng lai"))
+             self._send_json(200, {
+                 "success": True,
+                 "message": "Xác thực chữ ký ví thành công.",
+                 "token": token,
+                 "address": claimed_addr,
+                 "role": role,
++                "roleTitle": role_title,
+                 "isAdvisor": is_advisor,
+                 "isBcs": is_bcs,
+-                "expiresIn": SESSION_LIFETIME_SEC
++                "expiresIn": SESSION_LIFETIME_SEC,
++                "session": {
++                    "token": token,
++                    "address": claimed_addr,
++                    "role": role,
++                    "roleTitle": role_title,
++                    "isAdvisor": is_advisor,
++                    "isBcs": is_bcs,
++                    "expiresIn": SESSION_LIFETIME_SEC
++                }
+             })
+ 
+         # 2. Đăng xuất (POST /api/auth/logout)
+@@ -764,9 +1075,9 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
+                 "message": "Đã đăng xuất và hủy phiên làm việc thành công."
+             })
+ 
+-        # 3. Tạo / Cập nhật / Kết thúc thông báo nộp quỹ (POST /api/announcement)
++        # 3. Tạo / Cập nhật / Kết thúc / Thu hồi thông báo nộp quỹ (POST /api/announcement, /api/announcement/close, /api/announcement/revoke)
+         # BẢO VỆ BẰNG SESSION (Stage 3B.4)
+-        elif path == "/api/announcement" or path == "/api/announcement/close":
++        elif path in ("/api/announcement", "/api/announcement/close", "/api/announcement/revoke"):
+             session = get_authenticated_session(self.headers)
+             if not session or session.get("role") not in ["bcs", "advisor"]:
+                 self._send_json(403, {
+@@ -785,91 +1096,274 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
+                     self._send_json(400, {"success": False, "error": f"Dữ liệu JSON không hợp lệ: {str(e)}"})
+                     return
+ 
+-            store = load_announcements_store()
++            expected_revision = req_data.get("expectedRevision")
++            client_request_id = req_data.get("clientRequestId")
++
++            is_close_request = (path == "/api/announcement/close" or req_data.get("action") in ("close", "archive"))
++            is_revoke_request = (path == "/api/announcement/revoke" or req_data.get("action") == "revoke")
+ 
+-            # Thao tác kết thúc sớm đợt thu (Action: close)
+-            if path == "/api/announcement/close" or req_data.get("action") == "close":
+-                active = store.get("active")
+-                if not active:
+-                    self._send_json(400, {"success": False, "error": "Hiện không có đợt thu nào đang diễn ra để kết thúc."})
++            if is_close_request:
++                mode = "close"
++                action_name = "close_announcement"
++            elif is_revoke_request:
++                mode = "revoke"
++                action_name = "revoke_announcement"
++            else:
++                mode = str(req_data.get("mode", "create")).strip().lower()
++                if mode not in ["create", "edit"]:
++                    self._send_json(400, {"success": False, "error": "Tham số mode chỉ chấp nhận 'create' hoặc 'edit'."})
+                     return
++                action_name = "edit_announcement" if mode == "edit" else "create_announcement"
+ 
+-                active["status"] = "archived"
+-                active["endedAt"] = datetime.now(timezone.utc).isoformat()
+-                active["endReason"] = str(req_data.get("reason") or "Ban cán sự chủ động kết thúc đợt thu").strip()
+-                active["updatedBy"] = session["address"]
+-                active["updatedAt"] = datetime.now(timezone.utc).isoformat()
++            ann_file = get_announcement_file()
++            try:
++                with DualLayerFileLock(ann_file):
++                    try:
++                        store = load_announcements_store()
++                except CorruptedStorageError as exc:
++                    self._send_json(500, {
++                        "success": False,
++                        "code": "CORRUPTED_STORAGE",
++                        "error": str(exc),
++                    })
++                    return
+ 
+-                if not any(h.get("id") == active["id"] for h in store["history"]):
+-                    store["history"].insert(0, active)
+-                store["active"] = None
+-                save_announcements_store(store)
++                try:
++                    is_replay, replay_payload = validate_concurrency_and_idempotency(
++                        store,
++                        expected_revision=expected_revision,
++                        client_request_id=client_request_id,
++                        action=action_name,
++                        actor=session["address"],
++                    )
++                except IdempotencyConflictError as exc:
++                    self._send_json(409, {
++                        "success": False,
++                        "code": "IDEMPOTENCY_CONTEXT_MISMATCH",
++                        "error": str(exc),
++                        "clientRequestId": exc.client_request_id,
++                        "savedAction": exc.saved_action,
++                        "actualAction": exc.actual_action,
++                        "savedActor": exc.saved_actor,
++                        "actualActor": exc.actual_actor,
++                    })
++                    return
++                except RevisionConflictError as exc:
++                    self._send_json(409, {
++                        "success": False,
++                        "code": "REVISION_CONFLICT",
++                        "error": str(exc),
++                        "expectedRevision": exc.expected_revision,
++                        "currentRevision": exc.current_revision,
++                    })
++                    return
++                except ValueError as exc:
++                    self._send_json(400, {
++                        "success": False,
++                        "error": str(exc),
++                    })
++                    return
+ 
+-                self._send_json(200, {
+-                    "success": True,
+-                    "message": "Đã kết thúc đợt thu và chuyển vào lịch sử thông báo.",
+-                    "archived": active,
+-                    "active": None,
+-                    "history": store["history"]
+-                })
+-                return
++                if is_replay and replay_payload is not None:
++                    self._send_json(200, replay_payload)
++                    return
+ 
+-            # Thao tác tạo đợt thu mới hoặc cập nhật
+-            title = str(req_data.get("title", "")).strip()
+-            target_amount = str(req_data.get("targetAmountEth", "")).strip()
+-            if not title or not target_amount:
+-                self._send_json(400, {"success": False, "error": "Tiêu đề và mức đóng không được để trống."})
+-                return
++                # 1. Thao tác kết thúc sớm / lưu trữ đợt thu (close/archive)
++                if is_close_request:
++                    req_target_id = req_data.get("id") or req_data.get("targetId")
++                    try:
++                        resolved_id = resolve_target_id(store, req_target_id)
++                    except ValueError as ve:
++                        self._send_json(400, {"success": False, "error": str(ve)})
++                        return
++
++                    reason = str(req_data.get("reason") or "Ban cán sự chủ động kết thúc đợt thu").strip()
++                    try:
++                        # Đóng băng tiến độ cuối cùng của đợt thu (Giai đoạn 2)
++                        final_prog = freeze_campaign_progress_record(resolved_id, reason=reason)
++                        archived_item = transition_notification(
++                            store,
++                            target_id=resolved_id,
++                            new_status=NotificationStatus.ARCHIVED,
++                            reason=reason,
++                            actor=session["address"],
++                            client_request_id=client_request_id,
++                        )
++                        archived_item["finalProgress"] = final_prog
++                    except (KeyError, ValueError) as err:
++                        self._send_json(400, {"success": False, "error": str(err)})
++                        return
++
++                    views = build_views(store)
++                    resp_payload = {
++                        "success": True,
++                        "idempotentReplay": False,
++                        "message": "Đã kết thúc đợt thu và chuyển vào lịch sử thông báo.",
++                        "archived": archived_item,
++                        "notification": archived_item,
++                        "active": views["active"],
++                        "activeNotifications": views["activeNotifications"],
++                        "history": views["history"],
++                    }
++                    new_rev = record_mutation_commit(
++                        store,
++                        action="close_announcement",
++                        actor=session["address"],
++                        client_request_id=client_request_id,
++                        response_payload=resp_payload,
++                    )
++                    resp_payload["revision"] = new_rev
++                    if client_request_id:
++                        resp_payload["clientRequestId"] = str(client_request_id).strip()
++                    save_announcements_store(store)
++                    self._send_json(200, resp_payload)
++                    return
+ 
+-            try:
+-                amount_val = float(target_amount)
+-                if amount_val <= 0:
+-                    self._send_json(400, {"success": False, "error": "Mức đóng phải lớn hơn 0 ETH."})
++                # 2. Thao tác thu hồi đợt thu (revoke)
++                if is_revoke_request:
++                    req_target_id = req_data.get("id") or req_data.get("targetId")
++                    try:
++                        resolved_id = resolve_target_id(store, req_target_id)
++                    except ValueError as ve:
++                        self._send_json(400, {"success": False, "error": str(ve)})
++                        return
++
++                    reason = str(req_data.get("reason") or "Ban cán sự thu hồi thông báo").strip()
++                    try:
++                        final_prog = freeze_campaign_progress_record(resolved_id, reason=reason)
++                        revoked_item = transition_notification(
++                            store,
++                            target_id=resolved_id,
++                            new_status=NotificationStatus.REVOKED,
++                            reason=reason,
++                            actor=session["address"],
++                            client_request_id=client_request_id,
++                        )
++                        revoked_item["finalProgress"] = final_prog
++                    except (KeyError, ValueError) as err:
++                        self._send_json(400, {"success": False, "error": str(err)})
++                        return
++
++                    views = build_views(store)
++                    resp_payload = {
++                        "success": True,
++                        "idempotentReplay": False,
++                        "message": "Đã thu hồi thông báo thành công.",
++                        "revoked": revoked_item,
++                        "notification": revoked_item,
++                        "active": views["active"],
++                        "activeNotifications": views["activeNotifications"],
++                        "history": views["history"],
++                    }
++                    new_rev = record_mutation_commit(
++                        store,
++                        action="revoke_announcement",
++                        actor=session["address"],
++                        client_request_id=client_request_id,
++                        response_payload=resp_payload,
++                    )
++                    resp_payload["revision"] = new_rev
++                    if client_request_id:
++                        resp_payload["clientRequestId"] = str(client_request_id).strip()
++                    save_announcements_store(store)
++                    self._send_json(200, resp_payload)
+                     return
+-            except ValueError:
+-                self._send_json(400, {"success": False, "error": "Mức đóng không hợp lệ."})
+-                return
+ 
+-            roster_len = len(load_roster())
+-            actual_class_size = roster_len if roster_len > 0 else int(req_data.get("classSize", 7))
+-
+-            # Lưu trữ đợt thu active cũ nếu có (không ghi đè mất mát)
+-            old_active = store.get("active")
+-            if old_active and old_active.get("status") == "active":
+-                old_active["status"] = "archived"
+-                old_active["endedAt"] = datetime.now(timezone.utc).isoformat()
+-                old_active["endReason"] = "Thay thế bởi đợt thu mới"
+-                if not any(h.get("id") == old_active["id"] for h in store["history"]):
+-                    store["history"].insert(0, old_active)
+-
+-            deadline_str = str(req_data.get("deadline", "Chưa xác định")).strip()
+-            new_id = str(req_data.get("id") or f"ann-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}")
+-
+-            announcement_data = {
+-                "id": new_id,
+-                "title": title,
+-                "targetAmountEth": target_amount,
+-                "deadline": deadline_str,
+-                "deadlineTimestamp": parse_deadline_to_timestamp(deadline_str),
+-                "classSize": actual_class_size,
+-                "purpose": str(req_data.get("purpose", "")).strip(),
+-                "status": "active",
+-                "autoCloseOnTarget": bool(req_data.get("autoCloseOnTarget", False)),
+-                "createdAt": req_data.get("createdAt") or datetime.now(timezone.utc).isoformat(),
+-                "endedAt": None,
+-                "endReason": None,
+-                "updatedBy": session["address"],
+-                "updatedAt": datetime.now(timezone.utc).isoformat()
+-            }
++                # 3. Thao tác chỉnh sửa (mode="edit") hoặc tạo mới (mode="create")
++                title = str(req_data.get("title", "")).strip()
++                target_amount = str(req_data.get("targetAmountEth", "")).strip()
++                if not title or not target_amount:
++                    self._send_json(400, {"success": False, "error": "Tiêu đề và mức đóng không được để trống."})
++                    return
+ 
+-            store["active"] = announcement_data
+-            save_announcements_store(store)
+-            self._send_json(200, {
+-                "success": True,
+-                "announcement": announcement_data,
+-                "active": announcement_data,
+-                "history": store["history"]
+-            })
++                try:
++                    amount_val = float(target_amount)
++                    if amount_val <= 0:
++                        self._send_json(400, {"success": False, "error": "Mức đóng phải lớn hơn 0 ETH."})
++                        return
++                except ValueError:
++                    self._send_json(400, {"success": False, "error": "Mức đóng không hợp lệ."})
++                    return
++
++                roster_len = len(load_roster())
++                actual_class_size = roster_len if roster_len > 0 else int(req_data.get("classSize", 7))
++                req_data["classSize"] = actual_class_size
++
++                if mode == "edit":
++                    req_target_id = req_data.get("id") or req_data.get("targetId")
++                    try:
++                        resolved_id = resolve_target_id(store, req_target_id)
++                    except ValueError as ve:
++                        self._send_json(400, {"success": False, "error": str(ve)})
++                        return
++
++                    try:
++                        updated_item = edit_notification(
++                            store,
++                            target_id=resolved_id,
++                            updates=req_data,
++                            actor=session["address"],
++                            client_request_id=client_request_id,
++                        )
++                    except (KeyError, ValueError) as err:
++                        self._send_json(400, {"success": False, "error": str(err)})
++                        return
++
++                    announcement_data = updated_item
++                    action_name = "edit_announcement"
++                else:
++                    # mode == "create": Thêm mới độc lập, KHÔNG đóng hay ảnh hưởng bất kỳ thông báo cũ nào!
++                    try:
++                        announcement_data = create_notification(
++                            store,
++                            req_data,
++                            actor=session["address"],
++                            client_request_id=client_request_id,
++                        )
++                    except (NotificationValidationError, ValueError, KeyError) as nve:
++                        self._send_json(400, {"success": False, "error": str(nve)})
++                        return
++                    action_name = "create_announcement" 
++
++                views = build_views(store)
++                resp_payload = {
++                    "success": True,
++                    "idempotentReplay": False,
++                    "mode": mode,
++                    "announcement": announcement_data,
++                    "active": views["active"],
++                    "activeNotifications": views["activeNotifications"],
++                    "history": views["history"],
++                    "notifications": views["notifications"],
++                }
++                new_rev = record_mutation_commit(
++                    store,
++                    action=action_name,
++                    actor=session["address"],
++                    client_request_id=client_request_id,
++                    response_payload=resp_payload,
++                )
++                resp_payload["revision"] = new_rev
++                if client_request_id:
++                    resp_payload["clientRequestId"] = str(client_request_id).strip()
++                save_announcements_store(store)
++                self._send_json(200, resp_payload)
++            except AtomicStorageError as ase:
++                logger.warning("Thao tác lưu trữ bị từ chối do bảo vệ dữ liệu: %s", ase)
++                self._send_json(503, {
++                    "success": False,
++                    "code": "STORAGE_PROTECTED",
++                    "error": "Hệ thống lưu trữ đang ở chế độ bảo vệ dữ liệu (Read-Only). Vui lòng cấu hình cho phép ghi dữ liệu trên máy chủ triển khai.",
++                })
++                return
++            except Exception as ex:
++                logger.error("Lỗi hệ thống khi xử lý thông báo: %s", ex, exc_info=True)
++                self._send_json(500, {
++                    "success": False,
++                    "code": "INTERNAL_SERVER_ERROR",
++                    "error": "Đã xảy ra lỗi nội bộ trên máy chủ khi lưu thông báo. Vui lòng liên hệ quản trị viên.",
++                })
++                return
+ 
+         # 4. Thêm / Chỉnh sửa danh bạ sinh viên (POST /api/roster/register)
+         # BẢO VỆ BẰNG SESSION (Stage 3B.4)
+@@ -911,49 +1405,183 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
+                 self._send_json(400, {"success": False, "error": "Địa chỉ ví Ethereum không hợp lệ (cần đúng 42 ký tự, bắt đầu bằng 0x)."})
+                 return
+ 
+-            roster = load_roster()
+-            match_idx = None
+-            for idx, item in enumerate(roster):
+-                if original_mssv and item.get("mssv") == original_mssv:
+-                    match_idx = idx
+-                    break
+-                if item.get("mssv") == mssv:
+-                    match_idx = idx
+-                    break
+-
+-            if match_idx is not None:
+-                roster[match_idx]["mssv"] = mssv
+-                roster[match_idx]["name"] = name
+-                roster[match_idx]["wallet"] = wallet
+-                roster[match_idx]["role"] = role
+-                roster[match_idx]["roleTitle"] = role_title
+-                updated = True
+-            else:
+-                for item in roster:
+-                    if item.get("wallet", "").lower() == wallet.lower():
+-                        item["mssv"] = mssv
+-                        item["name"] = name
+-                        item["role"] = role
+-                        item["roleTitle"] = role_title
+-                        updated = True
++            roster_file = get_roster_file()
++            with DualLayerFileLock(roster_file):
++                roster = load_roster()
++                match_idx = None
++                for idx, item in enumerate(roster):
++                    if original_mssv and item.get("mssv") == original_mssv:
++                        match_idx = idx
+                         break
++                    if item.get("mssv") == mssv:
++                        match_idx = idx
++                        break
++
++                if match_idx is not None:
++                    roster[match_idx]["mssv"] = mssv
++                    roster[match_idx]["name"] = name
++                    roster[match_idx]["wallet"] = wallet
++                    roster[match_idx]["role"] = role
++                    roster[match_idx]["roleTitle"] = role_title
++                    updated = True
+                 else:
+-                    roster.append({
+-                        "mssv": mssv,
+-                        "name": name,
+-                        "wallet": wallet,
+-                        "role": role,
+-                        "roleTitle": role_title
+-                    })
+-                    updated = False
++                    for item in roster:
++                        if item.get("wallet", "").lower() == wallet.lower():
++                            item["mssv"] = mssv
++                            item["name"] = name
++                            item["role"] = role
++                            item["roleTitle"] = role_title
++                            updated = True
++                            break
++                    else:
++                        roster.append({
++                            "mssv": mssv,
++                            "name": name,
++                            "wallet": wallet,
++                            "role": role,
++                            "roleTitle": role_title
++                        })
++                        updated = False
++
++                save_roster(roster)
++                roster_snapshot = list(roster)
+ 
+-            save_roster(roster)
+             self._send_json(200, {
+                 "success": True,
+                 "message": f"Đã {'cập nhật thông tin' if updated else 'thêm mới'} sinh viên {name} ({mssv}) thành công.",
+-                "roster": roster
++                "roster": roster_snapshot
+             })
+ 
++        # 4c. Tạo Claim Intent trước khi mở ví MetaMask (POST /api/contribution/intent)
++        elif path == "/api/contribution/intent":
++            session = get_authenticated_session(self.headers)
++            if not session or not session.get("address"):
++                self._send_json(401, {
++                    "success": False,
++                    "error": "Yêu cầu đăng nhập và xác thực ví trước khi tạo ý định nộp quỹ."
++                })
++                return
++
++            content_length = int(self.headers.get("Content-Length", 0))
++            if content_length == 0:
++                self._send_json(400, {"success": False, "error": "Thiếu dữ liệu yêu cầu."})
++                return
++
++            try:
++                raw_body = self.rfile.read(content_length).decode("utf-8")
++                req_data = json.loads(raw_body)
++            except Exception as e:
++                self._send_json(400, {"success": False, "error": f"Dữ liệu JSON không hợp lệ: {str(e)}"})
++                return
++
++            target_nid = str(req_data.get("notificationId", "")).strip()
++            if not target_nid:
++                self._send_json(400, {"success": False, "error": "Thiếu mã đợt thu (notificationId)."})
++                return
++
++            # Kiểm tra trạng thái đợt thu từ notification_store
++            store = load_announcements_store()
++            views = build_views(store)
++            active_ids = [a.get("id") for a in views.get("activeNotifications", [])]
++            if target_nid not in active_ids:
++                self._send_json(400, {
++                    "success": False,
++                    "error": f"Đợt thu '{target_nid}' hiện không ở trạng thái ACTIVE. Không thể tạo ý định nộp quỹ."
++                })
++                return
++
++            matching_notif = next((a for a in views["activeNotifications"] if a.get("id") == target_nid), None)
++            target_amount = matching_notif.get("targetAmountEth") if matching_notif else None
++
++            try:
++                intent_rec = create_claim_intent(
++                    notification_id=target_nid,
++                    verified_wallet=session["address"],
++                    notification_status="active",
++                    target_amount_eth=target_amount
++                )
++                self._send_json(200, {
++                    "success": True,
++                    "message": "Đã tạo ý định nộp quỹ thành công. Có hiệu lực trong 30 phút.",
++                    "intent": intent_rec
++                })
++            except Exception as e:
++                self._send_json(400, {"success": False, "error": str(e)})
++            return
++
++        # 4d. Xác minh biên lai on-chain và phân bổ đóng góp (POST /api/contribution/claim)
++        elif path == "/api/contribution/claim":
++            session = get_authenticated_session(self.headers)
++            if not session or not session.get("address"):
++                self._send_json(401, {
++                    "success": False,
++                    "error": "Yêu cầu đăng nhập và xác thực chữ ký ví trước khi gửi claim đóng góp."
++                })
++                return
++
++            content_length = int(self.headers.get("Content-Length", 0))
++            if content_length == 0:
++                self._send_json(400, {"success": False, "error": "Thiếu dữ liệu yêu cầu."})
++                return
++
++            try:
++                raw_body = self.rfile.read(content_length).decode("utf-8")
++                req_data = json.loads(raw_body)
++            except Exception as e:
++                self._send_json(400, {"success": False, "error": f"Dữ liệu JSON không hợp lệ: {str(e)}"})
++                return
++
++            target_nid = str(req_data.get("notificationId", "")).strip()
++            tx_hash = str(req_data.get("txHash", "")).strip()
++            claim_intent_id = req_data.get("claimIntentId")
++
++            if not target_nid or not tx_hash:
++                self._send_json(400, {"success": False, "error": "Yêu cầu cung cấp đầy đủ notificationId và txHash."})
++                return
++
++            store = load_announcements_store()
++            views = build_views(store)
++            notif_rec = next((n for n in views["notifications"] if n.get("id") == target_nid), None)
++            notif_status = notif_rec.get("status", "none") if notif_rec else "none"
++            ended_at_ts = None
++            if notif_rec and notif_rec.get("endedAt"):
++                from backend.accounting_engine import parse_deadline_to_vn_timestamp
++                # Parse endedAt thành timestamp
++                try:
++                    import datetime
++                    dt = datetime.datetime.fromisoformat(str(notif_rec["endedAt"]))
++                    ended_at_ts = dt.timestamp()
++                except Exception:
++                    pass
++
++            roster_len = len(load_roster())
++            effective_class_sz = roster_len if roster_len > 0 else 7
++            target_eth_val = notif_rec.get("targetAmountEth") if notif_rec else None
++
++            try:
++                claim_res = verify_and_claim_contribution(
++                    notification_id=target_nid,
++                    tx_hash=tx_hash,
++                    verified_wallet=session["address"],
++                    claim_intent_id=claim_intent_id,
++                    notification_status=notif_status,
++                    notification_ended_at_ts=ended_at_ts,
++                    class_size=effective_class_sz,
++                    target_eth=target_eth_val
++                )
++                self._send_json(200, claim_res)
++            except ContributionAttributionError as cae:
++                self._send_json(409 if "đã được phân bổ" in str(cae) else 400, {
++                    "success": False,
++                    "error": str(cae)
++                })
++            except Exception as exc:
++                self._send_json(500, {
++                    "success": False,
++                    "error": f"Lỗi hệ thống khi xác minh đóng góp: {str(exc)}"
++                })
++            return
++
+         # 5. Hỏi đáp Trợ lý AI (POST /api/chat)
+         elif path == "/api/chat":
+             content_length = int(self.headers.get("Content-Length", 0))
+@@ -1026,15 +1654,18 @@ def run_server():
+     server_address = (HOST, PORT)
+     httpd = HTTPServer(server_address, AIChatRequestHandler)
+     ai_service = AIAssistantService()
++    start_expiration_daemon(interval_sec=30.0)
+     print("=" * 65, flush=True)
+     print(f"🚀 KTS-Class-Fund Backend (Auth Protected) đang chạy tại http://localhost:{PORT}", flush=True)
+     print(f"   Xác thực: Challenge-Response Signature (eth_account)", flush=True)
+     print(f"   Trạng thái Gemini API Key: {'ĐÃ CẤU HÌNH' if ai_service.is_configured() else 'CHƯA CẤU HÌNH'}", flush=True)
++    print(f"   Quét hết hạn nền (Background Scanner): ĐANG HOẠT ĐỘNG (chu kỳ 30s)", flush=True)
+     print("=" * 65, flush=True)
+     try:
+         httpd.serve_forever()
+     except KeyboardInterrupt:
+         print("\nĐang dừng máy chủ...", flush=True)
++        stop_expiration_daemon()
+         httpd.server_close()
+ 
+ 

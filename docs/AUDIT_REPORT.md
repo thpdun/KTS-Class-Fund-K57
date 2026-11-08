@@ -355,10 +355,76 @@ Báo cáo phân định minh bạch 4 tầng kết quả kiểm thử:
 
 ---
 
-## 12. Kết luận và Trạng thái Thẩm định (Audit Conclusion)
+## 12. Kết luận và Trạng thái Thẩm định (Audit Conclusion - Lab 14)
 
 - **Trạng thái thẩm định kỹ thuật nội bộ:** **ĐẠT YÊU CẦU NỘI BỘ (PASSED WITH CONDITIONS)**.
 - **Tóm tắt kết luận:**
   - Mục tiêu cốt lõi của Lab 14 — ngăn chặn thành viên tự ý rút tiền trực tiếp khỏi quỹ lớp và đưa việc hoàn tiền vào quy trình biểu quyết Ban cán sự $\ge 51\%$ — **đã hoàn thành xuất sắc ở cấp Smart Contract**.
   - Hệ thống kế toán giữ chỗ kép vận hành ổn định, bảo toàn 100% số wei, tuân thủ nguyên tắc Checks-Effects-Interactions và loại bỏ nguy cơ Reentrancy.
   - Báo cáo này phản ánh trung thực kết quả kiểm chứng: 24/24 ca Python test đã PASS, biên dịch Solidity thành công sạch sẽ, và các số liệu gas mới được đánh dấu chờ đo lại trên Remix VM theo đúng chuẩn mực minh bạch khoa học.
+
+---
+
+## 13. Phụ lục Lab 15: Kiểm toán Kỹ thuật Toàn diện 7 Nhóm Thay đổi (Phases 1–6)
+
+Sau đợt rà soát và thực hiện kế hoạch nâng cấp Lab 15 (`docs/CHANGE_PLAN_LAB15.md`), nhóm đã tiến hành kiểm toán chuyên sâu 7 nhóm tính năng mới:
+
+### 13.1. Bảng tổng hợp các phát hiện và xử lý bảo mật bổ sung (SEC-08 đến SEC-14)
+
+| Mã ID | Tên phát hiện / Vấn đề rủi ro | Phân loại | Mức độ rủi ro | Trạng thái xử lý |
+| :---: | :--- | :---: | :---: | :---: |
+| **SEC-08** | Lấy tiền sinh viên khác bù vào phí 1% khi hoàn tiền gross | Economic Loss | **CRITICAL** | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ** (Phase 1: `studentContributions` lưu 99% net, hạn mức hoàn tối đa `min(netContrib, availableFund)`) |
+| **SEC-09** | CVHT thêm ví ma để thao túng biểu quyết đang diễn ra | Governance Attack | **CRITICAL** | **ĐÃ KHẮC PHỤC** (Phase 2: Trễ kích hoạt 3 ngày `BCS_ACTIVATION_DELAY`, snapshot `voterBase` tại lúc tạo đề xuất) |
+| **SEC-10** | Xung đột lợi ích người nộp đơn / người nhận giải ngân bỏ phiếu | Governance / Collusion | **HIGH** | **ĐÃ KHẮC PHỤC** (Phase 2: Chặn applicant/recipient bỏ phiếu, giảm mẫu số `voterBase - 1`, yêu cầu `yesVotes >= 2`) |
+| **SEC-11** | Người ngoài gửi tiền hoặc lộ lọt thông tin cá nhân PII trên chuỗi | Privacy & Whitelist | **HIGH** | **ĐÃ KHẮC PHỤC** (Phase 3: Whitelist on-chain `setStudents`, revert `NotEnrolledStudent`, chỉ lưu `rosterHash` SHA-256) |
+| **SEC-12** | Đóng góp giữa các đợt thu bị lẫn lộn hoặc tràn sang nhau | Accounting / Isolation | **MEDIUM** | **ĐÃ KHẮC PHỤC** (Phase 4: Đợt thu on-chain độc lập, chỉ 1 đợt mở, hoàn thành khi `paidInCollection >= targetWei`) |
+| **SEC-13** | CVHT rút cạn phí vận hành làm BCS không có gas thực thi | Fund Drain / Governance | **HIGH** | **ĐÃ KHẮC PHỤC** (Phase 5: Xóa `withdrawAdminFee`, tự động hoàn gas qua `governanceAction`, chuyển phí dư `moveFeeToClassFund`) |
+| **SEC-14** | Tấn công Reentrancy hoặc tắc nghẽn khi hoàn gas thất bại | Security / Reentrancy | **HIGH** | **ĐÃ KHẮC PHỤC** (Phase 5: Kiểm tra reentrancy trong `governanceAction`, xử lý shortfall an toàn, fallback `GasRefundFailed` không revert) |
+
+### 13.2. Phân tích An toàn Checks-Effects-Interactions của Modifier `governanceAction`
+- **Đo Gas và Giới hạn Chi phí:**
+  - Lưu `gasStart = gasleft()` tại lối vào modifier.
+  - Sau khi thân hàm chính thực thi (`_`), tính `gasUsed = gasStart - gasleft() + GAS_OVERHEAD`.
+  - Giới hạn gas hoàn tối đa `500,000` gas units; giá gas tính theo `min(tx.gasprice, block.basefee + 2 gwei)`.
+- **An toàn Reentrancy & Bảo toàn kế toán:**
+  - Toàn bộ thay đổi trạng thái của hàm quản trị chính được ghi nhận xong trước khi bước vào đoạn tương tác chuyển ETH hoàn gas.
+  - Sử dụng cờ khóa reentrancy nội bộ `_governanceLocked`.
+  - Nếu số dư `adminFeePool` không đủ, hợp đồng chuyển hết số dư hiện có và ghi nhận thiếu hụt vào `gasRefundShortfall`, tuyệt đối không revert giao dịch quản trị.
+  - Nếu ví người gọi từ chối ETH (ví dụ Contract không có `receive`), phát sự kiện `GasRefundFailed`, hoàn trả lại số dư vào `adminFeePool`, bảo toàn tính toàn vẹn 100% của hệ thống.
+
+### 13.3. Kiểm soát Kích thước Deployed Bytecode (Giới hạn EIP-170)
+- **Cấu hình biên dịch chuẩn:** Solidity `0.8.20`, EVM `shanghai`, Optimizer bật với `runs: 200`.
+- **Kích thước đo lường thực tế:**
+  - `deployedBytecode`: **20,767 bytes** (Đạt **84.50%** ngưỡng trần 24,576 bytes của EIP-170, biên an toàn còn **3,809 bytes**).
+  - `initcode`: **20,860 bytes** (Nằm sâu dưới giới hạn 49,152 bytes của Shanghai hardfork).
+- **Cảnh báo triển khai trên Remix IDE:** Bắt buộc phải bật optimizer `runs = 200` và chọn EVM `shanghai` để tránh lỗi vượt kích thước bytecode (Oversized Data).
+
+### 13.4. Tổng hợp Kết quả Kiểm chứng Thực tế
+- **Hardhat Test Suite (`test/hardhat/baseline.test.js`):** **38/38 tests PASS**.
+- **Mô phỏng Kinh tế Python (`test/test_economic_rules.py`):** **58/58 test cases PASS**.
+- **Biên dịch Solc (`npx solc 0.8.20`):** 3 hợp đồng (`ProjectCore.sol`, `ProjectCore_test.sol`, `ProjectCore_integration_test.sol`) biên dịch thành công 100%, 0 lỗi, 0 cảnh báo.
+- **Bộ kiểm thử Tích hợp Backend & Indexer:**
+  - `test_blockchain_indexer.py`: 32/32 PASS.
+  - `test_auto_execution.py`: 18/18 PASS.
+  - `test_roster_hash.py`: 10/10 PASS.
+  - `test_announcement_lifecycle.py`: 30/30 PASS.
+  - `test_campaign_progress.py`: 13/13 PASS.
+  - `test_v454_roster_and_progress.py`: 5/5 PASS.
+  - `test_layout_responsiveness.py`: 5/5 PASS.
+  - `test_logo1_verification.py`: 1/1 PASS.
+  - `test_ai_privacy.py`: 6/6 PASS (1 skip do yêu cầu API key Gemini live).
+- **Bộ kiểm thử Giao diện Người dùng (JS Tests):**
+  - `test_metamask_and_ui_verification.js`: 4/4 PASS.
+  - `test_stage2_roles.js`: 14/14 PASS.
+  - `test_frontend_multiple_progress.js`: 4/4 PASS.
+  - `test_announcement_modal_behavior.js`: 4/4 PASS.
+  - `test_frontend_dom_cleanup.js`: 30/30 PASS.
+  - `test_roster_status.js`: 7/7 PASS.
+- **Bộ kiểm thử An ninh Backend (Khi máy chủ hoạt động):**
+  - `test_stage3b3_security.py`: 10/10 PASS.
+  - `test_stage3b4_security.py`: 7/7 PASS.
+  - `test_stage3b45_regression.py`: 8/8 PASS.
+  - `test_cors_security.py`: 6/6 PASS.
+  - `test_independent_audit.py`: 4/6 PASS (2 lỗi dự kiến do kịch bản kiểm tra sự tồn tại của lỗ hổng trước Stage 3B.4).
+- **Trạng thái Bộ kiểm thử Solidity trên Remix VM (`test/ProjectCore_test.sol` & `test/ProjectCore_integration_test.sol`):**
+  - **ĐÃ BIÊN DỊCH THÀNH CÔNG (CHƯA CHẠY TRÊN REMIX)**. Toàn bộ logic tương đương đã được kiểm chứng tự động 100% bằng Hardhat và Python simulator.

@@ -2,7 +2,20 @@
   "name": "hce-web3-starter",
   "private": true,
   "description": "ECO2432 starter kit. Optional: run npm install so local editors resolve OpenZeppelin imports; Remix IDE resolves them automatically.",
+  "scripts": {
+    "test": "npx hardhat test",
+    "verify": "npx hardhat test && python test/test_economic_rules.py && npx --no-install solc --optimize --optimize-runs 200 --bin -o cache/solc-bin contracts/project/ProjectCore.sol test/ProjectCore_test.sol test/ProjectCore_integration_test.sol && python test/test_blockchain_indexer.py && python test/test_auto_execution.py"
+  },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.2",
+    "@nomicfoundation/hardhat-ethers": "^3.1.3",
+    "@nomicfoundation/hardhat-network-helpers": "^1.1.2",
+    "chai": "^4.5.0",
+    "ethers": "^6.17.0",
+    "hardhat": "^2.29.1",
+    "solc": "0.8.20"
   }
 }

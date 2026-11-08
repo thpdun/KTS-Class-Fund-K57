@@ -23,6 +23,11 @@
 
 ## 2. Bảng Đo lường Gas Tiêu thụ Thực tế từng Hàm (Receipt & Execution)
 
+### 2.1. Bảng số liệu gốc Lab 14
+
+> [!NOTE]  
+> **Ghi chú:** Số liệu trước đây đo ở cấu hình cũ chưa bật optimizer (giữ nguyên toàn bộ số liệu gốc bên dưới để đối chiếu lịch sử).
+
 Bảng dưới đây ghi nhận số liệu Gas tiêu thụ của từng hàm trọng yếu trong `ProjectCore.sol`, đo lường qua kịch bản kiểm thử tích hợp trên Remix VM (Cancun):
 
 | STT | Tên hàm / Giao dịch | Điều kiện & Trạng thái thực hiện | Execution Cost (gasleft) | Transaction Cost (Remix Receipt) | Nguồn bằng chứng / Cách đo | Nhận xét & Đánh giá Gas |
@@ -38,6 +43,30 @@ Bảng dưới đây ghi nhận số liệu Gas tiêu thụ của từng hàm tr
 | **6d** | `expireRefundRequest()` | Dọn dẹp yêu cầu hoàn tiền quá 7 ngày, giải phóng giữ chỗ | *Cần đo lại trên Remix* (Dự phóng: ~18,000 - 24,000 gas) | *Cần đo lại trên Remix* (Dự phóng: ~39,000 - 45,000 gas) | Đang chờ re-measure trên Remix VM với ABI mới | Cập nhật `status = Expired` và giải phóng cả `reservedRefundAmount` lẫn `pendingStudentRefundAmount`.
 | **7** | `withdrawAdminFee()` | CVHT rút 0.1 ETH từ `adminFeePool` để bù đắp Gas (R11) | ~23,180 gas | ~44,180 gas | Đo qua `gasleft()` trong `testGas_MeasureAllFunctions` | Kiểm tra quyền CVHT, giảm `adminFeePool`, phát sự kiện `AdminFeeWithdrawn` và chuyển ETH. |
 | **8** | `expireSpendRequest()` | Dọn dẹp đề xuất quá 7 ngày, giải phóng tiền giữ chỗ | ~16,420 gas | ~37,420 gas | Đo qua `gasleft()` kịch bản quá hạn | Cập nhật `status = Expired` và hoàn trả hạn mức giữ chỗ về quỹ khả dụng. |
+
+### 2.2. Số liệu đo lại theo cấu hình mới (Phase 0 bổ sung: `solc 0.8.20`, EVM `shanghai`, Optimizer `runs: 200`)
+
+Số liệu dưới đây được đo trực tiếp trên phiên bản `ProjectCore.sol` trước Phase 1 bằng Hardhat EVM (`hardfork: "shanghai"`, `solc 0.8.20`, `optimizer: { enabled: true, runs: 200 }`), ghi nhận `Transaction Cost` từ `receipt.gasUsed` và `Execution Cost ≈ gasUsed - 21,000 - calldataCost` (đã tính hoàn trả EVM EIP-3529 ở cuối giao dịch):
+
+| STT | Tên hàm / Giao dịch | Điều kiện thực đo trên Hardhat | Execution Cost (net approx) | Transaction Cost (`receipt.gasUsed`) | Calldata Cost |
+| :---: | :--- | :--- | :---: | :---: | :---: |
+| **0** | `deploy ProjectCore` | Triển khai hợp đồng từ ví CVHT (bytecode 12,356 B) | — | **2,724,342 gas** | — |
+| **1** | `deposit()` | Nạp 10 ETH lần đầu (`cold SSTORE` khởi tạo 3 slot) | **70,132 gas** | **91,196 gas** | 64 gas |
+| **2** | `setBCSMember()` | CVHT thêm mới `bcs1` (`status = true`) | **46,698 gas** | **68,270 gas** | 572 gas |
+| **3** | `createSpendRequest()` | Tạo đề xuất chi 2 ETH (khởi tạo struct mới) | **195,819 gas** | **218,003 gas** | 1,184 gas |
+| **4a** | `voteSpendRequest()` (Pending) | Phiếu 1/3 chưa đạt ngưỡng 51% | **61,417 gas** | **82,761 gas** | 344 gas |
+| **4b** | `voteSpendRequest()` (Auto-Exec) | Phiếu 2/3 đạt 66% + tự động giải ngân 2 ETH | **87,576 gas** | **108,920 gas** | 344 gas |
+| **5** | `executeSpendRequest()` | Thực thi fallback sau khi ví nhận bỏ chặn ETH | **38,868 gas** | **60,072 gas** | 204 gas |
+| **6a** | `createRefundRequest()` | Sinh viên tạo yêu cầu hoàn 2 ETH (struct + giữ chỗ kép) | **195,812 gas** | **217,580 gas** | 768 gas |
+| **6b-1** | `voteRefundRequest()` (Pending) | Phiếu 1/3 chưa đạt ngưỡng 51% | **61,438 gas** | **82,782 gas** | 344 gas |
+| **6b-2** | `voteRefundRequest()` (Auto-Exec) | Phiếu 2/3 đạt 66% + tự động hoàn 2 ETH | **95,697 gas** | **117,041 gas** | 344 gas |
+| **6c** | `executeRefundRequest()` | Thực thi fallback hoàn 1 ETH sau khi ví sinh viên nhận lại ETH | **44,704 gas** | **65,908 gas** | 204 gas |
+| **6d** | `expireRefundRequest()` | Dọn dẹp yêu cầu hoàn tiền quá 7 ngày (`time.increase`) | **33,210 gas** | **54,414 gas** | 204 gas |
+| **7** | `withdrawAdminFee()` | CVHT rút 0.1 ETH phí vận hành | **13,965 gas** | **35,229 gas** | 264 gas |
+| **8** | `expireSpendRequest()` | Dọn dẹp đề xuất chi quá 7 ngày (`time.increase`) | **30,637 gas** | **51,841 gas** | 204 gas |
+
+> [!NOTE]  
+> Chi phí `createSpendRequest()` (~218k) và `createRefundRequest()` (~217.5k) cao hơn mức ước lượng cũ vì EVM thực tế tính `20,000 gas` cho mỗi slot storage lần đầu ghi từ `0 -> khác 0` khi khởi tạo struct `SpendRequest` / `RefundRequest`.
 
 ---
 
