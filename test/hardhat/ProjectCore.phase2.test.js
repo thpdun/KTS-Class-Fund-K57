@@ -44,10 +44,11 @@ describe("Phase 2 (Sections B & C - Governance Snapshot, Delay, Quorum & Conflic
     expect(deployedBytes).to.be.lessThanOrEqual(MAX_CONTRACT_BYTES);
   });
 
-  it("Section B constants & 3-day activation delay: immature BCS blocked until exact 3-day boundary, re-add resets delay", async function () {
+  it("Section B constants & 3-second activation delay: immature BCS blocked until exact 3-second boundary, re-add resets delay", async function () {
     const { core, advisor, bcs1, bcs2, bcs3, bcs4, studentA, recipient } = await deployFixture();
 
-    expect(await core.BCS_ACTIVATION_DELAY()).to.equal(BigInt(THREE_DAYS));
+    const ACTIVATION_DELAY = 3;
+    expect(await core.BCS_ACTIVATION_DELAY()).to.equal(BigInt(ACTIVATION_DELAY));
     expect(await core.MIN_BCS_FOR_PROPOSAL()).to.equal(3n);
     expect(await core.MAX_BCS()).to.equal(15n);
     expect(await core.getBCSList()).to.deep.equal([]);
@@ -64,35 +65,30 @@ describe("Phase 2 (Sections B & C - Governance Snapshot, Delay, Quorum & Conflic
     const tAdd = Number(block.timestamp);
 
     expect(await core.isBCSMember(bcs4.address)).to.equal(true);
-    expect(await core.memberSince(bcs4.address)).to.equal(BigInt(tAdd + THREE_DAYS));
-    expect(await core.isEligibleVoterAt(bcs4.address, tAdd + THREE_DAYS - 1)).to.equal(false);
-    expect(await core.isEligibleVoterAt(bcs4.address, tAdd + THREE_DAYS)).to.equal(true);
-    expect(await core.eligibleBCSCount(tAdd + THREE_DAYS - 1)).to.equal(3n);
-    expect(await core.eligibleBCSCount(tAdd + THREE_DAYS)).to.equal(4n);
+    expect(await core.memberSince(bcs4.address)).to.equal(BigInt(tAdd + ACTIVATION_DELAY));
+    expect(await core.isEligibleVoterAt(bcs4.address, tAdd + ACTIVATION_DELAY - 1)).to.equal(false);
+    expect(await core.isEligibleVoterAt(bcs4.address, tAdd + ACTIVATION_DELAY)).to.equal(true);
+    expect(await core.eligibleBCSCount(tAdd + ACTIVATION_DELAY - 1)).to.equal(3n);
+    expect(await core.eligibleBCSCount(tAdd + ACTIVATION_DELAY)).to.equal(4n);
 
-    // Move through exact pre-boundary seconds (-3, -2, -1) so each mined revert stays < tAdd + THREE_DAYS
-    await time.setNextBlockTimestamp(tAdd + THREE_DAYS - 3);
+    // Pre-boundary seconds: tAdd + 1 and tAdd + 2 revert NotActiveBCS
+    await time.setNextBlockTimestamp(tAdd + 1);
     await expect(
       core.connect(bcs4).voteSpendRequest(1, true)
     ).to.be.revertedWithCustomError(core, "NotActiveBCS");
 
-    await time.setNextBlockTimestamp(tAdd + THREE_DAYS - 2);
-    await expect(
-      core.connect(bcs4).voteRefundRequest(1, true)
-    ).to.be.revertedWithCustomError(core, "NotActiveBCS");
-
-    await time.setNextBlockTimestamp(tAdd + THREE_DAYS - 1);
+    await time.setNextBlockTimestamp(tAdd + 2);
     await expect(
       core.connect(bcs4).createSpendRequest(recipient.address, ethers.parseEther("1"), "Too early")
     ).to.be.revertedWithCustomError(core, "NotActiveBCS");
 
-    // At exact tAdd + THREE_DAYS -> onlyActiveBCS passes! (New request allowed; existing request still blocks by creation snapshot)
-    await time.setNextBlockTimestamp(tAdd + THREE_DAYS);
+    // At exact tAdd + ACTIVATION_DELAY (3s) -> onlyActiveBCS passes!
+    await time.setNextBlockTimestamp(tAdd + ACTIVATION_DELAY);
     await expect(
       core.connect(bcs4).createSpendRequest(recipient.address, ethers.parseEther("1"), "Now active")
     ).to.emit(core, "SpendRequestCreated");
 
-    // Remove and re-add bcs4 -> resets memberSince to tReadd + THREE_DAYS
+    // Remove and re-add bcs4 -> resets memberSince to tReadd + ACTIVATION_DELAY
     await core.connect(advisor).setBCSMember(bcs4.address, false);
     expect(await core.memberSince(bcs4.address)).to.equal(0n);
 
@@ -100,7 +96,7 @@ describe("Phase 2 (Sections B & C - Governance Snapshot, Delay, Quorum & Conflic
     const rReadd = await txReadd.wait();
     const bReadd = await ethers.provider.getBlock(rReadd.blockNumber);
     const tReadd = Number(bReadd.timestamp);
-    expect(await core.memberSince(bcs4.address)).to.equal(BigInt(tReadd + THREE_DAYS));
+    expect(await core.memberSince(bcs4.address)).to.equal(BigInt(tReadd + ACTIVATION_DELAY));
 
     await expect(
       core.connect(bcs4).createSpendRequest(recipient.address, ethers.parseEther("1"), "Reset delay blocks immediate call")
@@ -266,15 +262,15 @@ describe("Phase 2 (Sections B & C - Governance Snapshot, Delay, Quorum & Conflic
     await core.connect(advisor).setBCSMember(phantom2.address, true);
     await core.connect(advisor).setBCSMember(phantom3.address, true);
 
-    // Before 3 days: blocked by NotActiveBCS
-    await expect(core.connect(phantom1).voteSpendRequest(1, true)).to.be.revertedWithCustomError(
+    // Before 3 seconds: phantom3 was just added, so its 3-second delay has not elapsed -> blocked by NotActiveBCS
+    await expect(core.connect(phantom3).voteSpendRequest(1, true)).to.be.revertedWithCustomError(
       core,
       "NotActiveBCS"
     );
 
-    // Advance 3 days (still well inside 7-day voting period): phantoms become active BCS globally,
+    // Advance 10 seconds (activation delay passes, still well inside 7-day voting period): phantoms become active BCS globally,
     // BUT were NOT eligible at proposal.createdAt -> VoterNotEligibleAtCreation!
-    await time.increase(THREE_DAYS);
+    await time.increase(10);
 
     for (const ph of [phantom1, phantom2, phantom3]) {
       await expect(core.connect(ph).voteSpendRequest(1, true))

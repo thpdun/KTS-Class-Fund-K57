@@ -378,9 +378,9 @@ contract ProjectCoreTest {
         require(actual == bytes4(keccak256("NotActiveBCS()")), "Must revert NotActiveBCS()");
     }
 
-    /// @notice Ca B5 (Phase 2 / Mục B - chạy đơn TX trên Remix): Độ trễ kích hoạt 3 ngày, truy vấn view và chặn BCS mới
+    /// @notice Ca B5 (Phase 2 / Mục B - chạy đơn TX trên Remix): Độ trễ kích hoạt 3 giây, truy vấn view và chặn BCS mới
     function testGroupB5_SectionB_ActivationDelayAndViewQueries() public {
-        require(core.BCS_ACTIVATION_DELAY() == 3 days, "Activation delay must be 3 days");
+        require(core.BCS_ACTIVATION_DELAY() == 3 seconds, "Activation delay must be 3 seconds");
         require(core.MIN_BCS_FOR_PROPOSAL() == 3, "Min BCS for proposal must be 3");
         require(core.MAX_BCS() == 15, "Max BCS must be 15");
 
@@ -389,13 +389,13 @@ contract ProjectCoreTest {
         core.setBCSMember(address(bcs2), true);
         core.setBCSMember(address(bcs3), true);
 
-        // Chưa đủ 3 ngày: eligibleBCSCount(tAdd) == 0, eligibleBCSCount(tAdd + 3 days) == 3
+        // Chưa đủ 3 giây: eligibleBCSCount(tAdd) == 0, eligibleBCSCount(tAdd + 3 seconds) == 3
         require(core.eligibleBCSCount(tAdd) == 0, "Eligible count at tAdd must be 0");
-        require(core.eligibleBCSCount(tAdd + 3 days) == 3, "Eligible count at tAdd + 3 days must be 3");
-        require(!core.isEligibleVoterAt(address(bcs1), tAdd + 3 days - 1), "Before 3 days must be false");
-        require(core.isEligibleVoterAt(address(bcs1), tAdd + 3 days), "Exact 3 days must be true");
+        require(core.eligibleBCSCount(tAdd + 3 seconds) == 3, "Eligible count at tAdd + 3 seconds must be 3");
+        require(!core.isEligibleVoterAt(address(bcs1), tAdd + 3 seconds - 1), "Before 3 seconds must be false");
+        require(core.isEligibleVoterAt(address(bcs1), tAdd + 3 seconds), "Exact 3 seconds must be true");
 
-        // BCS mới thêm (< 3 ngày) gọi createSpendRequest bị chặn NotActiveBCS()
+        // BCS mới thêm (< 3 giây) gọi createSpendRequest bị chặn NotActiveBCS()
         (bool sEarly, bytes memory rEarly) = address(bcs1).call(
             abi.encodeWithSignature(
                 "createSpendRequest(address,address,uint256,string)",
@@ -405,7 +405,7 @@ contract ProjectCoreTest {
                 "Tao som"
             )
         );
-        require(!sEarly, "Immature BCS < 3 days cannot create spend request");
+        require(!sEarly, "Immature BCS < 3 seconds cannot create spend request");
         bytes4 aEarly;
         assembly { aEarly := mload(add(rEarly, 0x20)) }
         require(aEarly == bytes4(keccak256("NotActiveBCS()")), "Must revert NotActiveBCS()");

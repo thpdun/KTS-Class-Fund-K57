@@ -301,3 +301,35 @@ Thực hiện toàn diện 7 nhóm thay đổi kiến trúc (A–G) theo kế ho
 - Độc lập hóa `test/test_announcement_lifecycle.py` bằng fixture JSON cô lập trong thư mục tạm, không phụ thuộc vào trạng thái runtime của `backend/announcements.json`.
 - Thêm các mẫu `__pycache__/`, `*.pyc`, `*.bak*`, `*.lock` vào `.gitignore` và kiểm kê 62 tệp đang được Git theo dõi để phục vụ gỡ bỏ cache.
 - Toàn bộ 41 kiểm thử Hardhat, 61 kiểm thử mô phỏng kinh tế, và các kiểm thử indexer/auto-execution đều vượt qua 100% với Exit code 0.
+
+---
+
+## 6. Điều chỉnh Trễ Kích hoạt BCS & Đồng bộ Banner Thông báo Quỹ lớp
+
+### 6.1. Điều chỉnh thời gian kích hoạt Ban cán sự: 3 ngày xuống 3 giây
+- **Yêu cầu:** Giữ nguyên toàn bộ hiện trạng hợp đồng, chỉ chỉnh sửa thời gian chờ kích hoạt quyền biểu quyết của Ban cán sự (`BCS_ACTIVATION_DELAY`) từ `3 days` xuống `3 seconds` để phục vụ demo trực tiếp và kiểm thử nhanh.
+- **Thực hiện:**
+  - `contracts/project/ProjectCore.sol`: `uint256 public constant BCS_ACTIVATION_DELAY = 3 seconds;`.
+  - `test/test_economic_rules.py`: `BCS_ACTIVATION_DELAY = 3`.
+  - `test/test_auto_execution.py`: `BCS_ACTIVATION_DELAY = 3`.
+  - `test/hardhat/ProjectCore.phase2.test.js`: Cập nhật mốc kiểm tra thời gian từ `THREE_DAYS` sang `ACTIVATION_DELAY = 3` (revert trước 3s và hợp lệ tại mốc 3s).
+  - `test/ProjectCore_test.sol` & `test/ProjectCore_integration_test.sol`: Cập nhật `require(core.BCS_ACTIVATION_DELAY() == 3 seconds)`.
+
+### 6.2. Sửa lỗi nút "Điền nhanh từ Danh bạ lớp" (fillRosterAddresses)
+- **Vấn đề:** Nút `📋 Điền nhanh từ Danh bạ lớp` trong phân hệ Cố vấn báo lỗi "Chưa có ví sinh viên hợp lệ nào trong danh bạ" do đọc nhầm trường `s.walletAddress` thay vì `s.wallet`.
+- **Khắc phục:** Sửa thành `s.wallet || s.walletAddress || s.address` kèm fallback về `DEFAULT_CLASS_ROSTER`, giúp Cố vấn điền nhanh danh sách ví vào form `setStudents` chỉ bằng 1 cú click.
+
+### 6.3. Khắc phục 4 điểm mâu thuẫn trên Banner Thông báo Quỹ lớp (`web/index.html`)
+1. **Mâu thuẫn trạng thái:** Header gán cứng "Chưa có đợt thu" trong khi bên dưới hiện đợt thu đang áp dụng -> Bổ sung JS cập nhật động `annStatusText` và đổi class màu xanh khi có đợt thu mở.
+2. **Loại bỏ nút "✏️ Sửa":** Smart Contract on-chain là bất biến (`closeCollection`, không có hàm sửa mức đóng/hạn) -> Gỡ nút Sửa, chỉ giữ nút `🛑 Đóng đợt thu` cho BCS.
+3. **Mâu thuẫn Nghĩa vụ cá nhân:** Báo xanh "Đã có đóng góp on-chain" khi đợt thu mới là 0% -> Chuyển sang kiểm tra ưu tiên `hasPaidInCollection(currentActiveCollectionId, userAddress)` của đợt thu hiện tại.
+4. **Loại bỏ cạnh tranh 2 nút nộp:** Ẩn nút nộp nhanh Quỹ chung khi đang có đợt thu cụ thể đang mở, hướng dẫn người dùng bấm nút nộp đúng đợt.
+
+### 6.4. Kết quả Kiểm thử & Đo lường Cuối cùng:
+- **Hardhat Tests:** 41/41 passing (16s).
+- **Mô phỏng Kinh tế Python (`test_economic_rules.py`):** 61/61 passing.
+- **Tự động thực thi Python (`test_auto_execution.py`):** 18/18 passing.
+- **Blockchain Indexer (`test_blockchain_indexer.py`):** 32/32 passing.
+- **Vòng đời thông báo (`test_announcement_lifecycle.py`):** 30/30 passing.
+- **Kích thước Deployed Bytecode:** **22,021 bytes / 24,576 bytes** (89.60%, còn trống 2,555 bytes an toàn).
+- **Cú pháp JavaScript `web/index.html`:** Đã xác thực toàn vẹn (`JavaScript syntax valid!`).

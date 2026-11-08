@@ -35,7 +35,7 @@ FEE_BPS = 100                 # 1% = 100 bps
 BPS_DENOMINATOR = 10_000       # 100% = 10,000 bps
 PASSING_THRESHOLD_BPS = 5_100    # 51% = 5,100 bps
 VOTING_PERIOD_SECONDS = 7 * 24 * 3600  # 7 ngày
-BCS_ACTIVATION_DELAY = 3 * 24 * 3600   # 3 ngày chờ kích hoạt BCS (Phase 2 / Mục B)
+BCS_ACTIVATION_DELAY = 3                   # 3 giây chờ kích hoạt BCS mới (cập nhật từ 3 ngày xuống 3 giây)
 MIN_BCS_FOR_PROPOSAL = 3               # Tối thiểu 3 BCS đủ điều kiện (Phase 2 / Mục B)
 MAX_BCS = 15                           # Tối đa 15 BCS (Phase 2 / Mục B)
 MAX_BATCH = 100                        # Tối đa 100 địa chỉ trong 1 lượt setStudents (Mục D)
@@ -1010,9 +1010,9 @@ class TestAutoExecutionComprehensive(unittest.TestCase):
         for p in phantoms:
             self.contract.set_bcs_member(self.advisor, p, True, t + 120)
 
-        # Trước 3 ngày -> NotActiveBCSError
+        # Trước 3 giây (< 3s) -> NotActiveBCSError
         with self.assertRaises(NotActiveBCSError):
-            self.contract.vote_spend_request(phantoms[0], req_id, True, t + 130)
+            self.contract.vote_spend_request(phantoms[0], req_id, True, t + 121)
 
         # Sau 3 ngày (vẫn trong hạn 7 ngày của proposal) -> VoterNotEligibleAtCreationError
         for p in phantoms:

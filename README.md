@@ -29,7 +29,7 @@ Sau đợt nâng cấp toàn diện **Lab 15** theo tài liệu `docs/CHANGE_PLA
 - [x] **R1 — Phân quyền Quản trị CVHT, Quản lý BCS & Chống Thao túng Biểu quyết (Nhóm B):**
   - Modifier `onlyAdvisor`: Chỉ địa chỉ ví Cố vấn học tập mới có quyền thay đổi nhân sự BCS.
   - Hàm `setBCSMember(address member, bool status)`: Yêu cầu địa chỉ phải là sinh viên đã ghi danh (`onlyStudent`).
-  - **Hoãn kích hoạt 3 ngày (`BCS_ACTIVATION_DELAY = 3 days`):** Thành viên BCS mới được thêm phải đủ 3 ngày mới được tạo đề xuất hoặc bỏ phiếu, chặn việc CVHT bổ nhiệm tức thời ví ma để lũng đoạn biểu quyết.
+  - **Hoãn kích hoạt (`BCS_ACTIVATION_DELAY = 3 seconds`):** Thành viên BCS mới được thêm phải đủ 3 giây mới được tạo đề xuất hoặc bỏ phiếu (đã cấu hình giảm từ 3 ngày xuống 3 giây để thuận tiện kiểm thử và demo nhanh), chặn việc CVHT bổ nhiệm tức thời ví ma để lũng đoạn biểu quyết.
   - **Giới hạn quy mô BCS:** `MIN_BCS_FOR_PROPOSAL = 3` (bắt buộc tối thiểu 3 BCS hoạt động mới được tạo đề xuất), trần tối đa `MAX_BCS = 15`. Quản lý danh sách động `bcsList` qua kỹ thuật O(1) Swap-and-Pop.
   - **Snapshot `voterBase`:** Mẫu số cử tri được chốt cố định tại thời điểm tạo đề xuất chi hoặc hoàn tiền; thay đổi nhân sự sau đó không ảnh hưởng tới các đề xuất đang biểu quyết.
   - Phát sự kiện `BCSMemberUpdated(member, status)`.

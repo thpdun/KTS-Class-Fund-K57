@@ -47,7 +47,7 @@
 ## 3. Cơ chế Quản trị Dân chủ & Chống Lũng đoạn (Governance Architecture)
 
 * **Chống tạo cử tri ma (3-Day Activation Delay):**
-  - Thành viên BCS mới được bổ nhiệm bắt buộc phải trải qua thời gian chờ `BCS_ACTIVATION_DELAY = 3 days` mới có hiệu lực hoạt động.
+  - Thành viên BCS mới được bổ nhiệm bắt buộc phải trải qua thời gian chờ `BCS_ACTIVATION_DELAY = 3 seconds` (3 giây) mới có hiệu lực hoạt động (đã cấu hình giảm từ 3 ngày xuống 3 giây để thuận tiện kiểm thử/demo).
   - Vô hiệu hóa âm mưu của Cố vấn học tập tự ý thêm ví phụ vào biểu quyết tức thời để lật ngược kết quả biểu quyết.
 
 * **Bảo toàn mẫu số biểu quyết (Snapshot `voterBase`):**

@@ -9139,10 +9139,11 @@
         }
       }
 
-      // 4. Quick Actions & Banner Button
+      // 4. Quick Actions & Banner Button (ẩn nếu là Cố vấn/Khách hoặc khi đã có đợt thu cụ thể)
       const btnBannerDeposit = document.getElementById("btnBannerQuickDeposit");
       if (btnBannerDeposit) {
-        if (verifiedRole === "advisor" || verifiedRole === "guest") {
+        const activeList = typeof getActiveNotifications === "function" ? getActiveNotifications() : [];
+        if (verifiedRole === "advisor" || verifiedRole === "guest" || (activeList && activeList.length > 0)) {
           btnBannerDeposit.style.display = "none";
         } else {
           btnBannerDeposit.style.display = "inline-flex";
@@ -12185,10 +12186,11 @@
     }
 
     function fillRosterAddresses() {
-      if (!classRoster || classRoster.length === 0) {
+      const roster = (classRoster && classRoster.length > 0) ? classRoster : DEFAULT_CLASS_ROSTER;
+      if (!roster || roster.length === 0) {
         return alert("Danh bạ lớp hiện đang trống hoặc chưa được tải về!");
       }
-      const wallets = classRoster.map(s => s.walletAddress || s.address).filter(a => a && ethers.isAddress(a));
+      const wallets = roster.map(s => s.wallet || s.walletAddress || s.address).filter(a => a && ethers.isAddress(a));
       if (wallets.length === 0) {
         return alert("Chưa có ví sinh viên hợp lệ nào trong danh bạ!");
       }
@@ -12305,6 +12307,7 @@
         }
 
         currentActiveCollectionId = activeCol ? activeCol.id : null;
+        window.currentActiveCollectionData = activeCol;
         const nowSec = Math.floor(Date.now() / 1000);
 
         if (activeCol) {
@@ -12371,6 +12374,7 @@
           }
           if (stuAction) stuAction.style.display = "none";
         }
+        updatePersonalStatusBox();
       } catch (err) {
         console.warn("Lỗi load on-chain collection:", err);
       }
@@ -12994,11 +12998,27 @@
       activeList.forEach((a, idx) => {
         const nid = a.id || `ann-${idx}`;
         const prog = a.progress || {};
-        const walletsCount = Number(prog.contributingWalletsCount) || 0;
+        let walletsCount = Number(prog.contributingWalletsCount) || 0;
         const totalTx = Number(prog.totalTransactionsCount) || 0;
-        const raisedEth = prog.raisedEth || "0.0000";
+        let raisedEth = prog.raisedEth || "0.0000";
         const hasTarget = Boolean(prog.hasFinancialTarget && a.targetAmountEth && Number(a.targetAmountEth) > 0);
         const targetEth = a.targetAmountEth || "0.00";
+        
+        // Đồng bộ tiến độ từ dữ liệu Smart Contract thực tế:
+        // TH1: Có đợt thu on-chain đang mở, ưu tiên số lượng sinh viên đã nộp đợt thu (paidCount)
+        if (window.currentActiveCollectionData && window.currentActiveCollectionData.id) {
+          const colPaid = Number(window.currentActiveCollectionData.paidCount) || 0;
+          if (colPaid > walletsCount) {
+            walletsCount = colPaid;
+          }
+        }
+        // TH2: Backend chưa ghi nhận claim nhưng on-chain đã có sinh viên nộp quỹ thực tế
+        if (walletsCount === 0 && window.onchainDepositorsCount && window.onchainDepositorsCount > 0) {
+          walletsCount = window.onchainDepositorsCount;
+          if ((!raisedEth || raisedEth === "0.0000") && window.onchainTotalDepositedEth) {
+            raisedEth = window.onchainTotalDepositedEth;
+          }
+        }
         
         // Chuẩn hóa tên gọi chỉ số: "X/Y ví đã đóng góp"
         const classSz = Number(a.classSize) || dynamicClassSize;
@@ -13031,8 +13051,7 @@
                   <span class="badge bg-success" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 12px;">🟢 ĐANG ÁP DỤNG</span>
                 `}
                 ${isBcsOrAdvisor ? `
-                  <button class="btn btn-xs btn-outline-light" style="padding: 2px 6px; font-size: 0.75rem;" onclick="openAnnModal('${escapeHtml(nid)}', 'edit')">✏️ Sửa</button>
-                  <button class="btn btn-xs btn-danger" style="padding: 2px 6px; font-size: 0.75rem;" onclick="closeActiveAnnouncement('${escapeHtml(nid)}')">🛑 Đóng</button>
+                  <button class="btn btn-xs btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="closeActiveAnnouncement('${escapeHtml(nid)}')">🛑 Đóng đợt thu</button>
                 ` : ''}
               </div>
             </div>
@@ -13078,6 +13097,33 @@
       renderMultipleProgressCards(activeList);
       renderAnnouncementHistoryUI();
 
+      // Đồng bộ huy hiệu trạng thái đợt thu trên tiêu đề Banner
+      const annTag = document.getElementById("annStatusTag");
+      const annText = document.getElementById("annStatusText");
+      if (annText) {
+        if (activeList && activeList.length > 0) {
+          annText.textContent = `Đang mở đợt thu (${activeList.length})`;
+          if (annTag) {
+            annTag.style.background = "rgba(16, 185, 129, 0.2)";
+            annTag.style.color = "#34d399";
+            annTag.style.borderColor = "rgba(16, 185, 129, 0.4)";
+          }
+        } else {
+          annText.textContent = "Chưa có đợt thu";
+          if (annTag) {
+            annTag.style.background = "";
+            annTag.style.color = "";
+            annTag.style.borderColor = "";
+          }
+        }
+      }
+
+      // Tránh cạnh tranh 2 nút nộp: Khi đã có đợt thu mở, ẩn nút nộp chung ở banner
+      const btnBannerDeposit = document.getElementById("btnBannerQuickDeposit");
+      if (btnBannerDeposit && activeList && activeList.length > 0) {
+        btnBannerDeposit.style.display = "none";
+      }
+
       // Nút nộp quỹ chung bị ẩn nếu không có đợt thu nào đang hoạt động
       const btnDeposit = document.getElementById("btnDepositAction");
       if (btnDeposit) {
@@ -13110,117 +13156,150 @@
         pBadge.textContent = "Ví ngoài danh bạ";
         pDesc.textContent = "Địa chỉ ví của bạn chưa được liên kết danh bạ sinh viên K57";
       } else {
-        let myContribWei = 0n;
-        if (contract && userAddress) {
+        // Kiểm tra ưu tiên theo đợt thu on-chain đang mở (Phase 4 / Mục E)
+        let hasPaidActiveCollection = false;
+        let activeColTargetEth = null;
+        let activeColPaidEth = null;
+        let hasActiveCol = false;
+
+        if (contract && currentActiveCollectionId) {
+          hasActiveCol = true;
           try {
-            myContribWei = await contract.studentContributions(userAddress);
+            hasPaidActiveCollection = await contract.hasPaidInCollection(currentActiveCollectionId, userAddress);
+            const paidWei = await contract.paidInCollection(currentActiveCollectionId, userAddress);
+            activeColPaidEth = formatEth(paidWei);
+            const col = await contract.getCollection(currentActiveCollectionId);
+            activeColTargetEth = formatEth(col.targetWei);
           } catch (e) {
-            console.warn("Lỗi đọc studentContributions cá nhân:", e);
+            console.warn("Lỗi đọc trạng thái collection cá nhân:", e);
           }
         }
-        const myContribEth = formatEth(myContribWei);
-        if (Number(myContribEth) > 0) {
-          pBadge.className = "task-badge status-completed";
-          pBadge.textContent = "Đã có đóng góp on-chain";
-          pDesc.textContent = `Tổng tích lũy ví đã đóng góp: ${myContribEth} ETH on-chain cho quỹ lớp K57.`;
+
+        if (hasActiveCol) {
+          if (hasPaidActiveCollection) {
+            pBadge.className = "task-badge status-completed";
+            pBadge.textContent = "Đã hoàn thành đợt này";
+            pDesc.textContent = `Bạn đã nộp đủ hạn mức ${activeColPaidEth || activeColTargetEth} ETH cho đợt thu #${currentActiveCollectionId}.`;
+          } else {
+            pBadge.className = "task-badge status-action";
+            pBadge.textContent = "Chưa nộp đợt thu này";
+            const paidText = Number(activeColPaidEth) > 0 ? ` (Đã nộp ${activeColPaidEth}/${activeColTargetEth} ETH)` : ` (Mức đóng: ${activeColTargetEth} ETH)`;
+            pDesc.textContent = `Bạn chưa hoàn thành nghĩa vụ cho đợt thu đang diễn ra${paidText}.`;
+          }
         } else {
-          pBadge.className = "task-badge status-action";
-          pBadge.textContent = "Chưa có đóng góp on-chain";
-          pDesc.textContent = "Ví của bạn chưa phát sinh giao dịch đóng góp vào quỹ lớp.";
+          // Không có đợt thu mở -> hiển thị số dư tích lũy quỹ chung
+          let myContribWei = 0n;
+          if (contract && userAddress) {
+            try {
+              myContribWei = await contract.studentContributions(userAddress);
+            } catch (e) {
+              console.warn("Lỗi đọc studentContributions cá nhân:", e);
+            }
+          }
+          const myContribEth = formatEth(myContribWei);
+          if (Number(myContribEth) > 0) {
+            pBadge.className = "task-badge status-completed";
+            pBadge.textContent = "Đã có đóng góp quỹ chung";
+            pDesc.textContent = `Tổng tích lũy ví đã đóng góp: ${myContribEth} ETH on-chain cho quỹ lớp K57.`;
+          } else {
+            pBadge.className = "task-badge status-action";
+            pBadge.textContent = "Chưa có đóng góp";
+            pDesc.textContent = "Ví của bạn chưa phát sinh giao dịch đóng góp vào quỹ lớp.";
+          }
         }
       }
     }
 
     async function initiateCampaignContribution(notificationId, targetAmountEth) {
-      if (!userAddress) {
+      if (!signer || !userAddress) {
         alert("⚠️ Vui lòng kết nối ví MetaMask trước khi thực hiện nộp quỹ.");
         return;
       }
+      if (!(await ensureCorrectNetwork())) return;
       if (!contract) {
         alert("⚠️ Chưa kết nối Smart Contract. Vui lòng kiểm tra lại mạng Sepolia.");
         return;
       }
 
-      const activeToken = localStorage.getItem("kts_auth_session_token");
-      if (!activeToken) {
-        alert("⚠️ Vui lòng đăng nhập ví (Ký Challenge-Response) để hệ thống xác thực danh tính đóng góp.");
-        return;
-      }
+      // Kiểm tra ví sinh viên hợp lệ on-chain
+      try {
+        const isEnrolled = await contract.isStudent(userAddress);
+        if (!isEnrolled) {
+          alert("Từ chối: Địa chỉ ví của bạn chưa được Cố vấn ghi danh vào danh sách sinh viên lớp (setStudents). Vui lòng liên hệ Cố vấn học tập!");
+          return;
+        }
+      } catch (_) {}
 
       const cleanEth = prompt(`Nhập số lượng ETH bạn muốn nộp cho đợt thu này:`, targetAmountEth || "0.01");
       if (!cleanEth || parseFloat(cleanEth) <= 0) return;
+      const valueWei = ethers.parseEther(cleanEth);
 
-      // 1. Tạo claimIntentId TRƯỚC KHI mở MetaMask
+      // Nếu có token xác thực thì tạo intent ghi nhận phụ trợ (không bắt buộc, không chặn giao dịch)
+      const activeToken = localStorage.getItem("kts_auth_session_token");
       let intentId = null;
-      try {
-        const intentResp = await fetch(`${AI_BACKEND_URL}/api/contribution/intent`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${activeToken}`
-          },
-          body: JSON.stringify({ notificationId: notificationId })
-        });
-        if (intentResp.ok) {
-          const res = await intentResp.json();
-          if (res.success && res.intent) {
-            intentId = res.intent.intentId;
+      if (activeToken && notificationId) {
+        try {
+          const intentResp = await fetch(`${AI_BACKEND_URL}/api/contribution/intent`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${activeToken}`
+            },
+            body: JSON.stringify({ notificationId: notificationId })
+          });
+          if (intentResp.ok) {
+            const res = await intentResp.json();
+            if (res.success && res.intent) {
+              intentId = res.intent.intentId;
+            }
           }
-        } else {
-          const errRes = await intentResp.json();
-          alert("⚠️ Lỗi tạo ý định nộp quỹ: " + (errRes.error || "Đợt thu có thể đã đóng."));
-          return;
-        }
-      } catch (intentErr) {
-        console.warn("Lỗi tạo intent:", intentErr);
-        alert("Không thể kết nối máy chủ để tạo ý định nộp quỹ. Vui lòng thử lại.");
-        return;
+        } catch (_) {}
       }
 
-      // 2. Mở ví MetaMask gửi giao dịch deposit()
+      // Mở ví MetaMask gửi giao dịch on-chain
       try {
-        logToTerminal(`[Giao dịch] Đang gửi giao dịch nộp ${cleanEth} ETH cho đợt thu '${notificationId}'...`);
-        const valueWei = ethers.parseEther(cleanEth);
-        const tx = await contract.deposit({ value: valueWei });
+        let tx;
+        if (currentActiveCollectionId) {
+          logToTerminal(`[Giao dịch] Đang nộp ${cleanEth} ETH vào đợt thu #${currentActiveCollectionId} qua depositToCollection...`);
+          tx = await contract.depositToCollection(currentActiveCollectionId, { value: valueWei });
+        } else {
+          logToTerminal(`[Giao dịch] Đang nộp ${cleanEth} ETH vào Quỹ lớp qua deposit()...`);
+          tx = await contract.deposit({ value: valueWei });
+        }
+
         logToTerminal(`[Blockchain] Giao dịch đã phát sóng! TxHash: ${tx.hash}. Đang chờ xác nhận trên Sepolia...`);
-        alert(`Giao dịch đã được phát sóng lên Sepolia Blockchain!
-
-TxHash: ${tx.hash}
-
-Vui lòng chờ mạng xác nhận.`);
+        alert(`Giao dịch đã được phát sóng lên Sepolia Blockchain!\n\nTxHash: ${tx.hash}\n\nVui lòng chờ mạng xác nhận.`);
 
         const receipt = await tx.wait(1);
-        logToTerminal(`[Blockchain] Giao dịch thành công tại block #${receipt.blockNumber}! Đang gửi claim phân bổ...`);
+        logToTerminal(`[Blockchain] Giao dịch thành công tại block #${receipt.blockNumber}!`);
+        alert(`✅ Đóng góp thành công!\n\nSố tiền: ${cleanEth} ETH\nMã giao dịch: ${tx.hash}`);
 
-        // 3. Gửi claim lên Backend kèm intentId và txHash
-        const claimResp = await fetch(`${AI_BACKEND_URL}/api/contribution/claim`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${activeToken}`
-          },
-          body: JSON.stringify({
-            notificationId: notificationId,
-            txHash: tx.hash,
-            claimIntentId: intentId
-          })
-        });
+        // Gửi claim lên backend nếu có token
+        if (activeToken && intentId) {
+          try {
+            await fetch(`${AI_BACKEND_URL}/api/contribution/claim`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${activeToken}`
+              },
+              body: JSON.stringify({
+                notificationId: notificationId,
+                txHash: tx.hash,
+                claimIntentId: intentId
+              })
+            });
+          } catch (_) {}
+        }
 
-        if (claimResp.ok) {
-          const claimData = await claimResp.json();
-          alert(`✅ Đóng góp thành công!
-
-Số tiền: ${cleanEth} ETH
-Đợt thu: ${notificationId}
-Tiến độ đã được ghi nhận độc lập.`);
+        // Tự động làm mới dữ liệu on-chain và cập nhật giao diện
+        await refreshContractData();
+        if (typeof syncAnnouncementFromServer === "function") {
           syncAnnouncementFromServer();
-        } else {
-          const claimErr = await claimResp.json();
-          alert("⚠️ Giao dịch on-chain thành công nhưng có cảnh báo phân bổ: " + (claimErr.error || "Vui lòng liên hệ BCS đối soát."));
         }
       } catch (txErr) {
-        console.error("Lỗi giao dịch MetaMask:", txErr);
-        alert("Lỗi thực hiện giao dịch: " + (txErr.message || txErr));
+        logToTerminal(`[Lỗi giao dịch] ${txErr.shortMessage || txErr.message}`);
+        alert("Lỗi thực hiện giao dịch: " + (txErr.shortMessage || txErr.message));
       }
     }
 
@@ -13743,32 +13822,76 @@ Tiến độ đã được ghi nhận độc lập.`);
       else if (role === "student" || role === "bcs") {
         if (contract) {
           try {
-            // Kiểm tra trạng thái đóng góp cá nhân (không suy đoán từ số dư quỹ)
-            const myContribWei = await contract.studentContributions(userAddress);
-            const myContribEth = formatEth(myContribWei);
-            const ann = getAnnouncementData();
-            const targetEth = ann.targetAmountEth || "0.01";
+            // Kiểm tra trạng thái đóng góp cá nhân theo số GROSS (100% nạp), không dùng số NET (99% sau trừ 1% phí)
+            let isPaidCompleted = false;
+            let displayPaidEth = "0.0000";
+            let displayTargetEth = "0.01";
+            let isPartial = false;
+            let purposeText = "Kinh phí học tập & hoạt động lớp K57";
 
-            if (Number(myContribEth) === 0) {
+            if (currentActiveCollectionId) {
+              // 1. Đợt thu on-chain đang mở: Kiểm tra theo paidInCollection & hasPaidInCollection
+              try {
+                const col = await contract.getCollection(currentActiveCollectionId);
+                const colTargetWei = col.targetWei;
+                displayTargetEth = formatEth(colTargetWei);
+                purposeText = col.purpose || purposeText;
+
+                const hasPaidCol = await contract.hasPaidInCollection(currentActiveCollectionId, userAddress);
+                const paidColWei = await contract.paidInCollection(currentActiveCollectionId, userAddress);
+                displayPaidEth = formatEth(paidColWei);
+
+                if (hasPaidCol) {
+                  isPaidCompleted = true;
+                } else if (paidColWei > 0n) {
+                  isPartial = true;
+                }
+              } catch (colErr) {
+                console.warn("Lỗi kiểm tra task on-chain collection:", colErr);
+              }
+            } else {
+              // 2. Quỹ chung: Kiểm tra tổng số tiền gốc đã nộp studentTotalDeposited (Gross 100%)
+              let grossDepositedWei = 0n;
+              try {
+                grossDepositedWei = await contract.studentTotalDeposited(userAddress);
+              } catch (_) {
+                const netWei = await contract.studentContributions(userAddress);
+                grossDepositedWei = (netWei * 100n) / 99n;
+              }
+              displayPaidEth = formatEth(grossDepositedWei);
+
+              const ann = getAnnouncementData();
+              displayTargetEth = ann.targetAmountEth || "0.01";
+              purposeText = ann.purpose || purposeText;
+              let targetWei = ethers.parseEther(displayTargetEth);
+
+              if (grossDepositedWei >= targetWei) {
+                isPaidCompleted = true;
+              } else if (grossDepositedWei > 0n) {
+                isPartial = true;
+              }
+            }
+
+            if (!isPaidCompleted && !isPartial) {
               actionTasks.push({
                 id: "task-student-deposit",
                 icon: "⚡",
                 statusClass: "status-action",
                 statusText: "Chưa nộp quỹ (OPEN)",
-                title: `Đóng góp Quỹ Lớp K57 (${targetEth} ETH)`,
-                desc: `Đợt thu quỹ học kỳ 1 đang diễn ra (Mục đích: ${ann.purpose || "Kinh phí học tập & hoạt động lớp"}). Bạn chưa hoàn thành nộp quỹ.`,
+                title: `Đóng góp Quỹ Lớp K57 (${displayTargetEth} ETH)`,
+                desc: `Đợt thu quỹ đang diễn ra (Mục đích: ${purposeText}). Bạn chưa hoàn thành nộp quỹ.`,
                 actionText: "Nộp quỹ ngay",
                 actionClass: "btn-success",
                 onClick: () => handleQuickDepositClick()
               });
-            } else if (Number(myContribEth) < Number(targetEth)) {
+            } else if (isPartial) {
               actionTasks.push({
                 id: "task-student-deposit-partial",
                 icon: "⚠️",
                 statusClass: "status-action",
                 statusText: "Đã nộp một phần",
-                title: `Đóng góp bổ sung Quỹ Lớp (${myContribEth}/${targetEth} ETH)`,
-                desc: `Bạn đã đóng góp một phần ${myContribEth} ETH. Vui lòng đóng góp nốt phần còn lại để hoàn thành nghĩa vụ.`,
+                title: `Đóng góp bổ sung Quỹ Lớp (${displayPaidEth}/${displayTargetEth} ETH)`,
+                desc: `Bạn đã đóng góp một phần ${displayPaidEth} ETH. Vui lòng đóng góp nốt phần còn lại để hoàn thành nghĩa vụ.`,
                 actionText: "Nộp bổ sung",
                 actionClass: "btn-warning",
                 onClick: () => handleQuickDepositClick()
@@ -13780,7 +13903,7 @@ Tiến độ đã được ghi nhận độc lập.`);
                 statusClass: "status-completed",
                 statusText: "Đã nộp quỹ (COMPLETED)",
                 title: "Đã hoàn thành nghĩa vụ đóng góp quỹ lớp",
-                desc: `Bạn đã đóng góp thành công ${myContribEth} ETH on-chain cho tập thể lớp K57. Trạng thái đã được ghi nhận trên blockchain.`,
+                desc: `Bạn đã đóng góp đủ ${displayPaidEth} ETH on-chain cho tập thể lớp K57. Trạng thái đã được ghi nhận thành công trên blockchain.`,
                 actionText: "Xem chi tiết đóng góp",
                 actionClass: "btn-outline",
                 onClick: () => {
@@ -14329,6 +14452,15 @@ Tiến độ đã được ghi nhận độc lập.`);
       // Cập nhật lên Dashboard
       if (depNumEl) depNumEl.textContent = `${finalCount} sinh viên`;
       if (depNoteEl) depNoteEl.textContent = `Tổng nộp: ${finalEth} ETH`;
+
+      // Lưu trữ số liệu on-chain toàn cục để đồng bộ thanh tiến độ
+      window.onchainDepositorsCount = finalCount;
+      window.onchainTotalDepositedEth = finalEth;
+
+      // Làm mới lại thanh tiến độ thông báo đợt thu
+      if (typeof renderAnnouncementUI === "function") {
+        renderAnnouncementUI();
+      }
 
       // Đồng bộ và làm mới giao diện tiến độ cho toàn bộ các chiến dịch đang hoạt động
       if (typeof syncAnnouncementFromServer === "function") {

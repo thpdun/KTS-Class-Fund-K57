@@ -737,9 +737,9 @@ contract ProjectCoreIntegrationTest {
         uint256 tAdd = block.timestamp;
         core.setBCSMember(address(bcs1), true);
         core.setBCSMember(address(bcs2), true);
-        require(core.memberSince(address(bcs1)) == tAdd + 3 days, "memberSince set to +3 days");
+        require(core.memberSince(address(bcs1)) == tAdd + 3 seconds, "memberSince set to +3 seconds");
         require(core.eligibleBCSCount(tAdd) == 0, "Eligible BCS at tAdd must be 0");
-        require(core.eligibleBCSCount(tAdd + 3 days) == 2, "Eligible BCS at +3 days must be 2");
+        require(core.eligibleBCSCount(tAdd + 3 seconds) == 2, "Eligible BCS at +3 seconds must be 2");
 
         // Chưa đủ 3 BCS -> student1 xin hoàn tiền bị chặn NotEnoughBCS(0, 3)
         (bool sRef, bytes memory rRef) = address(student1).call(

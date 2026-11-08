@@ -76,7 +76,7 @@ contract ProjectCore {
     /// @notice Thời hạn hiệu lực tối đa để biểu quyết đề xuất chi (7 ngày) (R5)
     uint256 public constant VOTING_PERIOD = 7 days;
 
-    /// @notice Thời gian chờ kích hoạt quyền biểu quyết sau khi thêm BCS mới (3 ngày)
+    /// @notice Thời gian chờ kích hoạt quyền biểu quyết sau khi thêm BCS mới (3 giây)
     uint256 public constant BCS_ACTIVATION_DELAY = 3 seconds;
 
     /// @notice Số thành viên BCS đủ điều kiện tối thiểu để tạo đề xuất chi hoặc yêu cầu hoàn tiền

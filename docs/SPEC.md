@@ -147,7 +147,7 @@ Sau đợt nâng cấp Lab 15 (theo tài liệu kế hoạch `docs/CHANGE_PLAN_L
 - **Bảo vệ tài sản tập thể:** Khi hoàn tiền tối đa, sinh viên chỉ được nhận lại phần 99% net đã đóng góp, triệt tiêu lỗ hổng thâm hụt tài sản do lấy tiền của sinh viên khác bù vào 1% phí vận hành đã trích.
 
 ### 8.2. Nhóm B & C — Chống Thao túng Quản trị & Xung đột Lợi ích (Phase 2)
-- **Hoãn kích hoạt BCS 3 ngày (`BCS_ACTIVATION_DELAY = 3 days`):** Thành viên BCS mới được bổ nhiệm phải sau đủ 3 ngày mới có quyền tạo đề xuất hoặc bỏ phiếu. Chặn việc CVHT bổ nhiệm tức thời ví ma để lũng đoạn biểu quyết.
+- **Hoãn kích hoạt BCS (`BCS_ACTIVATION_DELAY = 3 seconds`):** Thành viên BCS mới được bổ nhiệm phải sau đủ 3 giây mới có quyền tạo đề xuất hoặc bỏ phiếu (đã điều chỉnh từ 3 ngày xuống 3 giây để tối ưu demo kiểm thử trực tiếp). Chặn việc CVHT bổ nhiệm tức thời ví ma để lũng đoạn biểu quyết.
 - **Snapshot `voterBase` tại thời điểm tạo yêu cầu:** Số cử tri đủ điều kiện được ghi nhận cố định tại thời điểm tạo đề xuất chi hoặc hoàn tiền. Mọi hành vi thêm/bớt BCS giữa chừng không làm thay đổi mẫu số biểu quyết của các đề xuất đang chạy.
 - **Ràng buộc quy mô Ban cán sự:**
   - `MIN_BCS_FOR_PROPOSAL = 3`: Phải có tối thiểu 3 BCS đủ điều kiện hoạt động mới được phép tạo đề xuất chi hoặc yêu cầu hoàn tiền.

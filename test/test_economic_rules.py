@@ -32,7 +32,7 @@ FEE_BPS = 100               # 1% = 100 basis points
 BPS_DENOMINATOR = 10_000     # 100% = 10,000 basis points
 PASSING_THRESHOLD_BPS = 5_100  # 51% = 5,100 basis points
 VOTING_PERIOD_SECONDS = 7 * 24 * 3600  # 7 ngày
-BCS_ACTIVATION_DELAY = 3 * 24 * 3600   # 3 ngày chờ kích hoạt BCS mới
+BCS_ACTIVATION_DELAY = 3                   # 3 giây chờ kích hoạt BCS mới (cập nhật từ 3 ngày xuống 3 giây)
 MIN_BCS_FOR_PROPOSAL = 3               # Tối thiểu 3 BCS đã kích hoạt để tạo đề xuất/hoàn tiền
 MAX_BCS = 15                           # Tối đa 15 BCS
 MAX_BATCH = 100                        # Tối đa 100 địa chỉ trong 1 lượt setStudents (Mục D)
@@ -1534,14 +1534,14 @@ class TestProjectCoreEconomicRules(unittest.TestCase):
         for p in phantoms:
             self.contract.set_bcs_member(self.advisor, p, True, current_time=phantom_added_t)
 
-        # (a) Ngay lúc mới thêm: bị chặn bởi NotActiveBCS
+        # (a) Ngay lúc mới thêm: bị chặn bởi NotActiveBCS (< 3 giây)
         for p in phantoms:
             with self.assertRaises(NotActiveBCSError):
-                self.contract.vote_spend_request(p, req_id, True, phantom_added_t + 10)
+                self.contract.vote_spend_request(p, req_id, True, phantom_added_t + 1)
             with self.assertRaises(NotActiveBCSError):
-                self.contract.vote_refund_request(p, ref_id, True, phantom_added_t + 10)
+                self.contract.vote_refund_request(p, ref_id, True, phantom_added_t + 1)
 
-        # (b) Đợi đủ 3 ngày (vẫn trong hạn 7 ngày bỏ phiếu): vượt qua onlyActiveBCS nhưng bị chặn bởi VoterNotEligibleAtCreation!
+        # (b) Đợi đủ 3 giây (vẫn trong hạn 7 ngày bỏ phiếu): vượt qua onlyActiveBCS nhưng bị chặn bởi VoterNotEligibleAtCreation!
         after_3_days = phantom_added_t + BCS_ACTIVATION_DELAY
         for p in phantoms:
             with self.assertRaises(VoterNotEligibleAtCreationError):
@@ -1831,12 +1831,12 @@ class TestProjectCoreEconomicRules(unittest.TestCase):
         with self.assertRaises(NotActiveBCSError):
             self.contract.create_collection(self.attacker, 1 * WEI_PER_ETH, deadline, "Attacker hack", ready_t)
 
-        # BCS mới thêm nhưng chưa đủ trễ 3 ngày -> Revert NotActiveBCS
+        # BCS mới thêm nhưng chưa đủ trễ 3 giây (< 3s) -> Revert NotActiveBCS
         bcs_new = "0xBCSNew00000000000000000000000000000004"
         self.contract.set_students(self.advisor, [bcs_new], True)
         self.contract.set_bcs_member(self.advisor, bcs_new, True, current_time=ready_t)
         with self.assertRaises(NotActiveBCSError):
-            self.contract.create_collection(bcs_new, 1 * WEI_PER_ETH, deadline, "Immature BCS", ready_t + 10)
+            self.contract.create_collection(bcs_new, 1 * WEI_PER_ETH, deadline, "Immature BCS", ready_t + 1)
 
         # Tạo đợt 1 bởi bcs_1
         cid = self.contract.create_collection(self.bcs_1, 1 * WEI_PER_ETH, deadline, "Hop le", ready_t)
