@@ -15473,6 +15473,183 @@
       if (glassAvail && flowAvail) glassAvail.textContent = flowAvail;
       if (glassRes && flowRes) glassRes.textContent = flowRes;
     }
+  
+    // =========================================================================
+    // STAGE 4: TOAST NOTIFICATIONS, BOTTOM SHEET CONFIRMATION & ERROR TRANSLATION
+    // =========================================================================
+
+    function translateContractError(err) {
+      if (!err) return "Giao dịch không thành công.";
+      const msg = err.message || err.toString() || "";
+
+      if (err.code === 4001 || msg.includes("rejected") || msg.includes("User rejected") || msg.includes("ACTION_REJECTED")) {
+        return "Bạn đã từ chối ký giao dịch trên ví MetaMask.";
+      }
+
+      const translations = [
+        { key: "InsufficientContribution", text: "Số tiền yêu cầu hoàn vượt quá tổng mức bạn đã đóng góp." },
+        { key: "NotActiveBCS", text: "Ví của bạn không nằm trong danh sách Ban cán sự đang hoạt động." },
+        { key: "OnlyOneActiveCollectionAllowed", text: "Hiện đã có một đợt thu on-chain đang mở. Cần đóng đợt thu cũ trước." },
+        { key: "ConflictOfInterestRecipientCannotVote", text: "Người thụ hưởng khoản chi không được tham gia biểu quyết cho chính mình." },
+        { key: "SpendAlreadyExecuted", text: "Khoản chi này đã được giải ngân trước đó." },
+        { key: "VotingPeriodEnded", text: "Thời hạn biểu quyết 7 ngày cho đề xuất này đã kết thúc." },
+        { key: "ExecutionWindowExpired", text: "Đề xuất đã quá thời hạn thực thi giải ngân." },
+        { key: "ZeroAmount", text: "Số tiền giao dịch phải lớn hơn 0 ETH." },
+        { key: "InsufficientBalance", text: "Số dư khả dụng của quỹ không đủ để thực hiện." },
+        { key: "NotAdvisor", text: "Chỉ Cố vấn học tập mới có quyền thực hiện thao tác này." },
+        { key: "MaxBCSCountExceeded", text: "Đã đạt giới hạn tối đa 15 Ban cán sự." },
+        { key: "ProposalNotReady", text: "Đề xuất chưa đạt đủ 51% phiếu thuận để giải ngân." },
+        { key: "AlreadyVoted", text: "Bạn đã bỏ phiếu cho đề xuất này rồi." },
+        { key: "StudentAlreadyRegistered", text: "Địa chỉ ví này đã có trong danh sách sinh viên." },
+        { key: "CollectionNotActive", text: "Hiện không có đợt thu nào đang mở hoặc đã hết hạn." }
+      ];
+
+      for (const item of translations) {
+        if (msg.includes(item.key) || (err.data && JSON.stringify(err.data).includes(item.key))) {
+          return item.text;
+        }
+      }
+
+      if (msg.includes("transaction execution reverted")) {
+        return "Giao dịch bị hợp đồng từ chối thực thi (reverted). Vui lòng kiểm tra lại số dư hoặc quyền hạn.";
+      }
+      return msg;
+    }
+
+    function showToast(message, type = "info", duration = 4000) {
+      let container = document.getElementById("toastContainer");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "toastContainer";
+        container.className = "toast-container";
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement("div");
+      toast.className = `toast-item toast-${type}`;
+
+      let icon = "ℹ️";
+      if (type === "success") icon = "✅";
+      else if (type === "error") icon = "❌";
+      else if (type === "warning" || type === "processing") icon = "⚠️";
+
+      toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" type="button" aria-label="Đóng">&times;</button>
+      `;
+
+      toast.querySelector(".toast-close").addEventListener("click", () => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 250);
+      });
+
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add("show"), 10);
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => { if (toast.parentElement) toast.remove(); }, 250);
+      }, duration);
+    }
+
+    let bottomSheetResolver = null;
+
+    function showConfirmBottomSheet(options) {
+      return new Promise((resolve) => {
+        bottomSheetResolver = resolve;
+        const backdrop = document.getElementById("bottomSheetBackdrop");
+        const container = document.getElementById("bottomSheetContainer");
+        const titleEl = document.getElementById("bottomSheetTitle");
+        const iconEl = document.getElementById("bottomSheetIcon");
+        const bodyEl = document.getElementById("bottomSheetBody");
+
+        if (titleEl) titleEl.textContent = options.title || "Xác nhận giao dịch";
+        if (iconEl) iconEl.textContent = options.icon || "🛡️";
+
+        if (bodyEl) {
+          let html = "";
+          if (options.actionName) {
+            html += `<div style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-bottom:12px;">Hành động: <span style="color:var(--primary);">${options.actionName}</span></div>`;
+          }
+          if (options.amountEth !== undefined) {
+            const val = parseFloat(options.amountEth) || 0;
+            const net99 = (val * 0.99).toFixed(4);
+            const fee1 = (val * 0.01).toFixed(4);
+            html += `
+              <div style="background:var(--bg-page); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="color:var(--text-muted); font-size:0.85rem;">Tổng số tiền gửi:</span>
+                  <strong style="color:var(--primary-dark); font-size:1.1rem;">${val} ETH</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#047857; margin-bottom:4px;">
+                  <span>• Quỹ lớp khả dụng (99%):</span>
+                  <strong>${net99} ETH</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#6d28d9;">
+                  <span>• Phí vận hành gas (1%):</span>
+                  <strong>${fee1} ETH</strong>
+                </div>
+              </div>
+            `;
+          }
+          if (options.detailsHtml) {
+            html += options.detailsHtml;
+          }
+          html += `
+            <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5; background:#fffbeb; border:1px solid #fef3c7; border-radius:8px; padding:10px 12px; margin-top:10px;">
+              ⚠️ <strong>Lưu ý:</strong> Giao dịch trên mạng thử nghiệm <strong>Ethereum Sepolia</strong> là bất biến và không thể hoàn tác sau khi được xác nhận trên Blockchain.
+            </div>
+          `;
+          bodyEl.innerHTML = html;
+        }
+
+        if (backdrop) backdrop.style.display = "block";
+        if (container) {
+          container.style.display = "block";
+          setTimeout(() => container.classList.add("open"), 10);
+        }
+      });
+    }
+
+    function closeBottomSheet(confirmed = false) {
+      const backdrop = document.getElementById("bottomSheetBackdrop");
+      const container = document.getElementById("bottomSheetContainer");
+      if (container) {
+        container.classList.remove("open");
+        setTimeout(() => {
+          container.style.display = "none";
+          if (backdrop) backdrop.style.display = "none";
+          if (bottomSheetResolver) {
+            bottomSheetResolver(confirmed);
+            bottomSheetResolver = null;
+          }
+        }, 250);
+      } else {
+        if (backdrop) backdrop.style.display = "none";
+        if (bottomSheetResolver) {
+          bottomSheetResolver(confirmed);
+          bottomSheetResolver = null;
+        }
+      }
+    }
+
+    function handleMobileProfileClick() {
+      if (userAddress) {
+        toggleWalletDropdown();
+      } else {
+        connectWallet();
+      }
+    }
+
+    // Active tab state for mobile bottom navigation
+    document.querySelectorAll(".mobile-nav-item").forEach(item => {
+      item.addEventListener("click", function() {
+        document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
+        this.classList.add("active");
+      });
+    });
+
   </script>
 
   <!-- ============================================================ -->
@@ -15531,6 +15708,57 @@
       <span>✨ Hỏi đáp AI Quỹ Lớp</span>
     </button>
   </div>
+
+  <!-- ============================================================ -->
+  <!-- STAGE 4 COMPONENTS: BOTTOM SHEET, TOAST & MOBILE BOTTOM NAV  -->
+  <!-- ============================================================ -->
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- CONFIRMATION BOTTOM SHEET MODAL -->
+  <div class="bottom-sheet-backdrop" id="bottomSheetBackdrop" style="display:none;" onclick="closeBottomSheet(false)"></div>
+  <div class="bottom-sheet-container" id="bottomSheetContainer" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="bottomSheetTitle">
+    <div class="bottom-sheet-drag-handle"></div>
+    <div class="bottom-sheet-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="bottom-sheet-icon" id="bottomSheetIcon">🛡️</span>
+        <div>
+          <h3 class="bottom-sheet-title" id="bottomSheetTitle">Xác nhận giao dịch</h3>
+          <span class="bottom-sheet-sub" id="bottomSheetSub">Mạng Ethereum Sepolia &bull; Hợp đồng KTS Class Fund</span>
+        </div>
+      </div>
+      <button class="bottom-sheet-close" type="button" onclick="closeBottomSheet(false)" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="bottom-sheet-body" id="bottomSheetBody"></div>
+    <div class="bottom-sheet-footer">
+      <button class="btn btn-secondary btn-sheet-cancel" type="button" onclick="closeBottomSheet(false)">Hủy bỏ</button>
+      <button class="btn btn-primary btn-sheet-confirm" type="button" id="btnBottomSheetConfirm" onclick="closeBottomSheet(true)">
+        🚀 Xác nhận gửi MetaMask
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION (SCREEN <= 767PX) -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <a href="#hero" class="mobile-nav-item active" id="mobNavHome">
+      <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Trang chủ</span>
+    </a>
+    <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="mobile-nav-item" id="mobNavProposals">
+      <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      <span>Đề xuất</span>
+    </a>
+    <a href="#dapp-workspace" onclick="selectRoleView('history')" class="mobile-nav-item" id="mobNavHistory">
+      <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <span>Sổ quỹ</span>
+    </a>
+    <a href="javascript:void(0)" onclick="handleMobileProfileClick()" class="mobile-nav-item" id="mobNavProfile">
+      <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <span>Cá nhân</span>
+    </a>
+  </nav>
+
 </body>
 
 </html>
