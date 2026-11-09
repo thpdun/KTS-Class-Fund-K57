@@ -4055,7 +4055,7 @@
         <!-- Nút toggle sidebar cũ được giữ trong DOM nhưng ẩn bằng CSS để không mất ID -->
         <button class="menu-toggle" id="btnToggleNav" style="display:none;" aria-label="Mở menu">☰</button>
         <a href="#home" onclick="if (typeof navigateTo === 'function') navigateTo('home'); return false;" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
-          <img src="logo1.png" alt="Logo KTS Class Fund" class="topbar-brand-logo">
+          <img src="logo1.png" alt="KTS Logo" class="topbar-mini-logo">
           <div class="topbar-brand-text">
             <div class="topbar-brand-title">KTS CLASS FUND</div>
             <div class="topbar-brand-sub">Lớp K57 Kinh Tế Số &bull; ECO2432</div>
@@ -6211,13 +6211,7 @@
         <!-- Cột 1: Logo, Tên dự án & Giới thiệu ngắn -->
         <div class="footer-col-brand">
           <div class="footer-brand-header">
-            <div class="footer-brand-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
-            </div>
+            <img src="logo1.png" alt="KTS Logo" class="footer-brand-logo-img">
             <span class="footer-brand-title">KTS Class Fund</span>
           </div>
           <p class="footer-brand-desc">
@@ -16382,9 +16376,9 @@
         if (subEl) subEl.textContent = "Ethereum Sepolia • Net 99% ngân sách lớp, 1% quỹ vận hành";
         if (pStudent) pStudent.style.display = 'block';
         if (secRefund) secRefund.style.display = "none";
-        if (verifiedRole === "student" || verifiedRole === "bcs") {
-          if (secDeposit) secDeposit.style.display = "block";
-        }
+        const secStudentCol = document.getElementById("sectionStudentOnchainCollection");
+        if (secStudentCol) secStudentCol.style.display = "none";
+        if (secDeposit) secDeposit.style.display = "block";
         const inp = document.getElementById("inputDepositAmount");
         if (inp) setTimeout(() => inp.focus(), 150);
       } else if (action === "refund") {
@@ -16394,9 +16388,9 @@
         if (subEl) subEl.textContent = "Hạn mức tối đa 99% số tiền ròng bạn đã đóng góp vào Quỹ";
         if (pStudent) pStudent.style.display = 'block';
         if (secDeposit) secDeposit.style.display = "none";
-        if (verifiedRole === "student" || verifiedRole === "bcs") {
-          if (secRefund) secRefund.style.display = "block";
-        }
+        const secStudentCol = document.getElementById("sectionStudentOnchainCollection");
+        if (secStudentCol) secStudentCol.style.display = "none";
+        if (secRefund) secRefund.style.display = "block";
         const inp = document.getElementById("inputRefundAmount");
         if (inp) setTimeout(() => inp.focus(), 150);
       } else if (action === "spend") {
@@ -16408,12 +16402,15 @@
         if (secBcsCol) secBcsCol.style.display = "none";
         const bcsSpendTable = document.getElementById("bcsSpendTableBody");
         if (bcsSpendTable) {
-          const wrap = bcsSpendTable.closest(".data-table-container") || bcsSpendTable.parentElement;
-          if (wrap) wrap.style.display = "none";
+          const wrap = bcsSpendTable.closest(".data-table-container");
+          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "none";
         }
-        if (verifiedRole === "bcs") {
-          if (secSpendCreate) secSpendCreate.style.display = "block";
+        const bcsRefundTable = document.getElementById("bcsRefundTableBody");
+        if (bcsRefundTable) {
+          const wrap = bcsRefundTable.closest(".data-table-container");
+          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "none";
         }
+        if (secSpendCreate) secSpendCreate.style.display = "block";
         const inp = document.getElementById("inputSpendRecipient");
         if (inp) setTimeout(() => inp.focus(), 150);
       } else if (action === "vote" || action === "disburse") {
@@ -16426,8 +16423,13 @@
         if (secBcsCol) secBcsCol.style.display = "none";
         const bcsSpendTable = document.getElementById("bcsSpendTableBody");
         if (bcsSpendTable) {
-          const wrap = bcsSpendTable.closest(".data-table-container") || bcsSpendTable.parentElement;
-          if (wrap) wrap.style.display = "block";
+          const wrap = bcsSpendTable.closest(".data-table-container");
+          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "block";
+        }
+        const bcsRefundTable = document.getElementById("bcsRefundTableBody");
+        if (bcsRefundTable) {
+          const wrap = bcsRefundTable.closest(".data-table-container");
+          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "block";
         }
       } else if (action === "ledger" || action === "history") {
         if (modalBox) modalBox.style.maxWidth = "1180px";
@@ -16448,9 +16450,7 @@
         if (pAdvisor) pAdvisor.style.display = 'block';
         if (secAdvFee) secAdvFee.style.display = "none";
         if (secAdvMon) secAdvMon.style.display = "none";
-        if (verifiedRole === "advisor") {
-          if (secAdvBcs) secAdvBcs.style.display = "block";
-        }
+        if (secAdvBcs) secAdvBcs.style.display = "block";
       } else if (action === "withdraw-fee") {
         if (modalBox) modalBox.style.maxWidth = "760px";
         if (iconEl) iconEl.textContent = "💰";
@@ -16459,9 +16459,7 @@
         if (pAdvisor) pAdvisor.style.display = 'block';
         if (secAdvBcs) secAdvBcs.style.display = "none";
         if (secAdvMon) secAdvMon.style.display = "none";
-        if (verifiedRole === "advisor") {
-          if (secAdvFee) secAdvFee.style.display = "block";
-        }
+        if (secAdvFee) secAdvFee.style.display = "block";
       }
 
       // Open Modal Overlay

@@ -284,11 +284,14 @@ button.btn,
   text-decoration: none;
 }
 
-.topbar-brand-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  object-fit: contain;
+.topbar-brand-logo,
+.topbar-mini-logo {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  object-fit: contain !important;
+  display: block !important;
+  flex-shrink: 0 !important;
 }
 
 .topbar-brand-text {
@@ -2181,6 +2184,15 @@ footer.site-footer,
   align-items: center !important;
   justify-content: center !important;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  flex-shrink: 0 !important;
+}
+
+.footer-brand-logo-img {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  object-fit: contain !important;
+  display: block !important;
   flex-shrink: 0 !important;
 }
 
