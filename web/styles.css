@@ -79,6 +79,9 @@ body {
   background-color: var(--bg-page) !important;
   color: var(--text-main) !important;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Tabular figures for numbers, balances and ETH values */
@@ -2128,6 +2131,7 @@ footer.site-footer,
   clear: both !important;
   box-sizing: border-box !important;
   display: block !important;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
