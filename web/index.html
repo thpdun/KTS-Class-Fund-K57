@@ -6205,42 +6205,67 @@
     </div>
 
 
-    <!-- FOOTER - DẢI THANH NGANG TRỌN VẸN (SLIM HORIZONTAL FOOTER BAR) -->
+    <!-- FOOTER - DẢI THANH NGANG 4 CỘT PHONG CÁCH HIỆN ĐẠI (FAIRTICKET-STYLE) -->
     <footer class="site-footer">
-      <div class="container footer-horizontal-bar">
-        <!-- Brand & Thông tin lớp bên trái -->
-        <div class="footer-brand-horizontal">
-          <strong class="footer-brand-title">KTS CLASS FUND</strong>
-          <span class="footer-sep-dot">•</span>
-          <span class="footer-brand-sub">Lớp K57 Kinh Tế Số (ECO2432)</span>
-          <span class="footer-sep-dot">•</span>
-          <span class="footer-brand-copy">&copy; 2026</span>
+      <div class="container footer-strip-container">
+        <!-- Cột 1: Logo, Tên dự án & Giới thiệu ngắn -->
+        <div class="footer-col-brand">
+          <div class="footer-brand-header">
+            <div class="footer-brand-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+            <span class="footer-brand-title">KTS Class Fund</span>
+          </div>
+          <p class="footer-brand-desc">
+            Nền tảng quản lý quỹ lớp ứng dụng blockchain: phân bổ tự động 99/1, biểu quyết chi tiêu &ge; 51%, minh bạch sổ quỹ on-chain trên Ethereum Sepolia.
+          </p>
         </div>
 
-        <!-- Dải liên kết chạy ngang ở giữa (Horizontal Links) -->
-        <nav class="footer-nav-horizontal" aria-label="Liên kết chân trang">
-          <a href="#hero" class="footer-hlink">Tổng quan</a>
-          <span class="footer-sep-dot">•</span>
-          <a href="#workflow" class="footer-hlink">Quy trình</a>
-          <span class="footer-sep-dot">•</span>
-          <a href="#governance" class="footer-hlink">Biểu quyết</a>
-          <span class="footer-sep-dot">•</span>
-          <a href="#economics" class="footer-hlink">Phân bổ 99/1</a>
-          <span class="footer-sep-dot">•</span>
-          <a href="https://sepolia.etherscan.io" target="_blank" rel="noopener noreferrer" class="footer-hlink">Sepolia Etherscan ↗</a>
-          <span class="footer-sep-dot">•</span>
-          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" class="footer-hlink">MetaMask ↗</a>
-          <span class="footer-sep-dot">•</span>
-          <a href="https://sepoliafaucet.com" target="_blank" rel="noopener noreferrer" class="footer-hlink">Faucet ETH ↗</a>
-        </nav>
-
-        <!-- Trạng thái mạng Sepolia & An toàn on-chain bên phải -->
-        <div class="footer-meta-horizontal">
-          <span class="footer-net-chip">
-            <span class="footer-green-dot"></span>
-            Ethereum Sepolia • Minh bạch on-chain
-          </span>
+        <!-- Cột 2: Khám phá -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">Khám phá</h4>
+          <ul class="footer-col-list">
+            <li><a href="#hero" class="footer-link">Tất cả dịch vụ quỹ</a></li>
+            <li><a href="#dapp-workspace" class="footer-link" onclick="if(typeof openActionModal==='function'){openActionModal('spend');}return false;">Đề xuất chi tiêu</a></li>
+            <li><a href="#ledger" class="footer-link" onclick="if(typeof navigateTo==='function'){navigateTo('ledger');}return false;">Sổ quỹ on-chain</a></li>
+            <li><a href="#workflow" class="footer-link">Quy trình 4 luồng tiền</a></li>
+          </ul>
         </div>
+
+        <!-- Cột 3: Tài khoản -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">Tài khoản</h4>
+          <ul class="footer-col-list">
+            <li><a href="#dapp-workspace" class="footer-link" onclick="if(typeof openActionModal==='function'){openActionModal('deposit');}return false;">Đóng góp quỹ của tôi</a></li>
+            <li><a href="#dapp-workspace" class="footer-link" onclick="if(typeof openActionModal==='function'){openActionModal('refund');}return false;">Yêu cầu hoàn tiền</a></li>
+            <li><a href="#governance" class="footer-link">Phân quyền Ban cán sự</a></li>
+            <li><a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" class="footer-link">Tải ví MetaMask ↗</a></li>
+          </ul>
+        </div>
+
+        <!-- Cột 4: Minh bạch -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">Minh bạch</h4>
+          <ul class="footer-col-list">
+            <li><a href="https://sepolia.etherscan.io" target="_blank" rel="noopener noreferrer" class="footer-link">Hợp đồng trên Etherscan ↗</a></li>
+            <li class="footer-text-item">
+              <span class="footer-live-dot"></span>
+              Mạng: Ethereum Sepolia (testnet)
+            </li>
+            <li><a href="https://sepoliafaucet.com" target="_blank" rel="noopener noreferrer" class="footer-link">Nhận SepoliaETH miễn phí ↗</a></li>
+            <li class="footer-text-item" style="color: #64748b; font-size: 0.8rem; margin-top: 4px;">Dự án học phần ECO2432</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Dải bản quyền dưới cùng -->
+      <div class="container footer-strip-bottom">
+        <div>&copy; 2026 KTS-Class-Fund (Lớp K57 Kinh Tế Số) — Dự án môn học ECO2432.</div>
+        <div class="footer-bottom-privacy">Thiết kế minh bạch • An toàn dữ liệu • Tôn trọng quyền riêng tư</div>
       </div>
     </footer>
   </div>

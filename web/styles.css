@@ -2109,17 +2109,17 @@ body.dark-theme .mobile-sheet-handle {
 }
 
 /* ==========================================================================
-   SITE FOOTER - DẢI THANH NGANG TRỌN VẸN (SLIM HORIZONTAL FOOTER BAR)
+   SITE FOOTER - DẢI THANH NGANG 4 CỘT PHONG CÁCH HIỆN ĐẠI (FAIRTICKET-STYLE)
    ========================================================================== */
 footer.site-footer,
 .site-footer {
   width: 100% !important;
   max-width: 100vw !important;
-  background: #05352B !important; /* Xanh đậm thương hiệu chuẩn mực */
+  background: #090d16 !important; /* Đen huyền bí siêu sang như mẫu FairTicket */
   color: #94a3b8 !important;
-  padding: 16px 0 calc(80px + env(safe-area-inset-bottom, 0px)) 0 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-  margin-top: 48px !important;
+  padding: 56px 0 32px 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin-top: 60px !important;
   position: relative !important;
   z-index: 10 !important;
   clear: both !important;
@@ -2127,125 +2127,162 @@ footer.site-footer,
   display: block !important;
 }
 
-@media (min-width: 769px) {
+@media (max-width: 768px) {
   footer.site-footer,
   .site-footer {
-    padding: 18px 0 !important; /* Dải thanh ngang thanh thoát trên desktop */
+    padding: 40px 0 calc(80px + env(safe-area-inset-bottom, 0px)) 0 !important;
   }
 }
 
-.site-footer .container,
-.site-footer .footer-horizontal-bar {
+.site-footer .footer-strip-container {
   width: 100% !important;
-  max-width: 1300px !important;
+  max-width: 1280px !important;
   margin: 0 auto !important;
-  padding: 0 24px !important;
+  padding: 0 32px !important;
   box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: wrap !important;
-  gap: 14px 24px !important;
+  display: grid !important;
+  grid-template-columns: 2.2fr 1.2fr 1.2fr 1.4fr !important;
+  gap: 48px !important;
 }
 
-.footer-brand-horizontal {
-  display: inline-flex !important;
+@media (max-width: 1024px) {
+  .site-footer .footer-strip-container {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 36px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-footer .footer-strip-container {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+}
+
+.footer-col-brand {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.footer-brand-header {
+  display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  font-size: 0.88rem !important;
-  color: #cbd5e1 !important;
+  gap: 12px !important;
+}
+
+.footer-brand-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #0B6B57 0%, #10b981 100%) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
   flex-shrink: 0 !important;
 }
 
 .footer-brand-title {
-  color: #ffffff !important;
+  font-size: 1.25rem !important;
   font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  font-size: 0.92rem !important;
+  color: #ffffff !important;
+  letter-spacing: -0.2px !important;
 }
 
-.footer-brand-sub {
-  color: #a7f3d0 !important;
-}
-
-.footer-brand-copy {
+.footer-brand-desc {
+  font-size: 0.88rem !important;
+  line-height: 1.65 !important;
   color: #94a3b8 !important;
+  margin: 0 !important;
+  max-width: 380px !important;
 }
 
-.footer-nav-horizontal {
-  display: inline-flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  flex-wrap: wrap !important;
-  gap: 8px 12px !important;
-  font-size: 0.84rem !important;
+.footer-col {
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-.footer-hlink {
-  color: #cbd5e1 !important;
+.footer-col-title {
+  font-size: 0.96rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 0 0 16px 0 !important;
+  letter-spacing: 0.2px !important;
+}
+
+.footer-col-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 11px !important;
+}
+
+.footer-col-list li a.footer-link,
+.site-footer .footer-link {
+  font-size: 0.88rem !important;
+  color: #94a3b8 !important;
   text-decoration: none !important;
-  transition: color 0.15s ease !important;
-  white-space: nowrap !important;
+  transition: color 0.18s ease, transform 0.18s ease !important;
+  display: inline-block !important;
 }
 
-.footer-hlink:hover {
-  color: #F2B84B !important; /* Vàng nhấn thương hiệu */
-  text-decoration: underline !important;
+.footer-col-list li a.footer-link:hover,
+.site-footer .footer-link:hover {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  transform: translateX(2px) !important;
 }
 
-.footer-sep-dot {
-  color: rgba(255, 255, 255, 0.28) !important;
-  font-size: 0.75rem !important;
-  user-select: none !important;
-}
-
-.footer-meta-horizontal {
-  display: inline-flex !important;
+.footer-text-item {
+  font-size: 0.88rem !important;
+  color: #94a3b8 !important;
+  display: flex !important;
   align-items: center !important;
-  flex-shrink: 0 !important;
+  gap: 8px !important;
 }
 
-.footer-net-chip {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-  padding: 5px 12px !important;
-  border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  font-size: 0.8rem !important;
-  color: #e2e8f0 !important;
-  white-space: nowrap !important;
-}
-
-.footer-green-dot {
+.footer-live-dot {
   width: 7px !important;
   height: 7px !important;
   border-radius: 50% !important;
   background: #10b981 !important;
-  box-shadow: 0 0 6px #10b981 !important;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8) !important;
   display: inline-block !important;
+  flex-shrink: 0 !important;
 }
 
-@media (max-width: 900px) {
-  .site-footer .container,
-  .site-footer .footer-horizontal-bar {
-    justify-content: center !important;
-    text-align: center !important;
-  }
-  .footer-brand-horizontal,
-  .footer-nav-horizontal,
-  .footer-meta-horizontal {
-    justify-content: center !important;
+.footer-strip-bottom {
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin: 36px auto 0 auto !important;
+  padding: 24px 32px 0 32px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-size: 0.84rem !important;
+  color: #64748b !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+}
+
+@media (max-width: 640px) {
+  .footer-strip-bottom {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
   }
 }
 
 /* Dark mode overrides for footer & workspace modal */
 body.dark-theme footer.site-footer,
 body.dark-theme .site-footer {
-  background: #061e18 !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: #060910 !important;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 body.dark-theme #dapp-workspace .workspace-modal-box {
