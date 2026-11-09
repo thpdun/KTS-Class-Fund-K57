@@ -13,9 +13,9 @@
 | :--- | :--- | :--- |
 | **Mạng Blockchain** | **Ethereum Sepolia Testnet** | Chain ID: `11155111` (`0xaa36a7`) |
 | **Tiền tệ Mạng** | SepoliaETH | Faucet tại: `sepoliafaucet.com` hoặc `infura.io/faucet` |
-| **Địa chỉ Hợp đồng (Contract Address)** | `[ĐIỀN ĐỊA CHỈ HỢP ĐỒNG SAU KHI DEPLOY VÀO ĐÂY]` | Ví dụ: `0x1234567890123456789012345678901234567890` |
-| **Mã giao dịch triển khai (Deployment Tx Hash)** | `[ĐIỀN TX HASH TRIỂN KHAI VÀO ĐÂY]` | Ví dụ: `0xabcdef...` |
-| **Địa chỉ Ví Deployer / Cố vấn (Advisor)** | `[ĐIỀN ĐỊA CHỈ VÍ CỐ VẤN HỌC TẬP VÀO ĐÂY]` | Địa chỉ truyền vào `constructor(address _advisor)` |
+| **Địa chỉ Hợp đồng (Contract Address)** | [`0x90948699FF04bC9cF159a39e200F09885439503D`](https://sepolia.etherscan.io/address/0x90948699FF04bC9cF159a39e200F09885439503D) *(Bản nâng cấp Lab 15: [`0x1F066cB83F41857DcC5D230C74963b12F1E8f58C`](https://sepolia.etherscan.io/address/0x1F066cB83F41857DcC5D230C74963b12F1E8f58C))* | Tra cứu trạng thái trên Sepolia Etherscan |
+| **Mã giao dịch triển khai (Deployment Tx Hash)** | `0x5d98...0f8c` | Đã xác thực thành công trên mạng Sepolia |
+| **Địa chỉ Ví Deployer / Cố vấn (Advisor)** | `0x36fd4887e9d1eca4ae5062a745cc2c6182b77060` | Địa chỉ truyền vào `constructor(address _advisor)` |
 | **Trình khám phá Khối (Block Explorer)** | [Sepolia Etherscan](https://sepolia.etherscan.io) | Tra cứu mã nguồn, sự kiện và biến trạng thái |
 | **Trình biên dịch (Compiler Version)** | Solidity `0.8.20` hoặc `0.8.28` | EVM Version: `Cancun` hoặc `Default` |
 | **Trình tối ưu hóa (Optimizer)** | Bật (Runs: 200) | Giảm phí gas triển khai và gọi hàm |
