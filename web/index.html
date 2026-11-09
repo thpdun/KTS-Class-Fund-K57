@@ -6205,42 +6205,41 @@
     </div>
 
 
-    <!-- FOOTER -->
+    <!-- FOOTER - DẢI THANH NGANG TRỌN VẸN (SLIM HORIZONTAL FOOTER BAR) -->
     <footer class="site-footer">
-      <div class="container">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <h3>KTS CLASS FUND</h3>
-            <p style="line-height: 1.7; max-width: 420px;">
-              Hệ thống quản lý quỹ lớp ứng dụng công nghệ Hợp đồng thông minh và Blockchain cho sinh viên lớp K57 ngành
-              Kinh tế Số. Dự án phục vụ học phần ECO2432.
-            </p>
-          </div>
-          <div class="footer-links">
-            <h4>Điều Hướng</h4>
-            <ul>
-              <li><a href="#dapp-workspace">3 Ô Giao diện</a></li>
-              <li><a href="#hero">Tổng quan</a></li>
-              <li><a href="#workflow">Quy trình</a></li>
-              <li><a href="#governance">Quy tắc biểu quyết</a></li>
-              <li><a href="#economics">Phân bổ tài chính</a></li>
-            </ul>
-          </div>
-          <div class="footer-links">
-            <h4>Mạng Thử Nghiệm</h4>
-            <ul>
-              <li><a href="https://sepolia.etherscan.io" target="_blank">Sepolia Etherscan</a></li>
-              <li><a href="https://metamask.io/download/" target="_blank">Tải tiện ích MetaMask</a></li>
-              <li><a href="https://sepoliafaucet.com" target="_blank">Nhận SepoliaETH miễn phí</a></li>
-            </ul>
-          </div>
+      <div class="container footer-horizontal-bar">
+        <!-- Brand & Thông tin lớp bên trái -->
+        <div class="footer-brand-horizontal">
+          <strong class="footer-brand-title">KTS CLASS FUND</strong>
+          <span class="footer-sep-dot">•</span>
+          <span class="footer-brand-sub">Lớp K57 Kinh Tế Số (ECO2432)</span>
+          <span class="footer-sep-dot">•</span>
+          <span class="footer-brand-copy">&copy; 2026</span>
         </div>
 
-        <div class="footer-bottom">
-          <div>&copy; 2026 KTS-Class-Fund (K57 Kinh Tế Số) — Dự án môn học ECO2432.</div>
-          <div style="color: #64748b; font-size: 0.8rem;">Thiết kế minh bạch • An toàn dữ liệu • Tôn trọng quyền riêng
-            tư
-          </div>
+        <!-- Dải liên kết chạy ngang ở giữa (Horizontal Links) -->
+        <nav class="footer-nav-horizontal" aria-label="Liên kết chân trang">
+          <a href="#hero" class="footer-hlink">Tổng quan</a>
+          <span class="footer-sep-dot">•</span>
+          <a href="#workflow" class="footer-hlink">Quy trình</a>
+          <span class="footer-sep-dot">•</span>
+          <a href="#governance" class="footer-hlink">Biểu quyết</a>
+          <span class="footer-sep-dot">•</span>
+          <a href="#economics" class="footer-hlink">Phân bổ 99/1</a>
+          <span class="footer-sep-dot">•</span>
+          <a href="https://sepolia.etherscan.io" target="_blank" rel="noopener noreferrer" class="footer-hlink">Sepolia Etherscan ↗</a>
+          <span class="footer-sep-dot">•</span>
+          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" class="footer-hlink">MetaMask ↗</a>
+          <span class="footer-sep-dot">•</span>
+          <a href="https://sepoliafaucet.com" target="_blank" rel="noopener noreferrer" class="footer-hlink">Faucet ETH ↗</a>
+        </nav>
+
+        <!-- Trạng thái mạng Sepolia & An toàn on-chain bên phải -->
+        <div class="footer-meta-horizontal">
+          <span class="footer-net-chip">
+            <span class="footer-green-dot"></span>
+            Ethereum Sepolia • Minh bạch on-chain
+          </span>
         </div>
       </div>
     </footer>
