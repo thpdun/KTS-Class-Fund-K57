@@ -582,7 +582,9 @@ def get_campaign_progress_view(notification_id: str, class_size: Optional[int] =
 def freeze_campaign_progress_record(
     notification_id: str,
     reason: str = "Đợt thu kết thúc",
-    class_size: Optional[int] = None
+    class_size: Optional[int] = None,
+    contributing_wallets_count: Optional[int] = None,
+    raised_eth: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Đóng băng tiến độ khi thông báo kết thúc.
@@ -615,6 +617,14 @@ def freeze_campaign_progress_record(
 
         target_class_sz = int(target_class_sz)
         wallets_cnt = camp.get("contributingWalletsCount", 0)
+        if contributing_wallets_count is not None and int(contributing_wallets_count) > wallets_cnt:
+            wallets_cnt = int(contributing_wallets_count)
+            camp["contributingWalletsCount"] = wallets_cnt
+
+        current_raised_eth = str(raised_eth) if raised_eth else camp.get("raisedEth", "0.0000")
+        if raised_eth:
+            camp["raisedEth"] = current_raised_eth
+
         headcount_pct = min(100, round((wallets_cnt / max(1, target_class_sz)) * 100))
         camp["headcountPercent"] = headcount_pct
 
@@ -624,7 +634,7 @@ def freeze_campaign_progress_record(
             "isFrozen": True,
             "frozenAt": now_iso,
             "reason": reason,
-            "raisedEth": camp.get("raisedEth", "0.0000"),
+            "raisedEth": current_raised_eth,
             "raisedWei": camp.get("raisedWei", "0"),
             "contributingWalletsCount": wallets_cnt,
             "classSize": target_class_sz,

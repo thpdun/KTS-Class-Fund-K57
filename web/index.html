@@ -4696,26 +4696,43 @@
                     <div style="font-size: 0.85rem; color: var(--text-muted);">Đang đồng bộ dữ liệu đợt thu on-chain...</div>
                   </div>
 
-                  <!-- Form tạo đợt thu mới -->
-                  <div id="formCreateCollectionWrapper" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px;">
-                    <h5 style="font-size: 0.92rem; color: var(--brand-blue); margin-bottom: 8px;">Tạo đợt thu on-chain mới:</h5>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                  <!-- Form tạo đợt thu mới (Đồng bộ hợp nhất) -->
+                  <div id="formCreateCollectionWrapper" style="border-top: 1px dashed var(--border-color); padding-top: 14px; margin-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 16px;">
                       <div>
-                        <label for="inputColTargetEth" style="font-size:0.82rem;">Mức thu mỗi SV (ETH):</label>
-                        <input type="number" step="0.001" min="0.001" class="form-control" id="inputColTargetEth" placeholder="Ví dụ: 0.01">
+                        <div style="font-weight: 700; color: #1e40af; font-size: 0.95rem;">🚀 Phát động đợt thu mới (Hợp nhất On-chain &amp; Bảng tin)</div>
+                        <div style="font-size: 0.80rem; color: #475569; margin-top: 2px;">
+                          Chỉ cần thực hiện 1 lần duy nhất: Kích hoạt đợt thu trên Smart Contract và hiển thị đồng bộ lên Bảng thông báo lớp.
+                        </div>
                       </div>
-                      <div>
-                        <label for="inputColDeadlineDays" style="font-size:0.82rem;">Thời hạn nộp (số ngày):</label>
-                        <input type="number" step="1" min="1" max="90" class="form-control" id="inputColDeadlineDays" placeholder="Ví dụ: 14">
+                      <button class="btn btn-purple" onclick="openAnnModal(null, 'create')" type="button" style="font-weight: 600; padding: 8px 16px; display: inline-flex; align-items: center; gap: 6px;">
+                        ✨ Mở hộp thoại Phát động đợt thu
+                      </button>
+                    </div>
+
+                    <!-- Tùy chọn mở rộng: Tạo riêng biệt on-chain cho mục đích kiểm thử/kỹ thuật -->
+                    <details style="margin-top: 12px; font-size: 0.80rem; color: #64748b;">
+                      <summary style="cursor: pointer; font-weight: 600; color: #475569; padding: 4px 0;">⚙️ Biểu mẫu tạo riêng biệt on-chain (Dành cho kiểm thử chuyên sâu)</summary>
+                      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 12px; margin-top: 8px;">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                          <div>
+                            <label for="inputColTargetEth" style="font-size:0.80rem;">Mức thu mỗi SV (ETH):</label>
+                            <input type="number" step="0.001" min="0.001" class="form-control" id="inputColTargetEth" placeholder="Ví dụ: 0.01">
+                          </div>
+                          <div>
+                            <label for="inputColDeadlineDays" style="font-size:0.80rem;">Thời hạn nộp (số ngày):</label>
+                            <input type="number" step="1" min="1" max="90" class="form-control" id="inputColDeadlineDays" placeholder="Ví dụ: 14">
+                          </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                          <label for="inputColPurpose" style="font-size:0.80rem;">Mục đích đợt thu:</label>
+                          <input type="text" class="form-control" id="inputColPurpose" placeholder="Ví dụ: Quỹ hoạt động thực hành Lab 15">
+                        </div>
+                        <button class="btn btn-purple btn-sm" id="btnCreateCollectionAction" style="width: 100%;">
+                          🚀 Tạo đợt thu riêng on-chain
+                        </button>
                       </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 10px;">
-                      <label for="inputColPurpose" style="font-size:0.82rem;">Mục đích đợt thu:</label>
-                      <input type="text" class="form-control" id="inputColPurpose" placeholder="Ví dụ: Quỹ hoạt động thực hành Lab 15">
-                    </div>
-                    <button class="btn btn-purple" id="btnCreateCollectionAction" style="width: 100%;">
-                      🚀 Tạo đợt thu mới on-chain
-                    </button>
+                    </details>
                   </div>
 
                   <!-- Form đóng đợt thu đang mở -->
@@ -5872,24 +5889,42 @@
         <div class="ann-form-grid-2"
           style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
           <div class="form-group">
-            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Hạn chót nộp:</label>
-            <input type="text" class="form-control" id="formAnnDeadline" style="width: 100%;"
-              placeholder="Ví dụ: 23:59 ngày 15/11/2026">
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Thời hạn nộp (số ngày):</label>
+            <input type="number" step="1" min="1" max="90" class="form-control" id="formAnnDays" value="14" style="width: 100%;"
+              placeholder="14">
+            <small class="text-muted" style="font-size: 0.74rem; color: #64748b; margin-top: 2px; display: block;">Tự động tính ngày hạn chót on-chain.</small>
           </div>
           <div class="form-group">
-            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Trạng thái đợt thu:</label>
-            <select class="form-control" id="formAnnStatus" style="width: 100%;">
-              <option value="Đang diễn ra">🔴 Đang diễn ra</option>
-              <option value="Sắp kết thúc">⏳ Sắp kết thúc</option>
-              <option value="Đã hoàn thành">✅ Đã hoàn thành</option>
-            </select>
+            <label style="font-weight: 600; display: block; margin-bottom: 4px;">Hạn chót hiển thị:</label>
+            <input type="text" class="form-control" id="formAnnDeadline" style="width: 100%;"
+              placeholder="Ví dụ: 23:59 ngày 30/11/2026">
           </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-weight: 600; display: block; margin-bottom: 4px;">Trạng thái đợt thu:</label>
+          <select class="form-control" id="formAnnStatus" style="width: 100%;">
+            <option value="Đang diễn ra">🔴 Đang diễn ra</option>
+            <option value="Sắp kết thúc">⏳ Sắp kết thúc</option>
+            <option value="Đã hoàn thành">✅ Đã hoàn thành</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
           <label style="font-weight: 600; display: block; margin-bottom: 4px;">Mục đích chi tiết:</label>
           <textarea class="form-control" id="formAnnPurpose" rows="3" style="width: 100%;"
             placeholder="Nêu rõ mục đích thu quỹ (tài liệu học tập, các hoạt động ngoại khóa, teambuilding...)"></textarea>
+        </div>
+
+        <!-- TÙY CHỌN GỘP CHUNG: KÍCH HOẠT ĐỒNG THỜI TRÊN SMART CONTRACT -->
+        <div id="formAnnOnchainSection" style="background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700; color: #1e40af; margin: 0; font-size: 0.90rem;">
+            <input type="checkbox" id="formAnnSyncOnchain" checked style="width: 18px; height: 18px; accent-color: #2563eb;">
+            <span>⚡ Đồng bộ &amp; Kích hoạt đợt thu on-chain trên Smart Contract</span>
+          </label>
+          <div style="font-size: 0.78rem; color: #475569; margin-top: 5px; margin-left: 28px; line-height: 1.45;">
+            Khi bật, hệ thống tự động gọi hàm <code>createCollection</code> qua ví MetaMask của Ban cán sự. Đợt thu sẽ được kích hoạt đồng thời trên cả Smart Contract lẫn Bảng thông báo chỉ với <strong>1 lần bấm duy nhất</strong>.
+          </div>
         </div>
       </div>
       <div class="ann-modal-footer"
@@ -5899,7 +5934,7 @@
         </button>
         <div style="display: flex; gap: 10px; margin-left: auto;">
           <button class="btn btn-secondary btn-sm" onclick="closeAnnModal()">Hủy bỏ</button>
-          <button class="btn btn-primary btn-sm" id="btnSaveAnnouncementModal">Lưu & Đăng thông báo</button>
+          <button class="btn btn-primary btn-sm" id="btnSaveAnnouncementModal">Lưu &amp; Đăng thông báo mới</button>
         </div>
       </div>
     </div>
@@ -11866,7 +11901,7 @@
 
       try {
         logToTerminal(`[Biểu quyết hoàn tiền] Đang bỏ phiếu ${support ? 'ĐỒNG Ý' : 'KHÔNG ĐỒNG Ý'} cho Yêu cầu #${refundId}...`);
-        const tx = await contract.voteRefundRequest(refundId, support);
+        const tx = await contract.voteRefundRequest(refundId, support, { gasLimit: 2000000n });
         const receipt = await tx.wait();
 
         // Bóc tách event từ receipt để phát hiện trạng thái auto-execution
@@ -11935,7 +11970,7 @@
 
       try {
         logToTerminal(`[Hoàn tiền] Đang thực hiện chuyển tiền hoàn cho Yêu cầu #${refundId}...`);
-        const tx = await contract.executeRefundRequest(refundId);
+        const tx = await contract.executeRefundRequest(refundId, { gasLimit: 2000000n });
         await tx.wait();
         logToTerminal(`[Thành công] Tiền hoàn đã được chuyển về ví của sinh viên! Mã giao dịch: ${tx.hash}`);
         alert("Hoàn tiền thành công về ví sinh viên! Mã giao dịch: " + tx.hash);
@@ -11970,10 +12005,31 @@
       if (!amountStr || parseFloat(amountStr) <= 0) return alert("Vui lòng nhập số ETH đề nghị chi hợp lệ!");
       if (!desc) return alert("Vui lòng nhập nội dung chi tiêu!");
 
+      const amountWei = ethers.parseEther(amountStr);
+
+      // Kiểm tra trước số dư khả dụng on-chain để cảnh báo rõ ràng cho người dùng
+      try {
+        const availableFund = await contract.getAvailableClassFund();
+        if (amountWei > availableFund) {
+          const availEth = formatEth(availableFund);
+          return alert(
+            `⚠️ Số tiền đề nghị chi vượt quá số dư khả dụng của Quỹ lớp!\n\n` +
+            `• Số tiền bạn nhập: ${amountStr} ETH\n` +
+            `• Ngân sách khả dụng hiện tại: ${availEth} ETH\n\n` +
+            `Lý do: Khi nộp quỹ, 1% đã được tự động trích vào Quỹ phí vận hành on-chain, nên Quỹ lớp chỉ khả dụng ${availEth} ETH.\n` +
+            `Vui lòng nhập số tiền nhỏ hơn hoặc bằng ${availEth} ETH (ví dụ: ${availEth} hoặc 0.005 ETH).`
+          );
+        }
+      } catch (checkErr) {
+        console.warn("Không thể kiểm tra trước availableFund:", checkErr);
+      }
+
       try {
         logToTerminal(`[Đề nghị chi] Đang tạo đề nghị chi ${amountStr} ETH cho ${shortenAddress(recipient)}...`);
-        const amountWei = ethers.parseEther(amountStr);
-        const tx = await contract.createSpendRequest(recipient, amountWei, desc);
+        // Thiết lập gasLimit an toàn (2.500.000 gas) để vượt qua ngưỡng reentrancy sentry (EIP-150 / EIP-2200) của modifier governanceAction
+        const tx = await contract.createSpendRequest(recipient, amountWei, desc, {
+          gasLimit: 2500000n
+        });
         await tx.wait();
         logToTerminal(`[Thành công] Đã tạo đề nghị chi tiền mới! Khoản tiền đã được tạm giữ an toàn.`);
         alert("Tạo đề nghị chi tiền thành công! Mã giao dịch: " + tx.hash);
@@ -11982,8 +12038,29 @@
         document.getElementById("inputSpendDesc").value = "";
         await refreshContractData();
       } catch (err) {
-        logToTerminal(`[Lỗi tạo đề nghị chi] ${err.shortMessage || err.message}`);
-        alert("Tạo đề nghị chi thất bại: " + (err.shortMessage || err.message));
+        let msg = err.shortMessage || err.message;
+        if (err.data && contract && contract.interface) {
+          try {
+            const parsed = contract.interface.parseError(err.data);
+            if (parsed) {
+              if (parsed.name === "InsufficientAvailableFund") {
+                const reqEth = formatEth(parsed.args[0]);
+                const avEth = formatEth(parsed.args[1]);
+                msg = `Số tiền đề nghị chi (${reqEth} ETH) vượt quá ngân sách khả dụng của Quỹ lớp (${avEth} ETH).`;
+              } else if (parsed.name === "NotEnoughBCS") {
+                msg = `Số lượng Ban cán sự đang hoạt động (${parsed.args[0]}) chưa đạt tối thiểu (${parsed.args[1]}) để tạo đề xuất.`;
+              } else if (parsed.name === "TooManyOpenRequests") {
+                msg = `Bạn đã có tối đa 3 đề xuất chi đang mở chưa giải quyết xong.`;
+              } else if (parsed.name === "NotActiveBCS") {
+                msg = `Tài khoản Ban cán sự của bạn chưa đủ thời gian kích hoạt.`;
+              } else {
+                msg = `Lỗi hợp đồng: ${parsed.name}`;
+              }
+            }
+          } catch (_) {}
+        }
+        logToTerminal(`[Lỗi tạo đề nghị chi] ${msg}`);
+        alert("Tạo đề nghị chi thất bại: " + msg);
       }
     }
 
@@ -12005,7 +12082,7 @@
 
       try {
         logToTerminal(`[Biểu quyết chi] Đang bỏ phiếu ${support ? 'ĐỒNG Ý' : 'KHÔNG ĐỒNG Ý'} cho Đề xuất #${requestId}...`);
-        const tx = await contract.voteSpendRequest(requestId, support);
+        const tx = await contract.voteSpendRequest(requestId, support, { gasLimit: 2000000n });
         const receipt = await tx.wait();
 
         // Bóc tách event từ receipt để phát hiện trạng thái auto-execution
@@ -12064,7 +12141,7 @@
 
       try {
         logToTerminal(`[Giải ngân chi tiêu] Đang thực hiện chuyển tiền cho Đề xuất #${requestId}...`);
-        const tx = await contract.executeSpendRequest(requestId);
+        const tx = await contract.executeSpendRequest(requestId, { gasLimit: 2000000n });
         await tx.wait();
         logToTerminal(`[Thành công] Đã giải ngân thành công! Tiền đã chuyển đến người nhận. Mã giao dịch: ${tx.hash}`);
         alert("Giải ngân thành công! Mã giao dịch: " + tx.hash);
@@ -12098,7 +12175,7 @@
 
       try {
         logToTerminal(`[Quản trị Cố vấn] Đang cập nhật quyền Ban cán sự cho ${shortenAddress(memberAddr)} -> ${statusVal ? 'Kích hoạt' : 'Thu hồi'}...`);
-        const tx = await contract.setBCSMember(memberAddr, statusVal);
+        const tx = await contract.setBCSMember(memberAddr, statusVal, { gasLimit: 2000000n });
         await tx.wait();
         logToTerminal(`[Thành công] Đã cập nhật thành công nhân sự Ban cán sự! Mã giao dịch: ${tx.hash}`);
         alert("Cập nhật Ban cán sự thành công! Mã giao dịch: " + tx.hash);
@@ -12173,7 +12250,7 @@
 
       try {
         logToTerminal(`[Cố vấn] Đang ghi nhận ${validAddrs.length} sinh viên on-chain qua setStudents...`);
-        const tx = await contract.setStudents(validAddrs, true);
+        const tx = await contract.setStudents(validAddrs, true, { gasLimit: 2500000n });
         await tx.wait();
         logToTerminal(`[Thành công] Đã ghi danh sách sinh viên on-chain! Mã GD: ${tx.hash}`);
         alert(`Ghi thành công ${validAddrs.length} sinh viên on-chain!`);
@@ -12215,7 +12292,7 @@
         const backendHash = data.hash;
 
         logToTerminal(`[Cố vấn] Hash chuẩn: ${backendHash}. Đang gọi commitRoster...`);
-        const tx = await contract.commitRoster(backendHash);
+        const tx = await contract.commitRoster(backendHash, { gasLimit: 2000000n });
         await tx.wait();
         logToTerminal(`[Thành công] Đã commit Roster Hash lên Blockchain! Mã GD: ${tx.hash}`);
         alert("Commit Roster Hash lên chuỗi thành công! Mã GD: " + tx.hash);
@@ -12312,6 +12389,8 @@
 
         if (activeCol) {
           const isExpired = nowSec > activeCol.deadline;
+          const isFullyPaid = activeCol.expectedPayers > 0 && activeCol.paidCount >= activeCol.expectedPayers;
+          const isPrePaidAll = (activeCol.paidCount === 0 && window.onchainDepositorsCount && window.onchainDepositorsCount >= activeCol.expectedPayers);
           const targetEth = formatEth(activeCol.targetWei);
           const deadlineDate = new Date(activeCol.deadline * 1000).toLocaleString("vi-VN");
           const pct = activeCol.expectedPayers > 0 ? Math.round((activeCol.paidCount / activeCol.expectedPayers) * 100) : 0;
@@ -12320,17 +12399,28 @@
             bcsStatus.innerHTML = `
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <strong style="color:var(--brand-blue); font-size:0.95rem;">Đợt #${activeCol.id}: ${escapeHtml(activeCol.purpose)}</strong>
-                <span class="badge ${isExpired ? 'bg-secondary' : 'bg-success'}">${isExpired ? '⌛ ĐÃ HẾT HẠN' : '🟢 ĐANG MỞ'}</span>
+                <span class="badge ${isFullyPaid || isPrePaidAll ? 'bg-primary' : (isExpired ? 'bg-secondary' : 'bg-success')}">${isFullyPaid || isPrePaidAll ? '🎉 ĐÃ HOÀN THÀNH 100%' : (isExpired ? '⌛ ĐÃ HẾT HẠN' : '🟢 ĐANG MỞ')}</span>
               </div>
               <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:8px; font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;">
                 <div>Mục tiêu: <strong style="color:var(--primary-navy);">${targetEth} ETH/SV</strong></div>
                 <div>Hạn nộp: <strong style="color:var(--primary-navy);">${deadlineDate}</strong></div>
                 <div>Đã nộp đủ: <strong style="color:var(--success);">${activeCol.paidCount}/${activeCol.expectedPayers} SV (${pct}%)</strong></div>
               </div>
+              ${isPrePaidAll ? `
+                <div style="margin-top:6px; padding:6px 10px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; font-size:0.78rem; color:#1e40af;">
+                  💡 <strong>Đối soát Quỹ lớp:</strong> Toàn bộ 5/5 sinh viên đã nộp đủ 0.0100 ETH vào Quỹ trước khi đợt on-chain này được tạo. Ngân sách đã thu đủ 100%. Ban cán sự có thể bấm nút đỏ bên dưới để chốt sổ đóng đợt thu này.
+                </div>
+              ` : ''}
             `;
           }
           if (formCreate) formCreate.style.display = "none";
-          if (formClose) formClose.style.display = "block";
+          if (formClose) {
+            formClose.style.display = "block";
+            const reasonInput = document.getElementById("inputCloseColReason");
+            if (reasonInput && (!reasonInput.value || reasonInput.value.includes("Đã hoàn thành"))) {
+              reasonInput.value = isPrePaidAll ? "Đã hoàn thành: 100% sinh viên đã nộp đủ quỹ vào hợp đồng" : "";
+            }
+          }
 
           if (stuBadge) {
             stuBadge.className = isExpired ? "badge bg-secondary" : "badge bg-success";
@@ -12360,7 +12450,32 @@
           }
         } else {
           if (bcsStatus) {
-            bcsStatus.innerHTML = `<div style="font-size:0.85rem; color:var(--text-muted);">Hiện không có đợt thu on-chain nào đang mở.</div>`;
+            const activeList = (typeof getActiveNotifications === "function") ? getActiveNotifications() : [];
+            if (activeList && activeList.length > 0) {
+              const ann = activeList[0];
+              bcsStatus.innerHTML = `
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin-bottom:10px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+                    <strong style="color:#166534; font-size:0.92rem;">📢 Đang có đợt thu trên Bảng thông báo: "${escapeHtml(ann.title || "Đợt thu quỹ")}"</strong>
+                    <span class="badge bg-warning text-dark" style="font-size:0.75rem;">Chưa kích hoạt On-chain</span>
+                  </div>
+                  <div style="font-size:0.82rem; color:#475569; margin-bottom:8px;">
+                    Mục đích: <strong>${escapeHtml(ann.purpose || "N/A")}</strong> • Mức nộp: <strong>${escapeHtml(ann.targetAmountEth || "0.01")} ETH</strong> • Hạn nộp: <strong>${escapeHtml(ann.deadline || "N/A")}</strong>
+                  </div>
+                  <div style="font-size:0.78rem; color:#15803d; margin-bottom:10px;">
+                    💡 <em>Đợt thu này mới chỉ hiển thị trên Bảng thông báo lớp. Để kích hoạt quy tắc thu nộp trực tiếp trên Smart Contract Sepolia, Ban cán sự hãy bấm nút bên dưới:</em>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-success" style="font-size:0.80rem; font-weight:600;" onclick="syncBannerToOnchain('${escapeHtml(ann.id)}')">
+                    ⚡ Đồng bộ thông tin & phát động đợt thu On-Chain
+                  </button>
+                </div>
+                <div style="font-size:0.82rem; color:var(--text-muted);">
+                  ℹ️ Hiện chưa có đợt thu nào được mở trực tiếp trong Smart Contract on-chain (collectionCount = 0).
+                </div>
+              `;
+            } else {
+              bcsStatus.innerHTML = `<div style="font-size:0.85rem; color:var(--text-muted);">Hiện không có đợt thu on-chain nào đang mở.</div>`;
+            }
           }
           if (formCreate) formCreate.style.display = "block";
           if (formClose) formClose.style.display = "none";
@@ -12400,7 +12515,7 @@
         const targetWei = ethers.parseEther(targetEth);
         const deadline = Math.floor(Date.now() / 1000) + parseInt(daysStr, 10) * 86400;
         logToTerminal(`[BCS] Đang tạo đợt thu on-chain: "${purpose}" (${targetEth} ETH)...`);
-        const tx = await contract.createCollection(targetWei, deadline, purpose);
+        const tx = await contract.createCollection(targetWei, deadline, purpose, { gasLimit: 2000000n });
         await tx.wait();
         logToTerminal(`[Thành công] Đã tạo đợt thu on-chain! Mã GD: ${tx.hash}`);
         alert("Tạo đợt thu on-chain thành công!");
@@ -12427,17 +12542,65 @@
 
       try {
         logToTerminal(`[BCS] Đang đóng đợt thu #${currentActiveCollectionId}...`);
-        const tx = await contract.closeCollection(currentActiveCollectionId, reason);
+        const tx = await contract.closeCollection(currentActiveCollectionId, reason, { gasLimit: 2000000n });
         await tx.wait();
         logToTerminal(`[Thành công] Đã đóng đợt thu #${currentActiveCollectionId}! Mã GD: ${tx.hash}`);
-        alert(`Đã đóng đợt thu #${currentActiveCollectionId} thành công!`);
+
+        // ĐỒNG THỜI ĐÓNG LUÔN THÔNG BÁO TRÊN BẢNG TIN VÀ CHUYỂN VÀO LỊCH SỬ
+        const activeList = (typeof getActiveNotifications === "function") ? getActiveNotifications() : [];
+        if (activeList && activeList.length > 0) {
+          const annToClose = activeList[0];
+          try {
+            const headers = { "Content-Type": "application/json" };
+            if (typeof userSessionToken !== "undefined" && userSessionToken) {
+              headers["Authorization"] = `Bearer ${userSessionToken}`;
+            }
+            await fetch(`${AI_BACKEND_URL}/api/announcement/close`, {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify({
+                id: annToClose.id,
+                reason: reason
+              })
+            });
+            logToTerminal(`[Đồng bộ] Đã đồng thời chuyển thông báo "${annToClose.title}" vào Lịch sử.`);
+          } catch (syncErr) {
+            console.warn("Lỗi đồng bộ đóng thông báo:", syncErr);
+          }
+        }
+
+        alert(`Đã đóng đợt thu #${currentActiveCollectionId} và đồng bộ lưu vào Lịch sử thành công!`);
         document.getElementById("inputCloseColReason").value = "";
         await refreshContractData();
+        if (typeof syncAnnouncementFromServer === "function") {
+          await syncAnnouncementFromServer();
+        }
       } catch (err) {
         logToTerminal(`[Lỗi closeCollection] ${err.shortMessage || err.message}`);
         alert("Đóng đợt thu thất bại: " + (err.shortMessage || err.message));
       }
     }
+
+    window.syncBannerToOnchain = function(annId) {
+      const activeList = (typeof getActiveNotifications === "function") ? getActiveNotifications() : [];
+      const ann = activeList.find(a => a && a.id === annId) || activeList[0];
+      if (!ann) return alert("Không tìm thấy thông tin đợt thu từ bảng thông báo.");
+      
+      const targetInput = document.getElementById("inputColTargetEth");
+      const purposeInput = document.getElementById("inputColPurpose");
+      const daysInput = document.getElementById("inputColDeadlineDays");
+      
+      if (targetInput) targetInput.value = ann.targetAmountEth || "0.01";
+      if (purposeInput) purposeInput.value = ann.purpose || ann.title || "Quỹ lớp K57";
+      if (daysInput) daysInput.value = "14";
+      
+      const wrapper = document.getElementById("formCreateCollectionWrapper");
+      if (wrapper) {
+        wrapper.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      if (targetInput) targetInput.focus();
+      logToTerminal(`[Đồng bộ] Đã tự động điền thông số từ Bảng thông báo ("${ann.title}") vào biểu mẫu On-chain! Vui lòng kiểm tra và bấm "🚀 Tạo đợt thu mới on-chain".`);
+    };
 
     async function doDepositToCollection() {
       if (!signer) return alert("Bạn chưa kết nối ví MetaMask!");
@@ -13030,7 +13193,74 @@
           financialPctText = ` • Tiền: ${raisedEth} / ${targetEth} ETH (${finPct}%)`;
         }
 
-        const isExpired = (a.deadlineTimestamp && (Date.now() / 1000) > Number(a.deadlineTimestamp)) || a.status === 'expired';
+        const isFullyCompleted = (classSz > 0 && walletsCount >= classSz);
+        const isExpired = (!isFullyCompleted && a.deadlineTimestamp && (Date.now() / 1000) > Number(a.deadlineTimestamp)) || a.status === 'expired';
+
+        // TỰ ĐỘNG ĐÓNG ĐỢT THU KHI 100% SĨ SỐ ĐÃ NỘP XONG
+        if (isFullyCompleted) {
+          const autoReason = `Đã hoàn thành: 100% sinh viên trong lớp (${walletsCount}/${classSz} ví) đã nộp đủ quỹ`;
+          if (!a._autoCloseTriggered) {
+            a._autoCloseTriggered = true;
+            logToTerminal(`[Tự động đóng đợt thu] 🎉 Đợt thu "${a.title}" đã đạt 100% sĩ số (${walletsCount}/${classSz} ví). Tự động chốt sổ và chuyển vào Lịch sử thông báo.`);
+            
+            // 1. Chuyển ngay trên Client UI vào Lịch sử
+            const finalEth = (raisedEth && raisedEth !== "0.0000") ? raisedEth : (Number(a.targetAmountEth || 0.01) * walletsCount).toFixed(4);
+            const completedAnn = {
+              ...a,
+              status: "archived",
+              endedAt: new Date().toISOString(),
+              endReason: autoReason,
+              finalProgress: {
+                notificationId: a.id,
+                isFrozen: true,
+                frozenAt: new Date().toISOString(),
+                reason: autoReason,
+                raisedEth: finalEth,
+                contributingWalletsCount: walletsCount,
+                classSize: classSz,
+                headcountPercent: 100
+              }
+            };
+            
+            // Cập nhật mảng active và history cục bộ
+            classActiveNotifications = (classActiveNotifications || []).filter(x => x && x.id !== a.id);
+            saveActiveNotifications(classActiveNotifications);
+            
+            if (!classAnnouncementHistory.some(x => x && x.id === a.id)) {
+              classAnnouncementHistory.unshift(completedAnn);
+            } else {
+              classAnnouncementHistory = classAnnouncementHistory.map(x => (x && x.id === a.id) ? completedAnn : x);
+            }
+            saveAnnouncementHistory(classAnnouncementHistory);
+
+            // 2. Gửi request đồng bộ đến Backend để lưu vĩnh viễn vào file JSON & audit trail
+            const headers = { "Content-Type": "application/json" };
+            if (typeof userSessionToken !== "undefined" && userSessionToken) {
+              headers["Authorization"] = `Bearer ${userSessionToken}`;
+            }
+            fetch(`${AI_BACKEND_URL}/api/announcement/close`, {
+              method: "POST",
+              headers: headers,
+              body: JSON.stringify({
+                id: a.id,
+                reason: autoReason,
+                autoComplete: true,
+                walletsCount: walletsCount,
+                classSize: classSz,
+                raisedEth: finalEth
+              })
+            }).then(() => {
+              if (typeof syncAnnouncementFromServer === "function") syncAnnouncementFromServer();
+            }).catch(e => console.warn("Lỗi đồng bộ tự động đóng đợt thu:", e));
+
+            // Gọi render lại để dọn banner ngay lập tức
+            setTimeout(() => {
+              if (typeof renderAnnouncementUI === "function") renderAnnouncementUI();
+            }, 50);
+          }
+          // Đã hoàn thành 100% -> Chuyển vào lịch sử, không hiển thị trên banner đợt thu đang mở
+          return;
+        }
 
         html += `
           <div class="active-campaign-card" id="progress-card-${escapeHtml(nid)}" data-notification-id="${escapeHtml(nid)}"
@@ -13045,11 +13275,13 @@
                 </div>
               </div>
               <div style="display: flex; gap: 6px; align-items: center;">
-                ${isExpired ? `
+                ${isFullyCompleted ? `
+                  <span class="badge bg-primary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 12px; background:#2563eb !important;">🎉 ĐÃ HOÀN THÀNH 100%</span>
+                ` : (isExpired ? `
                   <span class="badge bg-secondary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 12px;">⌛ ĐÃ HẾT HẠN</span>
                 ` : `
                   <span class="badge bg-success" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 12px;">🟢 ĐANG ÁP DỤNG</span>
-                `}
+                `)}
                 ${isBcsOrAdvisor ? `
                   <button class="btn btn-xs btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="closeActiveAnnouncement('${escapeHtml(nid)}')">🛑 Đóng đợt thu</button>
                 ` : ''}
@@ -13075,7 +13307,11 @@
             </div>
 
             <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-              ${isExpired ? `
+              ${isFullyCompleted ? `
+                <button class="btn btn-sm btn-success" style="font-size: 0.82rem; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px;" disabled>
+                  ✅ Cả lớp đã hoàn thành nộp quỹ
+                </button>
+              ` : (isExpired ? `
                 <button class="btn btn-sm btn-secondary" style="font-size: 0.82rem; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px;" disabled>
                   ⛔ Đợt thu đã kết thúc
                 </button>
@@ -13084,7 +13320,7 @@
                   onclick="initiateCampaignContribution('${escapeHtml(nid)}', '${escapeHtml(a.targetAmountEth || "0.01")}')">
                   ⚡ Nộp quỹ cho đợt này (${escapeHtml(a.targetAmountEth || "0.01")} ETH)
                 </button>
-              `}
+              `)}
             </div>
           </div>
         `;
@@ -13303,6 +13539,18 @@
       }
     }
 
+    function updateFormDeadlineFromDays() {
+      const daysEl = document.getElementById("formAnnDays");
+      const deadEl = document.getElementById("formAnnDeadline");
+      if (!daysEl || !deadEl) return;
+      const days = parseInt(daysEl.value, 10) || 14;
+      const targetDate = new Date(Date.now() + days * 86400 * 1000);
+      const dd = String(targetDate.getDate()).padStart(2, "0");
+      const mm = String(targetDate.getMonth() + 1).padStart(2, "0");
+      const yyyy = targetDate.getFullYear();
+      deadEl.value = `23:59 ngày ${dd}/${mm}/${yyyy}`;
+    }
+
     function openAnnModal(targetId, forceMode) {
       if (!userAddress) {
         alert(
@@ -13331,6 +13579,9 @@
 
       const modalTitleEl = document.querySelector("#announcementModal .modal-header h3");
       const btnSaveAnn = document.getElementById("btnSaveAnnouncementModal");
+      const secOnchain = document.getElementById("formAnnOnchainSection");
+      const chkOnchain = document.getElementById("formAnnSyncOnchain");
+      const daysEl = document.getElementById("formAnnDays");
 
       if (targetAnn) {
         currentAnnModalMode = "edit";
@@ -13341,19 +13592,23 @@
         document.getElementById("formAnnDeadline").value = targetAnn.deadline || "";
         document.getElementById("formAnnPurpose").value = targetAnn.purpose || "";
         document.getElementById("formAnnStatus").value = targetAnn.status === "completed" ? "Đã hoàn thành" : "Đang diễn ra";
+        if (secOnchain) secOnchain.style.display = "none";
         if (modalTitleEl) modalTitleEl.textContent = "✏️ Chỉnh sửa thông báo đợt thu quỹ K57";
         if (btnSaveAnn) btnSaveAnn.textContent = "Lưu thay đổi đợt thu";
       } else {
         currentAnnModalMode = "create";
         currentAnnModalTargetId = null;
-        document.getElementById("formAnnTitle").value = "";
+        document.getElementById("formAnnTitle").value = "Kêu gọi nộp Quỹ Lớp K57";
         document.getElementById("formAnnAmount").value = "0.01";
-        document.getElementById("formAnnClassSize").value = (classRoster && classRoster.length > 0) ? classRoster.length : "";
-        document.getElementById("formAnnDeadline").value = "";
-        document.getElementById("formAnnPurpose").value = "";
+        document.getElementById("formAnnClassSize").value = (classRoster && classRoster.length > 0) ? classRoster.length : "5";
+        if (daysEl) daysEl.value = "14";
+        updateFormDeadlineFromDays();
+        document.getElementById("formAnnPurpose").value = "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57";
         document.getElementById("formAnnStatus").value = "Đang diễn ra";
+        if (chkOnchain) chkOnchain.checked = true;
+        if (secOnchain) secOnchain.style.display = "block";
         if (modalTitleEl) modalTitleEl.textContent = "📢 Tạo & Phát động đợt thu quỹ mới K57";
-        if (btnSaveAnn) btnSaveAnn.textContent = "Lưu & Đăng thông báo mới";
+        if (btnSaveAnn) btnSaveAnn.textContent = "🚀 Phát động đợt thu (Hợp nhất On-chain & Bảng tin)";
       }
 
       const btnCloseEarly = document.getElementById("btnCloseAnnouncementEarly");
@@ -13401,6 +13656,28 @@
 
       const reason = prompt("Nhập lý do kết thúc đợt thu (sẽ lưu vĩnh viễn vào lịch sử):", "Ban cán sự chủ động kết thúc đợt thu");
       if (reason === null) return;
+
+      // ĐỒNG THỜI ĐÓNG ĐỢT THU TRÊN SMART CONTRACT NẾU ĐANG CÓ ĐỢT THU MỞ
+      if (currentActiveCollectionId && contract && signer && isBcsMember) {
+        const closeOnchain = confirm(
+          `Hệ thống nhận thấy Đợt thu on-chain #${currentActiveCollectionId} đang mở trên Smart Contract.\n\n` +
+          `Bạn có muốn đồng thời đóng đợt thu #${currentActiveCollectionId} trên Blockchain Sepolia không?\n\n` +
+          `- Bấm OK: Đóng đồng bộ cả trên Smart Contract và Bảng tin (Khuyến nghị).\n` +
+          `- Bấm Cancel: Chỉ đóng thông báo trên Bảng tin.`
+        );
+        if (closeOnchain) {
+          try {
+            logToTerminal(`[BCS] Đang đồng thời đóng đợt thu on-chain #${currentActiveCollectionId}...`);
+            const tx = await contract.closeCollection(currentActiveCollectionId, reason.trim() || "Ban cán sự đóng đợt thu", { gasLimit: 2000000n });
+            await tx.wait();
+            logToTerminal(`[Thành công] Đã đóng đợt thu on-chain #${currentActiveCollectionId}! Mã GD: ${tx.hash}`);
+            await refreshContractData();
+          } catch (onchainErr) {
+            console.warn("Lỗi đóng on-chain:", onchainErr);
+            logToTerminal(`[Cảnh báo on-chain] ${onchainErr.shortMessage || onchainErr.message}`);
+          }
+        }
+      }
 
       try {
         const headers = { "Content-Type": "application/json" };
@@ -13497,6 +13774,12 @@
         btnCloseEarly.addEventListener("click", () => closeActiveAnnouncement());
       }
 
+      // Tự động đồng bộ số ngày sang hạn chót hiển thị
+      const formDaysInput = document.getElementById("formAnnDays");
+      if (formDaysInput) {
+        formDaysInput.addEventListener("input", updateFormDeadlineFromDays);
+      }
+
       // Nút lưu thông báo trong modal
       const btnSave = document.getElementById("btnSaveAnnouncementModal");
       if (btnSave) {
@@ -13536,7 +13819,94 @@
 
           const originalBtnText = btnSave.textContent;
           btnSave.disabled = true;
-          btnSave.textContent = "⏳ Đang lưu...";
+
+          // ========================================================
+          // HỢP NHẤT: KÍCH HOẠT ĐỒNG THỜI TRÊN SMART CONTRACT ON-CHAIN
+          // ========================================================
+          const isSyncOnchain = Boolean(document.getElementById("formAnnSyncOnchain")?.checked && currentAnnModalMode === "create");
+          let onchainTxHash = null;
+          let onchainColId = null;
+
+          if (isSyncOnchain) {
+            if (!signer) {
+              alert("⚠️ Bạn chưa kết nối ví MetaMask!\nVui lòng kết nối ví Ban cán sự trước khi phát động đợt thu on-chain.");
+              btnSave.disabled = false;
+              btnSave.textContent = originalBtnText;
+              return;
+            }
+            if (!(await ensureCorrectNetwork())) {
+              btnSave.disabled = false;
+              btnSave.textContent = originalBtnText;
+              return;
+            }
+            if (!isBcsMember && window.currentVerifiedRole !== "bcs") {
+              alert("⚠️ Quyền hạn bị từ chối: Chỉ Ban cán sự hoạt động mới có quyền tạo đợt thu on-chain!");
+              btnSave.disabled = false;
+              btnSave.textContent = originalBtnText;
+              return;
+            }
+            if (!contract) {
+              promptContractConfig("tạo đợt thu on-chain");
+              btnSave.disabled = false;
+              btnSave.textContent = originalBtnText;
+              return;
+            }
+
+            // Kiểm tra đợt thu cũ trên Smart Contract
+            if (currentActiveCollectionId && currentActiveCollectionId > 0) {
+              const proceed = confirm(
+                `⚠️ Hiện đang có đợt thu on-chain #${currentActiveCollectionId} đang mở trên Smart Contract.\n` +
+                `Hợp đồng chỉ cho phép duy nhất 1 đợt thu hoạt động tại một thời điểm.\n\n` +
+                `Bạn có muốn tiếp tục lưu thông báo trên bảng tin mà KHÔNG tạo mới on-chain (hoặc đóng đợt thu #${currentActiveCollectionId} trước)?\n\n` +
+                `- Bấm OK: Chỉ lưu thông báo trên bảng tin.\n` +
+                `- Bấm Cancel: Dừng lại để đóng đợt thu cũ trước.`
+              );
+              if (!proceed) {
+                btnSave.disabled = false;
+                btnSave.textContent = originalBtnText;
+                return;
+              }
+            } else {
+              try {
+                const targetWei = ethers.parseEther(amount);
+                let daysCount = 14;
+                const daysEl = document.getElementById("formAnnDays");
+                if (daysEl && daysEl.value && parseInt(daysEl.value, 10) > 0) {
+                  daysCount = parseInt(daysEl.value, 10);
+                }
+                const deadlineTimestamp = Math.floor(Date.now() / 1000) + daysCount * 86400;
+                const onchainPurpose = purpose || title || "Quỹ lớp K57";
+
+                logToTerminal(`[BCS] Đang phát động đợt thu on-chain: "${onchainPurpose}" (${amount} ETH, ${daysCount} ngày)...`);
+                btnSave.textContent = "🦊 Đang mở MetaMask để ký giao dịch...";
+                const tx = await contract.createCollection(targetWei, deadlineTimestamp, onchainPurpose, { gasLimit: 2000000n });
+                btnSave.textContent = "⏳ Chờ xác nhận on-chain Sepolia...";
+                const receipt = await tx.wait();
+                onchainTxHash = tx.hash;
+                logToTerminal(`[Thành công] Đợt thu on-chain đã kích hoạt! Block: ${receipt.blockNumber}, TX: ${tx.hash}`);
+
+                if (receipt.logs) {
+                  for (const l of receipt.logs) {
+                    try {
+                      const parsed = contract.interface.parseLog(l);
+                      if (parsed && parsed.name === "CollectionCreated") {
+                        onchainColId = parsed.args[0] ? parsed.args[0].toString() : null;
+                        break;
+                      }
+                    } catch (e) {}
+                  }
+                }
+              } catch (txErr) {
+                logToTerminal(`[Lỗi createCollection] ${txErr.shortMessage || txErr.message}`);
+                alert(`❌ Tạo đợt thu on-chain thất bại:\n${txErr.shortMessage || txErr.message}\n\nDữ liệu chưa được lưu. Vui lòng thử lại.`);
+                btnSave.disabled = false;
+                btnSave.textContent = originalBtnText;
+                return;
+              }
+            }
+          }
+
+          btnSave.textContent = "⏳ Đang lưu thông báo...";
 
           const payload = {
             mode: currentAnnModalMode,
@@ -13546,6 +13916,8 @@
             deadline: deadline || "Chưa xác định",
             purpose: purpose || "Kinh phí phục vụ hoạt động lớp",
             status,
+            onchainCollectionId: onchainColId,
+            onchainTxHash: onchainTxHash,
             updatedAt: new Date().toISOString()
           };
 
@@ -13582,26 +13954,15 @@
 
             // CHỈ ĐÓNG MODAL KHI BACKEND XÁC NHẬN THÀNH CÔNG
             closeAnnModal();
-            logToTerminal(`[Đồng bộ] Máy chủ đã ghi nhận thông báo. Đang đồng bộ giao diện...`);
+            logToTerminal(`[Đồng bộ] Máy chủ đã ghi nhận thông báo. Đang làm mới dữ liệu toàn hệ thống...`);
 
-            // ĐỒNG BỘ GIAO DIỆN VÀ KIỂM TRA TỒN TẠI
-            let syncSuccess = false;
-            try {
-              await syncAnnouncementFromServer();
-              const activeList = getActiveNotifications();
-              const createdId = data.announcement ? data.announcement.id : null;
-              syncSuccess = activeList.some(a => a && (a.id === createdId || a.title === title));
-            } catch (syncErr) {
-              console.warn("Lỗi khi đồng bộ UI sau khi tạo thông báo:", syncErr);
-              syncSuccess = false;
-            }
+            await refreshContractData();
+            await syncAnnouncementFromServer();
 
-            if (syncSuccess) {
-              logToTerminal(`[Đồng bộ] ✅ Thông báo đã được công bố và hiển thị trên giao diện!`);
-              alert("✅ Đã cập nhật và lưu thông báo thành công!");
+            if (isSyncOnchain && onchainTxHash) {
+              alert("🎉 Phát động đợt thu HỢP NHẤT thành công!\nĐã kết nối và kích hoạt đồng thời trên Smart Contract on-chain và Bảng thông báo lớp K57.");
             } else {
-              logToTerminal(`[Đồng bộ] ⚠️ Máy chủ đã lưu nhưng giao diện chưa cập nhật kịp.`);
-              alert("✅ Máy chủ đã lưu thông báo thành công!\n⚠️ Tuy nhiên, đồng bộ hiển thị lên giao diện chưa hoàn tất. Vui lòng nhấn F5 (Tải lại trang) để cập nhật danh sách.");
+              alert("✅ Đã cập nhật và lưu thông báo thành công!");
             }
           } catch (err) {
             console.error("Lỗi gửi thông báo:", err);

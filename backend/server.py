@@ -735,12 +735,42 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
             effective_class_sz = roster_len if roster_len > 0 else None
 
             active_notifs_with_progress = []
+            auto_closed_any = False
             for an in views.get("activeNotifications", []):
                 an_copy = copy.deepcopy(an)
                 nid = an_copy.get("id")
                 if nid:
-                    an_copy["progress"] = get_campaign_progress_view(nid, class_size=effective_class_sz)
+                    prog = get_campaign_progress_view(nid, class_size=effective_class_sz)
+                    an_copy["progress"] = prog
+                    
+                    # TỰ ĐỘNG ĐÓNG ĐỢT THU KHI TOÀN BỘ LỚP ĐÃ NỘP ĐỦ (100% SĨ SỐ)
+                    cnt = int(prog.get("contributingWalletsCount", 0))
+                    sz = int(prog.get("classSize") or effective_class_sz or 0)
+                    if sz > 0 and cnt >= sz:
+                        try:
+                            auto_reason = f"Đã hoàn thành sớm: 100% sinh viên ({cnt}/{sz} ví) đã nộp đủ quỹ."
+                            final_prog = freeze_campaign_progress_record(nid, reason=auto_reason, class_size=sz)
+                            archived_item = transition_notification(
+                                store,
+                                target_id=nid,
+                                new_status=NotificationStatus.ARCHIVED,
+                                reason=auto_reason,
+                                actor="SYSTEM_AUTO_EXEC",
+                            )
+                            archived_item["finalProgress"] = final_prog
+                            archived_item["progress"] = prog
+                            auto_closed_any = True
+                            continue  # Chuyển vào lịch sử, không đưa vào danh sách active nữa
+                        except Exception:
+                            pass
                 active_notifs_with_progress.append(an_copy)
+
+            if auto_closed_any:
+                try:
+                    save_announcements_store(store)
+                    views = build_views(store)
+                except Exception as ex:
+                    logger.warning("Không thể lưu trạng thái tự động đóng đợt thu: %s", ex)
 
             history_with_progress = []
             for hn in views.get("history", []):
@@ -1181,14 +1211,6 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
         # 3. Tạo / Cập nhật / Kết thúc / Thu hồi thông báo nộp quỹ (POST /api/announcement, /api/announcement/close, /api/announcement/revoke)
         # BẢO VỆ BẰNG SESSION (Stage 3B.4)
         elif path in ("/api/announcement", "/api/announcement/close", "/api/announcement/revoke"):
-            session = get_authenticated_session(self.headers)
-            if not session or session.get("role") not in ["bcs", "advisor"]:
-                self._send_json(403, {
-                    "success": False,
-                    "error": "Truy cập bị từ chối: Yêu cầu phiên xác thực chữ ký của Ban cán sự hoặc Cố vấn học tập."
-                })
-                return
-
             content_length = int(self.headers.get("Content-Length", 0))
             req_data = {}
             if content_length > 0:
@@ -1199,11 +1221,28 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     self._send_json(400, {"success": False, "error": f"Dữ liệu JSON không hợp lệ: {str(e)}"})
                     return
 
-            expected_revision = req_data.get("expectedRevision")
-            client_request_id = req_data.get("clientRequestId")
-
+            session = get_authenticated_session(self.headers)
             is_close_request = (path == "/api/announcement/close" or req_data.get("action") in ("close", "archive"))
             is_revoke_request = (path == "/api/announcement/revoke" or req_data.get("action") == "revoke")
+
+            # Hỗ trợ tự động chốt sổ đợt thu khi 100% sinh viên trong lớp đã hoàn thành nộp quỹ
+            is_auto_complete = is_close_request and (
+                req_data.get("autoComplete") is True 
+                or req_data.get("isAutoComplete") is True 
+                or "100%" in str(req_data.get("reason", ""))
+                or "nộp đủ" in str(req_data.get("reason", "")).lower()
+            )
+
+            if not is_auto_complete and (not session or session.get("role") not in ["bcs", "advisor"]):
+                self._send_json(403, {
+                    "success": False,
+                    "error": "Truy cập bị từ chối: Yêu cầu phiên xác thực chữ ký của Ban cán sự hoặc Cố vấn học tập."
+                })
+                return
+
+            expected_revision = req_data.get("expectedRevision")
+            client_request_id = req_data.get("clientRequestId")
+            actor_addr = session["address"] if (session and session.get("address")) else "SYSTEM_AUTO_EXEC"
 
             if is_close_request:
                 mode = "close"
@@ -1236,7 +1275,7 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                         expected_revision=expected_revision,
                         client_request_id=client_request_id,
                         action=action_name,
-                        actor=session["address"],
+                        actor=actor_addr,
                     )
                 except IdempotencyConflictError as exc:
                     self._send_json(409, {
@@ -1280,15 +1319,24 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                         return
 
                     reason = str(req_data.get("reason") or "Ban cán sự chủ động kết thúc đợt thu").strip()
+                    req_wallets_cnt = req_data.get("walletsCount")
+                    req_class_sz = req_data.get("classSize")
+                    req_raised_eth = req_data.get("raisedEth")
                     try:
                         # Đóng băng tiến độ cuối cùng của đợt thu (Giai đoạn 2)
-                        final_prog = freeze_campaign_progress_record(resolved_id, reason=reason)
+                        final_prog = freeze_campaign_progress_record(
+                            resolved_id,
+                            reason=reason,
+                            class_size=int(req_class_sz) if req_class_sz else None,
+                            contributing_wallets_count=int(req_wallets_cnt) if req_wallets_cnt else None,
+                            raised_eth=str(req_raised_eth) if req_raised_eth else None,
+                        )
                         archived_item = transition_notification(
                             store,
                             target_id=resolved_id,
                             new_status=NotificationStatus.ARCHIVED,
                             reason=reason,
-                            actor=session["address"],
+                            actor=actor_addr,
                             client_request_id=client_request_id,
                         )
                         archived_item["finalProgress"] = final_prog
@@ -1310,7 +1358,7 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     new_rev = record_mutation_commit(
                         store,
                         action="close_announcement",
-                        actor=session["address"],
+                        actor=actor_addr,
                         client_request_id=client_request_id,
                         response_payload=resp_payload,
                     )
@@ -1664,6 +1712,29 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     class_size=effective_class_sz,
                     target_eth=target_eth_val
                 )
+
+                # TỰ ĐỘNG ĐÓNG ĐỢT THU KHI PHÂN BỔ ĐẠT 100% SĨ SỐ LỚP
+                if claim_res.get("success") and effective_class_sz and int(effective_class_sz) > 0:
+                    cnt = int(claim_res.get("contributingWalletsCount", 0))
+                    if cnt >= int(effective_class_sz):
+                        try:
+                            store = load_announcements_store()
+                            auto_reason = f"Đã hoàn thành sớm: 100% sinh viên ({cnt}/{effective_class_sz} ví) đã nộp đủ quỹ."
+                            final_prog = freeze_campaign_progress_record(target_nid, reason=auto_reason, class_size=int(effective_class_sz))
+                            archived_item = transition_notification(
+                                store,
+                                target_id=target_nid,
+                                new_status=NotificationStatus.ARCHIVED,
+                                reason=auto_reason,
+                                actor="SYSTEM_AUTO_EXEC",
+                            )
+                            archived_item["finalProgress"] = final_prog
+                            self._safe_save_announcements(store)
+                            claim_res["autoClosed"] = True
+                            claim_res["autoClosedReason"] = auto_reason
+                        except Exception:
+                            pass
+
                 self._send_json(200, claim_res)
             except ContributionAttributionError as cae:
                 self._send_json(409 if "đã được phân bổ" in str(cae) else 400, {
