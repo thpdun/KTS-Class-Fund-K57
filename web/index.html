@@ -3976,7 +3976,7 @@
       <li class="sidebar-link-item">
         <a href="#dapp-workspace" onclick="selectRoleView('advisor')" class="sidebar-link">
           <span class="sidebar-link-icon">🛡️</span>
-          <span>Cố vấn (Duyệt &amp; Rút phí)</span>
+          <span>Cố vấn (Duyệt &amp; Điều phối quỹ)</span>
         </a>
       </li>
       <li class="sidebar-link-item">
@@ -4490,14 +4490,13 @@
                     1. Đóng góp tiền vào quỹ lớp
                   </h4>
                   <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Tự động tách 99% vào Quỹ lớp và 1% vào Quỹ phí vận hành.
+                    Chỉ sinh viên trong danh bạ on-chain mới được nạp. Tự động ghi nhận 99% (Net) vào Quỹ lớp và 1% vào Quỹ hoàn gas tự động.
                   </p>
                   <div class="form-group" style="margin-bottom: 10px;">
                     <label for="inputDepositAmount">Số ETH muốn đóng góp:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputDepositAmount"
                       placeholder="Ví dụ: 0.05">
-                    <div class="form-helper-tip">💡 Gợi ý: 0.01 – 0.05 ETH. Quy tắc phân bổ: 99% vào Quỹ lớp chính, 1%
-                      vào Quỹ phí vận hành bù đắp gas.</div>
+                    <div class="form-helper-tip">💡 Gợi ý: 0.01 – 0.05 ETH. Phân bổ: 99% vào Quỹ lớp chính (Net), 1% vào Quỹ hoàn gas tự động (adminFeePool).</div>
                   </div>
                   <button class="btn btn-success" id="btnDepositAction" style="width: 100%;">
                     Xác nhận nộp quỹ qua MetaMask
@@ -4511,14 +4510,13 @@
                     2. Xin hoàn tiền khi nộp nhầm
                   </h4>
                   <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Nhận lại 99% số tiền xin hoàn sau khi được Ban cán sự phê duyệt (chịu 1% phí).
+                    Hoàn tối đa theo số Net (99% tiền gốc đã nạp, phí 1% không hoàn lại). Nhận đủ 100% số tiền đã yêu cầu khi được duyệt.
                   </p>
                   <div class="form-group" style="margin-bottom: 8px;">
                     <label for="inputRefundAmount">Số ETH xin hoàn lại:</label>
                     <input type="number" step="0.001" min="0.001" class="form-control" id="inputRefundAmount"
-                      placeholder="Không vượt quá hạn mức khả dụng">
-                    <div class="form-helper-tip">💡 Chỉ nộp đơn trong phạm vi hạn mức đóng góp khả dụng của bạn. Yêu cầu
-                      cần Ban cán sự bỏ phiếu ≥ 51%.</div>
+                      placeholder="Không vượt quá hạn mức Net khả dụng">
+                    <div class="form-helper-tip">💡 Chỉ nộp đơn trong phạm vi hạn mức Net khả dụng của bạn. Yêu cầu cần Ban cán sự bỏ phiếu ≥ 51% (người xin hoàn không được tự vote).</div>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
                     <label for="inputRefundReason">Lý do nộp nhầm:</label>
@@ -4786,14 +4784,12 @@
                     1. Quản lý nhân sự Ban cán sự
                   </h4>
                   <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Đặc quyền Cố vấn: Kích hoạt hoặc thu hồi quyền hạn thành viên Ban cán sự. Mẫu số biểu quyết 51% sẽ
-                    tự động cập nhật.
+                    Đặc quyền Cố vấn: Bổ nhiệm hoặc thu hồi quyền hạn Ban cán sự (tối đa 15 BCS). Thành viên mới có độ trễ kích hoạt 3 ngày trước khi có quyền tạo đề xuất và bỏ phiếu; đề xuất đang chạy bảo lưu snapshot mẫu số biểu quyết (voterBase).
                   </p>
                   <div class="form-group" style="margin-bottom: 8px;">
                     <label for="inputBcsAddress">Địa chỉ ví thành viên:</label>
                     <input type="text" class="form-control" id="inputBcsAddress" placeholder="0x...">
-                    <div class="form-helper-tip">💡 Ví thành viên sinh viên K57 được trao quyền tạo đề xuất và biểu
-                      quyết chi tiêu.</div>
+                    <div class="form-helper-tip">💡 Ví thành viên sinh viên K57 đã nằm trong danh sách sinh viên on-chain được trao quyền tạo đề xuất và biểu quyết chi tiêu.</div>
                   </div>
                   <div class="form-group" style="margin-bottom: 12px;">
                     <label for="selectBcsStatus">Trạng thái phân quyền:</label>
@@ -4991,7 +4987,7 @@
                   <div class="flow-balance-card" style="border-left: 4px solid var(--purple-role);">
                     <div class="flow-balance-title">Quỹ phí vận hành (1%)</div>
                     <div class="flow-balance-val" style="color:#6d28d9;" id="flowBalAdminFee">0.0000 ETH</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Bù đắp gas cho Cố vấn</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Hoàn gas tự động cho BCS &amp; Cố vấn</div>
                   </div>
                   <div class="flow-balance-card" style="border-left: 4px solid var(--brand-blue);">
                     <div class="flow-balance-title">Đã giải ngân chi tiêu</div>
@@ -5011,8 +5007,7 @@
                   </h4>
                   <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
                     Mỗi luồng tiền trong hệ thống đều tuân thủ các quy tắc kinh tế chuẩn mực và tự động ghi nhận trên
-                    Smart
-                    Contract:
+                    Smart Contract:
                   </p>
 
                   <div class="flow-steps-grid">
@@ -5021,20 +5016,20 @@
                       <span class="flow-step-badge flow-badge-inflow">📥 FLOW 1: THU NẠP QUỸ</span>
                       <h5 style="font-size:0.92rem; margin-bottom:6px; color:#065f46;">Sinh viên đóng góp ETH</h5>
                       <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-                        Sinh viên gửi ETH vào quỹ ➔ Hợp đồng tự động tách:
-                        <br><strong>● 99%</strong> nạp vào Quỹ lớp chính.
-                        <br><strong>● 1%</strong> nạp vào Quỹ phí vận hành.
+                        Chỉ sinh viên trong danh bạ on-chain mới được nạp. Hợp đồng tự động tách:
+                        <br><strong>● 99% (Net)</strong> ghi nhận vào Quỹ lớp chính &amp; hạn mức sinh viên.
+                        <br><strong>● 1%</strong> nạp vào Quỹ phí hoàn gas tự động (adminFeePool).
                       </p>
                     </div>
 
                     <!-- Flow 2: Spend Flow -->
                     <div class="flow-step-box" style="border-top: 3px solid #2563eb;">
                       <span class="flow-step-badge flow-badge-spend">📤 FLOW 2: CHI TIÊU QUỸ</span>
-                      <h5 style="font-size:0.92rem; margin-bottom:6px; color:#1e40af;">Đề xuất & Biểu quyết 51%</h5>
+                      <h5 style="font-size:0.92rem; margin-bottom:6px; color:#1e40af;">Đề xuất &amp; Biểu quyết 51%</h5>
                       <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-                        BCS tạo đề xuất ➔ Khóa tạm giữ tiền ➔ BCS biểu quyết (7 ngày).
-                        <br>➔ <strong>&ge; 51% thuận:</strong> Giải ngân chuyển ETH đến ví nhận.
-                        <br>➔ <strong>Từ chối / Hết hạn:</strong> Trả tiền về quỹ.
+                        BCS kích hoạt (tối thiểu 3 BCS) tạo đề xuất ➔ Khóa tạm giữ tiền ➔ Biểu quyết 7 ngày theo voterBase.
+                        <br>➔ <strong>&ge; 51% thuận:</strong> <em>Tự động giải ngân ngay</em> đến ví người nhận (chống xung đột lợi ích).
+                        <br>➔ <strong>Hết hạn / Không đạt:</strong> Tự động giải phóng tiền về quỹ.
                       </p>
                     </div>
 
@@ -5043,20 +5038,18 @@
                       <span class="flow-step-badge flow-badge-refund">🔄 FLOW 3: HOÀN TIỀN NHẦM</span>
                       <h5 style="font-size:0.92rem; margin-bottom:6px; color:#9a3412;">Sinh viên xin rút lại tiền</h5>
                       <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-                        Sinh viên tạo yêu cầu ➔ Khóa hạn mức ➔ BCS biểu quyết (7 ngày).
-                        <br>➔ <strong>&ge; 51% thuận:</strong> Hoàn <strong>99%</strong> về ví sinh viên,
-                        <strong>1%</strong> đưa vào quỹ phí.
+                        Sinh viên nộp đơn trong hạn mức Net (99%, phí 1% không hoàn lại) ➔ Khóa hạn mức.
+                        <br>➔ <strong>BCS biểu quyết:</strong> Người xin hoàn bị chặn vote (chống tự duyệt).
+                        <br>➔ <strong>&ge; 51% thuận:</strong> <em>Tự động hoàn 100%</em> số tiền yêu cầu về ví sinh viên.
                       </p>
                     </div>
 
                     <!-- Flow 4: Gas Rebalance -->
                     <div class="flow-step-box" style="border-top: 3px solid #8b5cf6;">
-                      <span class="flow-step-badge flow-badge-gas">⛽ FLOW 4: PHÍ BÙ ĐẮP GAS</span>
-                      <h5 style="font-size:0.92rem; margin-bottom:6px; color:#6b21a8;">Bù chi phí mạng lưới</h5>
+                      <span class="flow-step-badge flow-badge-gas">⛽ FLOW 4: HOÀN GAS TỰ ĐỘNG</span>
+                      <h5 style="font-size:0.92rem; margin-bottom:6px; color:#6b21a8;">Bù chi phí giao dịch quản trị</h5>
                       <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-                        Trích từ Quỹ phí vận hành (1%) ➔ Cố vấn học tập rút về ví để bù đắp chi phí gas khi deploy và
-                        quản
-                        lý nhân sự Ban cán sự.
+                        Trích từ Quỹ phí 1% (adminFeePool) ➔ Tự động hoàn gas (tối đa 500k gas, trần basefee + 2 gwei) cho BCS &amp; Cố vấn khi thực hiện 10 hành động quản trị. Cố vấn có thể điều phối phí dư vào Quỹ lớp.
                       </p>
                     </div>
                   </div>
@@ -5267,17 +5260,12 @@
                   <h4><span>Bước 1 — Sinh viên đóng góp vào quỹ</span> <span class="status-pill status-executed">Đã ghi
                       nhận</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ai thực hiện: <strong>Mọi sinh viên</strong></span>
-                    <span class="meta-tag">Tỷ lệ: <strong>99% vào quỹ lớp, 1% vào quỹ phí</strong></span>
+                    <span class="meta-tag">Ai thực hiện: <strong>Sinh viên trong danh bạ on-chain (isStudent)</strong></span>
+                    <span class="meta-tag">Tỷ lệ: <strong>99% (Net) vào Quỹ lớp, 1% vào Quỹ hoàn gas tự động</strong></span>
                   </div>
                   <p class="card-desc">
-                    Mọi sinh viên đều có thể đóng góp ETH vào quỹ lớp bằng ví MetaMask. Theo quy định được triển khai
-                    trong
-                    hợp đồng, 99% số tiền đóng góp được đưa vào quỹ lớp và 1% được đưa vào quỹ phí. Sau khi giao dịch
-                    được
-                    xác nhận trên blockchain, khoản đóng góp được ghi nhận công khai.
-                    <br><em>Ví dụ thực tế:</em> Đóng góp 1 ETH thì 0,99 ETH vào quỹ lớp và 0,01 ETH vào quỹ phí vận
-                    hành.
+                    Chỉ các sinh viên được Cố vấn ghi nhận vào danh sách sinh viên on-chain (isStudent) mới có thể nộp ETH vào quỹ lớp hoặc đợt thu on-chain. Ví lạ ngoài danh bạ nộp tiền sẽ bị Smart Contract từ chối (revert). Số tiền đóng góp được tự động ghi nhận 99% Net vào Quỹ lớp chính (tính vào hạn mức hoàn khả dụng của sinh viên) và 1% vào Quỹ phí hoàn gas tự động (adminFeePool) phục vụ chi phí giao dịch quản trị.
+                    <br><em>Ví dụ thực tế:</em> Đóng góp 1 ETH thì 0,99 ETH ghi nhận Net vào Quỹ lớp và 0,01 ETH vào Quỹ phí hoàn gas.
                   </p>
                 </div>
               </div>
@@ -5289,15 +5277,11 @@
                       chờ
                       biểu quyết</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự đang hoạt động</strong></span>
+                    <span class="meta-tag">Ai thực hiện: <strong>Ban cán sự đã qua 3 ngày kích hoạt (tối thiểu 3 BCS)</strong></span>
                     <span class="meta-tag">Yêu cầu: <strong>Số tiền, người nhận, lý do chi</strong></span>
                   </div>
                   <p class="card-desc">
-                    Khi cần sử dụng quỹ cho một hoạt động của lớp, thành viên ban cán sự có quyền tạo đề nghị chi tiền.
-                    Đề
-                    nghị cần ghi rõ số tiền, người nhận và lý do chi. Hệ thống kiểm tra số dư khả dụng và tạm giữ khoản
-                    tiền
-                    tương ứng để tránh sử dụng cùng một khoản tiền cho nhiều đề nghị khác nhau.
+                    Khi cần sử dụng quỹ cho một hoạt động của lớp, thành viên Ban cán sự có quyền tạo đề nghị chi tiền. Hệ thống quy định lớp phải có tối thiểu 3 thành viên Ban cán sự đã qua thời gian kích hoạt 3 ngày (BCS_ACTIVATION_DELAY). Đề nghị cần ghi rõ số tiền, người nhận và lý do chi. Hệ thống kiểm tra số dư khả dụng và tạm giữ khoản tiền tương ứng để tránh rủi ro chi vượt ngân sách.
                   </p>
                 </div>
               </div>
@@ -5308,14 +5292,11 @@
                   <h4><span>Bước 3 — Ban cán sự biểu quyết</span> <span class="status-pill status-pending">Đang bỏ
                       phiếu</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ai thực hiện: <strong>Các thành viên Ban cán sự đủ điều kiện</strong></span>
-                    <span class="meta-tag">Quy định: <strong>Mỗi người 1 phiếu, thời hạn 7 ngày</strong></span>
+                    <span class="meta-tag">Ai thực hiện: <strong>Ban cán sự đủ điều kiện (Snapshot voterBase)</strong></span>
+                    <span class="meta-tag">Quy định: <strong>Mỗi người 1 phiếu, 7 ngày, chống xung đột lợi ích</strong></span>
                   </div>
                   <p class="card-desc">
-                    Các thành viên ban cán sự đủ điều kiện tham gia sẽ xem nội dung đề nghị và chọn đồng ý hoặc không
-                    đồng
-                    ý. Mỗi thành viên chỉ được bỏ phiếu một lần cho mỗi đề nghị. Thời gian biểu quyết là 7 ngày theo quy
-                    định của hợp đồng.
+                    Các thành viên Ban cán sự đủ điều kiện tại thời điểm tạo đề xuất (snapshot voterBase) xem nội dung và chọn đồng ý hoặc không đồng ý. Thời gian biểu quyết là 7 ngày. Quy tắc chống xung đột lợi ích: Nếu người nhận tiền (recipient) là một thành viên Ban cán sự, người đó bị Smart Contract cấm bỏ phiếu cho đề xuất này (voterBase = eligible - 1).
                   </p>
                 </div>
               </div>
@@ -5323,22 +5304,15 @@
               <div class="timeline-step">
                 <div class="step-badge">4</div>
                 <div class="step-content">
-                  <h4><span>Bước 4 — Hệ thống xác định kết quả</span> <span class="status-pill status-ready">Đã đủ điều
+                  <h4><span>Bước 4 — Hệ thống xác định kết quả &amp; Tự động thực thi</span> <span class="status-pill status-ready">Đã đủ điều
                       kiện
                       giải ngân</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ngưỡng thông qua: <strong>Tối thiểu 51% tổng số Ban cán sự</strong></span>
-                    <span class="meta-tag">Lưu ý: <strong>Tiền chưa tự động chuyển</strong></span>
+                    <span class="meta-tag">Ngưỡng thông qua: <strong>Tối thiểu 51% trên voterBase snapshot</strong></span>
+                    <span class="meta-tag">Cơ chế: <strong>Tự động giải ngân ngay khi đủ phiếu (Auto-execution)</strong></span>
                   </div>
                   <p class="card-desc">
-                    Sau mỗi lượt bỏ phiếu, hệ thống cập nhật kết quả. Khi số phiếu đồng ý đạt ngưỡng thông qua (ít nhất
-                    51%
-                    tổng số thành viên ban cán sự đang hoạt động), đề nghị được chuyển sang trạng thái <strong>"Đã đủ
-                      điều
-                      kiện giải ngân"</strong>. Nếu chưa đạt ngưỡng, đề nghị tiếp tục chờ biểu quyết cho đến khi hết
-                    hạn.
-                    <br><em>Quan trọng:</em> Đạt ngưỡng thông qua không đồng nghĩa với việc tiền đã được chuyển ngay lập
-                    tức.
+                    Sau mỗi lượt bỏ phiếu, hệ thống cập nhật kết quả. Khi số phiếu đồng ý đạt ngưỡng thông qua (tối thiểu 51% trên voterBase snapshot đã loại trừ người xung đột lợi ích), Smart Contract tự động kích hoạt giải ngân (_tryExecuteSpend) ngay trong giao dịch bỏ phiếu! Tiền được tự động chuyển đến ví người nhận mà không cần chờ đợi.
                   </p>
                 </div>
               </div>
@@ -5346,18 +5320,15 @@
               <div class="timeline-step">
                 <div class="step-badge">5</div>
                 <div class="step-content">
-                  <h4><span>Bước 5 — Thực hiện chi tiền</span> <span class="status-pill status-executed">Đã chi tiền
+                  <h4><span>Bước 5 — Giải ngân tự động &amp; Dự phòng thủ công</span> <span class="status-pill status-executed">Đã chi tiền
                       thành
                       công</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự</strong></span>
-                    <span class="meta-tag">Hành động: <strong>Kiểm tra điều kiện & chuyển tiền</strong></span>
+                    <span class="meta-tag">Ai thực hiện: <strong>Hợp đồng tự động / Ban cán sự dự phòng</strong></span>
+                    <span class="meta-tag">Hành động: <strong>Kiểm tra điều kiện &amp; chuyển tiền</strong></span>
                   </div>
                   <p class="card-desc">
-                    Sau khi đề nghị đáp ứng đủ điều kiện, một thành viên ban cán sự được phép thực hiện giải ngân. Hệ
-                    thống
-                    kiểm tra điều kiện trước khi chuyển tiền đến người nhận. Chỉ khi giao dịch được thực hiện thành công
-                    trên blockchain, đề nghị mới được ghi nhận là đã chi tiền hoàn tất.
+                    Hệ thống tự động chuyển ETH trực tiếp từ Quỹ lớp đến địa chỉ ví người thụ hưởng ngay khi đạt đủ 51% phiếu thuận. Trường hợp ngoại lệ khi giao dịch tự động không thành công (ví dụ ví nhận là hợp đồng từ chối ETH), đề xuất sẽ giữ trạng thái 'Đã đủ điều kiện giải ngân' để thành viên Ban cán sự bấm giải ngân thủ công.
                   </p>
                 </div>
               </div>
@@ -5401,14 +5372,11 @@
                       gửi
                       yêu cầu</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ai thực hiện: <strong>Sinh viên đã đóng góp vào quỹ</strong></span>
-                    <span class="meta-tag">Điều kiện: <strong>Không vượt quá số tiền đã đóng góp</strong></span>
+                    <span class="meta-tag">Ai thực hiện: <strong>Sinh viên trong danh bạ on-chain đã đóng góp</strong></span>
+                    <span class="meta-tag">Điều kiện: <strong>Trong hạn mức Net khả dụng (phí 1% không hoàn lại)</strong></span>
                   </div>
                   <p class="card-desc">
-                    Khi sinh viên phát hiện đã chuyển nhầm tiền vào quỹ lớp, sinh viên có thể tạo yêu cầu hoàn tiền trực
-                    tiếp trên website. Hệ thống sẽ kiểm tra để đảm bảo số tiền yêu cầu hoàn không vượt quá số tiền mà
-                    chính
-                    sinh viên đó đã thực sự đóng góp vào quỹ.
+                    Khi sinh viên phát hiện đã chuyển nhầm tiền vào quỹ lớp, sinh viên có thể tạo yêu cầu hoàn tiền trực tiếp trên website. Mức hoàn tối đa được tính theo số Net (99% số tiền đã nạp trừ các khoản đã hoàn trước đó), vì khoản phí 1% đã đưa vào Quỹ hoàn gas tự động phục vụ lớp và là khoản phí không hoàn lại.
                   </p>
                 </div>
               </div>
@@ -5420,12 +5388,11 @@
                       tạm
                       giữ</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Cơ chế: <strong>Bảo vệ dòng tiền hai chiều</strong></span>
+                    <span class="meta-tag">Cơ chế: <strong>Bảo vệ dòng tiền hai chiều (Khóa hạn mức Net)</strong></span>
                     <span class="meta-tag">Mục đích: <strong>Tránh rút tiền trùng lặp</strong></span>
                   </div>
                   <p class="card-desc">
-                    Khoản tiền xin hoàn được hệ thống tạm giữ từ số dư quỹ lớp, đồng thời tạm khóa khỏi hạn mức của sinh
-                    viên để đảm bảo an toàn, tránh việc cùng một khoản tiền bị sử dụng hoặc xin hoàn nhiều lần.
+                    Khoản tiền xin hoàn được hệ thống tạm giữ từ số dư Quỹ lớp, đồng thời tạm khóa khỏi hạn mức Net của sinh viên để đảm bảo an toàn, tránh việc cùng một khoản tiền bị sử dụng hoặc xin hoàn nhiều lần.
                   </p>
                 </div>
               </div>
@@ -5437,12 +5404,11 @@
                       class="status-pill status-pending">Đang
                       duyệt</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự</strong></span>
-                    <span class="meta-tag">Thời hạn: <strong>7 ngày biểu quyết</strong></span>
+                    <span class="meta-tag">Ai thực hiện: <strong>Thành viên Ban cán sự (Chống xung đột lợi ích)</strong></span>
+                    <span class="meta-tag">Thời hạn: <strong>7 ngày biểu quyết (Người xin hoàn không được tự vote)</strong></span>
                   </div>
                   <p class="card-desc">
-                    Các thành viên ban cán sự kiểm tra lý do và thông tin nộp nhầm của sinh viên. Ban cán sự tham gia bỏ
-                    phiếu đồng ý hoặc không đồng ý để đảm bảo quỹ lớp không bị rút tùy tiện.
+                    Các thành viên Ban cán sự kiểm tra lý do và biểu quyết công khai. Quy tắc chống xung đột lợi ích: Nếu sinh viên xin hoàn tiền là thành viên Ban cán sự, người đó bị Smart Contract cấm tuyệt đối việc tự bỏ phiếu cho chính đơn xin hoàn của mình (voterBase = eligible - 1).
                   </p>
                 </div>
               </div>
@@ -5450,20 +5416,15 @@
               <div class="timeline-step">
                 <div class="step-badge">4</div>
                 <div class="step-content">
-                  <h4><span>Bước 4 — Xác định kết quả và hoàn trả</span> <span class="status-pill status-ready">Đã thông
+                  <h4><span>Bước 4 — Xác định kết quả và hoàn trả tự động</span> <span class="status-pill status-ready">Đã thông
                       qua</span></h4>
                   <div class="step-meta">
-                    <span class="meta-tag">Ngưỡng duyệt: <strong>Tối thiểu 51% Ban cán sự</strong></span>
-                    <span class="meta-tag">Mức hoàn: <strong>Nhận lại 99%, chịu 1% phí</strong></span>
+                    <span class="meta-tag">Ngưỡng duyệt: <strong>Tối thiểu 51% Ban cán sự (Tự động chuyển tiền)</strong></span>
+                    <span class="meta-tag">Mức hoàn: <strong>Nhận đủ 100% số tiền đã yêu cầu trong hạn mức Net</strong></span>
                   </div>
                   <p class="card-desc">
-                    Khi đạt đủ từ 51% số phiếu đồng ý của ban cán sự, yêu cầu chuyển sang trạng thái sẵn sàng hoàn tiền.
-                    Sinh viên hoặc ban cán sự có thể bấm thực hiện hoàn tiền. Theo quy định, sinh viên nhận lại 99% số
-                    tiền
-                    đã yêu cầu và chịu 1% phí vận hành (để bù đắp phí giao dịch trên blockchain).
-                    <br><em>Ví dụ thực tế:</em> Nếu xin hoàn lại 0,1 ETH thì sinh viên nhận về ví 0,099 ETH, còn 0,001
-                    ETH
-                    được giữ lại trong quỹ phí.
+                    Khi đạt đủ từ 51% số phiếu đồng thuận trên voterBase snapshot, Smart Contract tự động giải ngân (_tryExecuteRefund) chuyển trọn vẹn 100% số tiền sinh viên đã xin hoàn từ Quỹ lớp về lại ví sinh viên ngay lập tức. Sinh viên không bị trừ thêm bất kỳ khoản phí nào trong bước hoàn tiền này.
+                    <br><em>Ví dụ thực tế:</em> Nạp 1 ETH thì Net vào Quỹ lớp là 0,99 ETH. Nếu xin hoàn 0,1 ETH thì sinh viên nhận về ví đủ 0,1 ETH.
                   </p>
                 </div>
               </div>
@@ -5504,33 +5465,23 @@
           <div class="grid-2">
             <div class="card">
               <h4 style="color: var(--brand-blue); margin-bottom: 6px;">1. Ai có quyền tạo đề nghị chi tiền?</h4>
-              <p class="card-desc">Chỉ những thành viên Ban cán sự lớp đang hoạt động hợp lệ mới có quyền tạo đề nghị
-                chi
-                tiền. Sinh viên không có quyền này.</p>
+              <p class="card-desc">Chỉ những thành viên Ban cán sự lớp đã qua 3 ngày kích hoạt (BCS_ACTIVATION_DELAY) và lớp có tối thiểu 3 BCS hoạt động (MIN_BCS_FOR_PROPOSAL = 3) mới có quyền tạo đề nghị chi. Sinh viên và Cố vấn không có quyền tạo đề xuất chi.</p>
             </div>
 
             <div class="card">
               <h4 style="color: var(--brand-blue); margin-bottom: 6px;">2. Ai có quyền tham gia biểu quyết?</h4>
-              <p class="card-desc">Chỉ các thành viên Ban cán sự đang hoạt động mới được bỏ phiếu. Mỗi thành viên có
-                quyền
-                biểu quyết độc lập và công bằng.</p>
+              <p class="card-desc">Chỉ các thành viên Ban cán sự đủ điều kiện tại thời điểm tạo đề xuất (snapshot voterBase) mới được bỏ phiếu. Áp dụng cơ chế chống xung đột lợi ích: Người nhận tiền (recipient) nếu là BCS sẽ bị chặn quyền biểu quyết.</p>
             </div>
 
             <div class="card">
               <h4 style="color: var(--brand-blue); margin-bottom: 6px;">3. Mỗi thành viên được bỏ phiếu bao nhiêu lần?
               </h4>
-              <p class="card-desc">Chính xác 01 lần duy nhất cho mỗi đề nghị. Hệ thống ghi nhận địa chỉ ví đã bỏ phiếu
-                để
-                tránh việc một người bỏ phiếu nhiều lần.</p>
+              <p class="card-desc">Chính xác 01 lần duy nhất cho mỗi đề nghị (Đồng ý hoặc Không đồng ý). Smart Contract ghi nhận địa chỉ ví trên chuỗi để chống gian lận biểu quyết lặp lại.</p>
             </div>
 
             <div class="card">
               <h4 style="color: var(--brand-blue); margin-bottom: 6px;">4. Ngưỡng thông qua chính xác là bao nhiêu?</h4>
-              <p class="card-desc">Tối thiểu <strong>51%</strong> số phiếu đồng ý tính trên <strong>tổng số thành viên
-                  Ban
-                  cán sự đang hoạt động</strong>. Ví dụ: Nếu lớp có 3 thành viên Ban cán sự thì cần ít nhất 2 phiếu đồng
-                ý
-                (2/3 = 66,7% &ge; 51%).</p>
+              <p class="card-desc">Tối thiểu <strong>51%</strong> số phiếu đồng ý tính trên <strong>mẫu số voterBase snapshot</strong> (được chốt cố định tại thời điểm tạo và đã loại trừ người có xung đột lợi ích). Việc Cố vấn bổ nhiệm hay gỡ BCS sau đó không làm thay đổi mẫu số của đề xuất đang chạy.</p>
             </div>
 
             <div class="card">
@@ -5538,16 +5489,13 @@
                 nào?
               </h4>
               <p class="card-desc">Thời hạn là đúng <strong>7 ngày</strong> tính từ thời điểm đề nghị chi tiền được tạo
-                thành công. Sau 7 ngày, cổng bỏ phiếu tự động đóng lại.</p>
+                thành công trên blockchain. Sau 7 ngày, cổng bỏ phiếu tự động đóng lại.</p>
             </div>
 
             <div class="card">
               <h4 style="color: var(--brand-blue); margin-bottom: 6px;">6. Đạt ngưỡng có tự động chuyển tiền ngay không?
               </h4>
-              <p class="card-desc"><strong>Không tự động chuyển tiền.</strong> Đạt ngưỡng chỉ giúp đề nghị chuyển sang
-                trạng
-                thái "Đã đủ điều kiện giải ngân". Cần một thành viên Ban cán sự bấm nút thực hiện giải ngân trên hệ
-                thống.
+              <p class="card-desc"><strong>CÓ TỰ ĐỘNG CHUYỂN TIỀN (Auto-execution).</strong> Ngay khi lá phiếu đạt đủ từ 51% trở lên, Smart Contract tự động giải ngân và chuyển ETH trực tiếp đến ví người nhận trong cùng giao dịch đó. Nếu ví nhận gặp sự cố, hệ thống giữ trạng thái sẵn sàng để BCS giải ngân thủ công dự phòng.
               </p>
             </div>
           </div>
@@ -5574,15 +5522,9 @@
               </p>
               <ul
                 style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 24px;">
-                <li><strong>99% đưa vào Quỹ lớp:</strong> Phục vụ các hoạt động học tập, phong trào, sự kiện chung của
-                  tập
-                  thể lớp K57.</li>
-                <li><strong>1% đưa vào Quỹ phí vận hành:</strong> Dành riêng cho Cố vấn học tập rút về để bù đắp chi phí
-                  Gas
-                  mạng lưới blockchain khi thực hiện các giao dịch quản trị.</li>
-                <li><strong>Quy định khi hoàn tiền nộp nhầm:</strong> Sinh viên xin hoàn tiền sẽ chịu 1% phí vận hành và
-                  nhận lại 99% số tiền đã yêu cầu. Phần phí 1% không được hoàn lại để đảm bảo bù đắp chi phí vận hành hệ
-                  thống.</li>
+                <li><strong>99% (Net) ghi nhận vào Quỹ lớp:</strong> Phục vụ các hoạt động học tập, phong trào, sự kiện chung của tập thể lớp K57, đồng thời là hạn mức hoàn tiền tối đa cho sinh viên.</li>
+                <li><strong>1% đưa vào Quỹ hoàn gas tự động (adminFeePool):</strong> Smart Contract tự động bù đắp phí gas giao dịch (tối đa 500k gas, trần basefee + 2 gwei) cho Ban cán sự và Cố vấn khi thực hiện 10 hành động quản trị. Cố vấn có quyền điều phối phí dư vào Quỹ lớp qua hàm <code>moveFeeToClassFund</code> (không rút về ví riêng).</li>
+                <li><strong>Quy định khi hoàn tiền nộp nhầm:</strong> Sinh viên được xin hoàn tối đa theo số Net (99% tiền gốc đã nạp). Phí 1% không được hoàn lại để đảm bảo chi phí vận hành mạng lưới. Khi được duyệt, sinh viên nhận đủ 100% số tiền đã yêu cầu trong hạn mức Net.</li>
               </ul>
 
               <div
@@ -5611,16 +5553,16 @@
               <div
                 style="background: #f8fafc; border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--border-color);">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                  <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ lớp (99%):</span>
+                  <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ lớp chính (Net 99%):</span>
                   <strong style="color: var(--brand-blue); font-size: 1.05rem;" id="calcClassFund">0.9900 ETH</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                  <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ phí vận hành (1%):</span>
+                  <span style="font-size: 0.9rem; color: var(--text-muted);">Đưa vào Quỹ hoàn gas tự động (1%):</span>
                   <strong style="color: var(--warning); font-size: 1.05rem;" id="calcAdminFee">0.0100 ETH</strong>
                 </div>
                 <div
                   style="border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between;">
-                  <span style="font-size: 0.9rem; color: var(--text-muted);">Số tiền nhận lại nếu xin hoàn (99%):</span>
+                  <span style="font-size: 0.9rem; color: var(--text-muted);">Số tiền nhận lại tối đa khi xin hoàn (Net 99%):</span>
                   <strong style="color: var(--success); font-size: 1.05rem;" id="calcMaxRefund">0.9900 ETH</strong>
                 </div>
               </div>
@@ -8821,7 +8763,7 @@
       { cat: "Tổng quan", q: "KTS-Class-Fund là gì?", a: "KTS-Class-Fund là cổng thông tin và hệ thống quản lý quỹ lớp được xây dựng dựa trên Smart Contract (hợp đồng thông minh) trên nền tảng blockchain Ethereum Sepolia. Hệ thống giúp minh bạch hóa các khoản đóng góp, quản lý đề xuất chi tiêu và hoàn tiền cho tập thể sinh viên K57 ngành Kinh tế Số." },
       { cat: "Tổng quan", q: "Dự án giải quyết vấn đề gì?", a: "Dự án giải quyết những khó khăn khi quản lý quỹ thủ công như: thông tin thu chi nằm rải rác ở nhiều nơi, thành viên khó theo dõi một khoản chi do ai khởi xướng, khó kiểm chứng biên lai ngoài đời thực và người quản lý phải giải thích số liệu lặp đi lặp lại." },
       { cat: "Tổng quan", q: "Tại sao dùng Blockchain thay vì chỉ dùng bảng tính?", a: "Bảng tính thông thường có thể bị chỉnh sửa bất kỳ lúc nào mà không để lại vết tích rõ ràng. Trong khi đó, blockchain ghi nhận mọi giao dịch và kết quả bỏ phiếu một cách bất biến, công khai, giúp mọi thành viên đều có quyền kiểm chứng độc lập mà không cần đặt niềm tin mù quáng vào một cá nhân." },
-      { cat: "Tổng quan", q: "Dữ liệu nào có thể kiểm tra công khai?", a: "Mọi thành viên đều có thể kiểm tra công khai: tổng số dư quỹ lớp, số dư quỹ phí vận hành, danh sách các đề nghị chi tiền, tiến độ bỏ phiếu tán thành của Ban cán sự và các giao dịch chuyển tiền đã được xác nhận trên Sepolia Etherscan." },
+      { cat: "Tổng quan", q: "Dữ liệu nào có thể kiểm tra công khai?", a: "Mọi thành viên đều có thể kiểm tra công khai: tổng số dư quỹ lớp, số dư quỹ hoàn gas tự động (adminFeePool), danh sách sinh viên on-chain, mã băm roster hash, danh sách đợt thu on-chain, danh sách các đề nghị chi tiền, tiến độ bỏ phiếu 51% theo voterBase snapshot và các giao dịch chuyển tiền đã được xác nhận trên Sepolia Etherscan." },
       { cat: "Tổng quan", q: "Hệ thống đang chạy trên Sepolia hay Mainnet?", a: "Hệ thống đang hoạt động trên mạng thử nghiệm Ethereum Sepolia Testnet. Mạng này hoàn toàn miễn phí, ETH sử dụng là tài sản thử nghiệm (SepoliaETH) không có giá trị tiền tệ thực tế, giúp sinh viên làm quen và thực hành công nghệ mà không gặp rủi ro tài chính." },
 
       { cat: "Ví và kết nối", q: "Tôi cần MetaMask để sử dụng website không?", a: "Nếu bạn chỉ muốn đọc tài liệu, tìm hiểu quy trình và xem hướng dẫn, bạn không cần cài MetaMask. Tuy nhiên, nếu bạn muốn nộp tiền vào quỹ, tạo đề nghị, tham gia biểu quyết hoặc xin hoàn tiền, bạn cần cài tiện ích ví MetaMask trên trình duyệt máy tính hoặc điện thoại." },
@@ -8830,23 +8772,23 @@
       { cat: "Ví và kết nối", q: "Tôi có cần cung cấp mật khẩu, private key hoặc cụm từ khôi phục không?", a: "TUYỆT ĐỐI KHÔNG. Website không bao giờ hỏi hoặc yêu cầu bạn cung cấp mật khẩu ví, private key hay 12 từ khóa khôi phục (seed phrase). Bạn chỉ ký duyệt các giao dịch trực tiếp trên cửa sổ bảo mật của tiện ích MetaMask." },
       { cat: "Ví và kết nối", q: "Tôi làm gì nếu kết nối nhầm ví hoặc nhầm mạng?", a: "Bạn chỉ cần mở tiện ích MetaMask, bấm chọn đúng tài khoản mong muốn hoặc chuyển mạng sang Sepolia. Website sẽ tự động phát hiện và cập nhật trạng thái hiển thị ngay lập tức mà không cần tải lại trang." },
 
-      { cat: "Đóng góp và phí", q: "Gửi tiền vào quỹ như thế nào?", a: "Bạn kết nối ví MetaMask, chuyển đến Ô Giao diện Sinh viên, nhập số ETH muốn đóng góp (ví dụ 0.05 ETH) và bấm nút 'Xác nhận nộp quỹ qua MetaMask'. Cửa sổ MetaMask sẽ hiện ra để bạn kiểm tra số tiền, phí gas và bấm 'Xác nhận'." },
+      { cat: "Đóng góp và phí", q: "Gửi tiền vào quỹ như thế nào?", a: "Chỉ sinh viên có trong danh bạ on-chain (isStudent) mới có thể nộp quỹ. Bạn kết nối ví MetaMask, chuyển đến Ô Giao diện Sinh viên, nhập số ETH muốn đóng góp (hoặc nộp theo đợt thu on-chain) và bấm nút 'Xác nhận nộp quỹ qua MetaMask'. Cửa sổ MetaMask sẽ hiện ra để bạn kiểm tra số tiền, phí gas và bấm 'Xác nhận'." },
       { cat: "Đóng góp và phí", q: "Vì sao MetaMask yêu cầu xác nhận giao dịch?", a: "MetaMask là người bảo vệ tài sản của bạn. Bất kỳ hành động nào làm thay đổi số dư hoặc gọi hợp đồng đều bắt buộc phải được chủ ví trực tiếp ký xác nhận mật mã học để tránh việc tiền bị chuyển đi trái phép." },
       { cat: "Đóng góp và phí", q: "Vì sao giao dịch cần gas?", a: "Phí gas là chi phí trả cho các máy chủ đào/xác thực trong mạng lưới Ethereum để xử lý và ghi nhận giao dịch vào khối. Trên mạng Sepolia, bạn có thể nhận SepoliaETH miễn phí từ các trang vòi (faucet) để trả phí gas này." },
       { cat: "Đóng góp và phí", q: "Tôi có thể hủy giao dịch sau khi đã xác nhận không?", a: "Khi một giao dịch đã được các khối blockchain xác nhận, dữ liệu trở thành vĩnh viễn và không thể đảo ngược. Do đó, hãy luôn kiểm tra kỹ số tiền và địa chỉ trước khi bấm xác nhận trên MetaMask." },
-      { cat: "Đóng góp và phí", q: "Tại sao số tiền đóng góp và số tiền vào quỹ lớp có thể khác nhau?", a: "Theo quy định được lập trình trong hợp đồng, khi bạn nộp 100% số tiền thì 99% sẽ được đưa vào Quỹ lớp chính để phục vụ tập thể, còn 1% được tự động trích vào Quỹ phí vận hành để hỗ trợ chi phí gas cho ban quản trị." },
-      { cat: "Đóng góp và phí", q: "Phần phí quản lý 1% được xử lý như thế nào?", a: "Khoản phí 1% được lưu trữ độc lập tại quỹ phí vận hành. Chỉ có Cố vấn học tập mới có quyền rút khoản phí này về ví để bù đắp chi phí gas khi thực hiện việc bổ nhiệm nhân sự và quản lý hệ thống." },
+      { cat: "Đóng góp và phí", q: "Tại sao số tiền đóng góp và số tiền vào quỹ lớp có thể khác nhau?", a: "Theo quy định được lập trình trong hợp đồng, khi bạn nộp 100% số tiền thì 99% (Net) sẽ được đưa vào Quỹ lớp chính để phục vụ tập thể và ghi nhận vào hạn mức hoàn tối đa của bạn, còn 1% được tự động trích vào Quỹ phí (adminFeePool) để hoàn gas tự động cho các hoạt động quản trị." },
+      { cat: "Đóng góp và phí", q: "Phần phí quản lý 1% được xử lý như thế nào?", a: "Khoản phí 1% không rút về ví cá nhân nào mà được Smart Contract tự động hoàn trả gas cho Ban cán sự và Cố vấn khi thực hiện 10 hành động quản trị on-chain. Nếu quỹ phí còn dư, Cố vấn học tập có quyền chuyển số dư này sang Quỹ lớp chính qua hàm moveFeeToClassFund để tiếp tục phục vụ chi tiêu của lớp." },
 
-      { cat: "Đề xuất và biểu quyết", q: "Ai có quyền tạo đề xuất chi tiền?", a: "Chỉ các thành viên Ban cán sự đang hoạt động hợp lệ mới có quyền tạo đề nghị chi tiền. Khi tạo, người đề xuất phải ghi rõ số tiền, địa chỉ người nhận và mục đích chi tiêu cụ thể." },
-      { cat: "Đề xuất và biểu quyết", q: "Khi nào đề xuất được thông qua?", a: "Đề nghị được thông qua khi đạt tỷ lệ đồng thuận tối thiểu từ 51% trở lên tính trên tổng số thành viên Ban cán sự đang hoạt động trong lớp, trong thời hạn quy định là 7 ngày." },
-      { cat: "Đề xuất và biểu quyết", q: "Tại sao đề xuất đủ phiếu nhưng chưa được chuyển tiền?", a: "Khi đạt đủ 51% phiếu đồng ý, đề xuất mới chỉ chuyển sang trạng thái 'Đã đủ điều kiện giải ngân'. Để đảm bảo an toàn, cần một thành viên Ban cán sự bấm nút thực hiện giải ngân để hợp đồng thực hiện lệnh chuyển ETH đến người nhận." },
+      { cat: "Đề xuất và biểu quyết", q: "Ai có quyền tạo đề xuất chi tiền?", a: "Chỉ các thành viên Ban cán sự đang hoạt động, đã qua 3 ngày kích hoạt (BCS_ACTIVATION_DELAY) và khi lớp có tối thiểu 3 BCS hoạt động mới có quyền tạo đề nghị chi tiền. Khi tạo, người đề xuất phải ghi rõ số tiền, địa chỉ người nhận và mục đích chi tiêu cụ thể." },
+      { cat: "Đề xuất và biểu quyết", q: "Khi nào đề xuất được thông qua?", a: "Đề nghị được thông qua khi đạt tỷ lệ đồng thuận tối thiểu từ 51% trở lên tính trên mẫu số voterBase snapshot (đã loại trừ người có xung đột lợi ích), trong thời hạn quy định là 7 ngày." },
+      { cat: "Đề xuất và biểu quyết", q: "Tại sao đề xuất đủ phiếu nhưng chưa được chuyển tiền?", a: "Thông thường Smart Contract sẽ tự động chuyển tiền ngay (auto-execution) khi đạt đủ 51% phiếu thuận. Nếu đề xuất vẫn ở trạng thái 'Đã đủ điều kiện giải ngân' thì do giao dịch tự động gặp sự cố tạm thời (như ví nhận từ chối ETH), khi đó thành viên Ban cán sự có thể bấm nút giải ngân thủ công dự phòng." },
       { cat: "Đề xuất và biểu quyết", q: "Tôi có thể thay đổi phiếu sau khi đã bỏ phiếu không?", a: "Không thể thay đổi. Mỗi thành viên Ban cán sự chỉ được bỏ phiếu một lần duy nhất cho mỗi đề nghị để đảm bảo tính minh bạch và tránh gian lận biểu quyết." },
       { cat: "Đề xuất và biểu quyết", q: "Điều gì xảy ra khi hết hạn 7 ngày mà chưa đạt ngưỡng?", a: "Nếu quá 7 ngày mà đề nghị không đạt đủ 51% phiếu thuận, đề nghị sẽ hết hạn. Bất kỳ ai cũng có thể bấm dọn dẹp để hệ thống giải phóng khoản tiền đang tạm giữ về lại số dư khả dụng cho quỹ lớp." },
       { cat: "Đề xuất và biểu quyết", q: "Tôi có thể tạo hoặc bỏ phiếu nhiều lần không?", a: "Mỗi đề xuất chỉ được bỏ phiếu 1 lần đối với mỗi địa chỉ ví Ban cán sự. Cố ý bỏ phiếu lần 2 sẽ bị hợp đồng từ chối ngay lập tức." },
 
-      { cat: "Hoàn tiền và lỗi giao dịch", q: "Khi nào tôi có thể gửi yêu cầu hoàn tiền?", a: "Khi bạn chuyển nhầm tiền hoặc đóng thừa vào quỹ lớp, bạn có thể gửi yêu cầu hoàn tiền trong Ô Giao diện Sinh viên. Số tiền xin hoàn không được vượt quá số tiền bạn đã thực sự đóng góp vào quỹ." },
-      { cat: "Hoàn tiền và lỗi giao dịch", q: "Gửi yêu cầu hoàn tiền có đồng nghĩa với được hoàn tiền ngay không?", a: "Không. Để tránh việc kẻ xấu giả mạo rút trộm quỹ lớp, yêu cầu hoàn tiền phải được các thành viên Ban cán sự xem xét lý do và bỏ phiếu biểu quyết thông qua (tối thiểu 51%) trước khi được giải ngân." },
-      { cat: "Hoàn tiền và lỗi giao dịch", q: "Vì sao sinh viên xin hoàn tiền lại chịu 1% phí?", a: "Quy tắc kinh tế của quỹ quy định khoản phí 1% khi nộp vào đã được tính cho quỹ vận hành hệ thống. Khi sinh viên nộp nhầm xin rút lại, sinh viên sẽ nhận lại 99% số tiền đã yêu cầu và chịu 1% phí này." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Khi nào tôi có thể gửi yêu cầu hoàn tiền?", a: "Khi bạn chuyển nhầm tiền hoặc đóng thừa vào quỹ lớp, bạn có thể gửi yêu cầu hoàn tiền trong Ô Giao diện Sinh viên. Số tiền xin hoàn tối đa là số Net (99% tiền gốc đã nạp, trừ các khoản đã xin hoàn trước đó; phí 1% không hoàn lại)." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Gửi yêu cầu hoàn tiền có đồng nghĩa với được hoàn tiền ngay không?", a: "Không. Yêu cầu hoàn tiền phải được các thành viên Ban cán sự xem xét lý do và bỏ phiếu biểu quyết thông qua (tối thiểu 51% trên voterBase snapshot). Người nộp đơn xin hoàn bị cấm tự bỏ phiếu cho chính mình để chống gian lận. Ngay khi đủ 51%, hợp đồng sẽ tự động giải ngân về ví sinh viên." },
+      { cat: "Hoàn tiền và lỗi giao dịch", q: "Vì sao sinh viên xin hoàn tiền lại chịu 1% phí?", a: "Quy tắc kinh tế của quỹ quy định khoản phí 1% khi nộp vào đã được đưa vào Quỹ hoàn gas phục vụ quản trị và là khoản phí không hoàn lại. Sinh viên được hoàn tối đa theo số Net (99% tiền gốc đã nạp). Khi yêu cầu được thông qua, sinh viên nhận đủ 100% số tiền đã xin hoàn từ Quỹ lớp." },
       { cat: "Hoàn tiền và lỗi giao dịch", q: "Tôi phải làm gì nếu giao dịch pending (chờ xử lý) quá lâu?", a: "Giao dịch pending lâu thường do mạng Sepolia bị nghẽn hoặc mức phí gas quá thấp. Bạn có thể mở MetaMask, tìm giao dịch đang chờ và chọn nút 'Tăng tốc' (Speed up) để nâng phí gas giúp giao dịch được xác nhận nhanh hơn." },
       { cat: "Hoàn tiền và lỗi giao dịch", q: "Làm sao kiểm tra giao dịch đã thành công?", a: "Sau khi giao dịch hoàn tất, bạn có thể bấm vào liên kết mã băm giao dịch (Tx Hash) hiển thị trên màn hình để mở trang Sepolia Etherscan và xem dấu tích xanh 'Success'." },
       { cat: "Hoàn tiền và lỗi giao dịch", q: "Tôi cần làm gì nếu giao dịch thất bại?", a: "Nếu giao dịch thất bại (báo lỗi màu đỏ), bạn kiểm tra xem ví có đủ số dư SepoliaETH để trả phí gas không, bạn có đang kết nối đúng tài khoản có quyền thực hiện hay không, hoặc đọc thông báo lỗi chi tiết được hiển thị." },
@@ -9155,7 +9097,7 @@
                 <div style="font-size: 1.4rem; margin-bottom: 4px;">🛡️</div>
                 <h4 style="color: #6d28d9; font-size: 1rem; margin-bottom: 4px;">Phân hệ Cố vấn học tập</h4>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
-                  Chức năng quản trị nhân sự Ban cán sự và rút quỹ phí vận hành yêu cầu kết nối ví của Cố vấn học tập K57.
+                  Chức năng quản trị nhân sự Ban cán sự, điều phối quỹ phí và quản lý danh bạ yêu cầu kết nối ví của Cố vấn học tập K57.
                 </p>
                 <button class="btn btn-purple btn-sm" onclick="connectWallet()">Kết nối MetaMask</button>
               </div>`;
@@ -9166,7 +9108,7 @@
                 <div>
                   <strong style="color:#b91c1c; font-size:0.92rem;">Khu vực giới hạn quyền hạn:</strong>
                   <p style="margin:2px 0 0 0; font-size:0.84rem; color:var(--text-muted);">
-                    Chỉ Cố vấn học tập (Giảng viên phụ trách) mới có quyền quản lý nhân sự Ban cán sự và rút quỹ phí vận hành. Tài khoản hiện tại không có quyền truy cập.
+                    Chỉ Cố vấn học tập (Giảng viên phụ trách) mới có quyền quản lý nhân sự Ban cán sự, điều phối quỹ phí và ghi nhận danh bạ sinh viên on-chain. Tài khoản hiện tại không có quyền truy cập.
                   </p>
                 </div>
               </div>`;
@@ -14011,7 +13953,7 @@
           "Thông Báo Quyền Hạn Cố Vấn Học Tập",
           `<p style="font-size: 0.92rem; color: var(--text-main); line-height: 1.5;">
              Bạn đang kết nối với vai trò <strong>Cố vấn học tập</strong>.<br>
-             Quỹ lớp do sinh viên đóng góp. Cố vấn học tập thực hiện quyền giám sát quỹ, quản trị nhân sự Ban cán sự và bù đắp gas từ quỹ phí vận hành.
+             Quỹ lớp do sinh viên đóng góp. Cố vấn học tập thực hiện quyền giám sát quỹ, quản trị nhân sự Ban cán sự, quản lý danh bạ sinh viên on-chain và điều phối quỹ phí vận hành sang quỹ lớp.
            </p>
            <div style="margin-top: 16px; text-align: right;">
              <button class="btn btn-primary btn-sm" onclick="closeModal();">Đã hiểu</button>
@@ -14115,14 +14057,14 @@
             const adminFeeWei = await contract.adminFeePool();
             const adminFeeEth = formatEth(adminFeeWei);
 
-            if (activeBCS === 0) {
+            if (activeBCS < 3) {
               actionTasks.push({
                 id: "task-advisor-set-bcs",
                 icon: "🚨",
                 statusClass: "status-action",
-                statusText: "Cần xử lý gấp",
-                title: "Kích hoạt nhân sự Ban cán sự (R1)",
-                desc: "Hợp đồng hiện chưa có thành viên Ban cán sự hoạt động (activeBCSCount = 0). Cần kích hoạt ít nhất 1 BCS để bắt đầu biểu quyết và giải ngân chi tiêu.",
+                statusText: "Cần xử lý",
+                title: "Bổ nhiệm đủ tối thiểu 3 Ban cán sự",
+                desc: `Hợp đồng hiện có ${activeBCS} thành viên Ban cán sự. Cần bổ nhiệm tối thiểu 3 BCS (đã qua 3 ngày kích hoạt) để có thể tạo đề xuất chi hoặc xử lý đơn hoàn tiền.`,
                 actionText: "Quản trị nhân sự BCS",
                 actionClass: "btn-warning",
                 onClick: () => {
@@ -14160,8 +14102,8 @@
                 statusClass: "status-ready",
                 statusText: "Khả dụng",
                 title: `Quỹ phí vận hành có sẵn ${adminFeeEth} ETH`,
-                desc: "Khoản 1% trích từ tiền nạp để Cố vấn bù đắp chi phí gas khi thực hiện giao dịch quản trị trên Sepolia.",
-                actionText: "Đến biểu mẫu rút phí",
+                desc: "Khoản 1% trích từ tiền nạp để hoàn gas tự động cho BCS & Cố vấn. Cố vấn có thể điều phối phần phí dư chuyển vào Quỹ lớp chính.",
+                actionText: "Đến biểu mẫu điều phối phí",
                 actionClass: "btn-primary",
                 onClick: () => {
                   selectRoleView("advisor");
