@@ -259,6 +259,15 @@ contract ProjectCore {
         uint256 createdAt
     );
 
+    /// @notice Phát ra khi sinh viên tạo yêu cầu hoàn tiền nộp nhầm có giữ lại phần đóng góp (Giai đoạn 2C)
+    event RefundKeepingRequested(
+        uint256 indexed refundId,
+        address indexed student,
+        uint256 keepAmount,
+        uint256 keepNet,
+        uint256 refundAmount
+    );
+
     /// @notice Phát ra khi một thành viên BCS bỏ phiếu cho yêu cầu hoàn tiền (R7)
     event RefundRequestVoted(
         uint256 indexed refundId,
@@ -349,6 +358,9 @@ contract ProjectCore {
 
     /// @notice Số tiền yêu cầu hoàn vượt quá số tiền sinh viên đã đóng góp còn lại
     error InsufficientContribution(uint256 requested, uint256 available);
+
+    /// @notice Số tiền net dự định giữ lại vượt quá số tiền sinh viên đã đóng góp khả dụng (Giai đoạn 2C)
+    error KeepExceedsContribution(uint256 keepNet, uint256 refundable);
 
     /// @notice Số tiền đề xuất vượt quá số dư khả dụng thực tế của Quỹ lớp chính
     error InsufficientAvailableFund(uint256 requested, uint256 available);
@@ -1164,15 +1176,60 @@ contract ProjectCore {
     }
 
     // ==========================================
-    // R7: QUY TRÌNH HOÀN TIỀN CÓ BIỂU QUYẾT BAN CÁN SỰ (R7 V0.1)
+    // R7: QUY TRÌNH HOÀN TIỀN CÓ BIỂU QUYẾT BAN CÁN SỰ (R7 V0.1) & GIAI ĐOẠN 2C
     // ==========================================
 
-    /// @notice Sinh viên tạo yêu cầu xin hoàn lại tiền nộp nhầm/thừa vào Quỹ lớp (R7)
-    /// @dev Bước 1: Yêu cầu được ghi nhận và giữ chỗ ngân sách, KHÔNG tự động chuyển ETH ra khỏi hợp đồng
+    /// @notice Tính toán trước số tiền net (99%) và phí vận hành (1%) cho một khoản nạp
+    /// @param amount Số ETH dự định nạp (gross) tính bằng wei
+    /// @return netAmount Số tiền net ghi nhận vào Quỹ lớp và hạn mức sinh viên
+    /// @return fee Số tiền phí 1% nạp vào Quỹ phí vận hành (adminFeePool)
+    function previewDeposit(uint256 amount) public pure returns (uint256 netAmount, uint256 fee) {
+        fee = (amount * FEE_BPS) / BPS_DENOMINATOR;
+        netAmount = amount - fee;
+    }
+
+    /// @notice Tra cứu số tiền tối đa có thể hoàn của sinh viên (bí danh của getStudentAvailableContribution)
+    /// @param student Địa chỉ ví sinh viên cần tra cứu
+    /// @return Số tiền net khả dụng có thể hoàn (wei)
+    function getRefundable(address student) public view returns (uint256) {
+        return getStudentAvailableContribution(student);
+    }
+
+    /// @notice Dự tính số tiền hoàn lại khi sinh viên nộp nhầm và muốn giữ lại một phần đóng góp (Giai đoạn 2C)
+    /// @dev Phí 1% của keepAmount không hoàn lại và do sinh viên tự chịu
+    /// @param student Địa chỉ ví sinh viên cần tính toán hoàn tiền
+    /// @param keepAmount Số tiền gross sinh viên muốn giữ lại đóng góp cho quỹ (wei)
+    /// @return refundAmount Số tiền sinh viên sẽ được hoàn lại (wei)
+    /// @return keepNet Số tiền net tương ứng với keepAmount được giữ lại trong hạn mức đóng góp (wei)
+    function previewRefundKeeping(
+        address student,
+        uint256 keepAmount
+    ) public view returns (uint256 refundAmount, uint256 keepNet) {
+        uint256 refundable = getRefundable(student);
+        if (keepAmount > 0) {
+            (keepNet, ) = previewDeposit(keepAmount);
+        } else {
+            keepNet = 0;
+        }
+
+        if (keepNet > refundable) {
+            revert KeepExceedsContribution(keepNet, refundable);
+        }
+
+        refundAmount = refundable - keepNet;
+    }
+
+    /// @notice Hàm nội bộ khởi tạo yêu cầu hoàn tiền và thực hiện giữ chỗ kép (dual reservation)
+    /// @dev Áp dụng CEI: kiểm tra số dư, giữ chỗ cả hạn mức sinh viên và số dư quỹ lớp trước khi lưu trạng thái
+    /// @param student Địa chỉ ví sinh viên nộp yêu cầu hoàn tiền
     /// @param amount Số lượng ETH yêu cầu hoàn lại (wei)
     /// @param reason Lý do chi tiết gửi kèm yêu cầu
     /// @return refundId Mã định danh duy nhất của yêu cầu hoàn tiền vừa tạo
-    function createRefundRequest(uint256 amount, string calldata reason) external returns (uint256) {
+    function _createRefundRequest(
+        address student,
+        uint256 amount,
+        string calldata reason
+    ) internal returns (uint256) {
         // 1. Checks: Kiểm tra đầu vào hợp lệ và số lượng BCS đã kích hoạt >= MIN_BCS_FOR_PROPOSAL
         if (amount == 0) {
             revert ZeroAmount();
@@ -1184,7 +1241,7 @@ contract ProjectCore {
         }
 
         // Kiểm tra hạn mức đóng góp khả dụng của chính sinh viên (trừ đi các yêu cầu đang chờ duyệt)
-        uint256 availableContrib = getStudentAvailableContribution(msg.sender);
+        uint256 availableContrib = getStudentAvailableContribution(student);
         if (amount > availableContrib) {
             revert InsufficientContribution(amount, availableContrib);
         }
@@ -1195,18 +1252,18 @@ contract ProjectCore {
             revert InsufficientAvailableFund(amount, availableFund);
         }
 
-        uint256 voterBase = isEligibleVoterAt(msg.sender, block.timestamp) ? eligible - 1 : eligible;
+        uint256 voterBase = isEligibleVoterAt(student, block.timestamp) ? eligible - 1 : eligible;
 
         // 2. Effects: Ghi nhận yêu cầu, chốt voterBase và giữ chỗ số dư
         refundRequestCount++;
         uint256 refundId = refundRequestCount;
 
-        pendingStudentRefundAmount[msg.sender] += amount;
+        pendingStudentRefundAmount[student] += amount;
         reservedRefundAmount += amount;
 
         refundRequests[refundId] = RefundRequest({
             id: refundId,
-            applicant: payable(msg.sender),
+            applicant: payable(student),
             amount: amount,
             reason: reason,
             createdAt: block.timestamp,
@@ -1216,8 +1273,31 @@ contract ProjectCore {
             voterBase: voterBase
         });
 
-        emit RefundRequestCreated(refundId, msg.sender, amount, reason, block.timestamp);
+        emit RefundRequestCreated(refundId, student, amount, reason, block.timestamp);
         return refundId;
+    }
+
+    /// @notice Sinh viên tạo yêu cầu xin hoàn lại tiền nộp nhầm/thừa vào Quỹ lớp (R7)
+    /// @dev Bước 1: Yêu cầu được ghi nhận và giữ chỗ ngân sách, KHÔNG tự động chuyển ETH ra khỏi hợp đồng
+    /// @param amount Số lượng ETH yêu cầu hoàn lại (wei)
+    /// @param reason Lý do chi tiết gửi kèm yêu cầu
+    /// @return refundId Mã định danh duy nhất của yêu cầu hoàn tiền vừa tạo
+    function createRefundRequest(uint256 amount, string calldata reason) external returns (uint256) {
+        return _createRefundRequest(msg.sender, amount, reason);
+    }
+
+    /// @notice Sinh viên tạo yêu cầu hoàn tiền khi nộp nhầm, chỉ định số tiền gross muốn giữ lại đóng góp (Giai đoạn 2C)
+    /// @dev Phí 1% không hoàn lại; hợp đồng tự động tính keepNet và refundAmount qua previewRefundKeeping
+    /// @param keepAmount Số tiền gross sinh viên thực sự muốn nộp cho Quỹ lớp (0 = hoàn toàn bộ net khả dụng)
+    /// @param reason Lý do yêu cầu hoàn tiền
+    /// @return refundId Mã định danh duy nhất của yêu cầu hoàn tiền vừa tạo
+    function createRefundRequestKeeping(
+        uint256 keepAmount,
+        string calldata reason
+    ) external returns (uint256 refundId) {
+        (uint256 refundAmount, uint256 keepNet) = previewRefundKeeping(msg.sender, keepAmount);
+        refundId = _createRefundRequest(msg.sender, refundAmount, reason);
+        emit RefundKeepingRequested(refundId, msg.sender, keepAmount, keepNet, refundAmount);
     }
 
     /// @notice Thành viên Ban cán sự bỏ phiếu cho một yêu cầu hoàn tiền (R7)
