@@ -236,3 +236,636 @@ button.btn,
   font-weight: 600 !important;
   border-radius: var(--radius-full) !important;
 }
+
+/* ==========================================================================
+   STAGE 2: DESKTOP LAYOUT (TOPBAR, GRAND HERO, ACTION GRID, RIGHT RAIL)
+   ========================================================================== */
+
+/* Hide Legacy Dark Sidebar on all viewports */
+#appSidebar,
+#sidebarBackdrop {
+  display: none !important;
+}
+
+/* Adjust Main Layout to Full Width without sidebar offset */
+.app-main {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: var(--bg-page) !important;
+}
+
+/* --------------------------------------------------------------------------
+   1. Modern Light Topbar (68px height)
+   -------------------------------------------------------------------------- */
+.app-topbar-modern {
+  height: var(--topbar-height);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 14px rgba(8, 58, 46, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.topbar-brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.topbar-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar-brand-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.topbar-brand-sub {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Center Navigation Menu */
+.topbar-center-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-pill-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.nav-pill-item:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.nav-pill-item.active {
+  color: var(--primary-dark);
+  background: #ffffff;
+  border-color: var(--border-color);
+  box-shadow: 0 2px 8px rgba(8, 58, 46, 0.06);
+}
+
+/* Topbar Right Controls */
+.topbar-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.chip-network-sepolia {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.chip-network-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Single Unified Wallet Chip */
+.unified-wallet-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 5px 14px 5px 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(8, 58, 46, 0.04);
+  user-select: none;
+}
+
+.unified-wallet-chip:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(8, 58, 46, 0.08);
+}
+
+.wallet-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.wallet-chip-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.wallet-chip-role {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.wallet-chip-address {
+  font-size: 0.82rem;
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.wallet-chip-caret {
+  margin-left: 2px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+/* Wallet Dropdown Menu */
+.wallet-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 270px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-dropdown);
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1050;
+  animation: dropdownFadeIn 0.15s ease-out;
+}
+
+.wallet-dropdown-menu.show {
+  display: flex !important;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.wallet-dropdown-header {
+  padding: 10px 12px;
+  background: var(--bg-page);
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+}
+
+.wallet-dropdown-header-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.wallet-dropdown-header-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.wallet-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.wallet-dropdown-item:hover {
+  background: var(--bg-page);
+  color: var(--primary);
+}
+
+.wallet-dropdown-item.danger:hover {
+  background: var(--status-error-bg);
+  color: var(--status-error-text);
+}
+
+/* --------------------------------------------------------------------------
+   2. Welcome Greeting Header
+   -------------------------------------------------------------------------- */
+.home-welcome-section {
+  padding: 24px 32px 12px 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.welcome-greeting-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.welcome-greeting-sub {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Grand Hero Banner (MoMo Style Balance Card)
+   -------------------------------------------------------------------------- */
+.grand-hero-container {
+  padding: 0 32px 24px 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.grand-hero-card {
+  background: linear-gradient(135deg, #05352B 0%, #0B6B57 100%);
+  border-radius: var(--radius-hero);
+  box-shadow: var(--shadow-hero);
+  padding: 36px 42px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Concentric Circles top right */
+.grand-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  border: 40px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+/* Radial light glow bottom left */
+.grand-hero-card::before {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -60px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 184, 75, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-balance-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-balance-display {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 10px 0 24px 0;
+}
+
+.hero-balance-number {
+  font-size: 4.6rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-balance-unit {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+}
+
+/* 3 Frosted Glass Cards Inside Hero */
+.hero-glass-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.hero-glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+}
+
+.hero-glass-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.hero-glass-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-glass-sub {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
+/* Hero Action Buttons */
+.hero-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-deposit {
+  background-color: var(--accent-gold) !important;
+  color: var(--primary-dark) !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  padding: 12px 28px !important;
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  box-shadow: 0 4px 18px rgba(242, 184, 75, 0.45) !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-hero-deposit:hover {
+  background-color: var(--accent-gold-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 24px rgba(242, 184, 75, 0.55) !important;
+}
+
+.btn-hero-spend {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  padding: 12px 26px !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-hero-spend:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. Main Content 2-Column Grid (Main Area + 360px Right Rail)
+   -------------------------------------------------------------------------- */
+.home-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  padding: 0 32px 36px 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.home-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.home-right-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Action Grid "Bạn muốn làm gì?" (6 Service Cards)
+   -------------------------------------------------------------------------- */
+.section-headline-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.action-service-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px 18px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-service-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 32px rgba(8, 58, 46, 0.1);
+}
+
+.action-service-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.action-service-card:hover .action-service-icon-box {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.action-service-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.action-service-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   6. Clean "Việc cần xử lý" Section
+   -------------------------------------------------------------------------- */
+.clean-pending-box {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+/* --------------------------------------------------------------------------
+   7. Right Rail Cards (Đợt thu đang mở, Hoạt động gần đây, Trợ lý AI)
+   -------------------------------------------------------------------------- */
+.rail-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px;
+}
+
+.rail-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Recent Activity List */
+.rail-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rail-activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-page);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.82rem;
+}
+
+.rail-ai-promo-card {
+  background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-lg);
+  padding: 22px;
+}
+
+/* --------------------------------------------------------------------------
+   8. Advanced Settings (Cài đặt nâng cao) Accordion for Advisor
+   -------------------------------------------------------------------------- */
+.advanced-accordion-wrapper {
+  margin-top: 24px;
+}
+
+.advanced-summary-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

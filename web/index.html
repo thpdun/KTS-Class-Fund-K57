@@ -4056,285 +4056,380 @@
   <!-- ============================================================ -->
   <div class="app-main">
     <!-- Top Bar -->
-    <header class="app-topbar">
-      <div class="topbar-left">
-        <button class="menu-toggle" id="btnToggleNav" aria-label="Mở menu điều hướng">☰</button>
-        <img src="logo1.png" alt="KTS Logo" class="topbar-mini-logo">
-        <div class="topbar-brand-block">
+    <!-- TOPBAR MỚI (THANH TRÊN CÙNG SÁNG, CAO 68PX) -->
+    <header class="app-topbar app-topbar-modern" id="appTopbarModern">
+      <div class="topbar-brand">
+        <!-- Nút toggle sidebar cũ được giữ trong DOM nhưng ẩn bằng CSS -->
+        <button class="menu-toggle" id="btnToggleNav" style="display:none;" aria-label="Mở menu">☰</button>
+        <img src="logo1.png" alt="Logo KTS Class Fund" class="topbar-brand-logo">
+        <div class="topbar-brand-text">
           <div class="topbar-brand-title">KTS CLASS FUND</div>
-          <div class="topbar-brand-sub">Quản Trị Quỹ Lớp K57 &bull; Kinh Tế Số</div>
+          <div class="topbar-brand-sub">Lớp K57 Kinh Tế Số &bull; ECO2432</div>
         </div>
       </div>
 
-      <!-- Topbar Desktop Horizontal Navigation Bar (Vấn đề 3) -->
-      <nav class="topbar-nav" id="topbarNav">
-        <a href="#hero" class="topbar-nav-link active"><span>📊</span> Tổng quan</a>
-        <a href="#pendingActionsSection" class="topbar-nav-link"><span>📌</span> Việc cần xử lý</a>
-        <a href="#dapp-workspace" onclick="selectRoleView('student')" class="topbar-nav-link"><span>🎓</span> Đóng góp
-          &amp; Hoàn tiền</a>
-        <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="topbar-nav-link"><span>👥</span> Quản lý chi
-          tiêu</a>
-        <a href="javascript:void(0)" onclick="openRosterModal()" class="topbar-nav-link"><span>📋</span> Quản trị</a>
-        <a href="javascript:void(0)" onclick="document.getElementById('aiFabToggle').click()"
-          class="topbar-nav-link"><span>✨</span> Trợ lý AI</a>
+      <!-- Menu giữa: Trang chủ · Đề xuất · Sổ quỹ · Thành viên · Hướng dẫn -->
+      <nav class="topbar-center-nav" id="topbarNav">
+        <a href="#hero" class="nav-pill-item active">
+          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Trang chủ</span>
+        </a>
+        <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="nav-pill-item">
+          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Đề xuất</span>
+        </a>
+        <a href="#dapp-workspace" onclick="selectRoleView('history')" class="nav-pill-item">
+          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+          <span>Sổ quỹ</span>
+        </a>
+        <a href="javascript:void(0)" onclick="openRosterModal()" class="nav-pill-item">
+          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Thành viên</span>
+        </a>
+        <a href="#faq" class="nav-pill-item">
+          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Hướng dẫn</span>
+        </a>
       </nav>
 
-      <div class="topbar-right">
-        <div class="badge-network" id="networkBadge">
-          <span class="badge-dot" id="networkDot"></span>
-          <span id="networkText">Chưa kết nối ví</span>
+      <!-- Bên phải: Chip mạng Sepolia + MỘT Chip ví duy nhất -->
+      <div class="topbar-right-controls">
+        <div class="chip-network-sepolia" id="networkBadge">
+          <span class="chip-network-dot" id="networkDot"></span>
+          <span id="networkText">Sepolia</span>
         </div>
-        <span class="badge-topbar-role" id="topbarRoleBadge" style="display:none;"></span>
-        <button class="btn btn-warning btn-sm" id="btnVerifyWalletAuth"
-          style="display:none; padding:4px 10px; font-size:0.8rem;" onclick="authenticateWalletSession(true)"
-          title="Ký thông điệp xác thực bảo mật để mở khóa vai trò BCS/Cố vấn và bảo vệ thông tin sinh viên">🔑 Ký xác
-          thực</button>
-        <button class="btn btn-primary btn-sm" id="btnConnectWallet" title="Bấm để kết nối hoặc đổi tài khoản">
-          <svg style="width:16px;height:16px;fill:currentColor;" viewBox="0 0 24 24">
-            <path
-              d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z" />
-          </svg>
-          <span id="walletBtnText">Kết nối MetaMask</span>
-        </button>
-        <button class="btn btn-outline btn-sm" id="btnSwitchWallet" style="display:none;"
-          title="Đổi sang tài khoản ví khác" onclick="switchAccount()">
-          🔄 Đổi ví
-        </button>
-        <button class="btn btn-danger btn-sm" id="btnDisconnectWallet" style="display:none; padding:6px 10px;"
-          title="Ngắt kết nối ví" onclick="disconnectWallet()">
-          ✕
-        </button>
+
+        <div class="unified-wallet-container" id="unifiedWalletContainer" style="position: relative;">
+          <!-- Nút kết nối ban đầu -->
+          <button class="btn btn-primary btn-sm" id="btnConnectWallet" title="Bấm để kết nối hoặc đổi tài khoản">
+            <svg style="width:16px;height:16px;fill:currentColor;" viewBox="0 0 24 24">
+              <path d="M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z" />
+            </svg>
+            <span id="walletBtnText">Kết nối MetaMask</span>
+          </button>
+
+          <!-- Chip ví duy nhất (Avatar chữ cái + Vai trò + Địa chỉ rút gọn) -->
+          <div class="unified-wallet-chip" id="unifiedWalletChip" style="display: none;" onclick="toggleWalletDropdown(event)">
+            <div class="wallet-avatar-circle" id="walletAvatarLetter">K</div>
+            <div class="wallet-chip-info">
+              <span class="wallet-chip-role" id="walletChipRoleTitle">Sinh viên K57</span>
+              <span class="wallet-chip-address" id="walletChipAddressShort">0x0000...0000</span>
+            </div>
+            <span class="wallet-chip-caret">▾</span>
+          </div>
+
+          <!-- Menu thả xuống của chip ví -->
+          <div class="wallet-dropdown-menu" id="walletDropdownMenu">
+            <div class="wallet-dropdown-header">
+              <div class="wallet-dropdown-header-title">Tài khoản ví Web3</div>
+              <div class="wallet-dropdown-header-name" id="walletDropdownUserName">Chưa kết nối</div>
+              <span class="badge-topbar-role" id="topbarRoleBadge" style="display:none;"></span>
+            </div>
+            <button class="wallet-dropdown-item" id="btnSwitchWallet" type="button" onclick="switchAccount()">
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path><path d="m9 11 3 3L22 4"></path></svg>
+              <span>Đổi ví</span>
+            </button>
+            <button class="wallet-dropdown-item" id="btnVerifyWalletAuth" type="button" style="display:none;" onclick="authenticateWalletSession(true)">
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span>Ký xác thực</span>
+            </button>
+            <button class="wallet-dropdown-item danger" id="btnDisconnectWallet" type="button" onclick="disconnectWallet()">
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="app-content">
-      <!-- HERO & DASHBOARD OVERVIEW -->
-      <section class="hero-section" id="hero">
-        <div class="hero-banner-card">
-          <div class="hero-tag">
-            <span>●</span> Cổng Thông Tin &amp; Quản Lý Quỹ Lớp Blockchain Chuẩn Mực ECO2432
-          </div>
-          <h1 class="hero-title">KTS CLASS FUND — Minh bạch hóa quản lý quỹ lớp bằng Blockchain</h1>
-          <p class="hero-desc">
-            Hệ thống quản lý đóng góp, giải ngân chi tiêu và đối soát giao dịch thời gian thực thông qua hợp đồng thông
-            minh Ethereum Sepolia, giúp toàn thể sinh viên K57 giám sát dòng tiền minh bạch.
-          </p>
+      <!-- 2.a LỜI CHÀO LỚN -->
+      <div class="home-welcome-section">
+        <div class="welcome-greeting-title" id="welcomeGreetingTitle">
+          Chào mừng trở lại, <span id="welcomeRoleDisplay">Bạn</span>
         </div>
+        <div class="welcome-greeting-sub">
+          Hệ thống Quỹ Lớp K57 Kinh Tế Số &bull; ECO2432 &bull; <span id="welcomeIdentityDisplay">Chưa kết nối ví</span>
+        </div>
+      </div>
 
-        <!-- Quick Control Bar (Address, Role, Student Identity, Contract Config) -->
-        <div class="quick-control-bar">
-          <div class="quick-status-group">
-            <!-- Ô 1: Địa chỉ ví đang kết nối -->
-            <div class="quick-status-item">
-              <span class="quick-status-label">Địa chỉ ví đang kết nối</span>
-              <div class="quick-status-body">
-                <span class="quick-status-val" id="quickWalletAccount" style="font-family: monospace;">Chưa kết nối
-                  ví</span>
-                <div class="quick-status-actions">
-                  <button class="btn btn-sm btn-outline" id="btnQuickSwitch" style="display:none;"
-                    onclick="switchAccount()">🔄 Đổi ví</button>
-                  <button class="btn btn-sm btn-outline" id="btnQuickDisconnect" style="display:none;"
-                    onclick="disconnectWallet()">Đăng xuất</button>
+      <!-- 2.b KHỐI HERO HOÀNH TRÁNG -->
+      <section class="grand-hero-container" id="hero">
+        <div class="grand-hero-card">
+          <div class="hero-balance-label">
+            <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            <span>Quỹ Lớp Hiện Có</span>
+          </div>
+          <div class="hero-balance-display">
+            <span class="hero-balance-number" id="metricClassFund">- ETH</span>
+          </div>
+
+          <!-- 3 thẻ kính mờ trong Hero -->
+          <div class="hero-glass-row">
+            <div class="hero-glass-card">
+              <div class="hero-glass-title">Khả dụng (Net 99%)</div>
+              <div class="hero-glass-val" id="heroGlassAvailable">0.0000 ETH</div>
+              <div class="hero-glass-sub" id="metricClassFundNote">Sẵn sàng phục vụ lớp</div>
+            </div>
+            <div class="hero-glass-card">
+              <div class="hero-glass-title">Đang giữ chỗ</div>
+              <div class="hero-glass-val" id="heroGlassReserved">0.0000 ETH</div>
+              <div class="hero-glass-sub">Khóa cho chi / hoàn</div>
+            </div>
+            <div class="hero-glass-card">
+              <div class="hero-glass-title">Quỹ vận hành (1%)</div>
+              <div class="hero-glass-val" id="metricAdminFee">- ETH</div>
+              <div class="hero-glass-sub" id="metricAdminFeeNote">Hoàn gas tự động EIP-1559</div>
+            </div>
+          </div>
+
+          <!-- 2 nút hành động trên Hero -->
+          <div class="hero-action-buttons">
+            <button class="btn btn-hero-deposit" id="btnHeroDeposit" type="button" onclick="handleQuickAction('deposit')">
+              <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 12 12 14 14"></polyline></svg>
+              <span>Nạp quỹ ngay</span>
+            </button>
+            <button class="btn btn-hero-spend" id="btnHeroSpend" type="button" onclick="handleQuickAction('spend')">
+              <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Đề xuất chi</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2-COLUMN LAYOUT (MAIN LEFT + 360PX RIGHT RAIL) -->
+      <div class="home-layout-grid">
+        <!-- CỘT TRÁI (MAIN) -->
+        <div class="home-left-col">
+          <!-- 2.c LƯỚI "BẠN MUỐN LÀM GÌ?" (6 Ô LỚN CÓ ICON) -->
+          <div class="action-service-section">
+            <div class="section-headline-title">
+              <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Bạn muốn làm gì?</span>
+            </div>
+            <div class="action-service-grid">
+              <!-- Ô 1: Nạp quỹ -->
+              <div class="action-service-card" id="cardActionDeposit" onclick="handleQuickAction('deposit')">
+                <div class="action-service-icon-box">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                </div>
+                <div class="action-service-title">Nạp quỹ</div>
+                <div class="action-service-desc">Đóng góp ETH vào Quỹ lớp K57 (Net 99%)</div>
+              </div>
+
+              <!-- Ô 2: Xin hoàn tiền -->
+              <div class="action-service-card" id="cardActionRefund" onclick="handleQuickAction('refund')">
+                <div class="action-service-icon-box">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </div>
+                <div class="action-service-title">Xin hoàn tiền</div>
+                <div class="action-service-desc">Rút lại tiền khi nạp nhầm trong hạn mức Net</div>
+              </div>
+
+              <!-- Ô 3: Đề xuất chi (BCS) -->
+              <div class="action-service-card" id="cardActionSpend" onclick="handleQuickAction('spend')">
+                <div class="action-service-icon-box">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </div>
+                <div class="action-service-title">Đề xuất chi</div>
+                <div class="action-service-desc">Khởi tạo khoản chi tập thể lớp để BCS biểu quyết</div>
+              </div>
+
+              <!-- Ô 4: Biểu quyết (BCS & CVHT) -->
+              <div class="action-service-card" id="cardActionVote" onclick="handleQuickAction('vote')">
+                <div class="action-service-icon-box">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                </div>
+                <div class="action-service-title">Biểu quyết</div>
+                <div class="action-service-desc">Tham gia bỏ phiếu duyệt chi / hoàn tiền (&ge; 51%)</div>
+              </div>
+
+              <!-- Ô 5: Sổ dòng tiền -->
+              <div class="action-service-card" id="cardActionLedger" onclick="selectRoleView('history')">
+                <div class="action-service-icon-box">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div class="action-service-title">Sổ dòng tiền</div>
+                <div class="action-service-desc">Nhật ký 4 luồng thu chi minh bạch trên blockchain</div>
+              </div>
+
+              <!-- Ô 6: Thành viên -->
+              <div class="action-service-card" id="cardActionMembers" onclick="openRosterModal()">
+                <div class="action-service-icon-box">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                </div>
+                <div class="action-service-title">Thành viên</div>
+                <div class="action-service-desc">Tra cứu danh bạ lớp K57 &amp; tiến độ nộp quỹ</div>
+              </div>
+
+              <!-- Ô 7: Quản trị (Dành riêng cho CVHT) -->
+              <div class="action-service-card" id="cardActionGovernance" style="display:none;" onclick="selectRoleView('advisor')">
+                <div class="action-service-icon-box" style="background:#f5f3ff; color:#6d28d9;">
+                  <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div class="action-service-title">Quản trị CVHT</div>
+                <div class="action-service-desc">Bổ nhiệm BCS, điều chuyển phí &amp; danh bạ on-chain</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2.d "VIỆC CẦN BẠN XỬ LÝ" -->
+          <section class="pending-actions-section" id="pendingActionsSection">
+            <div class="pending-actions-card">
+              <div class="pending-actions-header">
+                <div class="pending-header-title">
+                  <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  <div>
+                    <h3 class="pending-title">Việc cần bạn xử lý</h3>
+                    <p class="pending-subtitle">Tác vụ theo thời gian thực dựa trên trạng thái hợp đồng thông minh và vai trò</p>
+                  </div>
+                </div>
+                <div class="pending-header-actions">
+                  <span class="pending-count-badge all-clear" id="pendingCountBadge">0 việc cần xử lý</span>
+                  <button class="btn btn-sm btn-outline" type="button" onclick="refreshContractData()" title="Làm mới tác vụ on-chain">🔄 Cập nhật</button>
+                </div>
+              </div>
+              <div class="pending-actions-list" id="pendingActionsList">
+                <div class="pending-all-clear">
+                  <div class="all-clear-icon">✨</div>
+                  <div class="all-clear-content">
+                    <h4>Đang tải dữ liệu tác vụ on-chain...</h4>
+                    <p>Hệ thống đang đồng bộ dữ liệu để kiểm tra các việc cần xử lý theo vai trò của bạn.</p>
+                  </div>
                 </div>
               </div>
             </div>
+          </section>
 
-            <!-- Ô 2: Vai trò xác thực -->
-            <div class="quick-status-item">
-              <span class="quick-status-label">Vai trò xác thực</span>
-              <div class="quick-status-body">
-                <div>
-                  <span class="status-pill status-ready" id="quickRoleBadge">Chưa kết nối</span>
+          <!-- KHU VỰC CÀI ĐẶT NÂNG CAO CHO CỐ VẤN (COLLAPSIBLE ACCORDION) -->
+          <div id="sectionAdvancedSettings" class="advanced-accordion-wrapper" style="display: none;">
+            <details class="advanced-details-box" style="background:#fff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:16px 20px; box-shadow:var(--shadow-card);">
+              <summary class="advanced-summary-btn" style="list-style:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                <span style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text-main);">
+                  <svg style="width:18px;height:18px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                  <span>Cài đặt &amp; Quản trị kỹ thuật nâng cao (Dành riêng cho Cố vấn)</span>
+                </span>
+                <span class="advanced-caret" style="color:var(--text-muted); font-size:0.85rem;">Chi tiết ▾</span>
+              </summary>
+              <div style="margin-top:14px; padding-top:14px; border-top:1px dashed var(--border-color);">
+                <div class="contract-toolbar-row" style="margin-bottom:12px;">
+                  <div class="contract-input-bar">
+                    <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
+                  </div>
+                  <button class="btn btn-sm btn-primary" id="btnSaveQuickContract" type="button" title="Lưu và tải hợp đồng">Lưu &amp; Tải</button>
+                  <button class="btn btn-sm btn-outline" id="btnResetQuickContract" type="button" onclick="resetToDefaultContract()" title="Khôi phục mặc định">🔄 Đặt lại</button>
+                  <div class="quick-status-item-btn" id="itemRosterModalBtn" style="display: none; margin-left: auto;">
+                    <button class="btn btn-sm btn-outline" id="btnOpenRosterModal" type="button" onclick="openRosterModal()">
+                      <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">--</span>)
+                    </button>
+                  </div>
                 </div>
               </div>
+            </details>
+          </div>
+
+          <!-- HIDDEN LEGACY ANCHOR CONTAINER: BẢO VỆ 100% ID CŨ CHO JAVASCRIPT -->
+          <div id="legacyDomAnchorWrapper" style="display:none !important;" aria-hidden="true">
+            <span id="quickWalletAccount">Chưa kết nối</span>
+            <span id="quickRoleBadge">Chưa kết nối</span>
+            <span id="quickStudentIdentity">--</span>
+            <span id="quickNetworkStatus"></span>
+            <button id="btnQuickSwitch" onclick="switchAccount()"></button>
+            <button id="btnQuickDisconnect" onclick="disconnectWallet()"></button>
+            <div id="guestWarningBanner"></div>
+            <span id="metricDepositorsCount">-</span>
+            <span id="metricDepositorsNote"></span>
+            <span id="metricSpendCount">-</span>
+            <span id="metricRefundCount">-</span>
+            <span id="metricActiveBCS">-</span>
+            <span id="metricActiveBCSNote"></span>
+          </div>
+        </div>
+
+        <!-- CỘT PHẢI (RIGHT RAIL 360PX) -->
+        <div class="home-right-rail">
+          <!-- THẺ 1: ĐỢT THU ĐANG MỞ -->
+          <div class="rail-card class-announcement-card" id="classAnnouncementCard">
+            <div class="rail-card-title">
+              <span style="display:flex; align-items:center; gap:7px;">
+                <svg style="width:17px;height:17px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span>Đợt thu đang mở</span>
+              </span>
+              <span class="ann-status-tag" id="annStatusTag"><span class="ann-dot-pulse"></span> <span id="annStatusText">Chưa có đợt thu</span></span>
             </div>
 
-            <!-- Ô 3: Định danh sinh viên K57 -->
-            <div class="quick-status-item">
-              <span class="quick-status-label">Định danh sinh viên K57</span>
-              <div class="quick-status-body">
-                <span class="quick-status-val" id="quickStudentIdentity"
-                  style="color: #0284c7; font-weight: 600;">--</span>
+            <!-- CONTAINER TIẾN ĐỘ ĐA THÔNG BÁO -->
+            <div id="activeProgressCardsContainer" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px;">
+              <!-- Được render động bởi renderMultipleProgressCards() -->
+            </div>
+
+            <!-- Trạng thái cá nhân -->
+            <div class="ann-personal-status-box" id="annPersonalStatusBox"
+              style="padding: 10px 12px; background: var(--bg-page); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); display: flex; flex-direction:column; gap: 6px;">
+              <div style="font-size: 0.82rem; display: flex; align-items: center; justify-content:space-between;">
+                <span style="font-weight: 700; color: var(--text-main);">Trạng thái của bạn:</span>
+                <span id="annPersonalStatusBadge" class="task-badge status-unverified">Chưa kết nối</span>
               </div>
+              <span id="annPersonalStatusDesc" style="font-size: 0.76rem; color: var(--text-muted);">Kết nối ví MetaMask để kiểm tra trạng thái</span>
             </div>
-            <span id="quickNetworkStatus" style="display: none;"></span>
-          </div>
 
-          <!-- Quick Contract Input & Actions Toolbar Row -->
-          <div class="contract-toolbar-row">
-            <div class="contract-input-bar">
-              <svg style="width:16px;height:16px;fill:#38bdf8;" viewBox="0 0 24 24">
-                <path
-                  d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-              </svg>
-              <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
-            </div>
-            <button class="btn btn-sm btn-primary" id="btnSaveQuickContract" title="Lưu và tải hợp đồng">Lưu &amp;
-              Tải</button>
-            <button class="btn btn-sm btn-outline" id="btnResetQuickContract" onclick="resetToDefaultContract()"
-              title="Khôi phục địa chỉ hợp đồng mặc định của dự án">🔄 Đặt lại</button>
-
-            <!-- Nút Quản lý Danh bạ K57 (Chỉ hiện khi BCS hoặc CVHT đăng nhập) -->
-            <div class="quick-status-item-btn" id="itemRosterModalBtn" style="display: none; margin-left: auto;">
-              <button class="btn btn-sm btn-outline" id="btnOpenRosterModal" onclick="openRosterModal()"
-                style="font-size:0.8rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px; background:#ffffff; color:var(--primary-navy); border-color:var(--border-color);"
-                title="Chỉ Ban cán sự và Cố vấn học tập mới có quyền mở">
-                <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">--</span>)
+            <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-primary" id="btnBannerQuickDeposit" style="display:none; width:100%;">
+                ⚡ Nộp quỹ cho đợt này
               </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- CẢNH BÁO KHÁCH VÃNG LAI (GUEST WARNING BANNER) -->
-        <div id="guestWarningBanner"
-          style="display: none; margin-top: 14px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: var(--radius-md); padding: 12px 18px; color: #fde68a; font-size: 0.88rem; align-items: center; justify-content: space-between; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 1.3rem;">⚠️</span>
-            <div>
-              <strong>Địa chỉ ví của bạn chưa được liên kết với Danh bạ sinh viên K57.</strong>
-              <div style="font-size: 0.8rem; color: #fef3c7; opacity: 0.9;">Hệ thống đang mở ở chế độ <strong>Khách vãng
-                  lai (Chỉ xem)</strong>. Để được định danh theo Tên & MSSV khi nộp quỹ và biểu quyết, vui lòng liên hệ
-                Ban cán sự hoặc Cố vấn học tập.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BẢNG THÔNG BÁO THU QUỸ LỚP (CLASS ANNOUNCEMENT BANNER) -->
-        <div class="class-announcement-card" id="classAnnouncementCard">
-          <div class="ann-header">
-            <div class="ann-tag-group">
-              <span class="ann-badge-pill">📢 THÔNG BÁO QUỸ LỚP</span>
-              <span class="ann-status-tag" id="annStatusTag"><span class="ann-dot-pulse"></span> <span
-                  id="annStatusText">Chưa có đợt thu</span></span>
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-outline-light" id="btnToggleAnnHistory" type="button"
-                title="Xem lịch sử các đợt thu quỹ lớp trước đây">
-                📜 Lịch sử thông báo (<span id="annHistoryCountBadge">0</span>)
+              <button class="btn btn-sm btn-outline" id="btnToggleAnnHistory" type="button" style="width:100%; font-size:0.8rem;" title="Xem lịch sử">
+                📜 Lịch sử đợt thu (<span id="annHistoryCountBadge">0</span>)
               </button>
-              <button class="btn btn-sm btn-outline-light" id="btnOpenAnnModal" style="display: none;"
-                title="Chỉ Ban cán sự mới có quyền sửa">
+              <button class="btn btn-sm btn-purple" id="btnOpenAnnModal" type="button" style="display:none; width:100%; font-size:0.8rem;">
                 ➕ Tạo đợt thu mới (BCS)
               </button>
             </div>
           </div>
 
-          <div class="ann-body">
-            <!-- CONTAINER TIẾN ĐỘ ĐA THÔNG BÁO (MULTIPLE PROGRESS CARDS) -->
-            <div id="activeProgressCardsContainer" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px;">
-              <!-- Được render động bởi renderMultipleProgressCards() -->
+          <!-- MỤC LỊCH SỬ THÔNG BÁO THU QUỸ ĐÃ HOÀN THÀNH -->
+          <div class="rail-card" id="annHistoryCard" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border-color);">
+              <strong style="font-size:0.88rem; color:var(--text-main);">📁 Lịch sử kêu gọi nộp quỹ</strong>
+              <button class="btn btn-sm btn-secondary" id="btnCloseAnnHistory" type="button" style="padding:2px 8px; font-size:0.75rem;">✕</button>
             </div>
+            <div id="annHistoryListContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
 
-            <!-- Phân biệt rạch ròi: Trạng thái cá nhân vs Trạng thái cả lớp (Đợt 3B.3) -->
-            <div class="ann-personal-status-box" id="annPersonalStatusBox"
-              style="margin-top: 14px; padding: 10px 14px; background: #ffffff; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-              <div style="font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 600; color: var(--primary-navy);">👤 Nghĩa vụ cá nhân:</span>
-                <span id="annPersonalStatusBadge" class="task-badge status-unverified">Chưa kết nối ví</span>
+          <!-- THẺ 2: HOẠT ĐỘNG GẦN ĐÂY -->
+          <div class="rail-card" id="cardRecentActivitiesRail">
+            <div class="rail-card-title">
+              <span style="display:flex; align-items:center; gap:7px;">
+                <svg style="width:17px;height:17px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <span>Hoạt động gần đây</span>
+              </span>
+              <a href="javascript:void(0)" onclick="selectRoleView('history')" style="font-size:0.78rem; font-weight:600; color:var(--primary); text-decoration:none;">Xem tất cả &rarr;</a>
+            </div>
+            <div class="rail-activity-list" id="railRecentActivityList">
+              <div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:12px 0;">Đang tải dữ liệu on-chain...</div>
+            </div>
+          </div>
+
+          <!-- THẺ 3: TRỢ LÝ AI QUỸ LỚP -->
+          <div class="rail-card rail-ai-promo-card" id="cardAiAssistantRail">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <div style="width:36px; height:36px; border-radius:10px; background:#0B6B57; color:#fff; display:flex; align-items:center; justify-content:center;">
+                <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
               </div>
-              <span id="annPersonalStatusDesc" style="font-size: 0.82rem; color: var(--text-muted);">Kết nối ví MetaMask
-                để kiểm tra trạng thái đóng góp của bạn</span>
-            </div>
-          </div>
-
-          <div class="ann-footer">
-            <button class="btn btn-primary" id="btnBannerQuickDeposit" style="display: none;">
-              ⚡ Nộp quỹ ngay
-            </button>
-            <span class="ann-tip">💡 Sinh viên có thể nộp quỹ khi Ban cán sự mở đợt thu hoặc hỏi Trợ lý AI để tra cứu thông tin chi tiết.</span>
-          </div>
-        </div>
-
-        <!-- MỤC LỊCH SỬ THÔNG BÁO THU QUỸ ĐÃ HOÀN THÀNH / LƯU TRỮ -->
-        <div class="class-announcement-card" id="annHistoryCard"
-          style="display: none; margin-top: 14px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px 20px;">
-          <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-            <h3
-              style="margin: 0; font-size: 1.05rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
-              📁 Lịch sử các đợt kêu gọi nộp Quỹ Lớp K57
-            </h3>
-            <button class="btn btn-sm btn-secondary" id="btnCloseAnnHistory" type="button">✖ Đóng</button>
-          </div>
-          <div id="annHistoryListContainer" style="display: flex; flex-direction: column; gap: 12px;">
-            <!-- Danh sách các thông báo cũ -->
-          </div>
-        </div>
-
-        <!-- Live metrics ribbon -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-title">Số dư Quỹ lớp (99%)</div>
-            <div class="metric-num" id="metricClassFund">- ETH</div>
-            <div class="metric-note" id="metricClassFundNote">Chờ cấu hình hợp đồng</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Quỹ phí vận hành (1%)</div>
-            <div class="metric-num" id="metricAdminFee">- ETH</div>
-            <div class="metric-note" id="metricAdminFeeNote">Hoàn gas tự động &amp; chuyển sổ Cố vấn</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Sinh viên đã nộp quỹ</div>
-            <div class="metric-num" id="metricDepositorsCount">-</div>
-            <div class="metric-note" id="metricDepositorsNote">Đồng bộ từ blockchain</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Tổng đề nghị chi tiền</div>
-            <div class="metric-num" id="metricSpendCount">-</div>
-            <div class="metric-note">Biểu quyết dân chủ tối thiểu 51%</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Tổng yêu cầu hoàn tiền</div>
-            <div class="metric-num" id="metricRefundCount">-</div>
-            <div class="metric-note">Bảo vệ quyền lợi khi nộp nhầm</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Ban cán sự hoạt động</div>
-            <div class="metric-num" id="metricActiveBCS">-</div>
-            <div class="metric-note" id="metricActiveBCSNote">Cố vấn học tập quản trị (R1)</div>
-          </div>
-        </div>
-        <!-- Banner cơ chế hoàn gas tự động EIP-1559 -->
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 16px; margin-top: 14px; font-size: 0.82rem; color: #166534; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-          <div>
-            ⚡ <strong>Cơ chế hoàn Gas tự động:</strong> 10 hành động quản trị (BCS &amp; Cố vấn) được hoàn trả chi phí gas trực tiếp từ Quỹ phí (adminFeePool) ngay trong giao dịch (trần basefee + 2 gwei, tối đa 500.000 gas units). Phí dư được Cố vấn chuyển sang Quỹ lớp.
-          </div>
-          <span style="background: #dcfce7; padding: 2px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; border: 1px solid #86efac;">EIP-1559 Active</span>
-        </div>
-      </section>
-
-      <!-- KHU VỰC: VIỆC CẦN XỬ LÝ & TRẠNG THÁI CÁ NHÂN (ACTION CENTER) -->
-      <section class="pending-actions-section" id="pendingActionsSection">
-        <div class="pending-actions-card">
-          <div class="pending-actions-header">
-            <div class="pending-header-title">
-              <span class="pending-header-icon">📌</span>
               <div>
-                <h3 class="pending-title">Việc cần xử lý &amp; Trạng thái của bạn</h3>
-                <p class="pending-subtitle">Tác vụ theo thời gian thực dựa trên trạng thái hợp đồng thông minh và vai
-                  trò đã xác thực</p>
+                <div style="font-weight:700; color:var(--primary-dark); font-size:0.95rem;">Trợ lý AI Quỹ Lớp</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Tư vấn quy chế &amp; đối soát số dư</div>
               </div>
             </div>
-            <div class="pending-header-actions">
-              <span class="pending-count-badge all-clear" id="pendingCountBadge">0 việc cần xử lý</span>
-              <button class="btn btn-sm btn-outline" onclick="refreshContractData()" title="Làm mới tác vụ on-chain">🔄
-                Cập nhật</button>
-            </div>
-          </div>
-          <div class="pending-actions-list" id="pendingActionsList">
-            <!-- Tự động kết xuất động theo trạng thái on-chain -->
-            <div class="pending-all-clear">
-              <div class="all-clear-icon">✨</div>
-              <div class="all-clear-content">
-                <h4>Đang tải dữ liệu tác vụ on-chain...</h4>
-                <p>Hệ thống đang đồng bộ dữ liệu để kiểm tra các việc cần xử lý theo vai trò của bạn.</p>
-              </div>
-            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
+              Hỏi đáp tức thì về quy trình hoàn tiền Net 99%, ngưỡng biểu quyết 51% và số dư on-chain thời gian thực.
+            </p>
+            <button class="btn btn-primary" type="button" style="width:100%; font-size:0.85rem;" onclick="document.getElementById('aiFabToggle').click()">
+              ✨ Hỏi Trợ lý AI ngay
+            </button>
           </div>
         </div>
-      </section>
-
+      </div>
       <!-- 3 Ô GIAO DIỆN THEO 3 VAI TRÒ -->
       <section class="dapp-hero-section" id="dapp-workspace">
         <div class="container">
@@ -9127,6 +9222,10 @@
           btnBannerDeposit.style.display = "inline-flex";
         }
       }
+
+      if (typeof updateRedesignUI === "function") {
+        updateRedesignUI(verifiedRole);
+      }
     }
 
     function selectRoleView(role) {
@@ -11749,6 +11848,9 @@
       });
 
       tableBody.innerHTML = rowsHtml;
+      if (typeof updateRecentActivitiesRail === "function") {
+        updateRecentActivitiesRail();
+      }
     }
 
     function filterFlowLedger(filterType, btnEl) {
@@ -15011,6 +15113,173 @@
         removeTypingIndicator();
         appendAIMessage("bot", `⚠️ <strong>Không thể kết nối đến Backend AI:</strong><br>${escapeHtml(err.message)}<br><br><span style="font-size:0.8rem; color:var(--text-muted);">💡 Vui lòng mở terminal và khởi chạy máy chủ:<br><code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:600;">python backend/server.py</code></span>`);
       }
+    }
+
+    /* ==========================================================================
+       REDESIGN SUPPORT FUNCTIONS (TOPBAR, WALLET DROPDOWN, ACTIONS, RECENT RAIL)
+       ========================================================================== */
+    function toggleWalletDropdown(event) {
+      if (event) event.stopPropagation();
+      const menu = document.getElementById("walletDropdownMenu");
+      if (menu) {
+        menu.classList.toggle("show");
+      }
+    }
+
+    document.addEventListener("click", function (e) {
+      const container = document.getElementById("unifiedWalletContainer");
+      const menu = document.getElementById("walletDropdownMenu");
+      if (container && menu && !container.contains(e.target)) {
+        menu.classList.remove("show");
+      }
+    });
+
+    function handleQuickAction(action) {
+      if (action === "deposit") {
+        selectRoleView("student");
+        const el = document.getElementById("sectionDepositForm");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const inp = document.getElementById("inputDepositAmount");
+        if (inp) inp.focus();
+      } else if (action === "refund") {
+        selectRoleView("student");
+        const el = document.getElementById("sectionRefundForm");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const inp = document.getElementById("inputRefundAmount");
+        if (inp) inp.focus();
+      } else if (action === "spend") {
+        selectRoleView("bcs");
+        const el = document.getElementById("sectionBcsCreateSpend");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const inp = document.getElementById("inputSpendRecipient");
+        if (inp) inp.focus();
+      } else if (action === "vote") {
+        selectRoleView("bcs");
+        const el = document.getElementById("bcsSpendTableBody");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function updateRecentActivitiesRail() {
+      const container = document.getElementById("railRecentActivityList");
+      if (!container) return;
+      if (!Array.isArray(allFlowItems) || allFlowItems.length === 0) {
+        container.innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:12px 0;">Chưa có hoạt động giao dịch gần đây.</div>';
+        return;
+      }
+      const items = allFlowItems.slice(0, 4);
+      let html = '';
+      items.forEach(it => {
+        let badgeClass = "badge-success";
+        let badgeText = "Đã duyệt";
+        if (it.status === "Pending" || it.status === "Đang biểu quyết") {
+          badgeClass = "badge-pending";
+          badgeText = "Đang duyệt";
+        }
+        const flowTitle = it.type === "spend" ? "Đề xuất chi" : (it.type === "refund" ? "Hoàn tiền" : "Thu nạp quỹ");
+        const amountDisplay = it.amountEth ? (it.amountEth + " ETH") : (it.amount ? (formatEth(it.amount) + " ETH") : "-- ETH");
+        html += `
+          <div class="rail-activity-item">
+            <div>
+              <div style="font-weight:700; color:var(--text-main); font-size:0.84rem;">${flowTitle} #${it.id}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml((it.description || it.reason || "").substring(0, 24))}...</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700; color:var(--primary); font-variant-numeric:tabular-nums; font-size:0.84rem;">${amountDisplay}</div>
+              <span class="status-pill ${badgeClass}" style="font-size:0.68rem; padding:1px 6px;">${badgeText}</span>
+            </div>
+          </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function updateRedesignUI(role) {
+      const currentRole = role || window.currentVerifiedRole || "none";
+      const userAddr = userAddress || "";
+
+      // 1. Update Welcome Greeting
+      const roleDisplay = document.getElementById("welcomeRoleDisplay");
+      const identDisplay = document.getElementById("welcomeIdentityDisplay");
+      if (roleDisplay) {
+        if (currentRole === "student") roleDisplay.textContent = "Sinh viên K57";
+        else if (currentRole === "bcs") roleDisplay.textContent = "Ban cán sự lớp K57";
+        else if (currentRole === "advisor") roleDisplay.textContent = "Cố vấn học tập";
+        else if (currentRole === "guest") roleDisplay.textContent = "Khách vãng lai";
+        else roleDisplay.textContent = "Bạn";
+      }
+      if (identDisplay) {
+        const studentName = document.getElementById("quickStudentIdentity")?.textContent || "";
+        if (userAddr && studentName && studentName !== "--" && !studentName.includes("Chưa xác thực")) {
+          identDisplay.textContent = studentName + " (" + shortenAddress(userAddr) + ")";
+        } else if (userAddr) {
+          identDisplay.textContent = shortenAddress(userAddr);
+        } else {
+          identDisplay.textContent = "Chưa kết nối ví";
+        }
+      }
+
+      // 2. Update Unified Wallet Chip
+      const btnConnect = document.getElementById("btnConnectWallet");
+      const chipWallet = document.getElementById("unifiedWalletChip");
+      const chipRole = document.getElementById("walletChipRoleTitle");
+      const chipAddr = document.getElementById("walletChipAddressShort");
+      const chipAvatar = document.getElementById("walletAvatarLetter");
+      const dropName = document.getElementById("walletDropdownUserName");
+
+      if (userAddr) {
+        if (btnConnect) btnConnect.style.display = "none";
+        if (chipWallet) chipWallet.style.display = "inline-flex";
+        if (chipAddr) chipAddr.textContent = shortenAddress(userAddr);
+
+        let roleText = "Sinh viên";
+        let letter = "S";
+        if (currentRole === "bcs") { roleText = "Ban cán sự"; letter = "B"; }
+        else if (currentRole === "advisor") { roleText = "Cố vấn"; letter = "C"; }
+        else if (currentRole === "guest") { roleText = "Khách"; letter = "K"; }
+
+        if (chipRole) chipRole.textContent = roleText;
+        if (chipAvatar) chipAvatar.textContent = letter;
+        if (dropName) {
+          const sName = document.getElementById("quickStudentIdentity")?.textContent || "";
+          dropName.textContent = (sName && sName !== "--") ? sName : shortenAddress(userAddr);
+        }
+      } else {
+        if (btnConnect) btnConnect.style.display = "inline-flex";
+        if (chipWallet) chipWallet.style.display = "none";
+        const dropMenu = document.getElementById("walletDropdownMenu");
+        if (dropMenu) dropMenu.classList.remove("show");
+      }
+
+      // 3. Update Action Grid Role Visibility
+      const cDeposit = document.getElementById("cardActionDeposit");
+      const cRefund = document.getElementById("cardActionRefund");
+      const cSpend = document.getElementById("cardActionSpend");
+      const cVote = document.getElementById("cardActionVote");
+      const cLedger = document.getElementById("cardActionLedger");
+      const cMembers = document.getElementById("cardActionMembers");
+      const cGov = document.getElementById("cardActionGovernance");
+
+      if (cDeposit) cDeposit.style.display = (currentRole === "advisor" ? "none" : "flex");
+      if (cRefund) cRefund.style.display = (currentRole === "advisor" ? "none" : "flex");
+      if (cSpend) cSpend.style.display = (currentRole === "bcs" ? "flex" : "none");
+      if (cVote) cVote.style.display = (currentRole === "bcs" || currentRole === "advisor" ? "flex" : "none");
+      if (cLedger) cLedger.style.display = "flex";
+      if (cMembers) cMembers.style.display = "flex";
+      if (cGov) cGov.style.display = (currentRole === "advisor" ? "flex" : "none");
+
+      // 4. Update Advanced Settings Accordion (only for Advisor)
+      const advSec = document.getElementById("sectionAdvancedSettings");
+      if (advSec) {
+        advSec.style.display = (currentRole === "advisor" ? "block" : "none");
+      }
+
+      // 5. Sync Glass Cards in Hero
+      const glassAvail = document.getElementById("heroGlassAvailable");
+      const glassRes = document.getElementById("heroGlassReserved");
+      const flowAvail = document.getElementById("flowBalClassFund")?.textContent;
+      const flowRes = document.getElementById("flowBalReserved")?.textContent;
+      if (glassAvail && flowAvail) glassAvail.textContent = flowAvail;
+      if (glassRes && flowRes) glassRes.textContent = flowRes;
     }
   </script>
 
