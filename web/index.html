@@ -11256,8 +11256,11 @@
       }
     }
 
+    let isRefreshingContractData = false;
+
     async function refreshContractData() {
-      if (!contract) return;
+      if (!contract || isRefreshingContractData) return;
+      isRefreshingContractData = true;
       try {
         logToTerminal("[Dữ liệu] Đang đồng bộ trạng thái on-chain từ Sepolia...");
 
@@ -11345,6 +11348,8 @@
         logToTerminal("[Dữ liệu] Hoàn tất đồng bộ dữ liệu hợp đồng và toàn bộ flow dòng tiền.");
       } catch (err) {
         logToTerminal(`[Lỗi đọc hợp đồng] ${err.shortMessage || err.message}`);
+      } finally {
+        isRefreshingContractData = false;
       }
     }
 
@@ -11450,6 +11455,7 @@
       }
 
       allRefundRequestsCache = [];
+      const localRefundCache = [];
       let bcsRows = "";
       let studentRows = "";
 
@@ -11464,7 +11470,7 @@
           const yesVotes = Number(req[5]);
           const status = Number(req[7]);
 
-          allRefundRequestsCache.push({
+          localRefundCache.push({
             id: refId,
             applicant: applicant,
             amount: amount,
@@ -11555,11 +11561,14 @@
         }
       }
 
+      allRefundRequestsCache = localRefundCache;
       if (bcsRefundTable) bcsRefundTable.innerHTML = bcsRows || `<tr><td colspan="8" style="text-align:center;">Không có dữ liệu</td></tr>`;
       if (studentRefundTable) studentRefundTable.innerHTML = studentRows || `<tr><td colspan="6" style="text-align:center; padding:18px; color:var(--text-muted);">Tài khoản hiện tại chưa tạo yêu cầu hoàn tiền nào.</td></tr>`;
     }
 
     // --- 9. CASH FLOW LEDGER & FLOW TRACKER ---
+    let isLoadingCashFlowLedger = false;
+
     async function loadCashFlowLedger(spendCount, refundCount, activeBcsCount, classFundWei, adminFeeWei) {
       const tableBody = document.getElementById("flowLedgerTableBody");
       const flowBalClass = document.getElementById("flowBalClassFund");
@@ -11575,107 +11584,124 @@
         linkEtherscan.href = `${CONFIG.blockExplorer}/address/${CONFIG.contractAddress}`;
       }
 
-      allFlowItems = [];
-      let totalExecutedSpendWei = 0n;
-      let executedSpendCount = 0;
-      let totalReservedWei = 0n;
+      if (isLoadingCashFlowLedger) return;
+      isLoadingCashFlowLedger = true;
 
-      // 1. Fetch reserved amounts if available
       try {
-        const resSpend = await contract.reservedSpendAmount();
-        const resRefund = await contract.reservedRefundAmount();
-        totalReservedWei = (resSpend || 0n) + (resRefund || 0n);
-      } catch (e) {
-        console.warn("Could not read reserved amounts", e);
-      }
-      if (flowBalRes) flowBalRes.textContent = formatEth(totalReservedWei) + " ETH";
+        const localFlowItems = [];
+        const seenIds = new Set();
+        let totalExecutedSpendWei = 0n;
+        let executedSpendCount = 0;
+        let totalReservedWei = 0n;
 
-      // 2. Collect all Spend Requests into ledger
-      for (let i = 1; i <= spendCount; i++) {
+        // 1. Fetch reserved amounts if available
         try {
-          const req = await contract.getSpendRequest(i);
-          const reqId = Number(req[0]);
-          const recipient = req[1];
-          const rawAmount = req[2];
-          const desc = req[3];
-          const creator = req[4];
-          const createdAt = Number(req[5]);
-          const yesVotes = Number(req[6]);
-          const status = Number(req[8]);
+          const resSpend = await contract.reservedSpendAmount();
+          const resRefund = await contract.reservedRefundAmount();
+          totalReservedWei = (resSpend || 0n) + (resRefund || 0n);
+        } catch (e) {
+          console.warn("Could not read reserved amounts", e);
+        }
+        if (flowBalRes) flowBalRes.textContent = formatEth(totalReservedWei) + " ETH";
 
-          if (status === 2) { // Executed
-            totalExecutedSpendWei += rawAmount;
-            executedSpendCount++;
+        // 2. Collect all Spend Requests into ledger
+        for (let i = 1; i <= spendCount; i++) {
+          try {
+            const req = await contract.getSpendRequest(i);
+            const reqId = Number(req[0]);
+            const recipient = req[1];
+            const rawAmount = req[2];
+            const desc = req[3];
+            const creator = req[4];
+            const createdAt = Number(req[5]);
+            const yesVotes = Number(req[6]);
+            const status = Number(req[8]);
+
+            if (status === 2) { // Executed
+              totalExecutedSpendWei += rawAmount;
+              executedSpendCount++;
+            }
+
+            const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+            // BẢO MẬT LỊCH SỬ DÒNG TIỀN (ĐỢT 3B.3):
+            // Không ghép nối Họ tên, MSSV từ danh bạ vào lịch sử công khai
+            // Chỉ hiển thị địa chỉ ví rút gọn an toàn (0x12ab...89cd)
+            const recText = shortenAddress(recipient);
+            const creText = shortenAddress(creator);
+            const itemId = `SP-${reqId}`;
+
+            if (!seenIds.has(itemId)) {
+              seenIds.add(itemId);
+              localFlowItems.push({
+                category: "spend",
+                id: itemId,
+                numId: reqId,
+                flowType: "📤 Chi tiêu",
+                badgeClass: "flow-badge-spend",
+                amountEth: formatEth(rawAmount),
+                party: `Nhận: ${recText} (Tạo: ${creText})`,
+                fullParty: `Người nhận: ${recipient} | Người tạo: ${creator}`,
+                desc: desc,
+                votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
+                statusNum: status,
+                statusBadge: getStatusBadge(status),
+                createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
+              });
+            }
+          } catch (e) {
+            console.error("Error reading spend for ledger", i, e);
           }
-
-          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
-          // BẢO MẬT LỊCH SỬ DÒNG TIỀN (ĐỢT 3B.3):
-          // Không ghép nối Họ tên, MSSV từ danh bạ vào lịch sử công khai
-          // Chỉ hiển thị địa chỉ ví rút gọn an toàn (0x12ab...89cd)
-          const recText = shortenAddress(recipient);
-          const creText = shortenAddress(creator);
-
-          allFlowItems.push({
-            category: "spend",
-            id: `SP-${reqId}`,
-            numId: reqId,
-            flowType: "📤 Chi tiêu",
-            badgeClass: "flow-badge-spend",
-            amountEth: formatEth(rawAmount),
-            party: `Nhận: ${recText} (Tạo: ${creText})`,
-            fullParty: `Người nhận: ${recipient} | Người tạo: ${creator}`,
-            desc: desc,
-            votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
-            statusNum: status,
-            statusBadge: getStatusBadge(status),
-            createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
-          });
-        } catch (e) {
-          console.error("Error reading spend for ledger", i, e);
         }
-      }
 
-      // 3. Collect all Refund Requests into ledger
-      for (let i = 1; i <= refundCount; i++) {
-        try {
-          const req = await contract.getRefundRequest(i);
-          const refId = Number(req[0]);
-          const applicant = req[1];
-          const rawAmount = req[2];
-          const reason = req[3];
-          const createdAt = Number(req[4]);
-          const yesVotes = Number(req[5]);
-          const status = Number(req[7]);
+        // 3. Collect all Refund Requests into ledger
+        for (let i = 1; i <= refundCount; i++) {
+          try {
+            const req = await contract.getRefundRequest(i);
+            const refId = Number(req[0]);
+            const applicant = req[1];
+            const rawAmount = req[2];
+            const reason = req[3];
+            const createdAt = Number(req[4]);
+            const yesVotes = Number(req[5]);
+            const status = Number(req[7]);
 
-          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
-          // BẢO MẬT LỊCH SỬ DÒNG TIỀN (ĐỢT 3B.3):
-          // Không ghép nối Họ tên, MSSV từ danh bạ vào đơn hoàn tiền trên sổ cái công khai
-          const appText = shortenAddress(applicant);
+            const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+            // BẢO MẬT LỊCH SỬ DÒNG TIỀN (ĐỢT 3B.3):
+            // Không ghép nối Họ tên, MSSV từ danh bạ vào đơn hoàn tiền trên sổ cái công khai
+            const appText = shortenAddress(applicant);
+            const itemId = `RF-${refId}`;
 
-          allFlowItems.push({
-            category: "refund",
-            id: `RF-${refId}`,
-            numId: refId,
-            flowType: "🔄 Hoàn tiền",
-            badgeClass: "flow-badge-refund",
-            amountEth: formatEth(rawAmount),
-            party: `Người nhận: ${appText}`,
-            fullParty: `Địa chỉ nhận hoàn: ${applicant}`,
-            desc: reason,
-            votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
-            statusNum: status,
-            statusBadge: getStatusBadge(status),
-            createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
-          });
-        } catch (e) {
-          console.error("Error reading refund for ledger", i, e);
+            if (!seenIds.has(itemId)) {
+              seenIds.add(itemId);
+              localFlowItems.push({
+                category: "refund",
+                id: itemId,
+                numId: refId,
+                flowType: "🔄 Hoàn tiền",
+                badgeClass: "flow-badge-refund",
+                amountEth: formatEth(rawAmount),
+                party: `Người nhận: ${appText}`,
+                fullParty: `Địa chỉ nhận hoàn: ${applicant}`,
+                desc: reason,
+                votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
+                statusNum: status,
+                statusBadge: getStatusBadge(status),
+                createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
+              });
+            }
+          } catch (e) {
+            console.error("Error reading refund for ledger", i, e);
+          }
         }
+
+        if (flowBalExec) flowBalExec.textContent = formatEth(totalExecutedSpendWei) + " ETH";
+        if (flowBalExecCount) flowBalExecCount.textContent = `${executedSpendCount} khoản chi đã giải ngân`;
+
+        allFlowItems = localFlowItems;
+        renderFlowLedgerTable(allFlowItems);
+      } finally {
+        isLoadingCashFlowLedger = false;
       }
-
-      if (flowBalExec) flowBalExec.textContent = formatEth(totalExecutedSpendWei) + " ETH";
-      if (flowBalExecCount) flowBalExecCount.textContent = `${executedSpendCount} khoản chi đã giải ngân`;
-
-      renderFlowLedgerTable(allFlowItems);
     }
 
     function renderFlowLedgerTable(items) {
@@ -11687,8 +11713,18 @@
         return;
       }
 
+      // Khử trùng lặp (Deduplicate) theo item.id để bảo đảm mỗi đề xuất chỉ hiển thị 1 dòng duy nhất
+      const uniqueItems = [];
+      const seen = new Set();
+      for (const it of items) {
+        if (it && it.id && !seen.has(it.id)) {
+          seen.add(it.id);
+          uniqueItems.push(it);
+        }
+      }
+
       let rowsHtml = "";
-      items.forEach(item => {
+      uniqueItems.forEach(item => {
         const isSpend = item.category === "spend";
         const sign = isSpend ? "- " : "~ ";
         const amountColor = isSpend ? "#ef4444" : "#ea580c";
