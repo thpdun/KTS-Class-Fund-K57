@@ -4086,7 +4086,7 @@
           <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           <span>Thành viên</span>
         </a>
-        <a href="#faq" class="nav-pill-item">
+        <a href="#guide" class="nav-pill-item">
           <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
           <span>Hướng dẫn</span>
         </a>
@@ -4303,26 +4303,103 @@
           </section>
 
           <!-- KHU VỰC CÀI ĐẶT NÂNG CAO CHO CỐ VẤN (COLLAPSIBLE ACCORDION) -->
-          <div id="sectionAdvancedSettings" class="advanced-accordion-wrapper" style="display: none;">
-            <details class="advanced-details-box" style="background:#fff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:16px 20px; box-shadow:var(--shadow-card);">
+          <div id="sectionAdvancedSettings" class="advanced-accordion-wrapper" style="display: none; margin-bottom: 24px;">
+            <details class="advanced-details-box" style="background:#fff; border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px 24px; box-shadow:var(--shadow-card);">
               <summary class="advanced-summary-btn" style="list-style:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
-                <span style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text-main);">
-                  <svg style="width:18px;height:18px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                  <span>Cài đặt &amp; Quản trị kỹ thuật nâng cao (Dành riêng cho Cố vấn)</span>
+                <span style="display:flex; align-items:center; gap:10px; font-weight:700; color:var(--text-main); font-size:1rem;">
+                  <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                  <span>Cài đặt nâng cao &amp; Quản trị kỹ thuật (Chỉ dành riêng cho Cố vấn)</span>
                 </span>
-                <span class="advanced-caret" style="color:var(--text-muted); font-size:0.85rem;">Chi tiết ▾</span>
+                <span class="advanced-caret" style="color:var(--text-muted); font-size:0.85rem; font-weight:600;">Chi tiết ▾</span>
               </summary>
-              <div style="margin-top:14px; padding-top:14px; border-top:1px dashed var(--border-color);">
-                <div class="contract-toolbar-row" style="margin-bottom:12px;">
-                  <div class="contract-input-bar">
-                    <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
+              <div style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border-color); display:flex; flex-direction:column; gap:20px;">
+                <!-- 1. Cấu hình Smart Contract -->
+                <div style="background:var(--bg-page); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:16px;">
+                  <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                    <span>⚙️</span> Địa chỉ Hợp đồng Thông minh (Smart Contract)
+                  </h4>
+                  <div class="form-group" style="margin-bottom:10px;">
+                    <label for="configContractAddress" style="font-size:0.8rem; font-weight:600;">Địa chỉ Hợp đồng (ProjectCore Address):</label>
+                    <input type="text" class="form-control" id="configContractAddress" value="" placeholder="Dán địa chỉ sau khi deploy bằng Remix IDE tại đây">
                   </div>
-                  <button class="btn btn-sm btn-primary" id="btnSaveQuickContract" type="button" title="Lưu và tải hợp đồng">Lưu &amp; Tải</button>
-                  <button class="btn btn-sm btn-outline" id="btnResetQuickContract" type="button" onclick="resetToDefaultContract()" title="Khôi phục mặc định">🔄 Đặt lại</button>
-                  <div class="quick-status-item-btn" id="itemRosterModalBtn" style="display: none; margin-left: auto;">
-                    <button class="btn btn-sm btn-outline" id="btnOpenRosterModal" type="button" onclick="openRosterModal()">
-                      <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">--</span>)
+                  <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" id="btnApplyContractAddress">Áp dụng &amp; Tải dữ liệu</button>
+                    <button class="btn btn-outline btn-sm" id="btnResetConfigContract" onclick="resetToDefaultContract()">🔄 Khôi phục mặc định</button>
+                    <a href="https://sepolia.etherscan.io" target="_blank" id="linkEtherscanContract" class="btn btn-outline btn-sm">Xem trên Sepolia Etherscan &rarr;</a>
+                  </div>
+                  <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+                    <strong>Trạng thái:</strong> <span id="textContractConfigStatus" style="color:var(--warning); font-weight:600;">Chưa cấu hình địa chỉ hợp đồng</span>
+                  </div>
+                  <div class="contract-toolbar-row" style="margin-top:12px; display:none;">
+                    <div class="contract-input-bar">
+                      <input type="text" id="quickContractAddress" placeholder="Dán địa chỉ Hợp đồng (0x...)">
+                    </div>
+                    <button class="btn btn-sm btn-primary" id="btnSaveQuickContract" type="button">Lưu &amp; Tải</button>
+                    <button class="btn btn-sm btn-outline" id="btnResetQuickContract" type="button" onclick="resetToDefaultContract()">Đặt lại</button>
+                    <div class="quick-status-item-btn" id="itemRosterModalBtn" style="display: none; margin-left: auto;">
+                      <button class="btn btn-sm btn-outline" id="btnOpenRosterModal" type="button" onclick="openRosterModal()">
+                        <span>📋</span> Quản lý Danh bạ K57 (<span id="rosterCountBadge">--</span>)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. Quản lý danh sách sinh viên on-chain & Roster Hash -->
+                <div id="sectionAdvisorManageStudents" style="background:#fff; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:16px;">
+                  <h4 style="font-size:0.95rem; font-weight:700; color:var(--primary-dark); margin-bottom:8px;">
+                    📋 Quản lý danh sách sinh viên on-chain &amp; Roster Hash
+                  </h4>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+                    Cố vấn ghi nhận danh sách ví sinh viên được phép nộp quỹ vào Smart Contract (setStudents) và cam kết mã băm danh bạ bảo mật (commitRoster).
+                  </p>
+                  <div class="form-group" style="margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <label for="inputStudentAddresses" style="margin-bottom:0; font-size:0.8rem; font-weight:600;">Danh sách địa chỉ ví sinh viên:</label>
+                      <button class="btn btn-xs btn-outline" id="btnFillRosterAddresses" style="font-size:0.75rem; padding:2px 8px;">
+                        📋 Điền nhanh từ Danh bạ lớp
+                      </button>
+                    </div>
+                    <textarea class="form-control" id="inputStudentAddresses" rows="3" placeholder="0x123..., 0x456... (mỗi địa chỉ một dòng hoặc cách nhau bởi dấu phẩy)" style="font-size:0.8rem; font-family:monospace;"></textarea>
+                    <div class="form-helper-tip" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">💡 Danh sách ví hợp lệ của sinh viên K57. Tối đa 100 ví mỗi giao dịch.</div>
+                  </div>
+                  <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+                    <button class="btn btn-purple" id="btnSetStudentsAction" style="flex:1; min-height:40px; font-size:0.85rem;">
+                      ✍️ Ghi danh sách sinh viên on-chain
                     </button>
+                    <button class="btn btn-outline" id="btnCommitRosterHashAction" style="flex:1; min-height:40px; font-size:0.85rem;">
+                      🔒 Commit Roster Hash lên chuỗi
+                    </button>
+                  </div>
+                  <!-- So khớp Roster Hash On-chain vs Backend -->
+                  <div style="background:var(--bg-page); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px 12px; font-size:0.8rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                      <strong style="color:var(--text-main);">Đối soát toàn vẹn Danh bạ (Roster Hash):</strong>
+                      <span id="rosterHashMatchBadge" class="badge bg-secondary" style="font-size:0.72rem; padding:3px 8px;">Đang đối soát...</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-family:monospace; font-size:0.75rem;">
+                      <span style="color:var(--text-muted);">Hash trên Blockchain:</span>
+                      <span id="onchainRosterHashText" style="color:var(--primary-dark); word-break:break-all;">Đang đọc...</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-family:monospace; font-size:0.75rem;">
+                      <span style="color:var(--text-muted);">Hash tính từ Danh bạ:</span>
+                      <span id="backendRosterHashText" style="color:var(--primary-dark); word-break:break-all;">Đang tính...</span>
+                    </div>
+                    <div id="rosterHashHelpHint" style="font-size:0.74rem; color:var(--text-muted); margin-top:4px; line-height:1.4;">
+                      ℹ️ Nếu Roster Hash không khớp, danh sách sinh viên ngoại chuỗi có thể đã bị sửa đổi trái phép.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Nhật ký giao dịch (Terminal) -->
+                <div style="background:#fff; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:16px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin:0;">
+                      <span>💻</span> Nhật ký giao dịch (Terminal)
+                    </h4>
+                    <button class="btn btn-outline btn-sm" onclick="clearTerminal()" style="padding:2px 10px; font-size:0.78rem;">Xóa nhật ký</button>
+                  </div>
+                  <div class="log-terminal" id="terminalLog" style="max-height:180px; overflow-y:auto; background:#0f172a; color:#10b981; font-family:monospace; font-size:0.78rem; padding:12px; border-radius:8px;">
+                    [Hệ thống] Đang tải cổng thông tin KTS Class Fund...
                   </div>
                 </div>
               </div>
@@ -4338,12 +4415,6 @@
             <button id="btnQuickSwitch" onclick="switchAccount()"></button>
             <button id="btnQuickDisconnect" onclick="disconnectWallet()"></button>
             <div id="guestWarningBanner"></div>
-            <span id="metricDepositorsCount">-</span>
-            <span id="metricDepositorsNote"></span>
-            <span id="metricSpendCount">-</span>
-            <span id="metricRefundCount">-</span>
-            <span id="metricActiveBCS">-</span>
-            <span id="metricActiveBCSNote"></span>
           </div>
         </div>
 
@@ -4925,53 +4996,12 @@
                   </button>
                 </div>
 
-                <!-- 3. Quản lý danh sách sinh viên on-chain & Roster Hash -->
-                <div id="sectionAdvisorManageStudents"
-                  style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px; margin-top: 16px;">
-                  <h4 style="font-size: 1.05rem; margin-bottom: 8px; color: var(--primary-navy);">
-                    3. Quản lý danh sách sinh viên on-chain &amp; Roster Hash
-                  </h4>
-                  <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-                    Cố vấn ghi nhận danh sách ví sinh viên được phép nộp quỹ vào Smart Contract (setStudents) và cam kết mã băm danh bạ bảo mật (commitRoster).
-                  </p>
-                  
-                  <div class="form-group" style="margin-bottom: 10px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                      <label for="inputStudentAddresses" style="margin-bottom:0;">Danh sách địa chỉ ví sinh viên:</label>
-                      <button class="btn btn-xs btn-outline" id="btnFillRosterAddresses" style="font-size:0.75rem; padding:2px 8px;">
-                        📋 Điền nhanh từ Danh bạ lớp
-                      </button>
-                    </div>
-                    <textarea class="form-control" id="inputStudentAddresses" rows="3" placeholder="0x123..., 0x456... (mỗi địa chỉ một dòng hoặc cách nhau bởi dấu phẩy)"></textarea>
-                    <div class="form-helper-tip">💡 Danh sách ví hợp lệ của sinh viên K57. Tối đa 100 ví mỗi giao dịch.</div>
-                  </div>
-                  
-                  <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                    <button class="btn btn-purple" id="btnSetStudentsAction" style="flex: 1;">
-                      ✍️ Ghi danh sách sinh viên on-chain
-                    </button>
-                    <button class="btn btn-outline" id="btnCommitRosterHashAction" style="flex: 1;">
-                      🔒 Commit Roster Hash lên chuỗi
-                    </button>
-                  </div>
-
-                  <!-- So khớp Roster Hash On-chain vs Backend -->
-                  <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; font-size: 0.82rem;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                      <strong style="color:var(--primary-navy);">Đối soát toàn vẹn Danh bạ (Roster Hash):</strong>
-                      <span id="rosterHashMatchBadge" class="badge bg-secondary" style="font-size:0.72rem; padding:3px 8px;">Đang đối soát...</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-family:monospace; font-size:0.78rem;">
-                      <span style="color:var(--text-muted);">Hash trên Blockchain:</span>
-                      <span id="onchainRosterHashText" style="color:var(--primary-navy); word-break:break-all;">Đang đọc...</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-family:monospace; font-size:0.78rem;">
-                      <span style="color:var(--text-muted);">Hash chuẩn từ Backend:</span>
-                      <span id="backendRosterHashText" style="color:var(--primary-navy); word-break:break-all;">Đang đọc...</span>
-                    </div>
+                <!-- 3. Quản lý danh sách sinh viên on-chain & Roster Hash đã được đưa vào mục Cài đặt nâng cao -->
+                <div style="background: #f8fafc; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 14px 18px; margin-top: 16px; font-size: 0.85rem; color: var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="color:var(--text-main);">📋 Cài đặt sinh viên &amp; Roster Hash:</strong> Đã chuyển vào mục <em>"Cài đặt nâng cao &amp; Quản trị kỹ thuật"</em> ở trang điều khiển chính.
                   </div>
                 </div>
-
                 <!-- 4. Giám sát giao dịch và tình hình đóng quỹ từng sinh viên -->
                 <div id="sectionAdvisorStudentMonitor"
                   style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-top: 16px;">
@@ -5067,7 +5097,33 @@
 
               <div class="panel-body">
                 <!-- PHẦN 1: TÓM TẮT CÂN ĐỐI DÒNG TIỀN HIỆN TẠI -->
-                <div class="flow-balance-grid">
+                            <!-- HÀNG CHỈ SỐ PHỤ THỐNG KÊ SỔ QUỸ (STAGE 3) -->
+            <div class="history-secondary-metrics" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:18px;">
+              <div class="history-metric-box" style="background:#f8fafc; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 14px;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Số đề xuất chi</div>
+                <div style="font-size:1.3rem; font-weight:800; color:var(--text-main); font-variant-numeric:tabular-nums;" id="metricSpendCount">-</div>
+              </div>
+              <div class="history-metric-box" style="background:#f8fafc; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 14px;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Số đơn hoàn tiền</div>
+                <div style="font-size:1.3rem; font-weight:800; color:var(--text-main); font-variant-numeric:tabular-nums;" id="metricRefundCount">-</div>
+              </div>
+              <div class="history-metric-box" style="background:#f8fafc; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 14px;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Ban cán sự hoạt động</div>
+                <div style="display:flex; align-items:baseline; gap:6px;">
+                  <span style="font-size:1.3rem; font-weight:800; color:var(--text-main); font-variant-numeric:tabular-nums;" id="metricActiveBCS">-</span>
+                  <span style="font-size:0.75rem; color:var(--text-muted);" id="metricActiveBCSNote"></span>
+                </div>
+              </div>
+              <div class="history-metric-box" style="background:#f8fafc; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 14px;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Số ví đã đóng góp</div>
+                <div style="display:flex; align-items:baseline; gap:6px;">
+                  <span style="font-size:1.3rem; font-weight:800; color:var(--text-main); font-variant-numeric:tabular-nums;" id="metricDepositorsCount">-</span>
+                  <span style="font-size:0.75rem; color:var(--text-muted);" id="metricDepositorsNote"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flow-balance-grid">
                   <div class="flow-balance-card" style="border-left: 4px solid var(--success);">
                     <div class="flow-balance-title">Quỹ lớp khả dụng (99%)</div>
                     <div class="flow-balance-val" style="color:#047857;" id="flowBalClassFund">0.0000 ETH</div>
@@ -5723,7 +5779,165 @@
       </section>
 
       <!-- CÂU HỎI THƯỜNG GẶP (FAQ ACCORDION) -->
-      <section id="faq" style="background: #f1f5f9;">
+            <!-- ======================================================== -->
+      <!-- TRANG GIỚI THIỆU & HƯỚNG DẪN HOẠT ĐỘNG (TAB HƯỚNG DẪN)    -->
+      <!-- ======================================================== -->
+      <section id="guide" class="guide-modern-section" style="padding: 56px 0; background: #ffffff; border-top: 1px solid var(--border-color);">
+        <div class="container">
+          <!-- Hero 1 câu -->
+          <div class="guide-hero-box" style="text-align: center; max-width: 820px; margin: 0 auto 44px auto;">
+            <span class="section-badge" style="background: rgba(11,107,87,0.1); color: var(--primary); font-weight: 700;">Cẩm Nang Vận Hành</span>
+            <h2 style="font-size: 2.3rem; font-weight: 800; color: var(--primary-dark); margin: 12px 0 10px 0; letter-spacing: -0.02em;">
+              Quỹ lớp minh bạch, ai cũng kiểm tra được
+            </h2>
+            <p style="font-size: 1.02rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+              Toàn bộ quy trình tài chính của lớp K57 được mã hóa vào Hợp đồng thông minh Ethereum Sepolia — loại bỏ hoàn toàn sự mập mờ, bảo đảm quyền lợi sinh viên và tự động hóa quy chế biểu quyết dân chủ.
+            </p>
+            <div style="display: inline-flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;">
+              <button class="btn btn-primary" type="button" onclick="connectWallet()" style="min-height: 46px; padding: 0 24px; font-weight: 700; border-radius: 12px;">
+                🦊 Kết nối MetaMask ngay
+              </button>
+              <a href="#faq" class="btn btn-outline" style="min-height: 46px; padding: 0 20px; border-radius: 12px; display: inline-flex; align-items: center;">
+                Tra cứu FAQ &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- 3 Thẻ Vai Trò -->
+          <div style="margin-bottom: 50px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Quy chế &amp; Quyền hạn theo 3 vai trò</h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted);">Mỗi thành viên trong tập thể đều có vai trò rõ ràng, minh bạch</p>
+            </div>
+            <div class="grid-3" style="gap: 20px;">
+              <!-- Card 1: Sinh viên -->
+              <div class="guide-role-card" style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-card);">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom: 16px;">
+                  <div style="width:40px; height:40px; border-radius:10px; background: rgba(11,107,87,0.1); color: var(--primary); display:flex; align-items:center; justify-content:center; font-size: 1.3rem;">
+                    🎓
+                  </div>
+                  <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0;">Sinh viên K57</h4>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);">Chủ nhân của nguồn quỹ lớp</span>
+                  </div>
+                </div>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: var(--primary); font-weight: 700;">•</span>
+                    <span><strong>Nộp quỹ thuận tiện:</strong> Chuyển ETH nhanh chóng qua mạng Ethereum Sepolia vào Hợp đồng lớp.</span>
+                  </li>
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: var(--primary); font-weight: 700;">•</span>
+                    <span><strong>Bảo vệ hoàn tiền Net 99%:</strong> Được quyền gửi đơn xin hoàn tiền ròng nếu nộp nhầm, tiền tự động hoàn về ví khi duyệt.</span>
+                  </li>
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: var(--primary); font-weight: 700;">•</span>
+                    <span><strong>Giám sát trực tiếp 24/7:</strong> Tra cứu mọi giao dịch thu, chi, và tỷ lệ biểu quyết on-chain không cần xin phép ai.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Card 2: Ban cán sự -->
+              <div class="guide-role-card" style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-card);">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom: 16px;">
+                  <div style="width:40px; height:40px; border-radius:10px; background: rgba(142,36,170,0.1); color: #8e24aa; display:flex; align-items:center; justify-content:center; font-size: 1.3rem;">
+                    👥
+                  </div>
+                  <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0;">Ban cán sự lớp</h4>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);">Đại diện đề xuất &amp; thực thi</span>
+                  </div>
+                </div>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: #8e24aa; font-weight: 700;">•</span>
+                    <span><strong>Tạo đề xuất chi công khai:</strong> Nhập rõ địa chỉ ví thụ hưởng, số tiền chi và lý do phục vụ hoạt động tập thể.</span>
+                  </li>
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: #8e24aa; font-weight: 700;">•</span>
+                    <span><strong>Biểu quyết dân chủ &ge;51%:</strong> Cần ít nhất 51% Ban cán sự đồng thuận trong thời hạn 7 ngày để giải ngân.</span>
+                  </li>
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: #8e24aa; font-weight: 700;">•</span>
+                    <span><strong>Phát động đợt thu on-chain:</strong> Quản lý đợt thu có mục tiêu cụ thể và đồng bộ số liệu tự động với cả lớp.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Card 3: Cố vấn học tập -->
+              <div class="guide-role-card" style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-card);">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom: 16px;">
+                  <div style="width:40px; height:40px; border-radius:10px; background: rgba(30,58,138,0.1); color: #1e3a8a; display:flex; align-items:center; justify-content:center; font-size: 1.3rem;">
+                    🛡️
+                  </div>
+                  <div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0;">Cố vấn học tập</h4>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);">Trọng tài &amp; Quản trị tối cao</span>
+                  </div>
+                </div>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: #1e3a8a; font-weight: 700;">•</span>
+                    <span><strong>Quản trị Ban cán sự:</strong> Bổ nhiệm và bãi nhiệm quyền biểu quyết của thành viên BCS (tối đa 15 người).</span>
+                  </li>
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: #1e3a8a; font-weight: 700;">•</span>
+                    <span><strong>Bảo chứng Danh bạ (Roster Hash):</strong> Cam kết mã băm SHA-256 danh sách sinh viên lên chuỗi để bảo vệ tính toàn vẹn.</span>
+                  </li>
+                  <li style="display: flex; gap: 8px;">
+                    <span style="color: #1e3a8a; font-weight: 700;">•</span>
+                    <span><strong>Rút quỹ vận hành 1%:</strong> Thu hồi adminFeePool để chi trả chi phí gas giao dịch vận hành theo chuẩn EIP-1559.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dòng tiền 4 bước -->
+          <div style="margin-bottom: 24px;">
+            <div style="text-align: center; margin-bottom: 28px;">
+              <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Quy trình dòng tiền 4 bước khép kín</h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted);">Không một ai có thể tự ý rút tiền quỹ nếu không qua đủ 4 bước chuẩn mực</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+              <!-- Bước 1 -->
+              <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+                <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 6px;">Bước 01</div>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">1. Nạp Quỹ Lớp</h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                  Sinh viên chuyển ETH vào quỹ. Hợp đồng tự động tách 99% vào ngân sách khả dụng lớp và 1% vào quỹ vận hành.
+                </p>
+              </div>
+              <!-- Bước 2 -->
+              <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+                <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 6px;">Bước 02</div>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">2. Đề Xuất Chi</h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                  Ban cán sự tạo đề xuất chi rõ người nhận và mục đích. Tiền chi được Smart Contract tạm giữ chỗ an toàn.
+                </p>
+              </div>
+              <!-- Bước 3 -->
+              <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+                <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 6px;">Bước 03</div>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">3. Biểu Quyết 51%</h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                  Ban cán sự bỏ phiếu on-chain trong 7 ngày. Khi đạt đủ &ge;51% phiếu thuận, đề xuất chuyển sang trạng thái Sẵn sàng.
+                </p>
+              </div>
+              <!-- Bước 4 -->
+              <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+                <div style="font-size: 0.78rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 6px;">Bước 04</div>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">4. Giải Ngân Tự Động</h4>
+                <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                  Bất kỳ ai cũng có thể kích hoạt thực thi giải ngân. Hợp đồng chuyển ETH trực tiếp đến ví người nhận, ghi nhật ký vĩnh viễn.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+<section id="faq" style="background: #f1f5f9;">
         <div class="container">
           <div class="section-header">
             <span class="section-badge">Giải Đáp Thắc Mắc</span>
@@ -5774,53 +5988,7 @@
       </section>
 
       <!-- MINH BẠCH VÀ CẤU HÌNH HỢP ĐỒNG -->
-      <section id="transparency" style="background: #f8fafc; border-top: 1px solid var(--border-color);">
-        <div class="container">
-          <div class="section-header">
-            <span class="section-badge">Minh Bạch Dữ Liệu</span>
-            <h2 class="section-title">Cấu Hình Hợp Đồng & Nhật Ký On-chain</h2>
-            <p class="section-desc">
-              Thông tin chi tiết về hợp đồng trên mạng thử nghiệm Ethereum Sepolia và nhật ký tương tác thời gian thực.
-            </p>
-          </div>
-
-          <div class="grid-2" style="margin-bottom: 30px;">
-            <div class="card" style="background:#fff;">
-              <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Địa chỉ Hợp đồng Thông minh (Smart Contract)</h3>
-              <div class="form-group">
-                <label for="configContractAddress">Địa chỉ Hợp đồng (ProjectCore Address):</label>
-                <input type="text" class="form-control" id="configContractAddress" value=""
-                  placeholder="Dán địa chỉ sau khi deploy bằng Remix IDE tại đây">
-              </div>
-              <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
-                <button class="btn btn-primary btn-sm" id="btnApplyContractAddress">Áp dụng & Tải dữ liệu</button>
-                <button class="btn btn-outline btn-sm" id="btnResetConfigContract" onclick="resetToDefaultContract()">🔄
-                  Khôi phục mặc định</button>
-                <a href="https://sepolia.etherscan.io" target="_blank" id="linkEtherscanContract"
-                  class="btn btn-outline btn-sm">Xem trên Sepolia Etherscan &rarr;</a>
-              </div>
-              <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-
-                <strong>Trạng thái:</strong> <span id="textContractConfigStatus"
-                  style="color: var(--warning); font-weight: 600;">Chưa cấu hình địa chỉ hợp đồng</span><br>
-                <strong>Ghi chú:</strong> Hệ thống tự động lưu địa chỉ hợp đồng vào trình duyệt của bạn sau khi bấm Áp
-                dụng.
-              </div>
-            </div>
-
-            <div class="card" style="background:#fff;">
-              <h3
-                style="font-size: 1.2rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                <span>Nhật ký giao dịch (Terminal)</span>
-                <button class="btn btn-outline btn-sm" onclick="clearTerminal()">Xóa nhật ký</button>
-              </h3>
-              <div class="log-terminal" id="terminalLog">
-                [Hệ thống] Đang tải cổng thông tin KTS Class Fund...
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section id="transparency" style="display:none !important;" aria-hidden="true"></section>
     </main>
 
     <!-- FOOTER -->
@@ -9446,11 +9614,9 @@
       const item = document.getElementById(`faq-item-${index}`);
       if (!item) return;
       const isOpen = item.classList.contains("open");
-      // Optional: If accordion style, close others, or allow multiple open
-      // Let's toggle smoothly:
-      if (isOpen) {
-        item.classList.remove("open");
-      } else {
+      // Accordion: Chỉ mở 1 câu hỏi tại một thời điểm
+      document.querySelectorAll("#faqAccordionContainer .accordion-item.open").forEach(el => el.classList.remove("open"));
+      if (!isOpen) {
         item.classList.add("open");
       }
     }
@@ -15271,6 +15437,32 @@
       const advSec = document.getElementById("sectionAdvancedSettings");
       if (advSec) {
         advSec.style.display = (currentRole === "advisor" ? "block" : "none");
+      }
+
+      // 4b. Role-based view switching & tab isolation (Stage 3)
+      const btnStudent = document.getElementById("btnRoleStudent");
+      const btnBCS = document.getElementById("btnRoleBCS");
+      const btnAdvisor = document.getElementById("btnRoleAdvisor");
+      const btnHistory = document.getElementById("btnRoleHistory");
+
+      if (btnStudent && btnBCS && btnAdvisor) {
+        if (currentRole === "student") {
+          btnStudent.style.display = "inline-flex";
+          btnBCS.style.display = "none";
+          btnAdvisor.style.display = "none";
+        } else if (currentRole === "bcs") {
+          btnStudent.style.display = "inline-flex";
+          btnBCS.style.display = "inline-flex";
+          btnAdvisor.style.display = "none";
+        } else if (currentRole === "advisor") {
+          btnStudent.style.display = "none";
+          btnBCS.style.display = "inline-flex";
+          btnAdvisor.style.display = "inline-flex";
+        } else {
+          btnStudent.style.display = "inline-flex";
+          btnBCS.style.display = "inline-flex";
+          btnAdvisor.style.display = "inline-flex";
+        }
       }
 
       // 5. Sync Glass Cards in Hero
