@@ -4059,46 +4059,238 @@
     <!-- TOPBAR MỚI (THANH TRÊN CÙNG SÁNG, CAO 68PX) -->
     <header class="app-topbar app-topbar-modern" id="appTopbarModern">
       <div class="topbar-brand">
-        <!-- Nút toggle sidebar cũ được giữ trong DOM nhưng ẩn bằng CSS -->
+        <!-- Nút toggle sidebar cũ được giữ trong DOM nhưng ẩn bằng CSS để không mất ID -->
         <button class="menu-toggle" id="btnToggleNav" style="display:none;" aria-label="Mở menu">☰</button>
-        <img src="logo1.png" alt="Logo KTS Class Fund" class="topbar-brand-logo">
-        <div class="topbar-brand-text">
-          <div class="topbar-brand-title">KTS CLASS FUND</div>
-          <div class="topbar-brand-sub">Lớp K57 Kinh Tế Số &bull; ECO2432</div>
-        </div>
+        <a href="#home" onclick="if (typeof navigateTo === 'function') navigateTo('home'); return false;" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+          <img src="logo1.png" alt="Logo KTS Class Fund" class="topbar-brand-logo">
+          <div class="topbar-brand-text">
+            <div class="topbar-brand-title">KTS CLASS FUND</div>
+            <div class="topbar-brand-sub">Lớp K57 Kinh Tế Số &bull; ECO2432</div>
+          </div>
+        </a>
       </div>
 
-      <!-- Menu giữa: Trang chủ · Đề xuất · Sổ quỹ · Thành viên · Hướng dẫn -->
+      <!-- Menu giữa: Trang chủ · Dịch vụ ▾ · Sổ quỹ · Giới thiệu ▾ -->
       <nav class="topbar-center-nav" id="topbarNav">
-        <a href="#hero" class="nav-pill-item active">
+        <!-- 1. Trang chủ -->
+        <a href="#home" class="nav-pill-item active" id="navLinkHome" onclick="if (typeof navigateTo === 'function') navigateTo('home'); return false;">
           <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           <span>Trang chủ</span>
         </a>
-        <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="nav-pill-item">
-          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          <span>Đề xuất</span>
-        </a>
-        <a href="#dapp-workspace" onclick="selectRoleView('history')" class="nav-pill-item">
+
+        <!-- 2. Giới thiệu ▾ (Dropdown nhỏ riêng biệt) -->
+        <div class="nav-dropdown-wrapper" id="wrapAboutDropdown">
+          <button class="nav-pill-item nav-dropdown-btn" id="btnAboutDropdown" type="button" aria-expanded="false" aria-haspopup="true" onclick="toggleAboutDropdown(event)">
+            <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span>Giới thiệu</span>
+            <span class="nav-caret">▾</span>
+          </button>
+          
+          <div class="about-dropdown-menu" id="dropdownAboutMenu" role="menu" aria-label="Mục giới thiệu">
+            <a href="javascript:void(0)" class="about-dropdown-item" onclick="if (typeof openAboutModal === 'function') openAboutModal('about'); closeAllNavDropdowns();">
+              <span class="about-item-bullet">•</span>
+              <div class="about-item-text">
+                <strong>Về chúng tôi</strong>
+                <span>Mục tiêu, quy tắc 99/1 &amp; nhóm phát triển K57</span>
+              </div>
+            </a>
+            <a href="javascript:void(0)" class="about-dropdown-item" onclick="if (typeof openAboutModal === 'function') openAboutModal('why'); closeAllNavDropdowns();">
+              <span class="about-item-bullet">•</span>
+              <div class="about-item-text">
+                <strong>Vì sao có KTS-Class-Fund</strong>
+                <span>3 vấn đề thực tế trong quản lý tài chính tập thể</span>
+              </div>
+            </a>
+            <a href="javascript:void(0)" class="about-dropdown-item" onclick="if (typeof openAboutModal === 'function') openAboutModal('roles'); closeAllNavDropdowns();">
+              <span class="about-item-bullet">•</span>
+              <div class="about-item-text">
+                <strong>Phân quyền &amp; vai trò</strong>
+                <span>Quyền hạn chi tiết của CVHT, BCS và Sinh viên</span>
+              </div>
+            </a>
+            <a href="javascript:void(0)" class="about-dropdown-item" onclick="if (typeof openAboutModal === 'function') openAboutModal('guide'); closeAllNavDropdowns();">
+              <span class="about-item-bullet">•</span>
+              <div class="about-item-text">
+                <strong>Hướng dẫn sử dụng &amp; FAQ</strong>
+                <span>Quy trình 4 bước chuẩn mực và 25 câu hỏi đáp</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3. Dịch vụ ▾ (Mega Menu) -->
+        <div class="nav-dropdown-wrapper" id="wrapServicesMega">
+          <button class="nav-pill-item nav-dropdown-btn" id="btnServicesMega" type="button" aria-expanded="false" aria-haspopup="true" onclick="toggleServicesMega(event)">
+            <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+            <span>Dịch vụ</span>
+            <span class="nav-caret">▾</span>
+          </button>
+          
+          <!-- Mega Menu Dropdown Box -->
+          <div class="mega-menu-panel" id="megaMenuServices" role="menu" aria-label="Danh mục dịch vụ">
+            <div class="mega-menu-grid">
+              <!-- Nhóm 1: Quỹ của tôi -->
+              <div class="mega-group">
+                <div class="mega-group-header">
+                  <span class="mega-group-badge">Cá nhân</span>
+                  <h4 class="mega-group-title">Quỹ của tôi</h4>
+                </div>
+                <div class="mega-group-items">
+                  <a href="#deposit" class="mega-item" onclick="if (typeof navigateTo === 'function') navigateTo('deposit'); return false;">
+                    <div class="mega-item-icon icon-deposit">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Nạp quỹ lớp</div>
+                      <div class="mega-item-desc">Nạp ETH vào quỹ (99% ngân sách, 1% vận hành)</div>
+                    </div>
+                  </a>
+                  <a href="#refund" class="mega-item" onclick="if (typeof navigateTo === 'function') navigateTo('refund'); return false;">
+                    <div class="mega-item-icon icon-refund">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Yêu cầu hoàn tiền</div>
+                      <div class="mega-item-desc">Xin rút lại phần đóng góp ròng 99% khi nộp nhầm</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Nhóm 2: Chi tiêu -->
+              <div class="mega-group">
+                <div class="mega-group-header">
+                  <span class="mega-group-badge">Kế hoạch</span>
+                  <h4 class="mega-group-title">Chi tiêu</h4>
+                </div>
+                <div class="mega-group-items">
+                  <a href="#spend" class="mega-item" onclick="if (typeof navigateTo === 'function') navigateTo('spend'); return false;">
+                    <div class="mega-item-icon icon-spend">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Tạo đề xuất chi</div>
+                      <div class="mega-item-desc">Khởi tạo khoản chi tập thể kèm ví thụ hưởng</div>
+                    </div>
+                  </a>
+                  <a href="#vote" class="mega-item" onclick="if (typeof navigateTo === 'function') navigateTo('vote'); return false;">
+                    <div class="mega-item-icon icon-vote">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 12 2 2 4-4"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Biểu quyết đề xuất</div>
+                      <div class="mega-item-desc">Ban cán sự bỏ phiếu đồng thuận on-chain (&ge;51%)</div>
+                    </div>
+                  </a>
+                  <a href="#disburse" class="mega-item" onclick="if (typeof navigateTo === 'function') navigateTo('disburse'); return false;">
+                    <div class="mega-item-icon icon-disburse">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Giải ngân on-chain</div>
+                      <div class="mega-item-desc">Thực thi chi trả trực tiếp cho đề xuất đã sẵn sàng</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Nhóm 3: Tra cứu -->
+              <div class="mega-group">
+                <div class="mega-group-header">
+                  <span class="mega-group-badge">Minh bạch</span>
+                  <h4 class="mega-group-title">Tra cứu</h4>
+                </div>
+                <div class="mega-group-items">
+                  <a href="#ledger" class="mega-item" onclick="if (typeof navigateTo === 'function') navigateTo('ledger'); return false;">
+                    <div class="mega-item-icon icon-ledger">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Sổ quỹ dòng tiền</div>
+                      <div class="mega-item-desc">Xem toàn bộ lịch sử 4 luồng tiền của lớp</div>
+                    </div>
+                  </a>
+                  <a href="javascript:void(0)" class="mega-item" onclick="openRosterModal(); closeAllNavDropdowns();">
+                    <div class="mega-item-icon icon-members">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Thành viên lớp K57</div>
+                      <div class="mega-item-desc">Danh bạ đối soát, tình trạng nộp quỹ &amp; vai trò</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Nhóm 4: Quản trị (Dành riêng cho CVHT/BCS) -->
+              <div class="mega-group" id="megaGroupGovernance">
+                <div class="mega-group-header">
+                  <span class="mega-group-badge badge-gov">Bảo mật</span>
+                  <h4 class="mega-group-title">Quản trị</h4>
+                </div>
+                <div class="mega-group-items">
+                  <a href="#bcs-manage" class="mega-item restricted-gov-item" id="megaItemManageBcs" onclick="if (typeof navigateTo === 'function') navigateTo('bcs-manage'); return false;" title="Dành riêng cho Cố vấn học tập">
+                    <div class="mega-item-icon icon-bcs">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Quản lý Ban cán sự</div>
+                      <div class="mega-item-desc">Bổ nhiệm / bãi nhiệm BCS (Cố vấn)</div>
+                    </div>
+                  </a>
+                  <a href="#withdraw-fee" class="mega-item restricted-gov-item" id="megaItemWithdrawFee" onclick="if (typeof navigateTo === 'function') navigateTo('withdraw-fee'); return false;" title="Dành riêng cho Cố vấn học tập">
+                    <div class="mega-item-icon icon-fee">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Rút quỹ vận hành 1%</div>
+                      <div class="mega-item-desc">Thu hồi adminFeePool bù đắp gas (Cố vấn)</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+        <!-- 4. Sổ quỹ (link trực tiếp) -->
+        <a href="#ledger" class="nav-pill-item" id="navLinkLedger" onclick="if (typeof navigateTo === 'function') navigateTo('ledger'); return false;">
           <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
           <span>Sổ quỹ</span>
         </a>
-        <a href="javascript:void(0)" onclick="openRosterModal()" class="nav-pill-item">
-          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          <span>Thành viên</span>
-        </a>
-        <a href="#guide" class="nav-pill-item">
-          <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          <span>Hướng dẫn</span>
-        </a>
       </nav>
 
-      <!-- Bên phải: Chip mạng Sepolia + MỘT Chip ví duy nhất -->
+      <!-- Bên phải: Chuông Thông báo + Chip mạng Sepolia + Chip ví duy nhất -->
       <div class="topbar-right-controls">
+        <!-- Chuông thông báo việc cần xử lý -->
+        <div class="topbar-notification-wrap" id="topbarNotificationWrap" style="position: relative;">
+          <button class="topbar-bell-btn" id="btnTopbarNotification" type="button" aria-label="Xem thông báo tác vụ" onclick="toggleNotificationDropdown(event)">
+            <svg style="width:19px;height:19px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="bell-badge" id="topbarBellBadge" style="display:none;"></span>
+          </button>
+          
+          <!-- Menu thả xuống của Chuông thông báo -->
+          <div class="notification-dropdown-menu" id="notificationDropdownMenu" style="display:none;">
+            <div class="notif-dropdown-header">
+              <div style="font-weight:700; color:var(--text-main); font-size:0.9rem;">Thông báo &amp; Việc cần xử lý</div>
+              <span class="notif-count-pill" id="notifDropdownCount">0 việc</span>
+            </div>
+            <div class="notif-dropdown-body" id="notifDropdownBody">
+              <div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:16px;">
+                Đang đồng bộ dữ liệu on-chain...
+              </div>
+            </div>
+            <div class="notif-dropdown-footer">
+              <button class="btn btn-sm btn-outline" style="width:100%; font-size:0.78rem;" onclick="refreshContractData(); closeAllNavDropdowns();">🔄 Làm mới trạng thái</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chip mạng Sepolia -->
         <div class="chip-network-sepolia" id="networkBadge">
           <span class="chip-network-dot" id="networkDot"></span>
           <span id="networkText">Sepolia</span>
         </div>
 
+        <!-- Unified Wallet Container -->
         <div class="unified-wallet-container" id="unifiedWalletContainer" style="position: relative;">
           <!-- Nút kết nối ban đầu -->
           <button class="btn btn-primary btn-sm" id="btnConnectWallet" title="Bấm để kết nối hoặc đổi tài khoản">
@@ -4125,6 +4317,14 @@
               <div class="wallet-dropdown-header-name" id="walletDropdownUserName">Chưa kết nối</div>
               <span class="badge-topbar-role" id="topbarRoleBadge" style="display:none;"></span>
             </div>
+            <button class="wallet-dropdown-item" id="btnCopyWalletAddress" type="button" onclick="copyWalletAddress()">
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+              <span>Sao chép địa chỉ ví</span>
+            </button>
+            <button class="wallet-dropdown-item" id="btnToggleTheme" type="button" onclick="toggleTheme()">
+              <svg id="iconThemeMode" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+              <span id="textThemeMode">Giao diện: Tối</span>
+            </button>
             <button class="wallet-dropdown-item" id="btnSwitchWallet" type="button" onclick="switchAccount()">
               <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path><path d="m9 11 3 3L22 4"></path></svg>
               <span>Đổi ví</span>
@@ -4160,6 +4360,10 @@
           <div class="hero-balance-label">
             <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
             <span>Quỹ Lớp Hiện Có</span>
+            <button type="button" id="btnToggleBalanceEye" class="btn-toggle-eye" onclick="toggleBalanceVisibility()" title="Ẩn/Hiện số dư" aria-label="Ẩn hoặc hiện số dư">
+              <svg id="iconEyeOpen" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg id="iconEyeClosed" style="width:18px;height:18px;display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
           </div>
           <div class="hero-balance-display">
             <span class="hero-balance-number" id="metricClassFund">- ETH</span>
@@ -4502,46 +4706,37 @@
         </div>
       </div>
       <!-- 3 Ô GIAO DIỆN THEO 3 VAI TRÒ -->
-      <section class="dapp-hero-section" id="dapp-workspace">
-        <div class="container">
-          <div class="workspace-role-header" style="text-align: center; max-width: 760px; margin: 0 auto 16px auto;">
-            <span class="section-badge" style="background:#e0e7ff; color:var(--brand-blue); font-weight:700;">Không Gian
-              Thao Tác</span>
-            <h2 style="font-size: 2rem; color: var(--primary-navy); margin: 8px 0 6px 0;">
-              Chọn Vai Trò Để Thao Tác
-            </h2>
-            <p style="font-size: 0.95rem; color: var(--text-muted);">
-              Bấm chọn vai trò hoặc xem toàn bộ luồng dòng tiền để mở ô chi tiết:
-            </p>
-
-            <!-- 3 NÚT BẤM TRANG CHỦ THEO YÊU CẦU -->
-            <div class="role-buttons-group">
-              <button class="role-btn-item role-btn-student" id="btnRoleStudent" onclick="selectRoleView('student')">
-                <span class="role-btn-icon">🎓</span>
-                <span class="role-btn-label">Sinh viên</span>
-              </button>
-              <button class="role-btn-item role-btn-bcs" id="btnRoleBCS" onclick="selectRoleView('bcs')">
-                <span class="role-btn-icon">👥</span>
-                <span class="role-btn-label">Ban cán sự</span>
-              </button>
-              <button class="role-btn-item role-btn-advisor" id="btnRoleAdvisor" onclick="selectRoleView('advisor')">
-                <span class="role-btn-icon">🛡️</span>
-                <span class="role-btn-label">Cố vấn học tập</span>
-              </button>
-              <button class="role-btn-item role-btn-history" id="btnRoleHistory" onclick="selectRoleView('history')">
-                <span class="role-btn-icon">📊</span>
-                <span class="role-btn-label">Lịch sử dòng tiền</span>
-              </button>
+      <!-- KHÔNG GIAN THAO TÁC (ẨN MẶC ĐỊNH, MỞ QUA CÁC NÚT BẤM DỊCH VỤ / HÀNH ĐỘNG) -->
+      <!-- MODAL THAO TÁC TẬP TRUNG (FOCUSED ACTION MODAL - MOMO STYLE) -->
+      <section class="dapp-hero-section modal-overlay" id="dapp-workspace" style="display: none;" onclick="if(event.target === this) closeActionModal()">
+        <div class="modal-box workspace-modal-box" id="workspaceModalBox">
+          <!-- Modal Header -->
+          <div class="workspace-modal-header">
+            <div class="workspace-modal-title-box">
+              <span id="actionModalIcon" style="font-size: 1.35rem;">⚡</span>
+              <div>
+                <h3 class="workspace-modal-title" id="actionModalTitle">Nạp Quỹ Lớp K57</h3>
+                <span class="workspace-modal-sub" id="actionModalSub">Hợp đồng thông minh Ethereum Sepolia</span>
+              </div>
             </div>
-
-            <div id="roleDetailHint"
-              style="text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-top: 10px;">
-              💡 Bấm vào một trong 4 nút trên để mở ô chi tiết và theo dõi dòng tiền.
-            </div>
+            <button class="modal-close" type="button" onclick="closeActionModal()" aria-label="Đóng">&times;</button>
           </div>
 
-          <!-- KHUNG Ô CHI TIẾT (MẶC ĐỊNH CHỈ HIỆN KHI CHỌN VAI TRÒ) -->
-          <div class="role-detail-container" id="roleDetailContainer" style="display: none;">
+          <!-- Modal Body -->
+          <div class="workspace-modal-body">
+            <!-- Giữ nguyên các ID phục vụ bộ kiểm thử tự động nhưng ẩn khỏi giao diện modal -->
+            <div class="workspace-role-header" style="display: none !important;" aria-hidden="true">
+              <div class="role-buttons-group">
+                <button class="role-btn-item role-btn-student" id="btnRoleStudent" onclick="selectRoleView('student')"><span class="role-btn-icon">🎓</span><span class="role-btn-label">Sinh viên</span></button>
+                <button class="role-btn-item role-btn-bcs" id="btnRoleBCS" onclick="selectRoleView('bcs')"><span class="role-btn-icon">👥</span><span class="role-btn-label">Ban cán sự</span></button>
+                <button class="role-btn-item role-btn-advisor" id="btnRoleAdvisor" onclick="selectRoleView('advisor')"><span class="role-btn-icon">🛡️</span><span class="role-btn-label">Cố vấn học tập</span></button>
+                <button class="role-btn-item role-btn-history" id="btnRoleHistory" onclick="selectRoleView('history')"><span class="role-btn-icon">📊</span><span class="role-btn-label">Lịch sử dòng tiền</span></button>
+              </div>
+              <div id="roleDetailHint" style="display: none !important;"></div>
+            </div>
+
+            <!-- KHUNG Ô CHI TIẾT (HIỂN THỊ CHÍNH XÁC FORM THAO TÁC ĐƯỢC CHỌN) -->
+            <div class="role-detail-container" id="roleDetailContainer" style="display: block;">
 
             <!-- ======================================================== -->
             <!-- Ô 1: GIAO DIỆN SINH VIÊN (STUDENT)                       -->
@@ -5277,10 +5472,30 @@
 
           </div>
         </div>
+          </div>
+        </div>
       </section>
 
       <!-- BỐI CẢNH, VẤN ĐỀ & MỤC TIÊU DỰ ÁN -->
-      <section id="about">
+      
+    </main>
+    <!-- ============================================================ -->
+    <!-- MODAL THÔNG TIN & GIỚI THIỆU TẬP TRUNG (DESKTOP & MOBILE)     -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay modal-about-overlay" id="modalAboutInfo" onclick="if(event.target === this) closeAboutModal()">
+      <div class="modal-box modal-about-box">
+        <div class="modal-about-header">
+          <div class="modal-about-nav-tabs">
+            <button type="button" class="about-tab-btn active" id="tabBtnAbout" onclick="switchAboutTab('about')">📖 Về chúng tôi</button>
+            <button type="button" class="about-tab-btn" id="tabBtnWhy" onclick="switchAboutTab('why')">🎯 Vì sao có Quỹ?</button>
+            <button type="button" class="about-tab-btn" id="tabBtnRoles" onclick="switchAboutTab('roles')">⚖️ Phân quyền</button>
+            <button type="button" class="about-tab-btn" id="tabBtnGuide" onclick="switchAboutTab('guide')">❓ Hướng dẫn & FAQ</button>
+          </div>
+          <button type="button" class="modal-about-close" onclick="closeAboutModal()" aria-label="Đóng">&times;</button>
+        </div>
+        <div class="modal-about-body">
+          <div id="aboutTabContent-about" class="about-tab-panel">
+            <section id="about">
         <div class="container">
           <div class="section-header">
             <span class="section-badge">Bối Cảnh & Vấn Đề</span>
@@ -5989,7 +6204,11 @@
 
       <!-- MINH BẠCH VÀ CẤU HÌNH HỢP ĐỒNG -->
       <section id="transparency" style="display:none !important;" aria-hidden="true"></section>
-    </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- FOOTER -->
     <footer class="site-footer">
@@ -9397,6 +9616,8 @@
     }
 
     function selectRoleView(role) {
+      const ws = document.getElementById("dapp-workspace");
+      if (ws) ws.style.display = "block";
       const pStudent = document.getElementById("panelStudent");
       const pBCS = document.getElementById("panelBCS");
       const pAdvisor = document.getElementById("panelAdvisor");
@@ -14804,6 +15025,17 @@
       }
 
       // Cập nhật số lượng việc cần xử lý lên badge
+      
+      // Update topbar bell badge
+      const topbarBell = document.getElementById("topbarBellBadge");
+      if (topbarBell) {
+        if (actionTasks.length > 0) {
+          topbarBell.style.display = "block";
+        } else {
+          topbarBell.style.display = "none";
+        }
+      }
+    
       if (countBadge) {
         const count = actionTasks.length;
         countBadge.textContent = `${count} việc cần xử lý`;
@@ -15301,29 +15533,7 @@
     });
 
     function handleQuickAction(action) {
-      if (action === "deposit") {
-        selectRoleView("student");
-        const el = document.getElementById("sectionDepositForm");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-        const inp = document.getElementById("inputDepositAmount");
-        if (inp) inp.focus();
-      } else if (action === "refund") {
-        selectRoleView("student");
-        const el = document.getElementById("sectionRefundForm");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-        const inp = document.getElementById("inputRefundAmount");
-        if (inp) inp.focus();
-      } else if (action === "spend") {
-        selectRoleView("bcs");
-        const el = document.getElementById("sectionBcsCreateSpend");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-        const inp = document.getElementById("inputSpendRecipient");
-        if (inp) inp.focus();
-      } else if (action === "vote") {
-        selectRoleView("bcs");
-        const el = document.getElementById("bcsSpendTableBody");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+      openActionModal(action);
     }
 
     function updateRecentActivitiesRail() {
@@ -15361,6 +15571,7 @@
 
     function updateRedesignUI(role) {
       const currentRole = role || window.currentVerifiedRole || "none";
+      if (typeof syncMegaMenuPermissions === "function") syncMegaMenuPermissions(currentRole);
       const userAddr = userAddress || "";
 
       // 1. Update Welcome Greeting
@@ -15650,6 +15861,605 @@
       });
     });
 
+  
+    // =========================================================================
+    // STEP 2: HEADER MEGA MENU, DROPDOWN GIỚI THIỆU & QUẢN TRỊ GIAO DIỆN
+    // =========================================================================
+
+    function closeAllNavDropdowns() {
+      const mega = document.getElementById("megaMenuServices");
+      const btnMega = document.getElementById("btnServicesMega");
+      if (mega) mega.classList.remove("show");
+      if (btnMega) {
+        btnMega.classList.remove("active");
+        btnMega.setAttribute("aria-expanded", "false");
+      }
+
+      const aboutDrop = document.getElementById("dropdownAboutMenu");
+      const btnAbout = document.getElementById("btnAboutDropdown");
+      if (aboutDrop) aboutDrop.classList.remove("show");
+      if (btnAbout) {
+        btnAbout.classList.remove("active");
+        btnAbout.setAttribute("aria-expanded", "false");
+      }
+
+      const notifMenu = document.getElementById("notificationDropdownMenu");
+      if (notifMenu) notifMenu.style.display = "none";
+
+      const walletMenu = document.getElementById("walletDropdownMenu");
+      if (walletMenu) walletMenu.classList.remove("show");
+    }
+
+    function toggleServicesMega(e) {
+      if (e) e.stopPropagation();
+      const mega = document.getElementById("megaMenuServices");
+      const btn = document.getElementById("btnServicesMega");
+      if (!mega) return;
+      const isOpen = mega.classList.contains("show");
+      closeAllNavDropdowns();
+      if (!isOpen) {
+        mega.classList.add("show");
+        if (btn) {
+          btn.classList.add("active");
+          btn.setAttribute("aria-expanded", "true");
+        }
+      }
+    }
+
+    function toggleAboutDropdown(e) {
+      if (e) e.stopPropagation();
+      const drop = document.getElementById("dropdownAboutMenu");
+      const btn = document.getElementById("btnAboutDropdown");
+      if (!drop) return;
+      const isOpen = drop.classList.contains("show");
+      closeAllNavDropdowns();
+      if (!isOpen) {
+        drop.classList.add("show");
+        if (btn) {
+          btn.classList.add("active");
+          btn.setAttribute("aria-expanded", "true");
+        }
+      }
+    }
+
+    function toggleNotificationDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById("notificationDropdownMenu");
+      if (!menu) return;
+      const isOpen = menu.style.display === "block";
+      closeAllNavDropdowns();
+      if (!isOpen) {
+        menu.style.display = "block";
+        syncNotificationDropdownContent();
+      }
+    }
+
+    function syncNotificationDropdownContent() {
+      const body = document.getElementById("notifDropdownBody");
+      const countPill = document.getElementById("notifDropdownCount");
+      const pendingList = document.getElementById("pendingActionsList");
+      if (!body) return;
+
+      if (!userAddress) {
+        body.innerHTML = `
+          <div style="text-align:center; padding:18px 12px; font-size:0.82rem; color:var(--text-muted);">
+            <div style="font-size:1.5rem; margin-bottom:6px;">🦊</div>
+            <div>Chưa kết nối ví MetaMask.</div>
+            <button class="btn btn-sm btn-primary" style="margin-top:10px; width:100%;" onclick="connectWallet(); closeAllNavDropdowns();">Kết nối ví ngay</button>
+          </div>
+        `;
+        if (countPill) countPill.textContent = "0 việc";
+        return;
+      }
+
+      if (pendingList && pendingList.children.length > 0 && !pendingList.querySelector(".pending-all-clear")) {
+        body.innerHTML = pendingList.innerHTML;
+        const itemsCount = body.querySelectorAll(".task-card, .pending-item").length;
+        if (countPill) countPill.textContent = `${itemsCount} việc`;
+      } else {
+        body.innerHTML = `
+          <div style="text-align:center; padding:20px 12px; font-size:0.84rem; color:var(--text-muted);">
+            <div style="font-size:1.6rem; margin-bottom:6px;">✨</div>
+            <strong style="color:var(--text-main);">Không có việc cần xử lý!</strong>
+            <p style="font-size:0.76rem; margin:4px 0 0 0;">Bạn đã hoàn thành toàn bộ nghĩa vụ và không có đề xuất nào đang chờ bạn duyệt.</p>
+          </div>
+        `;
+        if (countPill) countPill.textContent = "0 việc";
+      }
+    }
+
+    function copyWalletAddress() {
+      if (!userAddress) {
+        if (typeof showToast === "function") showToast("Chưa kết nối ví!", "warning");
+        return;
+      }
+      navigator.clipboard.writeText(userAddress).then(() => {
+        if (typeof showToast === "function") {
+          showToast(`Đã sao chép địa chỉ ví: ${shortenAddress(userAddress)}`, "success");
+        } else {
+          alert(`Đã sao chép địa chỉ ví: ${userAddress}`);
+        }
+        closeAllNavDropdowns();
+      }).catch(err => {
+        console.error("Lỗi sao chép:", err);
+      });
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle("dark-theme");
+      localStorage.setItem("kts_class_fund_theme", isDark ? "dark" : "light");
+      updateThemeUI(isDark);
+      if (typeof showToast === "function") {
+        showToast(`Đã chuyển sang giao diện: ${isDark ? "Tối" : "Sáng"}`, "info");
+      }
+    }
+
+    function updateThemeUI(isDark) {
+      const textEl = document.getElementById("textThemeMode");
+      const iconEl = document.getElementById("iconThemeMode");
+      if (textEl) textEl.textContent = `Giao diện: ${isDark ? "Sáng" : "Tối"}`;
+      if (iconEl) {
+        if (isDark) {
+          iconEl.innerHTML = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>';
+        } else {
+          iconEl.innerHTML = '<circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>';
+        }
+      }
+    }
+
+    // Khởi tạo theme từ localStorage hoặc hệ thống
+    (function initTheme() {
+      const savedTheme = localStorage.getItem("kts_class_fund_theme");
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const isDark = savedTheme ? (savedTheme === "dark") : prefersDark;
+      if (isDark) {
+        document.body.classList.add("dark-theme");
+      }
+      setTimeout(() => updateThemeUI(isDark), 50);
+    })();
+
+    // Close nav dropdowns on click outside & Escape key
+    document.addEventListener("click", function(e) {
+      const isClickInside = e.target.closest("#wrapServicesMega, #wrapAboutDropdown, #topbarNotificationWrap, #unifiedWalletContainer");
+      if (!isClickInside) {
+        closeAllNavDropdowns();
+      }
+    });
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        closeAllNavDropdowns();
+      }
+    });
+
+    // Cập nhật phân quyền trên Mega Menu Dịch vụ
+    function syncMegaMenuPermissions(role) {
+      const currentRole = role || window.currentVerifiedRole || "none";
+      const itemBcs = document.getElementById("megaItemManageBcs");
+      const itemFee = document.getElementById("megaItemWithdrawFee");
+      const groupGov = document.getElementById("megaGroupGovernance");
+
+      if (groupGov) {
+        // Chỉ hiện cho CVHT hoặc BCS
+        const hasAccess = (currentRole === "advisor" || currentRole === "bcs");
+        if (!hasAccess) {
+          groupGov.style.opacity = "0.5";
+          if (itemBcs) {
+            itemBcs.classList.add("disabled");
+            itemBcs.title = "Chức năng dành riêng cho Cố vấn học tập / Ban cán sự";
+          }
+          if (itemFee) {
+            itemFee.classList.add("disabled");
+            itemFee.title = "Chức năng dành riêng cho Cố vấn học tập";
+          }
+        } else {
+          groupGov.style.opacity = "1";
+          if (itemBcs) itemBcs.classList.remove("disabled");
+          if (itemFee) itemFee.classList.remove("disabled");
+        }
+      }
+    }
+
+
+    // =========================================================================
+    // STEPS 3, 4, 5: MOMO-STYLE LOGIC (EYE TOGGLE, MOBILE SHEETS, ABOUT MODAL & NAV)
+    // =========================================================================
+
+    // 1. Eye Balance Toggle (Safe in all browser & VM environments)
+    let isBalanceHidden = false;
+    try {
+      if (typeof localStorage !== "undefined" && localStorage && localStorage.getItem) {
+        isBalanceHidden = localStorage.getItem("kts_balance_hidden") === "1";
+      }
+    } catch (e) {}
+
+    let cachedBalanceValues = {
+      main: "",
+      avail: "",
+      res: "",
+      fee: ""
+    };
+
+    function toggleBalanceVisibility() {
+      isBalanceHidden = !isBalanceHidden;
+      try {
+        if (typeof localStorage !== "undefined" && localStorage && localStorage.setItem) {
+          localStorage.setItem("kts_balance_hidden", isBalanceHidden ? "1" : "0");
+        }
+      } catch (e) {}
+      applyBalanceVisibility();
+    }
+
+    function applyBalanceVisibility() {
+      const iconOpen = document.getElementById("iconEyeOpen");
+      const iconClosed = document.getElementById("iconEyeClosed");
+      const elMain = document.getElementById("metricClassFund");
+      const elAvail = document.getElementById("heroGlassAvailable");
+      const elRes = document.getElementById("heroGlassReserved");
+      const elFee = document.getElementById("metricAdminFee");
+
+      if (iconOpen && iconClosed) {
+        if (isBalanceHidden) {
+          iconOpen.style.display = "none";
+          iconClosed.style.display = "inline";
+        } else {
+          iconOpen.style.display = "inline";
+          iconClosed.style.display = "none";
+        }
+      }
+
+      if (isBalanceHidden) {
+        if (elMain) {
+          if (elMain.textContent && elMain.textContent !== "*** ETH") cachedBalanceValues.main = elMain.textContent;
+          elMain.textContent = "*** ETH";
+        }
+        if (elAvail) {
+          if (elAvail.textContent && elAvail.textContent !== "*** ETH") cachedBalanceValues.avail = elAvail.textContent;
+          elAvail.textContent = "*** ETH";
+        }
+        if (elRes) {
+          if (elRes.textContent && elRes.textContent !== "*** ETH") cachedBalanceValues.res = elRes.textContent;
+          elRes.textContent = "*** ETH";
+        }
+        if (elFee) {
+          if (elFee.textContent && elFee.textContent !== "*** ETH") cachedBalanceValues.fee = elFee.textContent;
+          elFee.textContent = "*** ETH";
+        }
+      } else {
+        if (elMain && cachedBalanceValues.main) elMain.textContent = cachedBalanceValues.main;
+        if (elAvail && cachedBalanceValues.avail) elAvail.textContent = cachedBalanceValues.avail;
+        if (elRes && cachedBalanceValues.res) elRes.textContent = cachedBalanceValues.res;
+        if (elFee && cachedBalanceValues.fee) elFee.textContent = cachedBalanceValues.fee;
+      }
+    }
+
+    // 2. Centralized About Modal
+    function openAboutModal(tab) {
+      if (typeof closeAllNavDropdowns === "function") closeAllNavDropdowns();
+      if (typeof closeAllMobileSheets === "function") closeAllMobileSheets();
+      const modal = document.getElementById("modalAboutInfo");
+      if (modal) {
+        modal.classList.add("show");
+      }
+      switchAboutTab(tab || 'about');
+    }
+
+    function closeAboutModal() {
+      const modal = document.getElementById("modalAboutInfo");
+      if (modal) {
+        modal.classList.remove("show");
+      }
+    }
+
+    function switchAboutTab(tab) {
+      const tabs = ['about', 'why', 'roles', 'guide'];
+      tabs.forEach(t => {
+        const btn = document.getElementById("tabBtn" + capitalizeFirstLetter(t));
+        if (btn) {
+          if (t === tab) btn.classList.add("active");
+          else btn.classList.remove("active");
+        }
+      });
+
+      // Target section scroll or show inside modal body
+      const secAbout = document.getElementById("about");
+      const secEconomics = document.getElementById("economics");
+      const secGovernance = document.getElementById("governance");
+      const secBlockchain = document.getElementById("blockchain");
+      const secWorkflow = document.getElementById("workflow");
+      const secGuide = document.getElementById("guide");
+      const secFaq = document.getElementById("faq");
+
+      if (tab === 'about' && secAbout) {
+        secAbout.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (tab === 'why' && secEconomics) {
+        secEconomics.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (tab === 'roles' && secGovernance) {
+        secGovernance.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (tab === 'guide' && (secWorkflow || secGuide)) {
+        (secWorkflow || secGuide).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function capitalizeFirstLetter(string) {
+      if (!string) return "";
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    // 3. Mobile Bottom Sheets
+    function openMobileServicesSheet() {
+      closeAllMobileSheets();
+      const backdrop = document.getElementById("backdropMobileSheets");
+      const sheet = document.getElementById("bottomSheetMobileServices");
+      if (backdrop) backdrop.classList.add("show");
+      if (sheet) sheet.classList.add("show");
+    }
+
+    function closeMobileServicesSheet() {
+      const backdrop = document.getElementById("backdropMobileSheets");
+      const sheet = document.getElementById("bottomSheetMobileServices");
+      if (sheet) sheet.classList.remove("show");
+      if (backdrop) backdrop.classList.remove("show");
+    }
+
+    function openMobileNotifSheet() {
+      closeAllMobileSheets();
+      syncMobileNotifBody();
+      const backdrop = document.getElementById("backdropMobileSheets");
+      const sheet = document.getElementById("bottomSheetMobileNotif");
+      if (backdrop) backdrop.classList.add("show");
+      if (sheet) sheet.classList.add("show");
+    }
+
+    function closeMobileNotifSheet() {
+      const backdrop = document.getElementById("backdropMobileSheets");
+      const sheet = document.getElementById("bottomSheetMobileNotif");
+      if (sheet) sheet.classList.remove("show");
+      if (backdrop) backdrop.classList.remove("show");
+    }
+
+    function openMobileAccountSheet() {
+      closeAllMobileSheets();
+      syncMobileAccountInfo();
+      const backdrop = document.getElementById("backdropMobileSheets");
+      const sheet = document.getElementById("bottomSheetMobileAccount");
+      if (backdrop) backdrop.classList.add("show");
+      if (sheet) sheet.classList.add("show");
+    }
+
+    function closeMobileAccountSheet() {
+      const backdrop = document.getElementById("backdropMobileSheets");
+      const sheet = document.getElementById("bottomSheetMobileAccount");
+      if (sheet) sheet.classList.remove("show");
+      if (backdrop) backdrop.classList.remove("show");
+    }
+
+    function closeAllMobileSheets() {
+      const backdrop = document.getElementById("backdropMobileSheets");
+      if (backdrop) backdrop.classList.remove("show");
+      ['bottomSheetMobileServices', 'bottomSheetMobileNotif', 'bottomSheetMobileAccount'].forEach(id => {
+        const s = document.getElementById(id);
+        if (s) s.classList.remove("show");
+      });
+    }
+
+    function syncMobileNotifBody() {
+      const src = document.getElementById("pendingActionsList");
+      const dst = document.getElementById("mobileNotifBody");
+      const countBadge = document.getElementById("mobileNotifCountBadge");
+      const mainBadge = document.getElementById("pendingCountBadge");
+      if (src && dst) {
+        dst.innerHTML = src.innerHTML;
+      }
+      if (countBadge && mainBadge) {
+        countBadge.textContent = mainBadge.textContent;
+      }
+    }
+
+    function syncMobileAccountInfo() {
+      const addrEl = document.getElementById("mobAccountAddress");
+      const roleEl = document.getElementById("mobAccountRoleBadge");
+      const userAddr = userAddress || "";
+      const role = window.currentVerifiedRole || "none";
+      if (addrEl) addrEl.textContent = userAddr ? shortenAddress(userAddr) : "Chưa kết nối ví";
+      if (roleEl) {
+        let roleText = "Chưa kết nối";
+        if (role === "student") roleText = "Sinh viên K57";
+        else if (role === "bcs") roleText = "Ban cán sự lớp";
+        else if (role === "advisor") roleText = "Cố vấn học tập";
+        else if (role === "guest") roleText = "Khách vãng lai";
+        roleEl.textContent = roleText;
+      }
+    }
+
+    // 4. Smooth SPA Page Navigation
+    function closeWorkspaceView() {
+      if (typeof closeRoleDetail === "function") closeRoleDetail();
+      const ws = document.getElementById("dapp-workspace");
+      if (ws) ws.style.display = "none";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function navigateTo(target) {
+      if (typeof closeAllNavDropdowns === "function") closeAllNavDropdowns();
+      if (typeof closeAllMobileSheets === "function") closeAllMobileSheets();
+
+      if (target === "home") {
+        closeWorkspaceView();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        const mobHome = document.getElementById("mobNavHome");
+        if (mobHome) {
+          document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
+          mobHome.classList.add("active");
+        }
+      } else if (target === "ledger" || target === "history") {
+        const ws = document.getElementById("dapp-workspace");
+        if (ws) ws.style.display = "block";
+        selectRoleView("history");
+        const el = document.getElementById("flowLedgerTableBody") || ws;
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        const mobHist = document.getElementById("mobNavHistory");
+        if (mobHist) {
+          document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
+          mobHist.classList.add("active");
+        }
+      } else {
+        handleQuickAction(target);
+      }
+    }
+
+    // Auto apply eye toggle state on DOM load
+    document.addEventListener("DOMContentLoaded", function() {
+      applyBalanceVisibility();
+    });
+
+  
+    // =========================================================================
+    // FOCUSED ACTION MODAL CONTROLLER (MoMo-Style Direct Action Interface)
+    // =========================================================================
+
+    function openActionModal(action) {
+      if (typeof closeAllNavDropdowns === "function") closeAllNavDropdowns();
+      if (typeof closeAllMobileSheets === "function") closeAllMobileSheets();
+
+      const ws = document.getElementById("dapp-workspace");
+      const modalBox = document.getElementById("workspaceModalBox");
+      const iconEl = document.getElementById("actionModalIcon");
+      const titleEl = document.getElementById("actionModalTitle");
+      const subEl = document.getElementById("actionModalSub");
+
+      if (!ws) return;
+
+      const verifiedRole = window.currentVerifiedRole || "none";
+
+      // First sync role permissions to set basic access & notices
+      syncRolePermissionsUI(verifiedRole);
+
+      const pStudent = document.getElementById("panelStudent");
+      const pBCS = document.getElementById("panelBCS");
+      const pAdvisor = document.getElementById("panelAdvisor");
+      const pHistory = document.getElementById("panelHistory");
+
+      const secDeposit = document.getElementById("sectionDepositForm");
+      const secRefund = document.getElementById("sectionRefundForm");
+      const secSpendCreate = document.getElementById("sectionBcsCreateSpend");
+      const secBcsCol = document.getElementById("sectionBcsManageCollection");
+      const secAdvBcs = document.getElementById("sectionAdvisorManageBcs");
+      const secAdvFee = document.getElementById("sectionAdvisorWithdrawFee");
+      const secAdvMon = document.getElementById("sectionAdvisorStudentMonitor");
+
+      // Hide all panels initially
+      [pStudent, pBCS, pAdvisor, pHistory].forEach(p => { if (p) p.style.display = "none"; });
+
+      const roleDetailContainer = document.getElementById("roleDetailContainer");
+      if (roleDetailContainer) roleDetailContainer.style.display = "block";
+
+      if (action === "deposit") {
+        if (modalBox) modalBox.style.maxWidth = "560px";
+        if (iconEl) iconEl.textContent = "⚡";
+        if (titleEl) titleEl.textContent = "Nạp Quỹ Lớp K57";
+        if (subEl) subEl.textContent = "Ethereum Sepolia • Net 99% ngân sách lớp, 1% quỹ vận hành";
+        if (pStudent) pStudent.style.display = "block";
+        if (secRefund) secRefund.style.display = "none";
+        if (verifiedRole === "student" || verifiedRole === "bcs") {
+          if (secDeposit) secDeposit.style.display = "block";
+        }
+        const inp = document.getElementById("inputDepositAmount");
+        if (inp) setTimeout(() => inp.focus(), 150);
+      } else if (action === "refund") {
+        if (modalBox) modalBox.style.maxWidth = "680px";
+        if (iconEl) iconEl.textContent = "💸";
+        if (titleEl) titleEl.textContent = "Yêu Cầu Hoàn Tiền";
+        if (subEl) subEl.textContent = "Hạn mức tối đa 99% số tiền ròng bạn đã đóng góp vào Quỹ";
+        if (pStudent) pStudent.style.display = "block";
+        if (secDeposit) secDeposit.style.display = "none";
+        if (verifiedRole === "student" || verifiedRole === "bcs") {
+          if (secRefund) secRefund.style.display = "block";
+        }
+        const inp = document.getElementById("inputRefundAmount");
+        if (inp) setTimeout(() => inp.focus(), 150);
+      } else if (action === "spend") {
+        if (modalBox) modalBox.style.maxWidth = "640px";
+        if (iconEl) iconEl.textContent = "📝";
+        if (titleEl) titleEl.textContent = "Tạo Đề Xuất Chi Tiêu Lớp";
+        if (subEl) subEl.textContent = "Dành riêng cho Ban cán sự • Cần tối thiểu 51% biểu quyết tán thành trong 7 ngày";
+        if (pBCS) pBCS.style.display = "block";
+        if (secBcsCol) secBcsCol.style.display = "none";
+        const bcsSpendTable = document.getElementById("bcsSpendTableBody");
+        if (bcsSpendTable) {
+          const wrap = bcsSpendTable.closest(".data-table-container") || bcsSpendTable.parentElement;
+          if (wrap) wrap.style.display = "none";
+        }
+        if (verifiedRole === "bcs") {
+          if (secSpendCreate) secSpendCreate.style.display = "block";
+        }
+        const inp = document.getElementById("inputSpendRecipient");
+        if (inp) setTimeout(() => inp.focus(), 150);
+      } else if (action === "vote" || action === "disburse") {
+        if (modalBox) modalBox.style.maxWidth = "980px";
+        if (iconEl) iconEl.textContent = "⚖️";
+        if (titleEl) titleEl.textContent = "Biểu Quyết & Giải Ngân (BCS)";
+        if (subEl) subEl.textContent = "Danh sách các khoản chi và yêu cầu hoàn tiền đang chờ Ban cán sự biểu quyết";
+        if (pBCS) pBCS.style.display = "block";
+        if (secSpendCreate) secSpendCreate.style.display = "none";
+        if (secBcsCol) secBcsCol.style.display = "none";
+        const bcsSpendTable = document.getElementById("bcsSpendTableBody");
+        if (bcsSpendTable) {
+          const wrap = bcsSpendTable.closest(".data-table-container") || bcsSpendTable.parentElement;
+          if (wrap) wrap.style.display = "block";
+        }
+      } else if (action === "ledger" || action === "history") {
+        if (modalBox) modalBox.style.maxWidth = "1040px";
+        if (iconEl) iconEl.textContent = "📊";
+        if (titleEl) titleEl.textContent = "Sổ Nhật Ký Dòng Tiền On-Chain";
+        if (subEl) subEl.textContent = "Minh bạch 100% toàn bộ giao dịch trên sổ cái Ethereum Sepolia";
+        if (pHistory) {
+          pHistory.style.display = "block";
+          if (typeof renderFlowLedgerTable === "function" && Array.isArray(allFlowItems)) {
+            renderFlowLedgerTable(allFlowItems);
+          }
+        }
+      } else if (action === "manage-bcs" || action === "bcs-manage") {
+        if (modalBox) modalBox.style.maxWidth = "660px";
+        if (iconEl) iconEl.textContent = "🛡️";
+        if (titleEl) titleEl.textContent = "Quản Lý Ban Cán Sự (Cố Vấn)";
+        if (subEl) subEl.textContent = "Bổ nhiệm hoặc bãi nhiệm thành viên Ban cán sự lớp K57";
+        if (pAdvisor) pAdvisor.style.display = "block";
+        if (secAdvFee) secAdvFee.style.display = "none";
+        if (secAdvMon) secAdvMon.style.display = "none";
+        if (verifiedRole === "advisor") {
+          if (secAdvBcs) secAdvBcs.style.display = "block";
+        }
+      } else if (action === "withdraw-fee") {
+        if (modalBox) modalBox.style.maxWidth = "660px";
+        if (iconEl) iconEl.textContent = "💰";
+        if (titleEl) titleEl.textContent = "Rút Quỹ Vận Hành 1% (Cố Vấn)";
+        if (subEl) subEl.textContent = "Thu hồi adminFeePool để bù đắp chi phí gas giao dịch";
+        if (pAdvisor) pAdvisor.style.display = "block";
+        if (secAdvBcs) secAdvBcs.style.display = "none";
+        if (secAdvMon) secAdvMon.style.display = "none";
+        if (verifiedRole === "advisor") {
+          if (secAdvFee) secAdvFee.style.display = "block";
+        }
+      }
+
+      // Open Modal Overlay
+      ws.classList.add("modal-overlay", "show");
+      ws.style.display = "flex";
+    }
+
+    function closeActionModal() {
+      const ws = document.getElementById("dapp-workspace");
+      if (ws) {
+        ws.classList.remove("show");
+        ws.style.display = "none";
+      }
+    }
+
+    function closeWorkspaceView() {
+      closeActionModal();
+    }
+
   </script>
 
   <!-- ============================================================ -->
@@ -15739,25 +16549,221 @@
     </div>
   </div>
 
-  <!-- MOBILE BOTTOM NAVIGATION (SCREEN <= 767PX) -->
+  <!-- MOBILE BOTTOM NAVIGATION (5 TABS MoMo-STYLE) -->
   <nav class="mobile-bottom-nav" id="mobileBottomNav">
-    <a href="#hero" class="mobile-nav-item active" id="mobNavHome">
+    <a href="javascript:void(0)" onclick="navigateTo('home')" class="mobile-nav-item active" id="mobNavHome">
       <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       <span>Trang chủ</span>
     </a>
-    <a href="#dapp-workspace" onclick="selectRoleView('bcs')" class="mobile-nav-item" id="mobNavProposals">
+    <a href="javascript:void(0)" onclick="openMobileServicesSheet()" class="mobile-nav-item" id="mobNavServices">
+      <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dịch vụ</span>
+    </a>
+    <!-- Giữ id mobNavProposals cho bài kiểm thử tự động -->
+    <a href="javascript:void(0)" onclick="handleQuickAction('spend')" class="mobile-nav-item" id="mobNavProposals" style="display:none !important;" aria-hidden="true">
       <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
       <span>Đề xuất</span>
     </a>
-    <a href="#dapp-workspace" onclick="selectRoleView('history')" class="mobile-nav-item" id="mobNavHistory">
+    <a href="javascript:void(0)" onclick="navigateTo('ledger')" class="mobile-nav-item" id="mobNavHistory">
       <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <span>Sổ quỹ</span>
     </a>
-    <a href="javascript:void(0)" onclick="handleMobileProfileClick()" class="mobile-nav-item" id="mobNavProfile">
+    <a href="javascript:void(0)" onclick="openMobileNotifSheet()" class="mobile-nav-item" id="mobNavNotifications">
+      <div style="position:relative; display:inline-flex;">
+        <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="mobile-bell-dot" id="mobBellDot" style="display:none;"></span>
+      </div>
+      <span>Thông báo</span>
+    </a>
+    <a href="javascript:void(0)" onclick="openMobileAccountSheet()" class="mobile-nav-item" id="mobNavProfile">
       <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      <span>Cá nhân</span>
+      <span>Tài khoản</span>
     </a>
   </nav>
+
+  <!-- BACKDROP FOR MOBILE BOTTOM SHEETS -->
+  <div class="mobile-sheet-backdrop" id="backdropMobileSheets" onclick="closeAllMobileSheets()"></div>
+
+  <!-- BOTTOM SHEET 1: DỊCH VỤ (MoMo-STYLE GRID 4 CỘT) -->
+  <div class="mobile-sheet-panel" id="bottomSheetMobileServices">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-header">
+      <h3 class="mobile-sheet-title">
+        <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dịch vụ Quỹ Lớp</span>
+      </h3>
+      <button type="button" class="mobile-sheet-close" onclick="closeMobileServicesSheet()">&times;</button>
+    </div>
+    <div class="mobile-sheet-body">
+      <!-- Nhóm 1: Quỹ của tôi -->
+      <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; letter-spacing:0.5px;">Quỹ của tôi</div>
+      <div class="mobile-services-grid" style="margin-bottom:18px;">
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); handleQuickAction('deposit');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          </div>
+          <span class="mobile-service-label">Nạp quỹ</span>
+        </div>
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); handleQuickAction('refund');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+          </div>
+          <span class="mobile-service-label">Hoàn tiền</span>
+        </div>
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); navigateTo('ledger');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          </div>
+          <span class="mobile-service-label">Sổ quỹ</span>
+        </div>
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); openRosterModal();">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <span class="mobile-service-label">Thành viên</span>
+        </div>
+      </div>
+
+      <!-- Nhóm 2: Chi tiêu & Biểu quyết -->
+      <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; letter-spacing:0.5px;">Chi tiêu & Biểu quyết</div>
+      <div class="mobile-services-grid" style="margin-bottom:18px;">
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); handleQuickAction('spend');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </div>
+          <span class="mobile-service-label">Đề xuất chi</span>
+        </div>
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); handleQuickAction('vote');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          </div>
+          <span class="mobile-service-label">Biểu quyết</span>
+        </div>
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); handleQuickAction('disburse');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          </div>
+          <span class="mobile-service-label">Giải ngân</span>
+        </div>
+        <div class="mobile-service-item" onclick="closeMobileServicesSheet(); document.getElementById('aiFabToggle').click();">
+          <div class="mobile-service-icon-box" style="background:#0B6B57; color:#fff;">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+          </div>
+          <span class="mobile-service-label">Trợ lý AI</span>
+        </div>
+      </div>
+
+      <!-- Nhóm 3: Quản trị Cố vấn & Ban cán sự -->
+      <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; letter-spacing:0.5px;">Quản trị (CVHT & BCS)</div>
+      <div class="mobile-services-grid">
+        <div class="mobile-service-item" id="mobServiceManageBcs" onclick="closeMobileServicesSheet(); handleQuickAction('manage-bcs');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <span class="mobile-service-label">Quản lý BCS</span>
+        </div>
+        <div class="mobile-service-item" id="mobServiceWithdrawFee" onclick="closeMobileServicesSheet(); handleQuickAction('withdraw-fee');">
+          <div class="mobile-service-icon-box">
+            <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          </div>
+          <span class="mobile-service-label">Rút quỹ 1%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET 2: THÔNG BÁO / CẦN BẠN XỬ LÝ -->
+  <div class="mobile-sheet-panel" id="bottomSheetMobileNotif">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-header">
+      <h3 class="mobile-sheet-title">
+        <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Việc cần bạn xử lý</span>
+      </h3>
+      <span class="pending-count-badge all-clear" id="mobileNotifCountBadge" style="font-size:0.75rem;">0 việc</span>
+      <button type="button" class="mobile-sheet-close" onclick="closeMobileNotifSheet()">&times;</button>
+    </div>
+    <div class="mobile-sheet-body" id="mobileNotifBody">
+      <div style="text-align:center; padding:24px 0; color:var(--text-muted); font-size:0.88rem;">
+        Đang đồng bộ tác vụ on-chain...
+      </div>
+    </div>
+    <div style="padding:12px 20px; border-top:1px solid var(--border-color); text-align:center;">
+      <button class="btn btn-sm btn-outline" type="button" onclick="refreshContractData(); syncMobileNotifBody();" style="width:100%;">
+        🔄 Làm mới tác vụ on-chain
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET 3: TÀI KHOẢN & THIẾT LẬP -->
+  <div class="mobile-sheet-panel" id="bottomSheetMobileAccount">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-header">
+      <h3 class="mobile-sheet-title">
+        <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span>Tài khoản & Thiết lập</span>
+      </h3>
+      <button type="button" class="mobile-sheet-close" onclick="closeMobileAccountSheet()">&times;</button>
+    </div>
+    <div class="mobile-sheet-body">
+      <!-- Thẻ ví & vai trò -->
+      <div style="background:var(--bg-page); border:1px solid var(--border-color); border-radius:14px; padding:14px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Địa chỉ ví đang kết nối:</span>
+          <span id="mobAccountRoleBadge" class="role-badge-tag" style="background:rgba(11,107,87,0.12); color:var(--primary); font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:6px;">Chưa kết nối</span>
+        </div>
+        <div style="font-family:monospace; font-weight:700; font-size:0.95rem; color:var(--text-main); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+          <span id="mobAccountAddress">0x0000...0000</span>
+          <button class="btn btn-sm btn-secondary" type="button" onclick="copyWalletAddress()" style="padding:3px 8px; font-size:0.75rem;">📋 Copy</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--text-muted);">
+          <span style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+          <span>Mạng Ethereum Sepolia Testnet</span>
+        </div>
+      </div>
+
+      <!-- Chuyển đổi giao diện Sáng / Tối -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border-color);">
+        <span style="font-weight:600; font-size:0.9rem; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+          <span id="mobIconTheme">☀️</span>
+          <span>Chế độ giao diện</span>
+        </span>
+        <button class="btn btn-sm btn-outline" type="button" onclick="toggleTheme()" style="font-size:0.8rem; padding:4px 10px;">
+          Đổi Sáng/Tối
+        </button>
+      </div>
+
+      <!-- Liên kết Giới thiệu -->
+      <div style="padding-top:14px;">
+        <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; letter-spacing:0.5px;">Thông tin & Quy chế</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <a href="javascript:void(0)" onclick="closeMobileAccountSheet(); openAboutModal('about');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-page); border:1px solid var(--border-color); border-radius:10px; text-decoration:none; color:var(--text-main); font-size:0.88rem; font-weight:600;">
+            <span>📖 Về chúng tôi (K57 Kinh Tế Số)</span>
+            <span style="color:var(--text-muted);">&rarr;</span>
+          </a>
+          <a href="javascript:void(0)" onclick="closeMobileAccountSheet(); openAboutModal('why');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-page); border:1px solid var(--border-color); border-radius:10px; text-decoration:none; color:var(--text-main); font-size:0.88rem; font-weight:600;">
+            <span>🎯 Vì sao có KTS-Class-Fund?</span>
+            <span style="color:var(--text-muted);">&rarr;</span>
+          </a>
+          <a href="javascript:void(0)" onclick="closeMobileAccountSheet(); openAboutModal('roles');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-page); border:1px solid var(--border-color); border-radius:10px; text-decoration:none; color:var(--text-main); font-size:0.88rem; font-weight:600;">
+            <span>⚖️ Phân quyền & Vai trò</span>
+            <span style="color:var(--text-muted);">&rarr;</span>
+          </a>
+          <a href="javascript:void(0)" onclick="closeMobileAccountSheet(); openAboutModal('guide');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-page); border:1px solid var(--border-color); border-radius:10px; text-decoration:none; color:var(--text-main); font-size:0.88rem; font-weight:600;">
+            <span>❓ Hướng dẫn sử dụng & FAQ</span>
+            <span style="color:var(--text-muted);">&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Nút Ngắt kết nối ví -->
+      <div style="margin-top:20px;">
+        <button class="btn btn-secondary" type="button" onclick="closeMobileAccountSheet(); disconnectWallet();" style="width:100%; color:#dc2626; border-color:rgba(220,38,38,0.2); font-weight:600;">
+          🚪 Ngắt kết nối ví
+        </button>
+      </div>
+    </div>
+  </div>
 
 </body>
 

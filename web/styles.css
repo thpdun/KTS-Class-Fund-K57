@@ -1336,3 +1336,757 @@ button.btn,
     padding: 12px 8px !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   11. Step 2: Mega Menu, About Dropdown, Bell Notifications & Dark Mode
+   -------------------------------------------------------------------------- */
+
+/* Dropdown Wrapper */
+.nav-dropdown-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-dropdown-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-caret {
+  font-size: 0.72rem;
+  transition: transform 0.2s ease;
+  margin-left: 2px;
+}
+
+.nav-dropdown-btn.active .nav-caret,
+.nav-dropdown-wrapper:hover .nav-caret {
+  transform: rotate(180deg);
+}
+
+/* Mega Menu Panel (Dịch vụ) */
+.mega-menu-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: 860px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(5, 53, 43, 0.16);
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+}
+
+.mega-menu-panel.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.mega-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.mega-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mega-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.mega-group-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.mega-group-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.mega-group-badge.badge-gov {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mega-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mega-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+  color: var(--text-main);
+}
+
+.mega-item:hover {
+  background: var(--bg-page);
+  transform: translateY(-1px);
+}
+
+.mega-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mega-item-icon.icon-deposit { background: rgba(11, 107, 87, 0.12); color: var(--primary); }
+.mega-item-icon.icon-refund { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
+.mega-item-icon.icon-spend { background: rgba(217, 119, 6, 0.12); color: #d97706; }
+.mega-item-icon.icon-vote { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+.mega-item-icon.icon-disburse { background: rgba(5, 150, 105, 0.12); color: #059669; }
+.mega-item-icon.icon-ledger { background: rgba(79, 70, 229, 0.12); color: #4f46e5; }
+.mega-item-icon.icon-members { background: rgba(14, 165, 233, 0.12); color: #0ea5e9; }
+.mega-item-icon.icon-bcs { background: rgba(147, 51, 234, 0.12); color: #9333ea; }
+.mega-item-icon.icon-fee { background: rgba(202, 138, 4, 0.12); color: #ca8a04; }
+
+.mega-item-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.mega-item-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.restricted-gov-item.disabled {
+  opacity: 0.45;
+  filter: grayscale(0.8);
+  cursor: not-allowed;
+}
+
+/* About Dropdown Menu (Giới thiệu) */
+.about-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 320px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(5, 53, 43, 0.14);
+  padding: 10px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+}
+
+.about-dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.about-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-main);
+  transition: background 0.15s ease;
+}
+
+.about-dropdown-item:hover {
+  background: var(--bg-page);
+}
+
+.about-item-bullet {
+  color: var(--primary);
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.about-item-text strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--text-main);
+}
+
+.about-item-text span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* Bell Notifications */
+.topbar-bell-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.topbar-bell-btn:hover {
+  background: var(--bg-page);
+  border-color: #cbd5e1;
+}
+
+.bell-badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 9px;
+  height: 9px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #ffffff;
+  animation: bellPulse 1.8s infinite;
+}
+
+@keyframes bellPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.notification-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 360px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(5, 53, 43, 0.16);
+  padding: 14px;
+  z-index: 1000;
+  animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notif-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+}
+
+.notif-count-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.notif-dropdown-body {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.notif-dropdown-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Dark Mode Theme Support */
+body.dark-theme {
+  --bg-page: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .app-topbar-modern,
+body.dark-theme .mega-menu-panel,
+body.dark-theme .about-dropdown-menu,
+body.dark-theme .wallet-dropdown-menu,
+body.dark-theme .notification-dropdown-menu,
+body.dark-theme .card,
+body.dark-theme .rail-card,
+body.dark-theme .role-panel,
+body.dark-theme .data-table-container,
+body.dark-theme .bottom-sheet-container {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .topbar-bell-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+body.dark-theme .bell-badge {
+  box-shadow: 0 0 0 2px #1e293b;
+}
+
+body.dark-theme .mega-item:hover,
+body.dark-theme .about-dropdown-item:hover,
+body.dark-theme .wallet-dropdown-item:hover {
+  background: #334155 !important;
+}
+
+
+/* ==========================================================================
+   STEPS 3, 4, 5: MOMO-STYLE REDESIGN - EYE TOGGLE, MOBILE SHEETS & ABOUT MODAL
+   ========================================================================== */
+
+/* 1. Eye Toggle Button for Hero Balance */
+.btn-toggle-eye {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.75);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+.btn-toggle-eye:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* 2. Hero Deposit CTA Button in Vibrant Gold */
+.btn-hero-deposit {
+  background: #F2B84B !important;
+  color: #14211C !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(242, 184, 75, 0.35) !important;
+}
+.btn-hero-deposit:hover {
+  background: #e5ab3e !important;
+  transform: translateY(-1px);
+}
+
+/* 3. Mobile Bottom Navigation & Sheets */
+.mobile-bell-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.mobile-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+.mobile-sheet-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-sheet-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.25);
+  z-index: 1060;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 20px);
+}
+.mobile-sheet-panel.show {
+  transform: translateY(0);
+}
+
+.mobile-sheet-handle {
+  width: 44px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 2px;
+  margin: 12px auto 4px auto;
+}
+
+.mobile-sheet-header {
+  padding: 12px 20px 14px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mobile-sheet-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mobile-sheet-close {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+.mobile-sheet-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Mobile Services Grid (MoMo-Style 4 columns) */
+.mobile-services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 8px;
+  text-align: center;
+}
+.mobile-service-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px 2px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.mobile-service-item:active {
+  transform: scale(0.95);
+  background: rgba(11, 107, 87, 0.08);
+}
+.mobile-service-icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: #e8f5f1;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(11, 107, 87, 0.08);
+}
+.mobile-service-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+/* 4. Centralized About Modal (Desktop & Tablet) */
+.modal-about-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-about-overlay.show {
+  display: flex;
+}
+.modal-about-box {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 980px;
+  height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-about-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+.modal-about-nav-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.modal-about-nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+.about-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.about-tab-btn:hover {
+  color: var(--primary);
+  background: rgba(11, 107, 87, 0.08);
+}
+.about-tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+.modal-about-close {
+  background: #f1f5f9;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.modal-about-close:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+.modal-about-body {
+  padding: 24px 32px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Dark theme extensions for new components */
+body.dark-theme .mobile-sheet-panel,
+body.dark-theme .modal-about-box {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+body.dark-theme .modal-about-header {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+body.dark-theme .mobile-sheet-header {
+  border-color: #334155 !important;
+}
+body.dark-theme .mobile-sheet-close,
+body.dark-theme .modal-about-close {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+body.dark-theme .mobile-service-icon-box {
+  background: #0f172a !important;
+  color: #34d399 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+body.dark-theme .mobile-service-label {
+  color: #e2e8f0 !important;
+}
+body.dark-theme .mobile-bell-dot {
+  border-color: #1e293b;
+}
+body.dark-theme .mobile-sheet-handle {
+  background: #475569;
+}
+
+/* ==========================================================================
+   FOCUSED ACTION MODAL SYSTEM (MoMo-Style Direct Action Popups)
+   ========================================================================== */
+
+#dapp-workspace.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  z-index: 1100 !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px !important;
+  overflow-y: auto !important;
+}
+
+#dapp-workspace.modal-overlay.show {
+  display: flex !important;
+}
+
+#dapp-workspace .workspace-modal-box {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 620px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  border: 1px solid var(--border-color);
+  margin: auto;
+}
+
+#dapp-workspace .workspace-modal-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+#dapp-workspace .workspace-modal-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#dapp-workspace .workspace-modal-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+#dapp-workspace .workspace-modal-sub {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+#dapp-workspace .workspace-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+#dapp-workspace .role-panel {
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+#dapp-workspace .role-panel > .panel-header {
+  display: none !important;
+}
+
+/* Dark mode for workspace modal */
+body.dark-theme #dapp-workspace .workspace-modal-box {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+body.dark-theme #dapp-workspace .workspace-modal-header {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+body.dark-theme #dapp-workspace .workspace-modal-title {
+  color: #f8fafc !important;
+}
