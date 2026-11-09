@@ -1,0 +1,238 @@
+/* ==========================================================================
+   KTS CLASS FUND - REDESIGN DESIGN SYSTEM (DESIGN TOKENS)
+   Compliant with Phase 1-4 UI Specifications
+   ========================================================================== */
+
+:root {
+  /* Brand Color Palette */
+  --primary: #0B6B57;
+  --primary-dark: #05352B;
+  --primary-light: #DDF1EA;
+  --primary-hover: #085343;
+
+  /* Accent Gold - Exclusively for Main Actions & "ETH" unit */
+  --accent-gold: #F2B84B;
+  --accent-gold-hover: #e0a638;
+  --accent-gold-light: #fef7ea;
+  --accent-gold-border: #fce4b3;
+
+  /* Neutrals & Surfaces */
+  --bg-page: #F4F6F5;
+  --bg-surface: #ffffff;
+  --border-color: #E3E8E5;
+  --border-subtle: #edf1ee;
+  
+  /* Text */
+  --text-main: #14211C;
+  --text-muted: #55625C;
+  --text-subtle: #798781;
+  --text-inverse: #ffffff;
+
+  /* Semantic Statuses */
+  /* Chờ duyệt (Pending) */
+  --status-pending-bg: #FDEBD0;
+  --status-pending-text: #8A4B00;
+  --status-pending-border: #f9d8a7;
+
+  /* Sẵn sàng / Thành công (Success / Ready) */
+  --status-success-bg: #DDF1EA;
+  --status-success-text: #0B5A49;
+  --status-success-border: #bce6da;
+
+  /* Hết hạn / Khóa (Expired / Neutral) */
+  --status-expired-bg: #EEF1EF;
+  --status-expired-text: #44504A;
+  --status-expired-border: #dbe0dc;
+
+  /* Lỗi / Từ chối (Error / Rejected) */
+  --status-error-bg: #FBE3E0;
+  --status-error-text: #A32A1E;
+  --status-error-border: #f5c4be;
+
+  /* Typography */
+  --font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-hero: 26px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-card: 0 8px 28px rgba(8, 58, 46, 0.07);
+  --shadow-hero: 0 24px 48px rgba(6, 56, 45, 0.28);
+  --shadow-dropdown: 0 16px 36px rgba(8, 58, 46, 0.12);
+  --shadow-modal: 0 24px 60px rgba(5, 53, 43, 0.25);
+
+  /* Heights & Grid */
+  --topbar-height: 68px;
+  --bottombar-height: 64px;
+  --btn-min-height: 44px;
+}
+
+/* ==========================================================================
+   GLOBAL RESETS & TYPOGRAPHY
+   ========================================================================== */
+body {
+  font-family: var(--font-family) !important;
+  background-color: var(--bg-page) !important;
+  color: var(--text-main) !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular figures for numbers, balances and ETH values */
+.stat-value,
+.stat-item-val,
+.flow-balance-val,
+.metric-value,
+.number-tabular,
+.balance-display,
+.eth-amount,
+.table td:nth-child(3),
+.table td:nth-child(4) {
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Accent Gold for ETH currency label */
+.unit-eth,
+.eth-label,
+.currency-eth {
+  color: var(--accent-gold) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+/* Focus styles */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2.5px solid var(--accent-gold) !important;
+  outline-offset: 2px !important;
+}
+
+/* ==========================================================================
+   BUTTONS (Min 44px height, 12px radius)
+   ========================================================================== */
+.btn,
+button.btn,
+.btn-primary,
+.btn-secondary,
+.btn-action-primary,
+.flow-filter-btn {
+  min-height: var(--btn-min-height) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-family) !important;
+  font-size: 0.92rem !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Nút hành động chính (Accent Gold #F2B84B) */
+.btn-primary,
+.btn-gold,
+.btn-action-primary,
+#btnBannerQuickDeposit,
+#btnDepositAction,
+#btnCreateSpendAction,
+#btnConnectWallet {
+  background-color: var(--accent-gold) !important;
+  color: var(--primary-dark) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(242, 184, 75, 0.35) !important;
+}
+
+.btn-primary:hover,
+.btn-gold:hover,
+.btn-action-primary:hover,
+#btnBannerQuickDeposit:hover,
+#btnDepositAction:hover,
+#btnCreateSpendAction:hover,
+#btnConnectWallet:hover {
+  background-color: var(--accent-gold-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(242, 184, 75, 0.45) !important;
+}
+
+/* Nút thứ cấp / viền mờ */
+.btn-secondary,
+.btn-outline {
+  background-color: #ffffff !important;
+  color: var(--text-main) !important;
+  border: 1.5px solid var(--border-color) !important;
+  box-shadow: 0 2px 6px rgba(8, 58, 46, 0.03) !important;
+}
+
+.btn-secondary:hover,
+.btn-outline:hover {
+  background-color: var(--bg-page) !important;
+  border-color: #ccd4cf !important;
+}
+
+/* ==========================================================================
+   CARDS & CONTAINERS (18px radius, refined elevation)
+   ========================================================================== */
+.card,
+.role-card,
+.flow-step-box,
+.flow-balance-card,
+.metric-card,
+.ann-card,
+.gov-card,
+.overview-panel {
+  border-radius: var(--radius-lg) !important;
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ==========================================================================
+   STATUS BADGES
+   ========================================================================== */
+.badge-pending,
+.status-pending {
+  background-color: var(--status-pending-bg) !important;
+  color: var(--status-pending-text) !important;
+  border: 1px solid var(--status-pending-border) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.badge-success,
+.badge-ready,
+.status-executed,
+.status-active {
+  background-color: var(--status-success-bg) !important;
+  color: var(--status-success-text) !important;
+  border: 1px solid var(--status-success-border) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.badge-expired,
+.status-expired {
+  background-color: var(--status-expired-bg) !important;
+  color: var(--status-expired-text) !important;
+  border: 1px solid var(--status-expired-border) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-full) !important;
+}
+
+.badge-danger,
+.badge-error,
+.status-rejected {
+  background-color: var(--status-error-bg) !important;
+  color: var(--status-error-text) !important;
+  border: 1px solid var(--status-error-border) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-full) !important;
+}
