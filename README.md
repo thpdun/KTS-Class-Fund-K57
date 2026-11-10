@@ -96,8 +96,8 @@ Sau đợt nâng cấp toàn diện **Lab 15** theo tài liệu `docs/CHANGE_PLA
 
 > [!NOTE]  
 > **Thông tin triển khai thực tế trên Ethereum Sepolia Testnet & Frontend DApp:**  
-> - **Địa chỉ Smart Contract:** [`0x90948699FF04bC9cF159a39e200F09885439503D`](https://sepolia.etherscan.io/address/0x90948699FF04bC9cF159a39e200F09885439503D) *(và bản nâng cấp Lab 15: [`0x1F066cB83F41857DcC5D230C74963b12F1E8f58C`](https://sepolia.etherscan.io/address/0x1F066cB83F41857DcC5D230C74963b12F1E8f58C))*.
-> - **Frontend DApp Web3:** Triển khai hoàn chỉnh tại `web/index.html` (chạy trên cổng `http://localhost:3000`), kết nối MetaMask trực tiếp, tích hợp đầy đủ 3 vai trò (Sinh viên, BCS, Cố vấn), quản lý đợt thu on-chain, biểu quyết giải ngân, hoàn tiền Net 99%, đối soát danh bạ SHA-256, và sổ nhật ký dòng tiền phân tán.
+> - **Địa chỉ Smart Contract (Sepolia mới nhất):** [`0xADCE24AeC2b194B58D882fa9FDe4112115770b03`](https://sepolia.etherscan.io/address/0xADCE24AeC2b194B58D882fa9FDe4112115770b03) *(bản cập nhật Phase 2C & Auto-execution)*.
+> - **Frontend DApp Web3:** Triển khai hoàn chỉnh tại [web/index.html](file:///d:/document/TDT/KTS-Class-Fund-K57/web/index.html) (chạy trên cổng `http://localhost:3000`), kết nối MetaMask trực tiếp, tích hợp đầy đủ 3 vai trò (Sinh viên, BCS, Cố vấn), quản lý đợt thu on-chain, biểu quyết giải ngân, hoàn tiền Net 99%, đối soát danh bạ SHA-256, và sổ nhật ký dòng tiền phân tán.
 > - **Môi trường kiểm chứng tự động:** 41 bài kiểm thử EVM Hardhat (`test/hardhat/`), 61 bài kiểm thử quy tắc kinh tế Python (`test/test_economic_rules.py`), và trình biên dịch `solc 0.8.20`.
 
 ---
