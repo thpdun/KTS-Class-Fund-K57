@@ -1,10 +1,121 @@
 {
   "schemaVersion": 3,
   "schemaName": "kts-notifications",
-  "revision": 3,
+  "revision": 4,
   "timezone": "Asia/Ho_Chi_Minh",
   "processedRequests": {},
-  "notifications": [],
+  "notifications": [
+    {
+      "id": "ann-20261110204508",
+      "title": "Kêu gọi nộp Quỹ Lớp K57",
+      "targetAmountEth": "1",
+      "deadline": "23:59 ngày 11/11/2026",
+      "purpose": "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
+      "classSize": 5,
+      "autoCloseOnTarget": false,
+      "status": "active",
+      "createdAt": "2026-11-10T20:45:08.830058+07:00",
+      "createdBy": "0x78567a377559f0cb30173f93869326a82320159a",
+      "updatedAt": "2026-11-10T20:45:08.830058+07:00",
+      "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
+      "endedAt": null,
+      "endReason": null,
+      "deadlineTimestamp": 1794416340.0,
+      "expiresAtTimestamp": 1794416340,
+      "expiresAt": "2026-11-11T23:59:00+07:00",
+      "targetAmountWei": "1000000000000000000",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "active",
+          "at": "2026-11-10T20:45:08.830058+07:00",
+          "by": "0x78567a377559f0cb30173f93869326a82320159a",
+          "reason": "Tạo thông báo"
+        }
+      ]
+    }
+  ],
   "auditChain": [],
-  "activeNotifications": []
+  "activeNotifications": [
+    {
+      "id": "ann-20261110204508",
+      "title": "Kêu gọi nộp Quỹ Lớp K57",
+      "targetAmountEth": "1",
+      "deadline": "23:59 ngày 11/11/2026",
+      "purpose": "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
+      "classSize": 5,
+      "autoCloseOnTarget": false,
+      "status": "active",
+      "createdAt": "2026-11-10T20:45:08.830058+07:00",
+      "createdBy": "0x78567a377559f0cb30173f93869326a82320159a",
+      "updatedAt": "2026-11-10T20:45:08.830058+07:00",
+      "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
+      "endedAt": null,
+      "endReason": null,
+      "deadlineTimestamp": 1794416340.0,
+      "expiresAtTimestamp": 1794416340,
+      "expiresAt": "2026-11-11T23:59:00+07:00",
+      "targetAmountWei": "1000000000000000000",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "active",
+          "at": "2026-11-10T20:45:08.830058+07:00",
+          "by": "0x78567a377559f0cb30173f93869326a82320159a",
+          "reason": "Tạo thông báo"
+        }
+      ]
+    }
+  ],
+  "active": {
+    "id": "ann-20261110204508",
+    "title": "Kêu gọi nộp Quỹ Lớp K57",
+    "targetAmountEth": "1",
+    "deadline": "23:59 ngày 11/11/2026",
+    "purpose": "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
+    "classSize": 5,
+    "autoCloseOnTarget": false,
+    "status": "active",
+    "createdAt": "2026-11-10T20:45:08.830058+07:00",
+    "createdBy": "0x78567a377559f0cb30173f93869326a82320159a",
+    "updatedAt": "2026-11-10T20:45:08.830058+07:00",
+    "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
+    "endedAt": null,
+    "endReason": null,
+    "deadlineTimestamp": 1794416340.0,
+    "expiresAtTimestamp": 1794416340,
+    "expiresAt": "2026-11-11T23:59:00+07:00",
+    "targetAmountWei": "1000000000000000000",
+    "statusHistory": [
+      {
+        "from": null,
+        "to": "active",
+        "at": "2026-11-10T20:45:08.830058+07:00",
+        "by": "0x78567a377559f0cb30173f93869326a82320159a",
+        "reason": "Tạo thông báo"
+      }
+    ]
+  },
+  "history": [],
+  "auditLog": [
+    {
+      "eventId": "evt-000001",
+      "type": "CREATED",
+      "notificationId": "ann-20261110204508",
+      "statusAfter": "active",
+      "actor": "0x78567a377559f0cb30173f93869326a82320159a",
+      "at": "2026-11-10T20:45:08.830058+07:00",
+      "notificationSnapshotSha256": "05e24eb44f507aad9830504fd42b08586bbcd7d0a4be99030618bdef1367bb7c",
+      "details": {},
+      "seq": 1,
+      "previousRecordHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+      "recordSha256": "936fa41d27f801f2b2297439e4b8bcf3d5d779cda1a0e6317795b9709e5320b4"
+    }
+  ],
+  "auditMeta": {
+    "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+    "tailHash": "936fa41d27f801f2b2297439e4b8bcf3d5d779cda1a0e6317795b9709e5320b4",
+    "length": 1
+  }
 }
