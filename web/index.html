@@ -15727,30 +15727,6 @@
         }
       }
 
-      // SINGLE SOURCE OF TRUTH: Sử dụng hàm đối soát dùng chung getPaidWalletsForActiveCollection
-      // (Áp dụng theo PHƯƠNG ÁN 1: Nộp qua deposit() cũng được tính đã nộp cho đợt thu đang mở)
-      const recon = await getPaidWalletsForActiveCollection();
-      const isPaid = userAddress ? recon.isWalletPaid(userAddress) : false;
-      const userPaidWei = userAddress ? recon.getWalletPaidWei(userAddress) : 0n;
-      const targetEthStr = recon.targetEth || "1";
-      const displayPaidEth = (userPaidWei && userPaidWei > 0n) ? formatEth(userPaidWei) : (isPaid ? targetEthStr : "0.0000");
-
-      window.isCurrentUserCampaignPaid = isPaid;
-
-      if (isPaid) {
-        pBadge.className = "task-badge status-completed ann-badge-paid";
-        pBadge.style.cssText = "background: #dcfce7 !important; color: #166534 !important; border: 1px solid #86efac !important; font-weight: 600 !important; font-size: 12px !important; padding: 4px 10px !important; border-radius: 20px !important; white-space: nowrap !important;";
-        pBadge.textContent = "Đã nộp";
-        pDesc.textContent = "Bạn đã hoàn thành nghĩa vụ cho đợt thu này";
-      } else {
-        pBadge.className = "task-badge status-action ann-badge-notpaid";
-        pBadge.style.cssText = "background: #fef3c7 !important; color: #92400e !important; border: 1px solid #f59e0b !important; font-weight: 600 !important; font-size: 12px !important; padding: 4px 10px !important; border-radius: 20px !important; white-space: nowrap !important;";
-        pBadge.textContent = "Chưa nộp";
-        const paidText = Number(displayPaidEth) > 0 ? ` (Đã nộp ${displayPaidEth}/${targetEthStr} ETH)` : ` (Mức đóng: ${targetEthStr} ETH)`;
-        pDesc.textContent = `Bạn chưa hoàn thành nghĩa vụ cho đợt thu đang diễn ra${paidText}.`;
-      }
-
-
       async function initiateCampaignContribution(notificationId, targetAmountEth) {
         if (!signer || !userAddress) {
           alert("⚠️ Vui lòng kết nối ví MetaMask trước khi thực hiện nộp quỹ.");
