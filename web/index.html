@@ -11062,7 +11062,7 @@
       // 1. Thu hồi token phiên ở backend nếu có
       if (userSessionToken) {
         try {
-          fetch("http://https://kts-class-fund-k57-1.onrender.com/api/auth/logout", {
+          fetch("https://kts-class-fund-k57.onrender.com/api/auth/logout", {
             method: "POST",
             headers: { "Authorization": `Bearer ${userSessionToken}` }
           }).catch(() => { });
@@ -11317,7 +11317,7 @@
 
       try {
         logToTerminal("[Xác thực ví] Đang yêu cầu mã thử thách (nonce) từ máy chủ bảo mật...");
-        const nonceRes = await fetch(`http://https://kts-class-fund-k57-1.onrender.com/api/auth/nonce?address=${encodeURIComponent(userAddress)}`);
+        const nonceRes = await fetch(`https://kts-class-fund-k57.onrender.com/api/auth/nonce?address=${encodeURIComponent(userAddress)}`);
         if (!nonceRes.ok) {
           throw new Error("Không thể kết nối đến dịch vụ xác thực máy chủ.");
         }
@@ -11330,7 +11330,7 @@
         const signature = await signer.signMessage(nonceData.message);
 
         logToTerminal("[Xác thực ví] Đang gửi chữ ký mật mã tới máy chủ để xác minh quyền sở hữu...");
-        const loginRes = await fetch("http://https://kts-class-fund-k57-1.onrender.com/api/auth/login", {
+        const loginRes = await fetch("https://kts-class-fund-k57.onrender.com/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -11406,7 +11406,7 @@
         if (userSessionToken) {
           headers["Authorization"] = `Bearer ${userSessionToken}`;
         }
-        const res = await fetch(`http://https://kts-class-fund-k57-1.onrender.com/api/roster/check?address=${encodeURIComponent(address)}`, {
+        const res = await fetch(`https://kts-class-fund-k57.onrender.com/api/roster/check?address=${encodeURIComponent(address)}`, {
           headers: headers
         });
         if (res.ok) {
@@ -11428,7 +11428,7 @@
         headers["Authorization"] = `Bearer ${userSessionToken}`;
       }
       try {
-        const res = await fetch(`http://https://kts-class-fund-k57-1.onrender.com/api/roster`, {
+        const res = await fetch(`https://kts-class-fund-k57.onrender.com/api/roster`, {
           headers: headers
         });
         if (res.ok) {
@@ -12742,7 +12742,7 @@
         if (userSessionToken) {
           headers["Authorization"] = `Bearer ${userSessionToken} `;
         }
-        const res = await fetch("http://https://kts-class-fund-k57-1.onrender.com/api/roster/register", {
+        const res = await fetch("https://kts-class-fund-k57.onrender.com/api/roster/register", {
           method: "POST",
           headers: headers,
           body: JSON.stringify({
