@@ -590,6 +590,102 @@ def stop_expiration_daemon():
 
 
 # =============================================================================
+# BỘ LỌC BẢO MẬT PII & CHỐNG PROMPT INJECTION CHO CHATBOT AI (REQUIREMENT D)
+# =============================================================================
+
+def check_privacy_input_filter(question: str) -> Optional[str]:
+    """
+    Bộ lọc đầu vào bảo vệ dữ liệu cá nhân & chống prompt injection (Requirement D).
+    Kiểm tra trước khi gửi tới LLM. Nếu phát hiện vi phạm thì trả về phản hồi từ chối lịch sự.
+    """
+    if not question:
+        return None
+    q_lower = question.lower().strip()
+
+    # 1. Chống Prompt Injection cố tình vượt rào chỉ dẫn hệ thống
+    injection_keywords = [
+        "bỏ qua chỉ dẫn", "bỏ qua quy tắc", "bỏ qua hướng dẫn", "ignore previous", "disregard instructions",
+        "jailbreak", "system prompt", "vai trò mới", "bạn là ai", "lộ diện", "tiết lộ bí mật"
+    ]
+    if any(k in q_lower for k in injection_keywords):
+        return (
+            "🔒 **Từ chối yêu cầu:** Hệ thống hoạt động theo chính sách bảo mật bất biến của Quỹ Lớp K57. "
+            "Trợ lý AI tuân thủ nghiêm ngặt quy định bảo vệ dữ liệu và không thể thay đổi chỉ dẫn hệ thống hay cung cấp dữ liệu cá nhân."
+        )
+
+    # 2. Sinh viên hỏi về chính mình (Requirement D.4)
+    self_keywords = [
+        "tôi đã nộp chưa", "tôi đã đóng chưa", "tôi nộp bao nhiêu", "kiểm tra tôi", "ví của tôi",
+        "trạng thái của tôi", "tài khoản của tôi", "số tiền tôi đã nộp", "xem thông tin của tôi",
+        "tôi có tên trong danh bạ không", "tôi là ai", "mình đã nộp chưa"
+    ]
+    if any(k in q_lower for k in self_keywords):
+        return (
+            "ℹ️ **Hướng dẫn tra cứu cá nhân:** Vì lý do bảo vệ quyền riêng tư và an toàn dữ liệu, "
+            "Chatbot AI không tra cứu hoặc hiển thị thông tin nộp quỹ của từng tài khoản cá nhân.\n\n"
+            "Bạn vui lòng kết nối ví MetaMask và theo dõi trực tiếp trạng thái nộp, số dư đóng góp của mình tại mục "
+            "**'Trạng thái của bạn'** ở cột bên phải trang chủ."
+        )
+
+    # 3. Yêu cầu danh tính, địa chỉ ví, ban cán sự, sinh viên cụ thể (Requirement D.1, D.3)
+    has_hex_address = bool(re.search(r'0x[a-fA-F0-9]{4,42}', question))
+
+    pii_keywords = [
+        "địa chỉ ví", "dia chi vi", "ví của các", "ví của ban cán sự", "họ là ai", "ho la ai",
+        "ai là ban cán sự", "ai là bcs", "danh sách ban cán sự", "danh sách bcs", "thành viên ban cán sự",
+        "thành viên bcs", "mssv của", "mssv cua", "mã sinh viên của", "tên của ví", "ví này của ai",
+        "ai đã nộp tiền", "ai chưa nộp", "danh sách sinh viên", "danh bạ sinh viên", "soi xét", "thông tin cá nhân",
+        "ví của ai", "người này là ai", "bạn phúc", "bạn dương", "bạn nhi", "bạn dung", "bạn chi", "phúc là ai", "dương là ai"
+    ]
+
+    if has_hex_address or any(k in q_lower for k in pii_keywords):
+        # Trừ khi câu hỏi chỉ thuần túy hỏi quy chế chung hoặc địa chỉ contract
+        is_about_contract_only = ("hợp đồng" in q_lower or "contract" in q_lower) and not any(k in q_lower for k in ["bcs", "cán sự", "ai", "mssv", "phúc", "dương", "nhi", "dung", "chi"])
+        if not is_about_contract_only:
+            return (
+                "🔒 **Chính sách bảo mật dữ liệu:** Theo quy chế bảo vệ quyền riêng tư của Quỹ Lớp K57, "
+                "Chatbot AI tuyệt đối không cung cấp danh tính, họ tên, MSSV hoặc địa chỉ ví cụ thể của bất kỳ sinh viên "
+                "hay thành viên Ban cán sự nào.\n\n"
+                "Bạn có thể tra cứu thông tin chung về quy chế quỹ, các bước nộp quỹ, quy trình biểu quyết chi tiêu "
+                "hoặc các số liệu thống kê tổng hợp (tổng số dư quỹ, số đợt thu, tỷ lệ đóng góp chung)."
+            )
+
+    return None
+
+
+def sanitize_ai_chat_output(reply: str) -> str:
+    """
+    Bộ lọc đầu ra quét PII (Requirement D.3):
+    Nếu câu trả lời chứa địa chỉ 0x... của người trong danh bạ hoặc họ tên + MSSV, thay bằng thông báo từ chối.
+    """
+    if not reply:
+        return reply
+
+    try:
+        roster = load_roster()
+    except Exception:
+        roster = []
+
+    # Quét địa chỉ ví Ethereum trong danh bạ
+    for s in roster:
+        w = s.get("wallet", "").strip().lower()
+        if len(w) == 42 and w in reply.lower():
+            return (
+                "🔒 **Thông báo bảo mật:** Phản hồi đã được hệ thống lọc tự động vì có chứa thông tin ví cá nhân. "
+                "Theo chính sách bảo vệ dữ liệu của Quỹ Lớp K57, Chatbot AI không hiển thị địa chỉ ví hoặc danh tính cụ thể của các thành viên."
+            )
+        name = s.get("name", "").strip()
+        mssv = s.get("mssv", "").strip()
+        if (name and name in reply) or (mssv and mssv in reply):
+            return (
+                "🔒 **Thông báo bảo mật:** Phản hồi đã được hệ thống lọc tự động vì có chứa thông tin định danh sinh viên. "
+                "Trợ lý AI chỉ giải đáp quy chế và số liệu thống kê tổng hợp ẩn danh."
+            )
+
+    return reply
+
+
+# =============================================================================
 # HTTP REQUEST HANDLER
 # =============================================================================
 
@@ -846,27 +942,32 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
         # Bắt buộc phải có Session Token hợp lệ của Ban cán sự hoặc Cố vấn học tập!
         # Không chấp nhận địa chỉ truyền qua query string để lấy PII.
         elif path == "/api/roster":
-            roster = load_roster()
             session = get_authenticated_session(self.headers)
+            if not session:
+                self._send_json(401, {
+                    "success": False,
+                    "authenticated": False,
+                    "error": "Yêu cầu đăng nhập và ký xác thực ví mật mã để truy cập danh bạ."
+                })
+                return
 
-            if session and session.get("role") in ["bcs", "advisor"]:
-                self._send_json(200, {
-                    "success": True,
-                    "count": len(roster),
-                    "classSize": len(roster),
-                    "isAuthorized": True,
-                    "requesterRole": session["role"],
-                    "roster": roster
-                })
-            else:
-                self._send_json(200, {
-                    "success": True,
-                    "count": len(roster),
-                    "classSize": len(roster),
+            if session.get("role") not in ["bcs", "advisor"]:
+                self._send_json(403, {
+                    "success": False,
                     "isAuthorized": False,
-                    "roster": [],
-                    "message": "Dữ liệu định danh được bảo vệ. Yêu cầu xác thực chữ ký ví Ban cán sự hoặc Cố vấn học tập để xem danh bạ."
+                    "error": "Truy cập bị từ chối: Chỉ Ban cán sự và Cố vấn học tập mới có quyền xem danh bạ."
                 })
+                return
+
+            roster = load_roster()
+            self._send_json(200, {
+                "success": True,
+                "count": len(roster),
+                "classSize": len(roster),
+                "isAuthorized": True,
+                "requesterRole": session["role"],
+                "roster": roster
+            })
 
         # 5b. Truy vấn mã băm danh bạ lớp on-chain (GET /api/roster/hash - Phase 3 / Mục D)
         # BẢO VỆ QUYỀN RIÊNG TƯ TUYỆT ĐỐI:
@@ -1528,13 +1629,22 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     return
                 self._send_json(200, resp_payload)
         # 4. Thêm / Chỉnh sửa danh bạ sinh viên (POST /api/roster/register)
-        # BẢO VỆ BẰNG SESSION (Stage 3B.4)
+        # BẢO VỆ BẰNG SESSION & PHÂN QUYỀN CHẶT CHẼ THEO VAI TRÒ
         elif path == "/api/roster/register":
             session = get_authenticated_session(self.headers)
-            if not session or session.get("role") not in ["bcs", "advisor"]:
+            if not session:
+                self._send_json(401, {
+                    "success": False,
+                    "authenticated": False,
+                    "error": "Yêu cầu đăng nhập và xác thực chữ ký ví mật mã để thao tác danh bạ."
+                })
+                return
+
+            caller_role = session.get("role")
+            if caller_role not in ["bcs", "advisor"]:
                 self._send_json(403, {
                     "success": False,
-                    "error": "Truy cập bị từ chối: Yêu cầu phiên xác thực chữ ký của Ban cán sự hoặc Cố vấn học tập."
+                    "error": "Truy cập bị từ chối: Yêu cầu quyền Ban cán sự hoặc Cố vấn học tập."
                 })
                 return
 
@@ -1552,12 +1662,9 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
 
             mssv = str(req_data.get("mssv", "")).strip()
             name = str(req_data.get("name", "")).strip()
-            wallet = str(req_data.get("wallet", "")).strip()
+            wallet = str(req_data.get("wallet", "")).strip().lower()
             role_raw = str(req_data.get("role", "student")).strip()
             original_mssv = str(req_data.get("originalMssv", "")).strip()
-
-            role = "bcs" if role_raw == "bcs" else "student"
-            role_title = "Ban cán sự" if role == "bcs" else "Sinh viên"
 
             if not mssv or not name or not wallet:
                 self._send_json(400, {"success": False, "error": "MSSV, Họ tên và Địa chỉ ví không được để trống."})
@@ -1567,9 +1674,51 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(400, {"success": False, "error": "Địa chỉ ví Ethereum không hợp lệ (cần đúng 42 ký tự, bắt đầu bằng 0x)."})
                 return
 
+            # QUY TẮC PHÂN QUYỀN MỤC C (AGENTS.md & User Requirements):
+            # BCS: Chỉ được THÊM sinh viên thường (role="student").
+            # KHÔNG được thêm BCS, xóa BCS, đổi vai trò, sửa thông tin hoặc ví của BCS, không tự nâng quyền.
+            # Chỉ CVHT mới được thêm/xóa/sửa BCS.
+            if caller_role == "bcs":
+                if role_raw == "bcs" or "cán sự" in str(req_data.get("roleTitle", "")).lower():
+                    self._send_json(403, {
+                        "success": False,
+                        "error": "Truy cập bị từ chối: Ban cán sự không có quyền chỉ định hoặc thêm thành viên Ban cán sự. Chỉ Cố vấn học tập mới có quyền này."
+                    })
+                    return
+                # Ép buộc vai trò sinh viên khi người gọi là BCS
+                role = "student"
+                role_title = "Sinh viên"
+            else:
+                role = "bcs" if role_raw == "bcs" else "student"
+                role_title = "Ban cán sự" if role == "bcs" else "Sinh viên"
+
             roster_file = get_roster_file()
             with DualLayerFileLock(roster_file):
                 roster = load_roster()
+
+                # Kiểm tra va chạm với thành viên Ban cán sự khi người gọi là BCS
+                if caller_role == "bcs":
+                    for item in roster:
+                        if item.get("role") in ["bcs", "advisor"]:
+                            if original_mssv and item.get("mssv") == original_mssv:
+                                self._send_json(403, {
+                                    "success": False,
+                                    "error": "Truy cập bị từ chối: Ban cán sự không có quyền sửa đổi thông tin hoặc ví của thành viên Ban cán sự."
+                                })
+                                return
+                            if item.get("mssv") == mssv:
+                                self._send_json(403, {
+                                    "success": False,
+                                    "error": "Truy cập bị từ chối: Không được sửa đổi thông tin của thành viên Ban cán sự."
+                                })
+                                return
+                            if item.get("wallet", "").lower() == wallet:
+                                self._send_json(403, {
+                                    "success": False,
+                                    "error": "Truy cập bị từ chối: Địa chỉ ví này thuộc thành viên Ban cán sự, không thể thay đổi thông tin."
+                                })
+                                return
+
                 match_idx = None
                 for idx, item in enumerate(roster):
                     if original_mssv and item.get("mssv") == original_mssv:
@@ -1580,6 +1729,14 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                         break
 
                 if match_idx is not None:
+                    # Nếu người sửa là BCS mà bản ghi cũ là BCS -> Chặn
+                    if caller_role == "bcs" and roster[match_idx].get("role") in ["bcs", "advisor"]:
+                        self._send_json(403, {
+                            "success": False,
+                            "error": "Truy cập bị từ chối: Ban cán sự không có quyền sửa thông tin hoặc vai trò của Ban cán sự."
+                        })
+                        return
+
                     roster[match_idx]["mssv"] = mssv
                     roster[match_idx]["name"] = name
                     roster[match_idx]["wallet"] = wallet
@@ -1588,7 +1745,13 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     updated = True
                 else:
                     for item in roster:
-                        if item.get("wallet", "").lower() == wallet.lower():
+                        if item.get("wallet", "").lower() == wallet:
+                            if caller_role == "bcs" and item.get("role") in ["bcs", "advisor"]:
+                                self._send_json(403, {
+                                    "success": False,
+                                    "error": "Truy cập bị từ chối: Ví này đã thuộc về thành viên Ban cán sự."
+                                })
+                                return
                             item["mssv"] = mssv
                             item["name"] = name
                             item["role"] = role
@@ -1786,8 +1949,19 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(400, {"success": False, "error": "Vui lòng nhập câu hỏi."})
                 return
 
+            # BỘ LỌC ĐẦU VÀO BẢO VỆ QUYỀN RIÊNG TƯ & AN TOÀN DỮ LIỆU (Requirement D.1, D.3, D.4)
+            privacy_guard_response = check_privacy_input_filter(question)
+            if privacy_guard_response:
+                self._send_json(200, {
+                    "success": True,
+                    "reply": privacy_guard_response,
+                    "model_used": "privacy-guard-server"
+                })
+                return
+
             try:
-                # Lọc sạch PII trước khi chuyển sang AI Assistant Service
+                # BẢO VỆ Ở MỨC SERVER (Requirement D.2):
+                # Tuyệt đối KHÔNG đưa roster, ánh xạ ví ↔ người, hay danh sách bcsMembers vào ngữ cảnh gửi LLM
                 raw_onchain = req_data.get("onchain_data", {})
                 if not isinstance(raw_onchain, dict):
                     raw_onchain = {}
@@ -1806,13 +1980,17 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     "announcement": raw_onchain.get("announcement", {}),
                     "spendRequests": raw_onchain.get("spendRequests", []),
                     "refundRequests": raw_onchain.get("refundRequests", []),
-                    "bcsMembers": raw_onchain.get("bcsMembers", []),
-                    "roster": []  # Luôn rỗng, không bao giờ chứa danh bạ PII
+                    "bcsMembers": [],  # KHÔNG gửi danh bạ BCS cho bất kỳ AI nào (Requirement D.1, D.2)
+                    "roster": []       # Luôn rỗng (Requirement D.2)
                 }
 
                 api_key_override = req_data.get("api_key")
                 ai_service = AIAssistantService(api_key=api_key_override)
                 result = ai_service.answer_question(question, onchain_data)
+
+                # BỘ LỌC ĐẦU RA QUÉT PII (Requirement D.3)
+                if result.get("success") and result.get("reply"):
+                    result["reply"] = sanitize_ai_chat_output(result["reply"])
 
                 if result.get("model_used") == "local-fallback-engine":
                     sys.stdout.write(f"[AI Backend Info] Kích hoạt Local Fallback Engine do: {result.get('fallback_reason')}\n")

@@ -141,26 +141,12 @@ class AIAssistantService:
                 else:
                     context_parts.append(f"- Số lượng thành viên Ban cán sự (BCS) đang hoạt động: {active_bcs} người.")
 
-            # Danh sách Ban cán sự (BCS) lớp K57 (Công khai danh tính và ví on-chain)
-            bcs_members = onchain_data.get("bcsMembers", [])
-            if bcs_members:
-                context_parts.append("- Danh sách Ban cán sự (BCS) lớp K57 (Cán sự lớp công khai):")
-                for m in bcs_members:
-                    m_name = m.get("name") or "Thành viên BCS"
-                    m_role = m.get("roleTitle") or m.get("role") or "Ban cán sự"
-                    m_wallet = m.get("address") or m.get("wallet") or ""
-                    context_parts.append(f"  * {m_name} ({m_role}): Ví {m_wallet}")
-
-                # Thông tin người nộp quỹ theo thời gian thực
+                # Thông tin người nộp quỹ tổng hợp (Ẩn danh hoàn toàn)
                 depositors_count = onchain_data.get("depositorsCount", 0)
                 total_deposited_eth = onchain_data.get("totalDepositedEth", "0")
-                depositors_list = onchain_data.get("depositorsList", [])
 
                 context_parts.append(f"- Số lượng sinh viên đã nộp quỹ tính đến đúng thời điểm hiện tại: {depositors_count} người.")
                 context_parts.append(f"- Tổng số ETH đã nộp vào quỹ: {total_deposited_eth} ETH.")
-                if depositors_list:
-                    dep_str = ", ".join([f"{d.get('address')} ({d.get('amountEth')} ETH)" for d in depositors_list[:10]])
-                    context_parts.append(f"- Danh sách chi tiết các ví nộp: {dep_str}")
 
             # Danh sách yêu cầu chi (Khử trùng lặp tuyệt đối theo ID)
             raw_spend = onchain_data.get("spendRequests", [])
@@ -255,9 +241,9 @@ class AIAssistantService:
         context_parts.append("     • Trạng thái hiện tại: [Trạng thái]")
         context_parts.append("     • Quy chế giải ngân: Nhắc lại điều kiện cần tối thiểu 51% phiếu thuận từ Ban cán sự trong 7 ngày (R4/R5).")
         context_parts.append("4. TUYỆT ĐỐI KHÔNG ĐƯỢC LẶP LẠI: Mỗi mã yêu cầu chỉ xuất hiện đúng 1 lần duy nhất trong câu trả lời. Không được in trùng lặp.")
-        context_parts.append("5. KHI ĐƯỢC HỎI VỀ BAN CÁN SỰ (BCS), DANH SÁCH HOẶC ĐỊA CHỈ VÍ CỦA BCS:")
-        context_parts.append("   - Khác với sinh viên thường, thành viên Ban cán sự là bộ máy biểu quyết công khai của lớp.")
-        context_parts.append("   - Trả lời rõ ràng số lượng và danh sách Ban cán sự (Họ tên, chức danh và địa chỉ ví biểu quyết on-chain) theo danh sách được cung cấp bên trên.")
+        context_parts.append("5. KHI ĐƯỢC HỎI VỀ DANH TÍNH, HỌ TÊN HOẶC ĐỊA CHỈ VÍ CỦA BAN CÁN SỰ HOẶC SINH VIÊN:")
+        context_parts.append("   - TUYỆT ĐỐI TỪ CHỐI cung cấp họ tên, MSSV hoặc địa chỉ ví của bất kỳ ai, kể cả Ban cán sự.")
+        context_parts.append("   - Nêu rõ: Vì chính sách bảo mật thông tin cá nhân của Quỹ Lớp K57, Trợ lý AI không cung cấp danh tính hoặc địa chỉ ví cụ thể của các thành viên. Bạn chỉ có thể biết số lượng thành viên Ban cán sự đang hoạt động và quy chế biểu quyết.")
         context_parts.append("   - Nếu số lượng là 0, giải thích rõ nguyên nhân: Hợp đồng ProjectCore khi mới deploy ban đầu có activeBCSCount = 0 (chỉ có ví Cố vấn học tập). Cố vấn học tập cần dùng ví của mình truy cập ô 'Cố vấn học tập' -> 'Quản trị nhân sự Ban cán sự' để kích hoạt thành viên (R1) trước khi có thể biểu quyết các khoản chi.")
         context_parts.append("6. KHI ĐƯỢC HỎI VỀ THÔNG BÁO LỚP, HẠN NỘP QUỸ, MỨC ĐÓNG HOẶC TIẾN ĐỘ THU QUỸ:")
         context_parts.append("   - Trích xuất chính xác tiêu đề đợt thu, mức tiền quy định (ETH), hạn chót nộp, mục đích thu quỹ và tiến độ thực tế (số bạn đã nộp/sĩ số).")
@@ -456,20 +442,15 @@ class AIAssistantService:
                 "👥 **Thông tin Ban cán sự (BCS) lớp K57:**",
                 f"- Số lượng thành viên Ban cán sự đang hoạt động on-chain: **{active_bcs} người**."
             ]
-            bcs_members = data.get("bcsMembers", [])
-            if bcs_members:
-                lines.append("\n📋 **Danh sách thành viên Ban cán sự và địa chỉ ví:**")
-                for idx, m in enumerate(bcs_members, start=1):
-                    lines.append(f"  {idx}. **{m.get('name', 'Thành viên BCS')}** ({m.get('roleTitle', 'Ban cán sự')}): `{m.get('address', '')}`")
-            elif active_bcs == 0:
+            if active_bcs == 0:
                 lines.append(
                     "\n⚠️ **Giải thích quy chế R1:** Khi Smart Contract mới được triển khai, activeBCSCount ban đầu bằng 0 "
                     "(chỉ có Cố vấn học tập sở hữu hợp đồng). Cố vấn học tập cần dùng ví của mình truy cập mục 'Cố vấn học tập' "
                     "-> 'Quản trị nhân sự Ban cán sự' để kích hoạt các thành viên BCS trước khi có thể biểu quyết các khoản chi."
                 )
             else:
-                lines.append(f"- Các đề xuất chi cần tối thiểu **51%** phiếu thuận từ {active_bcs} thành viên này để được giải ngân.")
-            lines.append("\n📌 **Quy chế:** Thành viên Ban cán sự có quyền tạo đề xuất chi tiêu và bỏ phiếu biểu quyết trên Smart Contract.")
+                lines.append(f"- Các đề xuất chi và duyệt hoàn tiền cần tối thiểu **51%** phiếu thuận từ {active_bcs} thành viên này trong thời hạn 7 ngày.")
+            lines.append("\n🔒 **Chính sách bảo mật:** Vì lý do bảo vệ dữ liệu cá nhân, danh tính, họ tên, MSSV và địa chỉ ví cụ thể của các thành viên không được cung cấp qua Chatbot AI.")
             return "\n".join(lines) + disclaimer
 
         # 7. Yêu cầu hoàn tiền (Refund)

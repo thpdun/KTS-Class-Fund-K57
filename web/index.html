@@ -4031,9 +4031,15 @@
       }
 
       @keyframes spinAnimation {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
       }
+
       .rotating-spin {
         animation: spinAnimation 0.8s linear infinite !important;
         display: inline-block !important;
@@ -4282,7 +4288,7 @@
           <div class="mega-menu-panel" id="megaMenuServices" role="menu" aria-label="Danh mục dịch vụ">
             <div class="mega-menu-grid">
               <!-- Nhóm 1: Quỹ của tôi -->
-              <div class="mega-group">
+              <div class="mega-group" id="megaGroupContribution">
                 <div class="mega-group-header">
                   <span class="mega-group-badge">Cá nhân</span>
                   <h4 class="mega-group-title">Quỹ của tôi</h4>
@@ -4319,7 +4325,7 @@
               </div>
 
               <!-- Nhóm 2: Chi tiêu -->
-              <div class="mega-group">
+              <div class="mega-group" id="megaGroupSpending">
                 <div class="mega-group-header">
                   <span class="mega-group-badge">Kế hoạch</span>
                   <h4 class="mega-group-title">Chi tiêu</h4>
@@ -4373,7 +4379,7 @@
               </div>
 
               <!-- Nhóm 3: Tra cứu -->
-              <div class="mega-group">
+              <div class="mega-group" id="megaGroupLedger">
                 <div class="mega-group-header">
                   <span class="mega-group-badge">Minh bạch</span>
                   <h4 class="mega-group-title">Tra cứu</h4>
@@ -4392,6 +4398,22 @@
                     <div class="mega-item-content">
                       <div class="mega-item-name">Sổ quỹ dòng tiền</div>
                       <div class="mega-item-desc">Xem toàn bộ lịch sử 4 luồng tiền của lớp</div>
+                    </div>
+                  </a>
+                  <a href="#view-spend" class="mega-item" id="megaItemViewSpend"
+                    onclick="if (typeof navigateTo === 'function') navigateTo('vote'); return false;">
+                    <div class="mega-item-icon icon-spend-view">
+                      <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                    </div>
+                    <div class="mega-item-content">
+                      <div class="mega-item-name">Yêu cầu chi</div>
+                      <div class="mega-item-desc">Xem các đề xuất chi và tình trạng duyệt</div>
                     </div>
                   </a>
                   <a href="javascript:void(0)" class="mega-item" onclick="openRosterModal(); closeAllNavDropdowns();">
@@ -4613,8 +4635,9 @@
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
               </svg>
               <span>Quỹ Lớp Hiện Có</span>
-              <button type="button" id="btnManualRefreshBalances" class="btn-toggle-eye" onclick="manualRefreshAllData(event)"
-                title="Làm mới dữ liệu on-chain Sepolia" aria-label="Làm mới dữ liệu" style="margin-left:auto; margin-right:4px;">
+              <button type="button" id="btnManualRefreshBalances" class="btn-toggle-eye"
+                onclick="manualRefreshAllData(event)" title="Làm mới dữ liệu on-chain Sepolia"
+                aria-label="Làm mới dữ liệu" style="margin-left:auto; margin-right:4px;">
                 <svg id="iconRefreshSpin" style="width:17px;height:17px;" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
@@ -5000,13 +5023,18 @@
                   <span>Đợt thu đang mở</span>
                 </span>
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" id="btnRailRefresh" class="btn btn-xs btn-outline" style="padding:4px 7px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px;" onclick="manualRefreshAllData(event)" title="Làm mới đợt thu &amp; số dư on-chain" aria-label="Làm mới">
-                    <svg class="spin-icon-rail" style="width:13px;height:13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <button type="button" id="btnRailRefresh" class="btn btn-xs btn-outline"
+                    style="padding:4px 7px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px;"
+                    onclick="manualRefreshAllData(event)" title="Làm mới đợt thu &amp; số dư on-chain"
+                    aria-label="Làm mới">
+                    <svg class="spin-icon-rail" style="width:13px;height:13px;" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
                     </svg>
                   </button>
-                  <span class="ann-status-tag" id="annStatusTag" style="white-space:nowrap !important; flex-shrink:0 !important;"><span class="ann-dot-pulse"></span> <span
-                      id="annStatusText">Chưa có đợt thu</span></span>
+                  <span class="ann-status-tag" id="annStatusTag"
+                    style="white-space:nowrap !important; flex-shrink:0 !important;"><span class="ann-dot-pulse"></span>
+                    <span id="annStatusText">Chưa có đợt thu</span></span>
                 </div>
               </div>
 
@@ -6107,7 +6135,8 @@
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                   <h4
                     style="margin: 0 0 8px 0; font-size: 0.98rem; color: var(--brand-blue); display: flex; align-items: center; gap: 6px;">
-                    <span>1.</span> Minh bạch hóa giao dịch</h4>
+                    <span>1.</span> Minh bạch hóa giao dịch
+                  </h4>
                   <p class="card-desc"
                     style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Giúp người dùng
                     dễ dàng kiểm tra các khoản đóng góp, đề xuất chi và hoàn tiền đã được ghi nhận trực tiếp trên sổ cái
@@ -6117,7 +6146,8 @@
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                   <h4
                     style="margin: 0 0 8px 0; font-size: 0.98rem; color: var(--brand-blue); display: flex; align-items: center; gap: 6px;">
-                    <span>2.</span> Quy trình hóa rõ ràng</h4>
+                    <span>2.</span> Quy trình hóa rõ ràng
+                  </h4>
                   <p class="card-desc"
                     style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Mô tả rõ ràng
                     từng bước từ lúc đóng góp đến khi đề xuất, biểu quyết tập thể, giải ngân hoặc dọn dẹp khoản tiền quá
@@ -6127,7 +6157,8 @@
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                   <h4
                     style="margin: 0 0 8px 0; font-size: 0.98rem; color: var(--brand-blue); display: flex; align-items: center; gap: 6px;">
-                    <span>3.</span> Phân định quyền hạn chuẩn mực</h4>
+                    <span>3.</span> Phân định quyền hạn chuẩn mực
+                  </h4>
                   <p class="card-desc"
                     style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Mỗi vai trò (Cố
                     vấn học tập, Ban cán sự, Sinh viên) chỉ được thực hiện đúng các chức năng tương ứng mà hợp đồng cho
@@ -6137,7 +6168,8 @@
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                   <h4
                     style="margin: 0 0 8px 0; font-size: 0.98rem; color: var(--brand-blue); display: flex; align-items: center; gap: 6px;">
-                    <span>4.</span> Dễ tiếp cận cho sinh viên</h4>
+                    <span>4.</span> Dễ tiếp cận cho sinh viên
+                  </h4>
                   <p class="card-desc"
                     style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Sử dụng ngôn ngữ
                     tự nhiên, giao diện trực quan và hướng dẫn từng bước chi tiết, không đòi hỏi người dùng phải biết
@@ -6147,7 +6179,8 @@
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                   <h4
                     style="margin: 0 0 8px 0; font-size: 0.98rem; color: var(--brand-blue); display: flex; align-items: center; gap: 6px;">
-                    <span>5.</span> Kiểm chứng độc lập on-chain</h4>
+                    <span>5.</span> Kiểm chứng độc lập on-chain
+                  </h4>
                   <p class="card-desc"
                     style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Cung cấp liên kết
                     tra cứu trực tiếp trên Sepolia Etherscan và mã băm giao dịch (Tx Hash) cho mọi biến động quỹ.</p>
@@ -6156,7 +6189,8 @@
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
                   <h4
                     style="margin: 0 0 8px 0; font-size: 0.98rem; color: var(--brand-blue); display: flex; align-items: center; gap: 6px;">
-                    <span>6.</span> Hỗ trợ giám sát tập thể</h4>
+                    <span>6.</span> Hỗ trợ giám sát tập thể
+                  </h4>
                   <p class="card-desc"
                     style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Giúp mọi thành
                     viên cùng theo dõi trạng thái dòng tiền thực tế thay vì chỉ nhận thông báo bằng lời nói hoặc bảng
@@ -6470,7 +6504,8 @@
                     tạo đề xuất (snapshot voterBase).</p>
                   <p style="margin: 0; color: var(--text-muted);">Thời hạn biểu quyết cố định <strong>7 ngày (604.800
                       giây)</strong>. Nếu hết hạn mà không đạt đủ 51% phiếu thuận, đề xuất tự động rơi vào trạng thái
-                    <em>Expired</em> và tiền giữ chỗ được giải phóng về Quỹ lớp.</p>
+                    <em>Expired</em> và tiền giữ chỗ được giải phóng về Quỹ lớp.
+                  </p>
                 </div>
                 <div
                   style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
@@ -6478,7 +6513,8 @@
                     Mẫu Hình CEI</h4>
                   <p style="margin: 0 0 8px 0; color: var(--text-muted);">Hợp đồng áp dụng mẫu hình bảo mật
                     <strong>Checks - Effects - Interactions (CEI)</strong> nhằm ngăn chặn triệt để tấn công Reentrancy
-                    (tái nhập) khi giải ngân ETH.</p>
+                    (tái nhập) khi giải ngân ETH.
+                  </p>
                   <p style="margin: 0; color: var(--text-muted);">Thành viên Ban cán sự tạo đề xuất chi <strong>không
                       được phép tự biểu quyết</strong> cho chính đề xuất của mình, bảo đảm tính khách quan tuyệt đối cho
                     tập thể.</p>
@@ -6742,7 +6778,7 @@
           <li><a href="#governance" class="footer-link"
               onclick="if(typeof openLearnModal==='function'){openLearnModal('governance');}return false;">Biểu quyết
               &ge; 51%</a></li>
-          <li><a href="javascript:void(0)" class="footer-link"
+          <li id="footerItemRoster"><a href="javascript:void(0)" class="footer-link" id="footerLinkRoster"
               onclick="if(typeof openRosterModal==='function'){openRosterModal();}return false;">Danh bạ sinh viên
               K57</a></li>
         </ul>
@@ -10117,6 +10153,18 @@
       return clean.slice(0, 6) + "..." + clean.slice(-4);
     }
 
+    function maskSensitiveTextForStudent(text, isPrivileged = false) {
+      if (!text || typeof text !== "string") return "";
+      if (isPrivileged) return text;
+      // 1. Rút gọn địa chỉ ví đầy đủ 0x[a-fA-F0-9]{40} -> 0x1234...5678
+      let res = text.replace(/0x[a-fA-F0-9]{40}/g, match => shortenAddress(match));
+      // 2. Che MSSV dạng 23Kxxxxxxx (vd: 23K4300004 -> 23K***0004)
+      res = res.replace(/23K\d{7}/gi, match => match.slice(0, 3) + "***" + match.slice(-4));
+      // 3. Che các mẫu MSSV mở rộng
+      res = res.replace(/23K[0-9a-zA-Z]{5,9}/gi, match => match.slice(0, 3) + "***" + match.slice(-3));
+      return res;
+    }
+
     function formatEth(weiVal) {
       if (!weiVal) return "0.0000";
       try {
@@ -10236,10 +10284,179 @@
       }
     }
 
+    // =========================================================================
+    // SINGLE SOURCE OF TRUTH: ROLE PERMISSIONS MATRIX
+    // =========================================================================
+    const ROLE_PERMISSIONS = {
+      none: {
+        deposit: false,
+        refund: false,
+        collectionPay: false,
+        personalStatus: false,
+        spend: false,
+        vote: false,
+        viewProposals: true,
+        manageCollection: false,
+        roster: false,
+        addStudent: false,
+        manageBCS: false,
+        ledger: true,
+        viewBCS: false,
+        viewSpendProposals: true,
+        viewCashflow: true,
+        viewCollections: true,
+        viewRefundSummary: true,
+        viewRoster: false,
+        viewBcsList: false,
+        manageMembers: false,
+        advisorAdmin: false
+      },
+      guest: {
+        deposit: false,
+        refund: false,
+        collectionPay: false,
+        personalStatus: false,
+        spend: false,
+        vote: false,
+        viewProposals: true,
+        manageCollection: false,
+        roster: false,
+        addStudent: false,
+        manageBCS: false,
+        ledger: true,
+        viewBCS: false,
+        viewSpendProposals: true,
+        viewCashflow: true,
+        viewCollections: true,
+        viewRefundSummary: true,
+        viewRoster: false,
+        viewBcsList: false,
+        manageMembers: false,
+        advisorAdmin: false
+      },
+      student: {
+        deposit: true,
+        refund: true,
+        collectionPay: true,
+        personalStatus: true,
+        spend: false,
+        vote: false,
+        viewProposals: true,
+        manageCollection: false,
+        roster: false,
+        addStudent: false,
+        manageBCS: false,
+        ledger: true,
+        viewBCS: false,
+        viewSpendProposals: true,
+        viewCashflow: true,
+        viewCollections: true,
+        viewRefundSummary: true,
+        viewRoster: false,
+        viewBcsList: false,
+        manageMembers: false,
+        advisorAdmin: false
+      },
+      bcs: {
+        deposit: true,
+        refund: true,
+        collectionPay: true,
+        personalStatus: true,
+        spend: true,
+        vote: true,
+        viewProposals: true,
+        manageCollection: true,
+        roster: true,
+        addStudent: true,
+        manageBCS: false,
+        ledger: true,
+        viewBCS: true,
+        viewSpendProposals: true,
+        viewCashflow: true,
+        viewCollections: true,
+        viewRefundSummary: true,
+        viewRoster: true,
+        viewBcsList: true,
+        manageMembers: false,
+        advisorAdmin: false
+      },
+      advisor: {
+        deposit: false,
+        refund: false,
+        collectionPay: false,
+        personalStatus: false,
+        spend: false,
+        vote: false,
+        viewProposals: true,
+        manageCollection: false,
+        roster: true,
+        addStudent: true,
+        manageBCS: true,
+        ledger: true,
+        viewBCS: true,
+        viewSpendProposals: true,
+        viewCashflow: true,
+        viewCollections: true,
+        viewRefundSummary: true,
+        viewRoster: true,
+        viewBcsList: true,
+        manageMembers: true,
+        advisorAdmin: true
+      }
+    };
+
+    function hasPermission(action, role = null) {
+      const currentRole = role || window.currentVerifiedRole || "none";
+      const perms = ROLE_PERMISSIONS[currentRole] || ROLE_PERMISSIONS.none;
+      if (perms[action] !== undefined) return Boolean(perms[action]);
+
+      // Aliases mapping
+      if (action === "viewSpendProposals" || action === "viewProposals") return Boolean(perms.viewSpendProposals ?? perms.viewProposals);
+      if (action === "viewCashflow" || action === "ledger") return Boolean(perms.viewCashflow ?? perms.ledger);
+      if (action === "viewCollections" || action === "collectionPay") return Boolean(perms.viewCollections ?? perms.collectionPay);
+      if (action === "viewRefundSummary") return Boolean(perms.viewRefundSummary);
+      if (action === "viewRoster" || action === "roster") return Boolean(perms.viewRoster ?? perms.roster);
+      if (action === "viewBcsList" || action === "viewBCS") return Boolean(perms.viewBcsList ?? perms.viewBCS);
+      if (action === "manageMembers") return Boolean(perms.manageMembers ?? perms.manageBCS);
+      if (action === "advisorAdmin" || action === "manageBCS") return Boolean(perms.advisorAdmin ?? perms.manageBCS);
+
+      return Boolean(perms[action]);
+    }
+
+    function mapActionToPermission(action) {
+      if (action === "deposit") return "deposit";
+      if (action === "refund") return "refund";
+      if (action === "collection" || action === "student-collection") return "collectionPay";
+      if (action === "spend" || action === "create-spend") return "spend";
+      if (action === "vote" || action === "disburse" || action === "proposals") return "viewProposals";
+      if (action === "bcs") return "viewProposals";
+      if (action === "ledger" || action === "history") return "ledger";
+      if (action === "manage-bcs" || action === "bcs-manage" || action === "advisor" || action === "withdraw-fee") return "manageBCS";
+      if (action === "bcs-personnel") return "viewBCS";
+      if (action === "members" || action === "roster") return "roster";
+      return null;
+    }
+
     // Centralized Role Permissions UI Manager (Stage 2)
     function syncRolePermissionsUI(verifiedRole) {
       if (!verifiedRole) verifiedRole = "none";
       window.currentVerifiedRole = verifiedRole;
+      if (verifiedRole === "student" || verifiedRole === "guest" || verifiedRole === "none") {
+        window.isBcsMember = false;
+        window.isAdvisor = false;
+        isBcsMember = false;
+        isAdvisor = false;
+      } else if (verifiedRole === "bcs") {
+        window.isBcsMember = true;
+        window.isAdvisor = false;
+        isBcsMember = true;
+        isAdvisor = false;
+      } else if (verifiedRole === "advisor") {
+        window.isBcsMember = false;
+        window.isAdvisor = true;
+        isBcsMember = false;
+        isAdvisor = true;
+      }
 
       // 1. Phân hệ Sinh viên (panelStudent)
       const secDeposit = document.getElementById("sectionDepositForm");
@@ -10393,6 +10610,27 @@
     }
 
     function selectRoleView(role) {
+      if (role === "student") {
+        if (!hasPermission("deposit") && !hasPermission("refund")) {
+          (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+          return;
+        }
+      } else if (role === "bcs") {
+        if (!hasPermission("spend") && !hasPermission("vote") && !hasPermission("viewProposals")) {
+          (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+          return;
+        }
+      } else if (role === "advisor") {
+        if (!hasPermission("manageBCS")) {
+          (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+          return;
+        }
+      } else if (role === "history") {
+        if (!hasPermission("ledger")) {
+          (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+          return;
+        }
+      }
       if (typeof openActionModal === "function") {
         openActionModal(role);
       }
@@ -11121,17 +11359,27 @@
     function lookupStudent(addr) {
       if (!addr) return null;
       const target = addr.toLowerCase().trim();
-      if (myStudentProfile && myStudentProfile.wallet && myStudentProfile.wallet.toLowerCase().trim() === target) {
-        return myStudentProfile;
+      const effProfile = window.myStudentProfile || myStudentProfile;
+      if (effProfile && effProfile.wallet && effProfile.wallet.toLowerCase().trim() === target) {
+        return effProfile;
       }
-      if (classRoster && classRoster.length > 0) {
-        const found = classRoster.find(s => s.wallet && s.wallet.toLowerCase().trim() === target);
+      const effRoster = (window.classRoster && window.classRoster.length > 0)
+        ? window.classRoster
+        : ((typeof classRoster !== 'undefined' && classRoster && classRoster.length > 0)
+          ? classRoster
+          : (typeof DEFAULT_CLASS_ROSTER !== 'undefined' ? DEFAULT_CLASS_ROSTER : []));
+      if (effRoster && effRoster.length > 0) {
+        const found = effRoster.find(s => s && s.wallet && s.wallet.toLowerCase().trim() === target);
         if (found) return found;
       }
       return null;
     }
 
     function openRosterModal() {
+      if (!hasPermission("roster")) {
+        (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+        return;
+      }
       const isBcs = isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs");
       const canManage = isAdvisor || isBcs;
 
@@ -11139,9 +11387,24 @@
       const adminSec = document.getElementById("rosterAdminSection");
       const bcsNote = document.getElementById("rosterBcsViewNote");
 
-      // Cả Cố vấn học tập và Ban cán sự đều có quyền thêm/sửa địa chỉ ví sinh viên khi đã xác thực
+      // Cả Cố vấn học tập và Ban cán sự đều có quyền thêm sinh viên khi đã xác thực
       if (adminSec) {
         adminSec.style.display = (canManage && userSessionToken) ? "block" : "none";
+        const fRole = document.getElementById("formRosterRole");
+        const fTitle = document.getElementById("rosterFormTitle");
+        if (fRole) {
+          if (!isAdvisor) {
+            fRole.value = "student|Sinh viên";
+            fRole.disabled = true;
+          } else {
+            fRole.disabled = false;
+          }
+        }
+        if (fTitle) {
+          fTitle.innerHTML = isAdvisor
+            ? "<span>➕</span> Đăng ký / Cập nhật liên kết ví sinh viên (Cố vấn học tập)"
+            : "<span>➕</span> Thêm sinh viên mới vào Danh bạ K57 (Ban cán sự)";
+        }
       }
       if (bcsNote) {
         if (!userSessionToken) {
@@ -11163,7 +11426,7 @@
           bcsNote.style.display = "block";
           bcsNote.innerHTML = isAdvisor
             ? "🏛️ <strong>Tài khoản Cố vấn học tập (Đã ký xác thực):</strong> Bạn có quyền thêm mới, xóa và cập nhật danh bạ sinh viên K57."
-            : "⭐ <strong>Tài khoản Ban cán sự (Đã ký xác thực):</strong> Bạn có quyền thêm mới, cập nhật MSSV và địa chỉ ví sinh viên để đối soát nộp quỹ.";
+            : "⭐ <strong>Tài khoản Ban cán sự (Đã ký xác thực):</strong> Bạn có quyền thêm mới sinh viên (MSSV, Họ tên và Ví) vào danh bạ lớp K57.";
         } else {
           bcsNote.style.display = "block";
           bcsNote.innerHTML = "ℹ️ <em>Bạn đang đăng nhập với tư cách sinh viên. Bạn không có quyền quản trị hoặc xem danh bạ của các sinh viên khác.</em>";
@@ -11204,9 +11467,13 @@
     }
 
     // ============================================================
-    // MODAL NHÂN SỰ BAN CÁN SỰ (DÀNH CHO MỌI VAI TRÒ TRA CỨU)
+    // MODAL NHÂN SỰ BAN CÁN SỰ (DÀNH CHO CVHT VÀ BCS)
     // ============================================================
     async function openBcsPersonnelModal() {
+      if (!hasPermission("viewBCS")) {
+        (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+        return;
+      }
       const modal = document.getElementById("bcsPersonnelModal");
       if (modal) {
         modal.classList.add("open");
@@ -11224,6 +11491,7 @@
     }
 
     async function renderBcsPersonnelList() {
+      if (!hasPermission("viewBCS")) return;
       const container = document.getElementById("bcsPersonnelListContent");
       const countBadge = document.getElementById("bcsModalCountBadge");
       if (!container) return;
@@ -11337,9 +11605,8 @@
     let currentEditingMssv = null;
 
     function editRosterStudent(mssv) {
-      const isBcs = isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs");
-      if (!isAdvisor && !isBcs) {
-        alert("Chỉ Ban cán sự hoặc Cố vấn học tập mới có quyền chỉnh sửa thông tin sinh viên!");
+      if (!isAdvisor && window.currentVerifiedRole !== "advisor") {
+        (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này. Chỉ Cố vấn học tập mới được sửa danh bạ.", "warning");
         return;
       }
       const s = classRoster.find(item => item.mssv === mssv);
@@ -11440,8 +11707,8 @@
 
       // 2. Kiểm tra bộ nhớ đệm (nếu mới truy vấn trong 10s và không bắt buộc forceRefresh)
       if (!forceRefresh && cachedCampaignReconciliation && cachedCampaignReconciliation.lastUpdated > 0 &&
-          (Date.now() - cachedCampaignReconciliation.lastUpdated < 10000) &&
-          cachedCampaignReconciliation.roundId === roundId) {
+        (Date.now() - cachedCampaignReconciliation.lastUpdated < 10000) &&
+        cachedCampaignReconciliation.roundId === roundId) {
         return cachedCampaignReconciliation;
       }
 
@@ -11470,12 +11737,12 @@
                 try {
                   const hasCol = await contract.hasPaidInCollection(roundId, wLower);
                   if (hasCol === true) isPaid = true;
-                } catch (_) {}
+                } catch (_) { }
                 try {
                   const colPaid = await contract.paidInCollection(roundId, wLower);
                   if (colPaid > paidWei) paidWei = colPaid;
                   if (colPaid >= targetWei) isPaid = true;
-                } catch (_) {}
+                } catch (_) { }
               }
 
               // Nhánh 2: Kiểm tra studentTotalDeposited / studentContributions (nộp qua deposit())
@@ -11490,7 +11757,7 @@
                     const grossDep = (netDep * 100n) / 99n;
                     if (grossDep > paidWei) paidWei = grossDep;
                     if (grossDep >= targetWei) isPaid = true;
-                  } catch (_) {}
+                  } catch (_) { }
                 }
               }
 
@@ -11831,8 +12098,9 @@
           ? `<span class="status-pill" style="font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">⭐ ${s.roleTitle || 'Ban cán sự'}</span>`
           : `<span class="status-pill" style="font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;">🎓 ${s.roleTitle || 'Sinh viên'}</span>`;
 
-        const canEditStudent = isAdvisor || isBcsMember || (myStudentProfile && myStudentProfile.role === "bcs");
-        const detailBtn = isAdvisor
+        // Ban cán sự CHỈ ĐƯỢC THÊM sinh viên mới, ẩn nút Sửa/Xóa với BCS. Toàn quyền sửa chỉ dành cho CVHT.
+        const canEditStudent = isAdvisor && (window.currentVerifiedRole === "advisor");
+        const detailBtn = (isAdvisor && window.currentVerifiedRole === "advisor")
           ? `<button class="btn btn-sm btn-outline" onclick="openAdvisorStudentDetail('${s.mssv}')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; color: #059669; border: 1px solid #a7f3d0; background: #ecfdf5; font-weight: 600; margin-right: 4px;" title="Xem chi tiết giao dịch và đóng góp">👁️ Xem</button>`
           : '';
         const actionBtn = canEditStudent
@@ -12112,11 +12380,11 @@
         if (student.role === "bcs") {
           roleBadgeEl.className = "status-pill";
           roleBadgeEl.style.cssText = "font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;";
-          roleBadgeEl.textContent = `⭐ ${ student.roleTitle || 'Ban cán sự' } `;
+          roleBadgeEl.textContent = `⭐ ${student.roleTitle || 'Ban cán sự'} `;
         } else {
           roleBadgeEl.className = "status-pill";
           roleBadgeEl.style.cssText = "font-size: 0.75rem; font-weight: 600; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;";
-          roleBadgeEl.textContent = `🎓 ${ student.roleTitle || 'Sinh viên' } `;
+          roleBadgeEl.textContent = `🎓 ${student.roleTitle || 'Sinh viên'} `;
         }
       }
 
@@ -12339,6 +12607,18 @@
       const roleVal = document.getElementById("formRosterRole").value;
       const [role, roleTitle] = roleVal.split("|");
 
+      // Kiểm tra phân quyền: Ban cán sự CHỈ ĐƯỢC THÊM sinh viên mới, không được thêm BCS hoặc sửa
+      if (!isAdvisor && window.currentVerifiedRole !== "advisor") {
+        if (currentEditingMssv) {
+          alert("Từ chối quyền: Ban cán sự chỉ được phép thêm sinh viên mới, không được sửa đổi danh bạ có sẵn!");
+          return;
+        }
+        if (role !== "student") {
+          alert("Từ chối quyền: Ban cán sự chỉ được phép thêm sinh viên (role: student), không được thêm Ban cán sự!");
+          return;
+        }
+      }
+
       if (!mssv || !name || !wallet) {
         alert("Vui lòng nhập đầy đủ MSSV, Họ và tên và Địa chỉ ví!");
         return;
@@ -12352,7 +12632,7 @@
       try {
         const headers = { "Content-Type": "application/json" };
         if (userSessionToken) {
-          headers["Authorization"] = `Bearer ${ userSessionToken } `;
+          headers["Authorization"] = `Bearer ${userSessionToken} `;
         }
         const res = await fetch("http://localhost:8000/api/roster/register", {
           method: "POST",
@@ -12584,7 +12864,7 @@
       // Nếu chuyển sang contract khác, dọn dẹp cache người nộp cũ của contract trước
       if (prevAddress && prevAddress.toLowerCase() !== address.toLowerCase()) {
         localStorage.removeItem("kts_known_depositors");
-        logToTerminal(`[Dọn dẹp] Đã chuyển sang contract mới(${ shortenAddress(address) }).Làm mới bộ nhớ đệm người nộp.`);
+        logToTerminal(`[Dọn dẹp] Đã chuyển sang contract mới(${shortenAddress(address)}).Làm mới bộ nhớ đệm người nộp.`);
       }
 
       const quickInp = document.getElementById("quickContractAddress");
@@ -12594,7 +12874,7 @@
 
       document.getElementById("textContractConfigStatus").textContent = "Đã cấu hình: " + address;
       document.getElementById("textContractConfigStatus").style.color = "var(--success)";
-      document.getElementById("linkEtherscanContract").href = `${ CONFIG.blockExplorer } /address/${ address } `;
+      document.getElementById("linkEtherscanContract").href = `${CONFIG.blockExplorer} /address/${address} `;
 
       initContractInstance();
     }
@@ -12607,7 +12887,7 @@
       }
       localStorage.setItem("kts_deployed_contract_default", CONFIG.defaultContractAddress);
       applyContractAddress(CONFIG.defaultContractAddress);
-      logToTerminal(`[Khôi phục] Đã đặt lại địa chỉ hợp đồng về mặc định của dự án: ${ CONFIG.defaultContractAddress } `);
+      logToTerminal(`[Khôi phục] Đã đặt lại địa chỉ hợp đồng về mặc định của dự án: ${CONFIG.defaultContractAddress} `);
     }
 
     // RPC Cache Wrapper for view/read functions on Contract instance (Requirement 3)
@@ -12640,7 +12920,7 @@
               if (frag && (frag.constant || frag.stateMutability === "view" || frag.stateMutability === "pure")) {
                 isView = true;
               }
-            } catch (_) {}
+            } catch (_) { }
 
             if (isView) {
               return function (...args) {
@@ -12733,13 +13013,13 @@
       if (!address || !ethers.isAddress(address)) return;
 
       try {
-        logToTerminal(`[Hợp đồng] Đang kiểm tra mã bytecode tại: ${ shortenAddress(address) }...`);
+        logToTerminal(`[Hợp đồng] Đang kiểm tra mã bytecode tại: ${shortenAddress(address)}...`);
 
         // Xác nhận mạng Sepolia và kiểm tra mã bytecode triển khai (Requirement 7)
         if (provider) {
           const code = await provider.getCode(address);
           if (!code || code === "0x" || code === "0x0") {
-            const warnMsg = `⚠️ Cảnh báo: Địa chỉ ${ address } không có mã bytecode trên Sepolia(ChainID: 11155111).Có thể đây là địa chỉ ví cá nhân(EOA) hoặc hợp đồng chưa được deploy lên mạng Sepolia.`;
+            const warnMsg = `⚠️ Cảnh báo: Địa chỉ ${address} không có mã bytecode trên Sepolia(ChainID: 11155111).Có thể đây là địa chỉ ví cá nhân(EOA) hoặc hợp đồng chưa được deploy lên mạng Sepolia.`;
             logToTerminal(warnMsg);
             const statusEl = document.getElementById("textContractConfigStatus");
             if (statusEl) {
@@ -12757,7 +13037,7 @@
         await renderRosterTable();
         setupContractAutoSync();
       } catch (err) {
-        logToTerminal(`[Lỗi kết nối contract] ${ err.message } `);
+        logToTerminal(`[Lỗi kết nối contract] ${err.message} `);
         const statusEl = document.getElementById("textContractConfigStatus");
         if (statusEl) {
           statusEl.textContent = "Lỗi kết nối hoặc không tương thích ABI";
@@ -12774,13 +13054,13 @@
       if (contract && window._contractFundListener) {
         try {
           contract.off("FundDeposited", window._contractFundListener);
-        } catch (_) {}
+        } catch (_) { }
         window._contractFundListener = null;
       }
       if (contract && window._contractCollectionListener) {
         try {
           contract.off("CollectionDeposited", window._contractCollectionListener);
-        } catch (_) {}
+        } catch (_) { }
         window._contractCollectionListener = null;
       }
     }
@@ -12847,7 +13127,7 @@
       try {
         logToTerminal("[Làm mới] Đang đồng bộ lại toàn bộ dữ liệu on-chain và đợt thu...");
         if (typeof syncAnnouncementFromServer === "function") {
-          await syncAnnouncementFromServer().catch(() => {});
+          await syncAnnouncementFromServer().catch(() => { });
         }
         await refreshContractData({ force: true });
         if (typeof renderPendingActions === "function") {
@@ -12933,7 +13213,7 @@
         document.getElementById("metricSpendCount").textContent = Number(spendCount);
         document.getElementById("metricRefundCount").textContent = Number(refundCount);
         const bcsEl = document.getElementById("metricActiveBCS");
-        if (bcsEl) bcsEl.textContent = `${ Number(activeBCS) } thành viên`;
+        if (bcsEl) bcsEl.textContent = `${Number(activeBCS)} thành viên`;
         const bcsNote = document.getElementById("metricActiveBCSNote");
         if (bcsNote) bcsNote.textContent = Number(activeBCS) > 0 ? "Đã sẵn sàng biểu quyết (≥51%)" : "Cần Cố vấn kích hoạt (R1)";
         document.getElementById("advisorFeePoolBalance").textContent = formatEth(adminFee) + " ETH";
@@ -12954,10 +13234,10 @@
             logToTerminal("[Xác thực] Bạn là Cố vấn học tập.");
           } else if (isBcsMember) {
             updateRoleDisplay("bcs", student);
-            logToTerminal(`[Xác thực] Bạn là thành viên Ban cán sự${ student ? ` (${student.name} - ${student.mssv})` : '' }.`);
+            logToTerminal(`[Xác thực] Bạn là thành viên Ban cán sự${student ? ` (${student.name} - ${student.mssv})` : ''}.`);
           } else if (student) {
             updateRoleDisplay("student", student);
-            logToTerminal(`[Xác thực] Chào bạn ${ student.name } (MSSV: ${ student.mssv }) - Sinh viên lớp K57.`);
+            logToTerminal(`[Xác thực] Chào bạn ${student.name} (MSSV: ${student.mssv}) - Sinh viên lớp K57.`);
           } else {
             updateRoleDisplay("guest", null);
             const sbId = document.getElementById("sidebarUserIdentity");
@@ -12966,7 +13246,7 @@
             if (sbId) sbId.textContent = "Chưa kết nối ví";
             if (sbRole) { sbRole.textContent = "Chưa kết nối"; sbRole.className = "status-pill status-ready"; sbRole.style.background = ""; sbRole.style.color = ""; }
             if (sbAddr) sbAddr.textContent = "--";
-            logToTerminal(`[Cảnh báo] Địa chỉ ví ${ shortenAddress(userAddress) } chưa thuộc danh bạ sinh viên K57.Chế độ khách vãng lai.`);
+            logToTerminal(`[Cảnh báo] Địa chỉ ví ${shortenAddress(userAddress)} chưa thuộc danh bạ sinh viên K57.Chế độ khách vãng lai.`);
           }
 
           // 3. User personal contribution (đọc song song)
@@ -13013,7 +13293,7 @@
       } catch (err) {
         window.__lastRefreshError = err;
         console.warn("[Đồng bộ] Lỗi đọc hợp đồng:", err);
-        logToTerminal(`[Lỗi đọc hợp đồng] ${ err.shortMessage || err.message } `);
+        logToTerminal(`[Lỗi đọc hợp đồng] ${err.shortMessage || err.message} `);
       }
     }
 
@@ -13042,7 +13322,7 @@
 
     function invalidateRpcCache() {
       __refreshEpoch++;
-      try { if (contract && contract.__rpcCache) contract.__rpcCache.clear(); } catch (_) {}
+      try { if (contract && contract.__rpcCache) contract.__rpcCache.clear(); } catch (_) { }
     }
     window.__invalidateRpcCache = invalidateRpcCache;
 
@@ -13105,6 +13385,8 @@
     async function loadSpendRequests(totalCount, activeBcsCount) {
       const bcsTableBody = document.getElementById("bcsSpendTableBody");
       if (!bcsTableBody) return;
+      const targetContract = window.contract || contract;
+      if (!targetContract) return;
 
       if (totalCount === 0) {
         bcsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:var(--text-muted);">Hiện chưa có đề nghị chi tiền nào trong hợp đồng.</td></tr>`;
@@ -13114,7 +13396,7 @@
       let rowsHtml = "";
       for (let i = 1; i <= totalCount; i++) {
         try {
-          const req = await contract.getSpendRequest(i);
+          const req = await targetContract.getSpendRequest(i);
           const reqId = Number(req[0]);
           const recipient = req[1];
           const amount = formatEth(req[2]);
@@ -13128,14 +13410,15 @@
           let voteActionHtml = "";
           let executeActionHtml = "";
 
-          const isUserBcs = (isBcsMember || window.currentVerifiedRole === "bcs");
+          const isUserBcs = (window.isBcsMember || isBcsMember || window.currentVerifiedRole === "bcs");
+          const currentEffectiveUser = window.userAddress || userAddress;
 
           if (status === 0) { // Pending
             if (isUserBcs) {
               let alreadyVoted = false;
-              if (userAddress) {
+              if (currentEffectiveUser) {
                 try {
-                  alreadyVoted = await contract.hasVoted(reqId, userAddress);
+                  alreadyVoted = await targetContract.hasVoted(reqId, currentEffectiveUser);
                 } catch (e) { }
               }
               if (alreadyVoted) {
@@ -13170,17 +13453,33 @@
             executeActionHtml = `<span class="status-pill status-cancelled" style="font-size:0.75rem; white-space:nowrap;">Hết hạn 7 ngày</span>`;
           }
 
-          const recStudent = lookupStudent(recipient);
-          const recLabel = recStudent
-            ? `<div style="line-height:1.35;"><strong style="color:var(--text-main); font-size:0.84rem;">${escapeHtml(recStudent.name)}</strong><br><span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace; word-break:break-all;" title="${escapeHtml(recipient)}">${escapeHtml(recStudent.mssv)} • ${shortenAddress(recipient)}</span></div>`
-            : `<div style="font-size:0.75rem; font-family:monospace; word-break:break-all; line-height:1.35;" title="${escapeHtml(recipient)}">${shortenAddress(recipient)}</div>`;
+          const viewerRole = window.currentVerifiedRole || "none";
+          const isPrivilegedViewer = (viewerRole === "bcs" || viewerRole === "advisor" || window.isBcsMember || isBcsMember || window.isAdvisor || isAdvisor);
+          const isMyWallet = currentEffectiveUser && (recipient.toLowerCase() === currentEffectiveUser.toLowerCase());
+
+          let recLabel = "";
+          if (isMyWallet) {
+            const effProfile = window.myStudentProfile || myStudentProfile;
+            const myName = (effProfile && effProfile.name) || "Bạn";
+            recLabel = `<div style="line-height:1.35;"><strong style="color:var(--brand-blue); font-size:0.84rem;">Bạn (${escapeHtml(myName)})</strong><br><span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;" title="${escapeHtml(recipient)}">${shortenAddress(recipient)}</span></div>`;
+          } else if (isPrivilegedViewer) {
+            const recStudent = lookupStudent(recipient);
+            recLabel = recStudent
+              ? `<div style="line-height:1.35;"><strong style="color:var(--text-main); font-size:0.84rem;">${escapeHtml(recStudent.name)}</strong><br><span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace; word-break:break-all;" title="${escapeHtml(recipient)}">${escapeHtml(recStudent.mssv)} • ${shortenAddress(recipient)}</span></div>`
+              : `<div style="font-size:0.75rem; font-family:monospace; word-break:break-all; line-height:1.35;" title="${escapeHtml(recipient)}">${shortenAddress(recipient)}</div>`;
+          } else {
+            // Sinh viên hoặc Khách: Ẩn danh người khác, không gọi API roster, không để lộ ví đầy đủ
+            recLabel = `<div style="font-size:0.78rem; font-family:monospace; line-height:1.35; color:var(--text-main);">${shortenAddress(recipient)}</div>`;
+          }
+
+          const cleanDesc = maskSensitiveTextForStudent(desc || "", isPrivilegedViewer);
 
           rowsHtml += `
             <tr>
               <td style="white-space:nowrap;"><strong>#${reqId}</strong></td>
               <td style="min-width:140px; max-width:200px;">${recLabel}</td>
               <td style="white-space:nowrap;"><strong>${amount} ETH</strong></td>
-              <td style="min-width:140px; word-break:break-word;">${escapeHtml(desc || "")}</td>
+              <td style="min-width:140px; word-break:break-word; white-space:normal; line-height:1.45;">${escapeHtml(cleanDesc)}</td>
               <td style="white-space:nowrap;">${yesVotes}/${activeBcsCount} (${pct}%)</td>
               <td style="white-space:nowrap;">${statusBadge}</td>
               <td>${voteActionHtml}</td>
@@ -13198,6 +13497,8 @@
     async function loadRefundRequests(totalCount, activeBcsCount) {
       const bcsRefundTable = document.getElementById("bcsRefundTableBody");
       const studentRefundTable = document.getElementById("studentRefundTableBody");
+      const targetContract = window.contract || contract;
+      if (!targetContract) return;
 
       if (totalCount === 0) {
         allRefundRequestsCache = [];
@@ -13213,7 +13514,7 @@
 
       for (let i = 1; i <= totalCount; i++) {
         try {
-          const req = await contract.getRefundRequest(i);
+          const req = await targetContract.getRefundRequest(i);
           const refId = Number(req[0]);
           const applicant = req[1];
           const amount = formatEth(req[2]);
@@ -13235,7 +13536,8 @@
           const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
           const statusBadge = getStatusBadge(status);
 
-          const isUserBcs = (isBcsMember || window.currentVerifiedRole === "bcs");
+          const isUserBcs = (window.isBcsMember || isBcsMember || window.currentVerifiedRole === "bcs");
+          const currentEffectiveUser = window.userAddress || userAddress;
 
           // For BCS table
           let bcsVoteHtml = "";
@@ -13243,9 +13545,9 @@
           if (status === 0) {
             if (isUserBcs) {
               let alreadyVotedRefund = false;
-              if (userAddress) {
+              if (currentEffectiveUser) {
                 try {
-                  alreadyVotedRefund = await contract.hasVotedRefund(refId, userAddress);
+                  alreadyVotedRefund = await targetContract.hasVotedRefund(refId, currentEffectiveUser);
                 } catch (e) { }
               }
               if (alreadyVotedRefund) {
@@ -13280,17 +13582,33 @@
             bcsExecHtml = `<span class="status-pill status-cancelled" style="font-size:0.75rem; white-space:nowrap;">Hết hạn 7 ngày</span>`;
           }
 
-          const appStudent = lookupStudent(applicant);
-          const appLabel = appStudent
-            ? `<div style="line-height:1.35;"><strong style="color:var(--text-main); font-size:0.84rem;">${escapeHtml(appStudent.name)}</strong><br><span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace; word-break:break-all;" title="${escapeHtml(applicant)}">${escapeHtml(appStudent.mssv)} • ${shortenAddress(applicant)}</span></div>`
-            : `<div style="font-size:0.75rem; font-family:monospace; word-break:break-all; line-height:1.35;" title="${escapeHtml(applicant)}">${shortenAddress(applicant)}</div>`;
+          const viewerRole = window.currentVerifiedRole || "none";
+          const isPrivilegedViewer = (viewerRole === "bcs" || viewerRole === "advisor" || window.isBcsMember || isBcsMember || window.isAdvisor || isAdvisor);
+          const isMyWallet = currentEffectiveUser && (applicant.toLowerCase() === currentEffectiveUser.toLowerCase());
+
+          let appLabel = "";
+          if (isMyWallet) {
+            const effProfile = window.myStudentProfile || myStudentProfile;
+            const myName = (effProfile && effProfile.name) || "Bạn";
+            appLabel = `<div style="line-height:1.35;"><strong style="color:var(--brand-blue); font-size:0.84rem;">Bạn (${escapeHtml(myName)})</strong><br><span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;" title="${escapeHtml(applicant)}">${shortenAddress(applicant)}</span></div>`;
+          } else if (isPrivilegedViewer) {
+            const appStudent = lookupStudent(applicant);
+            appLabel = appStudent
+              ? `<div style="line-height:1.35;"><strong style="color:var(--text-main); font-size:0.84rem;">${escapeHtml(appStudent.name)}</strong><br><span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace; word-break:break-all;" title="${escapeHtml(applicant)}">${escapeHtml(appStudent.mssv)} • ${shortenAddress(applicant)}</span></div>`
+              : `<div style="font-size:0.75rem; font-family:monospace; word-break:break-all; line-height:1.35;" title="${escapeHtml(applicant)}">${shortenAddress(applicant)}</div>`;
+          } else {
+            // Sinh viên hoặc Khách: Ẩn danh người khác, không gọi API roster, không để lộ ví đầy đủ
+            appLabel = `<div style="font-size:0.78rem; font-family:monospace; line-height:1.35; color:var(--text-main);">${shortenAddress(applicant)}</div>`;
+          }
+
+          const cleanReason = maskSensitiveTextForStudent(reason || "", isPrivilegedViewer);
 
           bcsRows += `
             <tr>
               <td style="white-space:nowrap;"><strong>#${refId}</strong></td>
               <td style="min-width:140px; max-width:200px;">${appLabel}</td>
               <td style="white-space:nowrap;"><strong>${amount} ETH</strong></td>
-              <td style="min-width:140px; max-width:220px; word-break:break-word;">${escapeHtml(reason || "")}</td>
+              <td style="min-width:140px; max-width:260px; word-break:break-word; white-space:normal; line-height:1.45;">${escapeHtml(cleanReason)}</td>
               <td style="white-space:nowrap;">${yesVotes}/${activeBcsCount} (${pct}%)</td>
               <td style="white-space:nowrap;">${statusBadge}</td>
               <td>${bcsVoteHtml}</td>
@@ -13339,7 +13657,7 @@
       if (flowBalClass) flowBalClass.textContent = formatEth(classFundWei) + " ETH";
       if (flowBalFee) flowBalFee.textContent = formatEth(adminFeeWei) + " ETH";
       if (linkEtherscan && CONFIG.contractAddress) {
-        linkEtherscan.href = `${ CONFIG.blockExplorer } /address/${ CONFIG.contractAddress } `;
+        linkEtherscan.href = `${CONFIG.blockExplorer} /address/${CONFIG.contractAddress} `;
       }
 
       if (isLoadingCashFlowLedger) return;
@@ -13381,12 +13699,38 @@
             }
 
             const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
-            // BẢO MẬT LỊCH SỬ DÒNG TIỀN (ĐỢT 3B.3):
-            // Không ghép nối Họ tên, MSSV từ danh bạ vào lịch sử công khai
-            // Chỉ hiển thị địa chỉ ví rút gọn an toàn (0x12ab...89cd)
-            const recText = shortenAddress(recipient);
-            const creText = shortenAddress(creator);
-            const itemId = `SP - ${ reqId } `;
+            // BẢO MẬT & MINH BẠCH LỊCH SỬ DÒNG TIỀN:
+            // - Sinh viên/Khách: Chỉ thấy 0x rút gọn, ví của chính mình hiện "Bạn", không ghép tên PII
+            // - Cố vấn/BCS: Ghép đầy đủ họ tên từ danh bạ
+            const viewerRole = window.currentVerifiedRole || "none";
+            const isPrivileged = (viewerRole === "bcs" || viewerRole === "advisor" || window.isBcsMember || isBcsMember || window.isAdvisor || isAdvisor);
+            const currentEffectiveUser = window.userAddress || userAddress;
+
+            let recText = shortenAddress(recipient);
+            let creText = shortenAddress(creator);
+
+            if (currentEffectiveUser && recipient.toLowerCase() === currentEffectiveUser.toLowerCase()) {
+              recText = `Bạn (${shortenAddress(recipient)})`;
+            } else if (isPrivileged) {
+              const recStudent = lookupStudent(recipient);
+              if (recStudent) recText = `${recStudent.name} (${shortenAddress(recipient)})`;
+            }
+
+            if (currentEffectiveUser && creator.toLowerCase() === currentEffectiveUser.toLowerCase()) {
+              creText = `Bạn (${shortenAddress(creator)})`;
+            } else if (isPrivileged) {
+              const creStudent = lookupStudent(creator);
+              if (creStudent) creText = `${creStudent.name} (${shortenAddress(creator)})`;
+            } else {
+              creText = `Ban cán sự (${shortenAddress(creator)})`;
+            }
+
+            const cleanDesc = maskSensitiveTextForStudent(desc || "", isPrivileged);
+
+            const itemId = `SP-${reqId}`;
+            const fullParty = isPrivileged
+              ? `Người nhận: ${recipient} | Người tạo: ${creator}`
+              : `Người nhận: ${recText} | Người tạo: ${creText}`;
 
             if (!seenIds.has(itemId)) {
               seenIds.add(itemId);
@@ -13397,69 +13741,83 @@
                 flowType: "📤 Chi tiêu",
                 badgeClass: "flow-badge-spend",
                 amountEth: formatEth(rawAmount),
-                party: `Nhận: ${ recText } (Tạo: ${ creText })`,
-                fullParty: `Người nhận: ${ recipient } | Người tạo: ${ creator } `,
-                desc: desc,
-                votesText: `${ yesVotes }/${activeBcsCount} (${pct}%)`,
-          statusNum: status,
-            statusBadge: getStatusBadge(status),
-              createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
-        });
-      }
-    } catch (e) {
-      console.error("Error reading spend for ledger", i, e);
-    }
+                party: `Nhận: ${recText} (Tạo: ${creText})`,
+                fullParty: fullParty,
+                desc: cleanDesc,
+                votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
+                statusNum: status,
+                statusBadge: getStatusBadge(status),
+                createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
+              });
+            }
+          } catch (e) {
+            console.error("Error reading spend for ledger", i, e);
+          }
         }
 
-    // 3. Collect all Refund Requests into ledger
-    for (let i = 1; i <= refundCount; i++) {
-      try {
-        const req = await contract.getRefundRequest(i);
-        const refId = Number(req[0]);
-        const applicant = req[1];
-        const rawAmount = req[2];
-        const reason = req[3];
-        const createdAt = Number(req[4]);
-        const yesVotes = Number(req[5]);
-        const status = Number(req[7]);
+        // 3. Collect all Refund Requests into ledger
+        for (let i = 1; i <= refundCount; i++) {
+          try {
+            const req = await contract.getRefundRequest(i);
+            const refId = Number(req[0]);
+            const applicant = req[1];
+            const rawAmount = req[2];
+            const reason = req[3];
+            const createdAt = Number(req[4]);
+            const yesVotes = Number(req[5]);
+            const status = Number(req[7]);
 
-        const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
-        // BẢO MẬT LỊCH SỬ DÒNG TIỀN (ĐỢT 3B.3):
-        // Không ghép nối Họ tên, MSSV từ danh bạ vào đơn hoàn tiền trên sổ cái công khai
-        const appText = shortenAddress(applicant);
-        const itemId = `RF-${refId}`;
+            const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+            const viewerRole = window.currentVerifiedRole || "none";
+            const isPrivileged = (viewerRole === "bcs" || viewerRole === "advisor" || window.isBcsMember || isBcsMember || window.isAdvisor || isAdvisor);
+            const currentEffectiveUser = window.userAddress || userAddress;
 
-        if (!seenIds.has(itemId)) {
-          seenIds.add(itemId);
-          localFlowItems.push({
-            category: "refund",
-            id: itemId,
-            numId: refId,
-            flowType: "🔄 Hoàn tiền",
-            badgeClass: "flow-badge-refund",
-            amountEth: formatEth(rawAmount),
-            party: `Người nhận: ${appText}`,
-            fullParty: `Địa chỉ nhận hoàn: ${applicant}`,
-            desc: reason,
-            votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
-            statusNum: status,
-            statusBadge: getStatusBadge(status),
-            createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
-          });
+            let appText = shortenAddress(applicant);
+            if (currentEffectiveUser && applicant.toLowerCase() === currentEffectiveUser.toLowerCase()) {
+              appText = `Bạn (${shortenAddress(applicant)})`;
+            } else if (isPrivileged) {
+              const appStudent = lookupStudent(applicant);
+              if (appStudent) appText = `${appStudent.name} (${shortenAddress(applicant)})`;
+            }
+
+            const itemId = `RF-${refId}`;
+            const fullParty = isPrivileged
+              ? `Địa chỉ nhận hoàn: ${applicant}`
+              : `Địa chỉ nhận hoàn: ${appText}`;
+
+            const cleanReason = maskSensitiveTextForStudent(reason || "", isPrivileged);
+
+            if (!seenIds.has(itemId)) {
+              seenIds.add(itemId);
+              localFlowItems.push({
+                category: "refund",
+                id: itemId,
+                numId: refId,
+                flowType: "🔄 Hoàn tiền",
+                badgeClass: "flow-badge-refund",
+                amountEth: formatEth(rawAmount),
+                party: `Người nhận: ${appText}`,
+                fullParty: fullParty,
+                desc: cleanReason,
+                votesText: `${yesVotes}/${activeBcsCount} (${pct}%)`,
+                statusNum: status,
+                statusBadge: getStatusBadge(status),
+                createdAt: createdAt ? new Date(createdAt * 1000).toLocaleDateString("vi-VN") : "Gần đây"
+              });
+            }
+          } catch (e) {
+            console.error("Error reading refund for ledger", i, e);
+          }
         }
-      } catch (e) {
-        console.error("Error reading refund for ledger", i, e);
-      }
-    }
 
-    if (flowBalExec) flowBalExec.textContent = formatEth(totalExecutedSpendWei) + " ETH";
-    if (flowBalExecCount) flowBalExecCount.textContent = `${executedSpendCount} khoản chi đã giải ngân`;
+        if (flowBalExec) flowBalExec.textContent = formatEth(totalExecutedSpendWei) + " ETH";
+        if (flowBalExecCount) flowBalExecCount.textContent = `${executedSpendCount} khoản chi đã giải ngân`;
 
-    allFlowItems = localFlowItems;
-    renderFlowLedgerTable(allFlowItems);
+        allFlowItems = localFlowItems;
+        renderFlowLedgerTable(allFlowItems);
       } finally {
-      isLoadingCashFlowLedger = false;
-    }
+        isLoadingCashFlowLedger = false;
+      }
     }
 
     function renderFlowLedgerTable(items) {
@@ -15065,7 +15423,7 @@
                 `)}
               </div>
               <div>
-                ${isBcsOrAdvisor ? `
+                ${(hasPermission("manageCollection")) ? `
                   <button class="btn btn-xs btn-danger" style="padding: 4px 10px !important; font-size: 0.75rem !important; font-weight: 600 !important; white-space: nowrap !important;" onclick="closeActiveAnnouncement('${escapeHtml(nid)}')">🛑 Đóng đợt thu</button>
                 ` : ''}
               </div>
@@ -15106,7 +15464,11 @@
             </div>
 
             <div style="margin-top: 14px; display: flex; justify-content: flex-end;">
-              ${isFullyCompleted ? `
+              ${!hasPermission("collectionPay") ? `
+                <span style="font-size: 0.8rem; color: #64748b; font-style: italic;">
+                  ${window.currentVerifiedRole === "advisor" ? "🏛️ Tài khoản Cố vấn học tập (Giám sát)" : "🔒 Vui lòng kết nối ví Sinh viên để nộp quỹ"}
+                </span>
+              ` : (isFullyCompleted ? `
                 <button class="btn btn-sm btn-success" style="font-size: 0.85rem; font-weight: 600; padding: 7px 16px; display: inline-flex; align-items: center; gap: 6px; cursor: default; background: #dcfce7 !important; color: #166534 !important; border: 1px solid #86efac !important; border-radius: 8px; opacity: 1;" disabled title="Cả lớp đã hoàn thành nộp quỹ">
                   ✅ Cả lớp đã hoàn thành
                 </button>
@@ -15123,7 +15485,7 @@
                   onclick="initiateCampaignContribution('${escapeHtml(nid)}', '${escapeHtml(a.targetAmountEth || "0.01")}')">
                   ⚡ Nộp quỹ cho đợt này (${escapeHtml(a.targetAmountEth || "0.01")} ETH)
                 </button>
-              `))}
+              `)))}
             </div>
           </div>
         `;
@@ -15816,7 +16178,7 @@
              Vui lòng liên hệ Ban cán sự hoặc Cố vấn học tập để cập nhật ví trước khi thực hiện đóng góp.
            </p>
            <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
-             <button class="btn btn-primary btn-sm" onclick="closeModal(); openRosterModal();">Xem danh bạ lớp</button>
+             <button class="btn btn-primary btn-sm" onclick="closeModal(); navigateTo('ledger');">Xem Sổ dòng tiền</button>
              <button class="btn btn-outline btn-sm" onclick="closeModal();">Đóng</button>
            </div>`
         );
@@ -15891,9 +16253,9 @@
           statusText: "Ví ngoài danh bạ",
           title: "Ví chưa được định danh trong danh bạ K57",
           desc: `Địa chỉ ví ${shortenAddress(userAddress)} đang ở chế độ xem công khai. Nếu bạn là sinh viên lớp K57, vui lòng liên hệ Ban cán sự để cập nhật ví.`,
-          actionText: "Xem danh bạ lớp",
+          actionText: "Xem Sổ quỹ",
           actionClass: "btn-outline",
-          onClick: () => openRosterModal()
+          onClick: () => navigateTo('ledger')
         });
       }
       // 3. CỐ VẤN HỌC TẬP
@@ -16985,13 +17347,19 @@
       const cMembers = document.getElementById("cardActionMembers");
       const cGov = document.getElementById("cardActionGovernance");
 
-      if (cDeposit) cDeposit.style.display = (currentRole === "advisor" ? "none" : "flex");
-      if (cRefund) cRefund.style.display = (currentRole === "advisor" ? "none" : "flex");
-      if (cSpend) cSpend.style.display = (currentRole === "bcs" ? "flex" : "none");
-      if (cVote) cVote.style.display = (currentRole === "bcs" || currentRole === "advisor" ? "flex" : "none");
-      if (cLedger) cLedger.style.display = "flex";
-      if (cMembers) cMembers.style.display = "flex";
-      if (cGov) cGov.style.display = (currentRole === "advisor" ? "flex" : "none");
+      if (cDeposit) cDeposit.style.display = hasPermission("deposit", currentRole) ? "flex" : "none";
+      if (cRefund) cRefund.style.display = hasPermission("refund", currentRole) ? "flex" : "none";
+      if (cSpend) cSpend.style.display = hasPermission("spend", currentRole) ? "flex" : "none";
+      if (cVote) cVote.style.display = hasPermission("vote", currentRole) ? "flex" : "none";
+      if (cLedger) cLedger.style.display = hasPermission("ledger", currentRole) ? "flex" : "none";
+      if (cMembers) cMembers.style.display = hasPermission("roster", currentRole) ? "flex" : "none";
+      if (cGov) cGov.style.display = hasPermission("manageBCS", currentRole) ? "flex" : "none";
+
+      // Ẩn toàn bộ khối dịch vụ nhanh nếu là Khách vãng lai / chưa kết nối
+      const svcSection = document.querySelector(".action-service-section");
+      if (svcSection) {
+        svcSection.style.display = (currentRole === "guest" || currentRole === "none") ? "none" : "block";
+      }
 
       // 4. Update Advanced Settings Accordion (only for Advisor)
       const advSec = document.getElementById("sectionAdvancedSettings");
@@ -17008,21 +17376,26 @@
       if (btnStudent && btnBCS && btnAdvisor) {
         if (currentRole === "student") {
           btnStudent.style.display = "inline-flex";
-          btnBCS.style.display = "none";
+          btnBCS.style.display = "inline-flex";
+          btnBCS.innerHTML = '<span>📋</span> Đề xuất chi (Xem)';
           btnAdvisor.style.display = "none";
         } else if (currentRole === "bcs") {
           btnStudent.style.display = "inline-flex";
           btnBCS.style.display = "inline-flex";
+          btnBCS.innerHTML = '<span>👥</span> Ban cán sự';
           btnAdvisor.style.display = "none";
         } else if (currentRole === "advisor") {
           btnStudent.style.display = "none";
-          btnBCS.style.display = "inline-flex";
+          btnBCS.style.display = "none";
           btnAdvisor.style.display = "inline-flex";
         } else {
-          btnStudent.style.display = "inline-flex";
-          btnBCS.style.display = "inline-flex";
-          btnAdvisor.style.display = "inline-flex";
+          btnStudent.style.display = "none";
+          btnBCS.style.display = "none";
+          btnAdvisor.style.display = "none";
         }
+      }
+      if (btnHistory) {
+        btnHistory.style.display = hasPermission("ledger", currentRole) ? "inline-flex" : "none";
       }
 
       // 5. Sync Glass Cards in Hero (Khả dụng = Quỹ lớp hiện có - Đang giữ chỗ)
@@ -17079,6 +17452,9 @@
     }
 
     function showToast(message, type = "info", duration = 4000) {
+      if (typeof window.__onToast === "function") {
+        window.__onToast(message, type);
+      }
       let container = document.getElementById("toastContainer");
       if (!container) {
         container = document.createElement("div");
@@ -17249,6 +17625,9 @@
       const isOpen = mega.classList.contains("show");
       closeAllNavDropdowns();
       if (!isOpen) {
+        if (typeof syncMegaMenuPermissions === "function") {
+          syncMegaMenuPermissions(window.currentVerifiedRole);
+        }
         mega.classList.add("show");
         if (btn) {
           btn.classList.add("active");
@@ -17383,31 +17762,129 @@
       }
     });
 
-    // Cập nhật phân quyền trên Mega Menu Dịch vụ
+    // Cập nhật phân quyền trên Mega Menu Dịch vụ, Topbar & Mobile Nav
     function syncMegaMenuPermissions(role) {
       const currentRole = role || window.currentVerifiedRole || "none";
-      const itemBcs = document.getElementById("megaItemManageBcs");
-      const itemFee = document.getElementById("megaItemWithdrawFee");
-      const groupGov = document.getElementById("megaGroupGovernance");
+      const isGuest = (currentRole === "guest" || currentRole === "none");
 
-      if (groupGov) {
-        // Chỉ hiện cho CVHT hoặc BCS
-        const hasAccess = (currentRole === "advisor" || currentRole === "bcs");
-        if (!hasAccess) {
-          groupGov.style.opacity = "0.5";
-          if (itemBcs) {
-            itemBcs.classList.add("disabled");
-            itemBcs.title = "Chức năng dành riêng cho Cố vấn học tập / Ban cán sự";
+      // 1. Topbar Sổ quỹ link
+      const navLedger = document.getElementById("navLinkLedger");
+      if (navLedger) {
+        navLedger.style.display = hasPermission("ledger", currentRole) ? "inline-flex" : "none";
+      }
+
+      // 2. Topbar Dịch vụ dropdown
+      const wrapServices = document.getElementById("wrapServicesMega");
+      if (wrapServices) {
+        wrapServices.style.display = isGuest ? "none" : "inline-block";
+      }
+
+      // 3. Các mục trong Mega Menu
+      const megaDeposit = document.querySelector('#megaMenuServices a[href="#deposit"]');
+      const megaRefund = document.querySelector('#megaMenuServices a[href="#refund"]');
+      const megaSpend = document.querySelector('#megaMenuServices a[href="#spend"]');
+      const megaVote = document.querySelector('#megaMenuServices a[href="#vote"]');
+      const megaDisburse = document.querySelector('#megaMenuServices a[href="#disburse"]');
+      const megaLedger = document.querySelector('#megaMenuServices a[href="#ledger"]');
+      const megaViewSpend = document.getElementById("megaItemViewSpend");
+      const megaRoster = document.querySelector('#megaMenuServices a[onclick*="openRosterModal"]');
+      const megaBcsManage = document.getElementById("megaItemManageBcs");
+      const megaWithdrawFee = document.getElementById("megaItemWithdrawFee");
+
+      if (megaDeposit) megaDeposit.style.display = hasPermission("deposit", currentRole) ? "flex" : "none";
+      if (megaRefund) megaRefund.style.display = hasPermission("refund", currentRole) ? "flex" : "none";
+      if (megaSpend) megaSpend.style.display = hasPermission("spend", currentRole) ? "flex" : "none";
+      if (megaVote) megaVote.style.display = hasPermission("vote", currentRole) ? "flex" : "none";
+      if (megaDisburse) megaDisburse.style.display = hasPermission("spend", currentRole) ? "flex" : "none";
+      if (megaLedger) megaLedger.style.display = hasPermission("ledger", currentRole) ? "flex" : "none";
+      if (megaViewSpend) megaViewSpend.style.display = hasPermission("viewSpendProposals", currentRole) ? "flex" : "none";
+      if (megaRoster) megaRoster.style.display = hasPermission("roster", currentRole) ? "flex" : "none";
+      if (megaBcsManage) megaBcsManage.style.display = hasPermission("manageBCS", currentRole) ? "flex" : "none";
+      if (megaWithdrawFee) megaWithdrawFee.style.display = hasPermission("manageBCS", currentRole) ? "flex" : "none";
+
+      // Động lực hóa hiển thị từng CỘT (nhóm) trong Mega Menu:
+      // Menu chỉ render những CỘT có ít nhất 1 mục được phép. Cột rỗng ẩn hoàn toàn cả tiêu đề.
+      const megaPanel = document.getElementById("megaMenuServices");
+      const megaGrid = megaPanel ? megaPanel.querySelector(".mega-menu-grid") : null;
+      if (megaPanel && megaGrid) {
+        const groups = megaPanel.querySelectorAll(".mega-group");
+        let visibleColCount = 0;
+        groups.forEach(group => {
+          const items = Array.from(group.querySelectorAll(".mega-item"));
+          const hasVisibleItem = items.some(item => item.style.display !== "none");
+          if (hasVisibleItem) {
+            group.style.display = "flex";
+            visibleColCount++;
+          } else {
+            group.style.display = "none";
           }
-          if (itemFee) {
-            itemFee.classList.add("disabled");
-            itemFee.title = "Chức năng dành riêng cho Cố vấn học tập";
-          }
-        } else {
-          groupGov.style.opacity = "1";
-          if (itemBcs) itemBcs.classList.remove("disabled");
-          if (itemFee) itemFee.classList.remove("disabled");
-        }
+        });
+
+        // Áp dụng CSS Grid động và thu gọn chiều rộng panel theo số cột thực tế
+        const nCols = Math.max(1, visibleColCount);
+        megaGrid.style.gridTemplateColumns = `repeat(${nCols}, minmax(220px, 1fr))`;
+
+        // Thu hẹp chiều rộng toàn menu khi số cột ít hơn 4 (tránh khoảng trắng bên phải cho sinh viên)
+        const colWidth = 260;
+        const totalGap = (nCols - 1) * 20;
+        const totalPad = 48;
+        const calcWidth = (colWidth * nCols) + totalGap + totalPad;
+        megaPanel.style.width = `${Math.min(960, Math.max(320, calcWidth))}px`;
+      }
+
+      // 4. Mobile Bottom Nav
+      const mobServices = document.getElementById("mobNavServices");
+      const mobHist = document.getElementById("mobNavHistory");
+      if (mobServices) mobServices.style.display = isGuest ? "none" : "flex";
+      if (mobHist) mobHist.style.display = hasPermission("ledger", currentRole) ? "flex" : "none";
+
+      // 5. Mobile Services Sheet Items
+      const mobDep = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="deposit"]');
+      const mobRef = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="refund"]');
+      const mobLed = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="ledger"]');
+      const mobMem = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="openRosterModal"]');
+      const mobSpd = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="spend"]');
+      const mobVot = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="vote"]');
+      const mobDis = document.querySelector('#bottomSheetMobileServices .mobile-service-item[onclick*="disburse"]');
+      const mobBcs = document.getElementById("mobServiceManageBcs");
+      const mobFee = document.getElementById("mobServiceWithdrawFee");
+
+      if (mobDep) mobDep.style.display = hasPermission("deposit", currentRole) ? "flex" : "none";
+      if (mobRef) mobRef.style.display = hasPermission("refund", currentRole) ? "flex" : "none";
+      if (mobLed) mobLed.style.display = hasPermission("ledger", currentRole) ? "flex" : "none";
+      if (mobMem) mobMem.style.display = hasPermission("roster", currentRole) ? "flex" : "none";
+      if (mobSpd) mobSpd.style.display = hasPermission("spend", currentRole) ? "flex" : "none";
+      if (mobVot) mobVot.style.display = hasPermission("vote", currentRole) ? "flex" : "none";
+      if (mobDis) mobDis.style.display = hasPermission("spend", currentRole) ? "flex" : "none";
+      if (mobBcs) mobBcs.style.display = hasPermission("manageBCS", currentRole) ? "flex" : "none";
+      if (mobFee) mobFee.style.display = hasPermission("manageBCS", currentRole) ? "flex" : "none";
+
+      // 6. Sidebar links
+      const sbRoster = document.querySelector('.sidebar-menu a[onclick*="openRosterModal"]');
+      if (sbRoster && sbRoster.closest('li')) {
+        sbRoster.closest('li').style.display = hasPermission("roster", currentRole) ? "block" : "none";
+      }
+      const sbStudent = document.querySelector('.sidebar-menu a[onclick*="selectRoleView(\'student\')"]');
+      if (sbStudent && sbStudent.closest('li')) {
+        sbStudent.closest('li').style.display = (hasPermission("deposit", currentRole) || hasPermission("refund", currentRole)) ? "block" : "none";
+      }
+      const sbBcs = document.querySelector('.sidebar-menu a[onclick*="selectRoleView(\'bcs\')"]');
+      if (sbBcs && sbBcs.closest('li')) {
+        sbBcs.closest('li').style.display = (hasPermission("spend", currentRole) || hasPermission("vote", currentRole)) ? "block" : "none";
+      }
+      const sbAdv = document.querySelector('.sidebar-menu a[onclick*="selectRoleView(\'advisor\')"]');
+      if (sbAdv && sbAdv.closest('li')) {
+        sbAdv.closest('li').style.display = hasPermission("manageBCS", currentRole) ? "block" : "none";
+      }
+      const sbHist = document.querySelector('.sidebar-menu a[onclick*="selectRoleView(\'history\')"]');
+      if (sbHist && sbHist.closest('li')) {
+        sbHist.closest('li').style.display = hasPermission("ledger", currentRole) ? "block" : "none";
+      }
+
+      // 7. Footer roster link
+      const ftRoster = document.getElementById("footerItemRoster");
+      if (ftRoster) {
+        ftRoster.style.display = hasPermission("roster", currentRole) ? "block" : "none";
       }
     }
 
@@ -17793,6 +18270,10 @@
           mobHome.classList.add("active");
         }
       } else if (target === "ledger" || target === "history") {
+        if (!hasPermission("ledger")) {
+          showToast("Bạn không có quyền thực hiện thao tác này.", "warning");
+          return;
+        }
         showHomePage();
         const ws = document.getElementById("dapp-workspace");
         if (ws) ws.style.display = "block";
@@ -17893,10 +18374,22 @@
       if (typeof closeAllNavDropdowns === "function") closeAllNavDropdowns();
       if (typeof closeAllMobileSheets === "function") closeAllMobileSheets();
 
+      // Kiểm tra quyền hạn trực tiếp trước khi mở
+      const mappedPerm = mapActionToPermission(action);
+      if (mappedPerm && !hasPermission(mappedPerm)) {
+        (window.showToast || showToast)("Bạn không có quyền thực hiện thao tác này.", "warning");
+        return;
+      }
+
       // Nếu là tra cứu nhân sự BCS, mở modal chuyên dụng
-      if (action === "bcs-personnel" || action === "members") {
+      if (action === "bcs-personnel") {
         if (typeof openBcsPersonnelModal === "function") {
           openBcsPersonnelModal();
+          return;
+        }
+      } else if (action === "members") {
+        if (typeof openRosterModal === "function") {
+          openRosterModal();
           return;
         }
       }
@@ -18010,11 +18503,14 @@
         const inp = document.getElementById("inputSpendRecipient");
         if (inp) setTimeout(() => inp.focus(), 150);
       } else if (action === "vote" || action === "disburse") {
+        const isBcs = hasPermission("vote");
         if (btnMap.bcs) btnMap.bcs.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "1140px";
-        if (iconEl) iconEl.textContent = "⚖️";
-        if (titleEl) titleEl.textContent = "Biểu Quyết & Giải Ngân (BCS)";
-        if (subEl) subEl.textContent = "Danh sách các khoản chi và yêu cầu hoàn tiền đang chờ Ban cán sự biểu quyết";
+        if (iconEl) iconEl.textContent = isBcs ? "⚖️" : "📋";
+        if (titleEl) titleEl.textContent = isBcs ? "Biểu Quyết & Giải Ngân (BCS)" : "Đề Xuất Chi & Hoàn Tiền (Chế độ xem)";
+        if (subEl) subEl.textContent = isBcs
+          ? "Danh sách các khoản chi và yêu cầu hoàn tiền đang chờ Ban cán sự biểu quyết"
+          : "Danh sách đề xuất chi tiêu và hoàn tiền minh bạch cho sinh viên theo dõi tiến độ";
         if (pBCS) pBCS.style.display = 'block';
         if (secSpendCreate) secSpendCreate.style.display = "none";
         if (secBcsCol) secBcsCol.style.display = "none";
@@ -18032,14 +18528,17 @@
         if (wrapSpend && wrapSpend.parentElement) wrapSpend.parentElement.style.display = "none";
         if (wrapRefund && wrapRefund.parentElement) wrapRefund.parentElement.style.display = "none";
       } else if (action === "bcs") {
+        const isBcs = hasPermission("spend") || hasPermission("vote");
         if (btnMap.bcs) btnMap.bcs.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "1140px";
-        if (iconEl) iconEl.textContent = "👥";
-        if (titleEl) titleEl.textContent = "Bảng Thao Tác Ban Cán Sự";
-        if (subEl) subEl.textContent = "Tạo đề xuất chi, biểu quyết, duyệt hoàn tiền và quản lý đợt thu";
+        if (iconEl) iconEl.textContent = isBcs ? "👥" : "📋";
+        if (titleEl) titleEl.textContent = isBcs ? "Bảng Thao Tác Ban Cán Sự" : "Đề Xuất Chi & Hoàn Tiền (Chế độ xem)";
+        if (subEl) subEl.textContent = isBcs
+          ? "Tạo đề xuất chi, biểu quyết, duyệt hoàn tiền và quản lý đợt thu"
+          : "Theo dõi minh bạch các đề xuất chi tiêu, đơn hoàn tiền và kết quả biểu quyết của lớp";
         if (pBCS) pBCS.style.display = 'block';
-        if (secSpendCreate) secSpendCreate.style.display = "block";
-        if (secBcsCol) secBcsCol.style.display = "block";
+        if (secSpendCreate) secSpendCreate.style.display = isBcs ? "block" : "none";
+        if (secBcsCol) secBcsCol.style.display = isBcs ? "block" : "none";
         if (wrapSpend && wrapSpend.parentElement) wrapSpend.parentElement.style.display = "block";
         if (wrapRefund && wrapRefund.parentElement) wrapRefund.parentElement.style.display = "block";
       } else if (action === "manage-bcs" || action === "bcs-manage") {
