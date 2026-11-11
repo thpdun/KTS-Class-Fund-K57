@@ -1893,33 +1893,47 @@
     }
 
     .ai-fab-btn {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 20px;
-      background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      background: linear-gradient(135deg, #0b5d45 0%, #1B7F5C 100%);
       color: #ffffff;
-      border: none;
-      border-radius: var(--radius-full);
-      font-weight: 700;
-      font-size: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 8px 22px rgba(11, 93, 69, 0.45);
       transition: all 0.2s ease;
     }
 
     .ai-fab-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.5);
+      transform: translateY(-3px);
+      filter: brightness(1.12);
+      box-shadow: 0 12px 28px rgba(11, 93, 69, 0.55);
+    }
+
+    .ai-fab-btn:focus-visible {
+      outline: 3px solid #F5B83D;
+      outline-offset: 3px;
     }
 
     .ai-fab-badge {
-      width: 8px;
-      height: 8px;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+      background: #94a3b8;
+      box-shadow: 0 0 0 2px #0b5d45;
     }
+
+    .ai-fab-badge.online { background: #4ade80; }
+    .ai-fab-badge.warn { background: #F5B83D; }
+    .ai-fab-badge.offline { background: #ef4444; }
 
     .ai-chat-drawer {
       display: none;
@@ -1943,7 +1957,7 @@
 
     .ai-chat-header {
       padding: 14px 18px;
-      background: var(--primary-navy);
+      background: linear-gradient(135deg, #0b5d45 0%, #1B7F5C 100%);
       color: #ffffff;
       display: flex;
       justify-content: space-between;
@@ -1960,7 +1974,7 @@
 
     .ai-header-status {
       font-size: 0.72rem;
-      color: #94a3b8;
+      color: #d1fae5;
       display: flex;
       align-items: center;
       gap: 5px;
@@ -2012,7 +2026,7 @@
     }
 
     .ai-msg-user {
-      background: var(--brand-blue);
+      background: #0b5d45;
       color: #ffffff;
       align-self: flex-end;
       border-bottom-right-radius: 2px;
@@ -2063,13 +2077,13 @@
     }
 
     .ai-input:focus {
-      border-color: var(--brand-blue);
+      border-color: #1B7F5C;
     }
 
     .ai-send-btn {
       padding: 8px 14px;
-      background: var(--brand-blue);
-      color: #ffffff;
+      background: #F5B83D;
+      color: #142a22;
       border: none;
       border-radius: 6px;
       font-weight: 600;
@@ -3804,8 +3818,9 @@
         }
 
         .ai-fab-btn {
-          padding: 10px 16px !important;
-          font-size: 0.82rem !important;
+          width: 56px !important;
+          height: 56px !important;
+          padding: 0 !important;
         }
 
         .ai-chat-drawer {
@@ -4045,8 +4060,9 @@
         display: inline-block !important;
       }
   </style>
-  <link rel="stylesheet" href="styles.css?v=20261110_fix5_autorefresh">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="styles.css?v=20261111_hero_logo2">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png?v=20261111_logo2">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180x180.png?v=20261111_logo2">
 </head>
 
 <body>
@@ -4055,7 +4071,7 @@
   <!-- ============================================================ -->
   <aside class="app-sidebar" id="appSidebar">
     <div class="sidebar-header">
-      <img src="logo.png" alt="Logo KTS Class Fund" class="sidebar-logo-img">
+      <img src="assets/logo2.png?v=20261111_logo2" alt="KTS Class Fund" class="sidebar-logo-img">
       <div>
         <div class="sidebar-brand-title">KTS CLASS FUND</div>
         <div class="sidebar-brand-sub">K57 Kinh Tế Số &bull; ECO2432</div>
@@ -4199,7 +4215,7 @@
         <button class="menu-toggle" id="btnToggleNav" style="display:none;" aria-label="Mở menu">☰</button>
         <a href="#home" onclick="if (typeof navigateTo === 'function') navigateTo('home'); return false;"
           style="display:flex; align-items:center; gap:10px; text-decoration:none;">
-          <img src="logo.png" alt="KTS Logo" class="topbar-mini-logo">
+          <img src="assets/logo2.png?v=20261111_logo2" alt="KTS Class Fund" class="topbar-mini-logo">
           <div class="topbar-brand-text">
             <div class="topbar-brand-title">KTS CLASS FUND</div>
             <div class="topbar-brand-sub">Lớp K57 Kinh Tế Số &bull; ECO2432</div>
@@ -4628,34 +4644,118 @@
         <!-- 2.b KHỐI HERO HOÀNH TRÁNG -->
         <section class="grand-hero-container" id="hero">
           <div class="grand-hero-card">
+            <!-- Họa tiết mờ 3D Grid & Blockchain Nodes / Cubes chuẩn ảnh mẫu -->
+            <div class="hero-card-pattern" aria-hidden="true">
+              <svg width="100%" height="100%" viewBox="0 0 1000 420" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="heroGlowRight" cx="82%" cy="38%" r="48%">
+                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.16" />
+                    <stop offset="60%" stop-color="#0b5d45" stop-opacity="0.04" />
+                    <stop offset="100%" stop-color="#052e22" stop-opacity="0" />
+                  </radialGradient>
+                  <linearGradient id="heroGridLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#34d399" stop-opacity="0.05" />
+                    <stop offset="70%" stop-color="#6ee7b7" stop-opacity="0.13" />
+                    <stop offset="100%" stop-color="#10b981" stop-opacity="0.03" />
+                  </linearGradient>
+                </defs>
+                <!-- Background Radial Soft Glow -->
+                <rect width="1000" height="420" fill="url(#heroGlowRight)" />
+                
+                <!-- 3D Perspective Grid Lines -->
+                <g stroke="url(#heroGridLineGrad)" stroke-width="0.8" opacity="0.85">
+                  <line x1="0" y1="30" x2="1000" y2="30" />
+                  <line x1="0" y1="75" x2="1000" y2="75" />
+                  <line x1="0" y1="130" x2="1000" y2="130" />
+                  <line x1="0" y1="195" x2="1000" y2="195" />
+                  <line x1="0" y1="270" x2="1000" y2="270" />
+                  <line x1="0" y1="350" x2="1000" y2="350" />
+                  <line x1="0" y1="415" x2="1000" y2="415" />
+                  
+                  <line x1="50" y1="0" x2="20" y2="420" />
+                  <line x1="160" y1="0" x2="150" y2="420" />
+                  <line x1="280" y1="0" x2="290" y2="420" />
+                  <line x1="410" y1="0" x2="430" y2="420" />
+                  <line x1="540" y1="0" x2="570" y2="420" />
+                  <line x1="670" y1="0" x2="710" y2="420" />
+                  <line x1="800" y1="0" x2="850" y2="420" />
+                  <line x1="920" y1="0" x2="980" y2="420" />
+                </g>
+
+                <!-- Blockchain network nodes & connections on right -->
+                <g opacity="0.9">
+                  <line x1="720" y1="160" x2="790" y2="110" stroke="#6ee7b7" stroke-width="1" opacity="0.16" />
+                  <line x1="790" y1="110" x2="890" y2="140" stroke="#6ee7b7" stroke-width="1" opacity="0.18" />
+                  <line x1="890" y1="140" x2="940" y2="80" stroke="#6ee7b7" stroke-width="1" opacity="0.14" />
+                  <line x1="790" y1="110" x2="840" y2="220" stroke="#6ee7b7" stroke-width="1" opacity="0.16" />
+                  <line x1="840" y1="220" x2="770" y2="290" stroke="#6ee7b7" stroke-width="1" opacity="0.14" />
+                  <line x1="840" y1="220" x2="920" y2="250" stroke="#6ee7b7" stroke-width="1" opacity="0.16" />
+                  <line x1="890" y1="140" x2="920" y2="250" stroke="#6ee7b7" stroke-width="1" opacity="0.18" />
+                  <line x1="920" y1="250" x2="970" y2="330" stroke="#6ee7b7" stroke-width="1" opacity="0.14" />
+                  <line x1="770" y1="290" x2="860" y2="350" stroke="#6ee7b7" stroke-width="1" opacity="0.12" />
+
+                  <circle cx="720" cy="160" r="14" fill="#10b981" fill-opacity="0.10" stroke="#34d399" stroke-width="1" stroke-opacity="0.22" />
+                  <circle cx="790" cy="110" r="6" fill="#34d399" fill-opacity="0.22" />
+                  <circle cx="890" cy="140" r="22" fill="#10b981" fill-opacity="0.08" stroke="#6ee7b7" stroke-width="1.2" stroke-opacity="0.25" />
+                  <circle cx="890" cy="140" r="8" fill="#a7f3d0" fill-opacity="0.20" />
+                  <circle cx="940" cy="80" r="12" fill="#10b981" fill-opacity="0.10" stroke="#34d399" stroke-width="1" stroke-opacity="0.18" />
+                  <circle cx="840" cy="220" r="16" fill="#059669" fill-opacity="0.12" stroke="#6ee7b7" stroke-width="1" stroke-opacity="0.20" />
+                  <circle cx="770" cy="290" r="7" fill="#34d399" fill-opacity="0.18" />
+                  <circle cx="920" cy="250" r="26" fill="#10b981" fill-opacity="0.07" stroke="#34d399" stroke-width="1.2" stroke-opacity="0.22" />
+                  <circle cx="920" cy="250" r="9" fill="#6ee7b7" fill-opacity="0.20" />
+                  <circle cx="970" cy="330" r="18" fill="#10b981" fill-opacity="0.08" stroke="#34d399" stroke-width="1" stroke-opacity="0.18" />
+                  <circle cx="860" cy="350" r="10" fill="#34d399" fill-opacity="0.15" />
+
+                  <!-- Isometric 3D Cubes -->
+                  <g transform="translate(860, 60)" stroke="#6ee7b7" stroke-width="1" stroke-opacity="0.22" fill="rgba(16,185,129,0.06)">
+                    <polygon points="20,0 40,10 40,30 20,20" />
+                    <polygon points="20,0 0,10 0,30 20,20" />
+                    <polygon points="20,20 40,30 20,40 0,30" />
+                  </g>
+
+                  <g transform="translate(740, 180)" stroke="#34d399" stroke-width="1.2" stroke-opacity="0.25" fill="rgba(16,185,129,0.08)">
+                    <polygon points="28,0 56,14 56,42 28,28" />
+                    <polygon points="28,0 0,14 0,42 28,28" />
+                    <polygon points="28,28 56,42 28,56 0,42" />
+                  </g>
+
+                  <g transform="translate(930, 180)" stroke="#a7f3d0" stroke-width="1" stroke-opacity="0.20" fill="rgba(16,185,129,0.05)">
+                    <polygon points="24,0 48,12 48,36 24,24" />
+                    <polygon points="24,0 0,12 0,36 24,24" />
+                    <polygon points="24,24 48,36 24,48 0,36" />
+                  </g>
+                </g>
+              </svg>
+            </div>
+
             <div class="hero-balance-label">
               <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
               </svg>
-              <span>Quỹ Lớp Hiện Có</span>
-              <button type="button" id="btnManualRefreshBalances" class="btn-toggle-eye"
-                onclick="manualRefreshAllData(event)" title="Làm mới dữ liệu on-chain Sepolia"
-                aria-label="Làm mới dữ liệu" style="margin-left:auto; margin-right:4px;">
-                <svg id="iconRefreshSpin" style="width:17px;height:17px;" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
-                </svg>
-              </button>
+              <span>QUỸ LỚP HIỆN CÓ</span>
               <button type="button" id="btnToggleBalanceEye" class="btn-toggle-eye" onclick="toggleBalanceVisibility()"
                 title="Ẩn/Hiện số dư" aria-label="Ẩn hoặc hiện số dư">
-                <svg id="iconEyeOpen" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none"
+                <svg id="iconEyeOpen" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
-                <svg id="iconEyeClosed" style="width:18px;height:18px;display:none;" viewBox="0 0 24 24" fill="none"
+                <svg id="iconEyeClosed" style="width:16px;height:16px;display:none;" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2">
                   <path
                     d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
                   </path>
                   <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+              <button type="button" id="btnManualRefreshBalances" class="btn-toggle-eye"
+                onclick="manualRefreshAllData(event)" title="Làm mới dữ liệu on-chain Sepolia"
+                aria-label="Làm mới dữ liệu" style="margin-left:auto;">
+                <svg id="iconRefreshSpin" style="width:15px;height:15px;" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
                 </svg>
               </button>
             </div>
@@ -4666,17 +4766,17 @@
             <!-- 3 thẻ kính mờ trong Hero -->
             <div class="hero-glass-row">
               <div class="hero-glass-card">
-                <div class="hero-glass-title">Khả dụng (Net 99%)</div>
+                <div class="hero-glass-title">KHẢ DỤNG (NET 99%)</div>
                 <div class="hero-glass-val" id="heroGlassAvailable">0.0000 ETH</div>
-                <div class="hero-glass-sub" id="metricClassFundNote">Sẵn sàng phục vụ lớp</div>
+                <div class="hero-glass-sub" id="metricClassFundNote">Dữ liệu on-chain chính xác</div>
               </div>
               <div class="hero-glass-card">
-                <div class="hero-glass-title">Đang giữ chỗ</div>
+                <div class="hero-glass-title">ĐANG GIỮ CHỖ</div>
                 <div class="hero-glass-val" id="heroGlassReserved">0.0000 ETH</div>
                 <div class="hero-glass-sub">Khóa cho chi / hoàn</div>
               </div>
               <div class="hero-glass-card">
-                <div class="hero-glass-title">Quỹ vận hành (1%)</div>
+                <div class="hero-glass-title">QUỸ VẬN HÀNH (1%)</div>
                 <div class="hero-glass-val" id="metricAdminFee">- ETH</div>
                 <div class="hero-glass-sub" id="metricAdminFeeNote">Hoàn gas tự động EIP-1559</div>
               </div>
@@ -4687,15 +4787,15 @@
               <button class="btn btn-hero-deposit" id="btnHeroDeposit" type="button"
                 onclick="handleQuickAction('deposit')">
                 <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2">
+                  stroke-width="2.2">
                   <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 8 12 12 14 14"></polyline>
+                  <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
                 <span>Nạp quỹ ngay</span>
               </button>
               <button class="btn btn-hero-spend" id="btnHeroSpend" type="button" onclick="handleQuickAction('spend')">
                 <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2">
+                  stroke-width="2.2">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
@@ -5082,27 +5182,7 @@
               <div id="annHistoryListContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
 
-            <!-- THẺ 2: HOẠT ĐỘNG GẦN ĐÂY -->
-            <div class="rail-card" id="cardRecentActivitiesRail">
-              <div class="rail-card-title">
-                <span style="display:flex; align-items:center; gap:7px;">
-                  <svg style="width:17px;height:17px;color:var(--primary);" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                  </svg>
-                  <span>Hoạt động gần đây</span>
-                </span>
-                <a href="javascript:void(0)" onclick="selectRoleView('history')"
-                  style="font-size:0.78rem; font-weight:600; color:var(--primary); text-decoration:none;">Xem tất cả
-                  &rarr;</a>
-              </div>
-              <div class="rail-activity-list" id="railRecentActivityList">
-                <div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:12px 0;">Đang tải dữ
-                  liệu on-chain...</div>
-              </div>
-            </div>
-
-            <!-- THẺ 3: TRỢ LÝ AI QUỸ LỚP -->
+            <!-- THẺ 2: TRỢ LÝ AI QUỸ LỚP -->
             <div class="rail-card rail-ai-promo-card" id="cardAiAssistantRail">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
                 <div
@@ -6052,8 +6132,8 @@
             <!-- Thẻ Hero giới thiệu Smart Contract (~150 từ + 4 ý chính) -->
             <div class="about-momo-card" style="margin-bottom: 24px;">
               <div class="momo-about-hero" style="text-align: center; max-width: 840px; margin: 0 auto 24px auto;">
-                <img src="logo.png" alt="KTS Logo" class="momo-about-logo"
-                  style="width: 58px; height: 58px; object-fit: contain; margin-bottom: 12px;">
+                <img src="assets/logo2.png?v=20261111_logo2" alt="KTS Class Fund" class="momo-about-logo"
+                  style="width: 58px; height: 58px; object-fit: contain; margin-bottom: 12px; border-radius: 12px; background: #ffffff; padding: 2px;">
                 <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">KTS
                   Class Fund – Quỹ Lớp K57 Kinh Tế Số</h2>
                 <span class="badge-role"
@@ -6275,10 +6355,17 @@
                 </div>
                 <div
                   style="background: #fffbeb; border: 1px dashed #fde68a; padding: 16px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center;">
-                  <div style="font-weight: 700; color: #b45309; margin-bottom: 6px;">👥 Nhóm phát triển dự án:</div>
-                  <div style="color: #92400e; font-style: italic;">
-                    [Chưa cập nhật thông tin nhóm phát triển - Điền thông tin tại đây]
-                  </div>
+                  <div style="font-weight: 700; color: #b45309; margin-bottom: 10px;">👥 Nhóm phát triển dự án:</div>
+                  <ul class="dev-team-list" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px;">
+                    <li style="display: flex; align-items: center; gap: 12px;">
+                      <span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #0b5d45; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">PD</span>
+                      <strong style="color: #0f172a; font-size: 0.95rem;">Trần Hoàng Phương Dung</strong>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 12px;">
+                      <span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #F5B83D; color: #142a22; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0;">TP</span>
+                      <strong style="color: #0f172a; font-size: 0.95rem;">Võ Ngọc Tâm Phúc</strong>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -6741,7 +6828,7 @@
       <!-- Cột 1: Logo, Tên dự án & Giới thiệu ngắn -->
       <div class="footer-col-brand">
         <div class="footer-brand-header">
-          <img src="logo.png" alt="KTS Logo" class="footer-brand-logo-img">
+          <img src="assets/logo2.png?v=20261111_logo2" alt="KTS Class Fund" class="footer-brand-logo-img">
           <span class="footer-brand-title">KTS Class Fund</span>
         </div>
         <p class="footer-brand-desc">
@@ -13864,9 +13951,6 @@
       });
 
       tableBody.innerHTML = rowsHtml;
-      if (typeof updateRecentActivitiesRail === "function") {
-        updateRecentActivitiesRail();
-      }
     }
 
     function filterFlowLedger(filterType, btnEl) {
@@ -14954,14 +15038,18 @@
           const data = await resp.json();
           indicator.className = "ai-status-indicator online";
           statusText.textContent = data.is_configured ? "Backend Python sẵn sàng" : "Thiếu GEMINI_API_KEY";
-          statusText.style.color = data.is_configured ? "#10b981" : "#f59e0b";
+          statusText.style.color = data.is_configured ? "#6ee7b7" : "#fcd34d";
+          const fabBadgeOk = document.getElementById("aiFabBadge");
+          if (fabBadgeOk) fabBadgeOk.className = "ai-fab-badge " + (data.is_configured ? "online" : "warn");
         } else {
           throw new Error("Backend response not ok");
         }
       } catch (err) {
         indicator.className = "ai-status-indicator offline";
         statusText.textContent = "Chưa kết nối Backend (Port 8000)";
-        statusText.style.color = "#ef4444";
+        statusText.style.color = "#fecaca";
+        const fabBadgeErr = document.getElementById("aiFabBadge");
+        if (fabBadgeErr) fabBadgeErr.className = "ai-fab-badge offline";
       }
     }
 
@@ -17236,39 +17324,6 @@
       openActionModal(action);
     }
 
-    function updateRecentActivitiesRail() {
-      const container = document.getElementById("railRecentActivityList");
-      if (!container) return;
-      if (!Array.isArray(allFlowItems) || allFlowItems.length === 0) {
-        container.innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:12px 0;">Chưa có hoạt động giao dịch gần đây.</div>';
-        return;
-      }
-      const items = allFlowItems.slice(0, 4);
-      let html = '';
-      items.forEach(it => {
-        let badgeClass = "badge-success";
-        let badgeText = "Đã duyệt";
-        if (it.status === "Pending" || it.status === "Đang biểu quyết") {
-          badgeClass = "badge-pending";
-          badgeText = "Đang duyệt";
-        }
-        const flowTitle = it.type === "spend" ? "Đề xuất chi" : (it.type === "refund" ? "Hoàn tiền" : "Thu nạp quỹ");
-        const amountDisplay = it.amountEth ? (it.amountEth + " ETH") : (it.amount ? (formatEth(it.amount) + " ETH") : "-- ETH");
-        html += `
-          <div class="rail-activity-item">
-            <div>
-              <div style="font-weight:700; color:var(--text-main); font-size:0.84rem;">${flowTitle} #${it.id}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml((it.description || it.reason || "").substring(0, 24))}...</div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-weight:700; color:var(--primary); font-variant-numeric:tabular-nums; font-size:0.84rem;">${amountDisplay}</div>
-              <span class="status-pill ${badgeClass}" style="font-size:0.68rem; padding:1px 6px;">${badgeText}</span>
-            </div>
-          </div>`;
-      });
-      container.innerHTML = html;
-    }
-
     function updateRedesignUI(role) {
       const currentRole = role || window.currentVerifiedRole || "none";
       if (typeof syncMegaMenuPermissions === "function") syncMegaMenuPermissions(currentRole);
@@ -18719,9 +18774,14 @@
     </div>
 
     <!-- Floating Action Button -->
-    <button class="ai-fab-btn" id="aiFabToggle">
+    <button class="ai-fab-btn" id="aiFabToggle" type="button" aria-label="Mở trợ lý AI Quỹ Lớp" title="Hỏi đáp AI Quỹ Lớp">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.3 8.9 8.9 0 0 1-3.6-.75L3.5 20.5l1.4-4.6A8.1 8.1 0 0 1 4 11.5 8.4 8.4 0 0 1 12.5 3.2 8.4 8.4 0 0 1 21 11.5z"></path>
+        <line x1="8.5" y1="10.5" x2="16.5" y2="10.5"></line>
+        <line x1="8.5" y1="13.8" x2="13.5" y2="13.8"></line>
+      </svg>
       <span class="ai-fab-badge" id="aiFabBadge"></span>
-      <span>✨ Hỏi đáp AI Quỹ Lớp</span>
     </button>
   </div>
 
