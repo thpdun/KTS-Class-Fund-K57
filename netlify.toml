@@ -1,0 +1,6 @@
+   [build]
+     publish = "web"
+     command = ""
+
+   [build.environment]
+     NETLIFY_USE_PYTHON = "false"
