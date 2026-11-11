@@ -11787,14 +11787,14 @@
     };
 
     async function getPaidWalletsForActiveCollection(roundId = null, targetWei = null, forceRefresh = false) {
-      // 1. Xác định roundId và targetWei nếu chưa truyền vào
+      // 1. Xác định đợt thu on-chain. Không có đợt on-chain đang mở => roundId = 0 (không ai được tính là đã nộp)
       if (!roundId) {
         if (window.currentActiveCollectionData && window.currentActiveCollectionData.id) {
           roundId = Number(window.currentActiveCollectionData.id);
         } else if (typeof currentActiveCollectionId !== "undefined" && currentActiveCollectionId) {
           roundId = Number(currentActiveCollectionId);
         } else {
-          roundId = 1; // Mặc định đợt thu Sepolia #1
+          roundId = 0;
         }
       }
 
@@ -11804,87 +11804,60 @@
         } else {
           const activeList = (typeof getActiveNotifications === "function") ? getActiveNotifications() : [];
           const ann = (activeList && activeList.length > 0) ? activeList[0] : null;
-          const ethStr = ann?.targetAmountEth || "1";
           try {
-            targetWei = ethers.parseEther(ethStr);
+            targetWei = ethers.parseEther(ann?.targetAmountEth || "1");
           } catch (_) {
             targetWei = 1000000000000000000n;
           }
         }
       }
 
-      // 2. Kiểm tra bộ nhớ đệm (nếu mới truy vấn trong 10s và không bắt buộc forceRefresh)
+      // 2. Cache 10 giây (chỉ dùng lại nếu cùng đợt và cùng mức đóng)
       if (!forceRefresh && cachedCampaignReconciliation && cachedCampaignReconciliation.lastUpdated > 0 &&
         (Date.now() - cachedCampaignReconciliation.lastUpdated < 10000) &&
-        cachedCampaignReconciliation.roundId === roundId) {
+        cachedCampaignReconciliation.roundId === roundId &&
+        cachedCampaignReconciliation.targetWei === targetWei) {
         return cachedCampaignReconciliation;
       }
 
-      // 3. Lấy danh bạ lớp (ưu tiên classRoster thực tế, fallback DEFAULT_CLASS_ROSTER)
+      // 3. Danh bạ
       const roster = (Array.isArray(classRoster) && classRoster.length > 0) ? classRoster : DEFAULT_CLASS_ROSTER;
       const total = roster.length > 0 ? roster.length : 5;
       const statusMap = new Map();
       const validWallets = [];
-
       for (const s of roster) {
-        if (s && s.wallet && ethers.isAddress(s.wallet)) {
-          validWallets.push(s.wallet.toLowerCase().trim());
-        }
+        if (s && s.wallet && ethers.isAddress(s.wallet)) validWallets.push(s.wallet.toLowerCase().trim());
       }
 
-      // 4. Truy vấn contract song song qua Promise.all để tối đa tốc độ (batch read)
-      if (contract && validWallets.length > 0) {
+      // 4. CHỈ tính tiền nộp trong ĐÚNG đợt thu này (depositToCollection).
+      //    Không còn dùng studentTotalDeposited, nên tiền nạp từ các đợt trước không bị tính nhầm.
+      if (contract && roundId > 0 && validWallets.length > 0) {
         try {
           const results = await Promise.all(
             validWallets.map(async (wLower) => {
               let isPaid = false;
               let paidWei = 0n;
-
-              // Nhánh 1: Kiểm tra hasPaidInCollection / paidInCollection theo đợt thu
-              if (roundId) {
-                try {
-                  const hasCol = await contract.hasPaidInCollection(roundId, wLower);
-                  if (hasCol === true) isPaid = true;
-                } catch (_) { }
-                try {
-                  const colPaid = await contract.paidInCollection(roundId, wLower);
-                  if (colPaid > paidWei) paidWei = colPaid;
-                  if (colPaid >= targetWei) isPaid = true;
-                } catch (_) { }
-              }
-
-              // Nhánh 2: Kiểm tra studentTotalDeposited / studentContributions (nộp qua deposit())
+              try {
+                const colPaid = await contract.paidInCollection(roundId, wLower);
+                paidWei = BigInt(colPaid);
+                if (paidWei >= targetWei) isPaid = true;
+              } catch (_) { }
               if (!isPaid) {
                 try {
-                  const totalDep = await contract.studentTotalDeposited(wLower);
-                  if (totalDep > paidWei) paidWei = totalDep;
-                  if (totalDep >= targetWei) isPaid = true;
-                } catch (_) {
-                  try {
-                    const netDep = await contract.studentContributions(wLower);
-                    const grossDep = (netDep * 100n) / 99n;
-                    if (grossDep > paidWei) paidWei = grossDep;
-                    if (grossDep >= targetWei) isPaid = true;
-                  } catch (_) { }
-                }
+                  if (await contract.hasPaidInCollection(roundId, wLower)) isPaid = true;
+                } catch (_) { }
               }
-
               return { wallet: wLower, isPaid, paidWei };
             })
           );
-
-          for (const res of results) {
-            statusMap.set(res.wallet, { isPaid: res.isPaid, paidWei: res.paidWei });
-          }
+          for (const r of results) statusMap.set(r.wallet, { isPaid: r.isPaid, paidWei: r.paidWei });
         } catch (err) {
           console.warn("Lỗi đối soát dữ liệu đóng góp đợt thu on-chain:", err);
         }
       }
 
       const paidList = [];
-      statusMap.forEach((val, key) => {
-        if (val.isPaid) paidList.push(key);
-      });
+      statusMap.forEach((val, key) => { if (val.isPaid) paidList.push(key); });
 
       const paidCount = paidList.length;
       const percent = total > 0 ? Math.min(100, Math.round((paidCount / total) * 100)) : 0;
@@ -11910,7 +11883,6 @@
           return entry ? (entry.paidWei || 0n) : 0n;
         }
       };
-
       return cachedCampaignReconciliation;
     }
 
