@@ -3062,6 +3062,7 @@ aside.app-sidebar,
   width: 22px !important;
   height: 22px !important;
 }
+
 /* ==========================================================================
    ABOUT PAGE VIEW (SPA STYLES - MOMO THEME)
    ========================================================================== */
@@ -3078,6 +3079,7 @@ aside.app-sidebar,
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -3311,21 +3313,26 @@ body.dark-theme .about-dropdown-item.active strong {
   .about-page-container {
     padding: 0 12px;
   }
+
   .about-momo-card {
     padding: 18px 14px;
     border-radius: 14px;
   }
+
   .about-subnav-pill {
     padding: 8px 16px;
     font-size: 0.85rem;
   }
+
   .momo-about-highlights {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
   }
+
   .momo-roles-grid {
     grid-template-columns: 1fr !important;
   }
+
   .momo-calc-preview-grid {
     grid-template-columns: 1fr !important;
   }
@@ -3394,8 +3401,48 @@ body.view-about .about-breadcrumb {
 }
 
 
-html, body {
-  overflow-x: hidden !important;
+/* Modal Loading / Error State Banner (Requirement 4: No Blank Modals) */
+.modal-sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.modal-sync-indicator .mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #bbf7d0;
+  border-top-color: #166534;
+  border-radius: 50%;
+  animation: modalSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.modal-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+@keyframes modalSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* ==========================================================================
@@ -3642,4 +3689,3 @@ html, body {
   background: #f1f5f9;
   border-color: #94a3b8;
 }
-

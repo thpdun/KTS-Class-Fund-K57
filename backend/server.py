@@ -22,7 +22,7 @@ import logging
 
 logger = logging.getLogger('kts.server')
 from datetime import datetime, timezone
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 from typing import Optional, Tuple
@@ -111,6 +111,7 @@ try:
         verify_audit_chain,
         create_notification,
         edit_notification,
+        find_notification,
         transition_notification,
         resolve_target_id,
         build_views,
@@ -128,6 +129,7 @@ except ImportError:
         verify_audit_chain,
         create_notification,
         edit_notification,
+        find_notification,
         transition_notification,
         resolve_target_id,
         build_views,
@@ -595,20 +597,20 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
     def _send_cors_headers(self):
         origin = self.headers.get("Origin")
         if not origin:
-            # Request không có Origin (curl, urllib, scripts nội bộ): Không gửi CORS header
-            return
+            origin = "http://localhost:3000"
 
-        is_allowed = False
-        if origin in DEV_ALLOWED_ORIGINS:
-            is_allowed = True
-        elif origin == "null" and not IS_PRODUCTION:
-            is_allowed = True
-
-        if is_allowed:
+        if origin in DEV_ALLOWED_ORIGINS or (origin == "null" and not IS_PRODUCTION):
             self.send_header("Access-Control-Allow-Origin", origin)
-            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-            self.send_header("Access-Control-Max-Age", "86400")
+        else:
+            self.send_header("Access-Control-Allow-Origin", "http://localhost:3000")
+
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+        self.send_header("Access-Control-Max-Age", "86400")
+
+    def send_error(self, code, message=None, explain=None):
+        """Đảm bảo mọi phản hồi lỗi HTTP đều có đầy đủ CORS headers và trả về JSON chuẩn."""
+        self._send_json(code, {"success": False, "error": message or f"Lỗi HTTP {code}"})
 
     def _send_json(self, status_code: int, data: dict):
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")
@@ -1323,6 +1325,23 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                     req_class_sz = req_data.get("classSize")
                     req_raised_eth = req_data.get("raisedEth")
                     try:
+                        # Kiểm tra tính Idempotent: Nếu thông báo đã ở trạng thái lưu trữ/đóng trước đó thì trả về thành công ngay
+                        existing_item = find_notification(store, resolved_id)
+                        if existing_item and existing_item.get("status") in ("archived", "closed", "completed"):
+                            views = build_views(store)
+                            self._send_json(200, {
+                                "success": True,
+                                "idempotentReplay": True,
+                                "alreadyArchived": True,
+                                "message": f"Thông báo '{resolved_id}' đã ở trạng thái kết thúc/lưu trữ trước đó.",
+                                "archived": existing_item,
+                                "notification": existing_item,
+                                "active": views["active"],
+                                "activeNotifications": views["activeNotifications"],
+                                "history": views["history"],
+                            })
+                            return
+
                         # Đóng băng tiến độ cuối cùng của đợt thu (Giai đoạn 2)
                         final_prog = freeze_campaign_progress_record(
                             resolved_id,
@@ -1762,46 +1781,52 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(400, {"success": False, "error": f"Dữ liệu JSON không hợp lệ: {str(e)}"})
                 return
 
-            question = req_data.get("question", "").strip()
+            question = (req_data.get("question") or req_data.get("message") or "").strip()
             if not question:
                 self._send_json(400, {"success": False, "error": "Vui lòng nhập câu hỏi."})
                 return
 
-            # Lọc sạch PII trước khi chuyển sang AI Assistant Service
-            raw_onchain = req_data.get("onchain_data", {})
-            if not isinstance(raw_onchain, dict):
-                raw_onchain = {}
+            try:
+                # Lọc sạch PII trước khi chuyển sang AI Assistant Service
+                raw_onchain = req_data.get("onchain_data", {})
+                if not isinstance(raw_onchain, dict):
+                    raw_onchain = {}
 
-            onchain_data = {
-                "isContractConnected": bool(raw_onchain.get("isContractConnected", False)),
-                "contractAddress": str(raw_onchain.get("contractAddress", "")),
-                "viewerRole": "public",
-                "classFundBalanceEth": str(raw_onchain.get("classFundBalanceEth", "0")),
-                "adminFeePoolEth": str(raw_onchain.get("adminFeePoolEth", "0")),
-                "spendCount": int(raw_onchain.get("spendCount", 0)),
-                "refundCount": int(raw_onchain.get("refundCount", 0)),
-                "activeBCSCount": int(raw_onchain.get("activeBCSCount", 0)),
-                "depositorsCount": int(raw_onchain.get("depositorsCount", 0)),
-                "totalDepositedEth": str(raw_onchain.get("totalDepositedEth", "0")),
-                "announcement": raw_onchain.get("announcement", {}),
-                "spendRequests": raw_onchain.get("spendRequests", []),
-                "refundRequests": raw_onchain.get("refundRequests", []),
-                "roster": []  # Luôn rỗng, không bao giờ chứa danh bạ PII
-            }
+                onchain_data = {
+                    "isContractConnected": bool(raw_onchain.get("isContractConnected", False)),
+                    "contractAddress": str(raw_onchain.get("contractAddress", "")),
+                    "viewerRole": "public",
+                    "classFundBalanceEth": str(raw_onchain.get("classFundBalanceEth", "0")),
+                    "adminFeePoolEth": str(raw_onchain.get("adminFeePoolEth", "0")),
+                    "spendCount": int(raw_onchain.get("spendCount", 0)),
+                    "refundCount": int(raw_onchain.get("refundCount", 0)),
+                    "activeBCSCount": int(raw_onchain.get("activeBCSCount", 0)),
+                    "depositorsCount": int(raw_onchain.get("depositorsCount", 0)),
+                    "totalDepositedEth": str(raw_onchain.get("totalDepositedEth", "0")),
+                    "announcement": raw_onchain.get("announcement", {}),
+                    "spendRequests": raw_onchain.get("spendRequests", []),
+                    "refundRequests": raw_onchain.get("refundRequests", []),
+                    "bcsMembers": raw_onchain.get("bcsMembers", []),
+                    "roster": []  # Luôn rỗng, không bao giờ chứa danh bạ PII
+                }
 
-            api_key_override = req_data.get("api_key")
-            ai_service = AIAssistantService(api_key=api_key_override)
-            result = ai_service.answer_question(question, onchain_data)
+                api_key_override = req_data.get("api_key")
+                ai_service = AIAssistantService(api_key=api_key_override)
+                result = ai_service.answer_question(question, onchain_data)
 
-            if result.get("model_used") == "local-fallback-engine":
-                sys.stdout.write(f"[AI Backend Info] Kích hoạt Local Fallback Engine do: {result.get('fallback_reason')}\n")
+                if result.get("model_used") == "local-fallback-engine":
+                    sys.stdout.write(f"[AI Backend Info] Kích hoạt Local Fallback Engine do: {result.get('fallback_reason')}\n")
+                    sys.stdout.flush()
+
+                status_code = 200 if result.get("success") else 500
+                if not result.get("success"):
+                    sys.stdout.write(f"[AI Backend Error] {result.get('error')}\n")
+                    sys.stdout.flush()
+                self._send_json(status_code, result)
+            except Exception as e:
+                sys.stdout.write(f"[AI Backend Fatal] Lỗi xử lý chat: {str(e)}\n")
                 sys.stdout.flush()
-
-            status_code = 200 if result.get("success") else 500
-            if not result.get("success"):
-                sys.stdout.write(f"[AI Backend Error] {result.get('error')}\n")
-                sys.stdout.flush()
-            self._send_json(status_code, result)
+                self._send_json(500, {"success": False, "error": f"Lỗi nội bộ máy chủ AI: {str(e)}"})
 
         else:
             self._send_json(404, {"error": "Not Found"})
@@ -1818,7 +1843,7 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
 
 def run_server():
     server_address = (HOST, PORT)
-    httpd = HTTPServer(server_address, AIChatRequestHandler)
+    httpd = ThreadingHTTPServer(server_address, AIChatRequestHandler)
     ai_service = AIAssistantService()
     start_expiration_daemon(interval_sec=30.0)
     print("=" * 65, flush=True)

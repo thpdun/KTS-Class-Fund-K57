@@ -1,7 +1,7 @@
 {
   "schemaVersion": 3,
   "schemaName": "kts-notifications",
-  "revision": 4,
+  "revision": 5,
   "timezone": "Asia/Ho_Chi_Minh",
   "processedRequests": {},
   "notifications": [
@@ -13,13 +13,13 @@
       "purpose": "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
       "classSize": 5,
       "autoCloseOnTarget": false,
-      "status": "active",
+      "status": "archived",
       "createdAt": "2026-11-10T20:45:08.830058+07:00",
       "createdBy": "0x78567a377559f0cb30173f93869326a82320159a",
-      "updatedAt": "2026-11-10T20:45:08.830058+07:00",
-      "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
-      "endedAt": null,
-      "endReason": null,
+      "updatedAt": "2026-11-11T16:47:38.566611+07:00",
+      "updatedBy": "SYSTEM_AUTO_EXEC",
+      "endedAt": "2026-11-11T16:47:38.566611+07:00",
+      "endReason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ",
       "deadlineTimestamp": 1794416340.0,
       "expiresAtTimestamp": 1794416340,
       "expiresAt": "2026-11-11T23:59:00+07:00",
@@ -31,12 +31,40 @@
           "at": "2026-11-10T20:45:08.830058+07:00",
           "by": "0x78567a377559f0cb30173f93869326a82320159a",
           "reason": "Tạo thông báo"
+        },
+        {
+          "from": "active",
+          "to": "archived",
+          "at": "2026-11-11T16:47:38.566611+07:00",
+          "by": "SYSTEM_AUTO_EXEC",
+          "reason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ"
         }
-      ]
+      ],
+      "statusChangedBy": "SYSTEM_AUTO_EXEC",
+      "archivedAt": "2026-11-11T16:47:38.566611+07:00",
+      "archivedBy": "SYSTEM_AUTO_EXEC",
+      "finalProgress": {
+        "notificationId": "ann-20261110204508",
+        "isFrozen": true,
+        "frozenAt": "2026-11-11T16:47:38+07:00",
+        "reason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ",
+        "raisedEth": "5.0000",
+        "raisedWei": "0",
+        "contributingWalletsCount": 5,
+        "classSize": 5,
+        "headcountPercent": 100,
+        "hasFinancialTarget": false,
+        "targetAmountEth": null,
+        "financialPercent": null,
+        "totalTransactionsCount": 0,
+        "allocatedTxHashes": []
+      }
     }
   ],
   "auditChain": [],
-  "activeNotifications": [
+  "activeNotifications": [],
+  "active": null,
+  "history": [
     {
       "id": "ann-20261110204508",
       "title": "Kêu gọi nộp Quỹ Lớp K57",
@@ -45,13 +73,13 @@
       "purpose": "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
       "classSize": 5,
       "autoCloseOnTarget": false,
-      "status": "active",
+      "status": "archived",
       "createdAt": "2026-11-10T20:45:08.830058+07:00",
       "createdBy": "0x78567a377559f0cb30173f93869326a82320159a",
-      "updatedAt": "2026-11-10T20:45:08.830058+07:00",
-      "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
-      "endedAt": null,
-      "endReason": null,
+      "updatedAt": "2026-11-11T16:47:38.566611+07:00",
+      "updatedBy": "SYSTEM_AUTO_EXEC",
+      "endedAt": "2026-11-11T16:47:38.566611+07:00",
+      "endReason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ",
       "deadlineTimestamp": 1794416340.0,
       "expiresAtTimestamp": 1794416340,
       "expiresAt": "2026-11-11T23:59:00+07:00",
@@ -63,40 +91,36 @@
           "at": "2026-11-10T20:45:08.830058+07:00",
           "by": "0x78567a377559f0cb30173f93869326a82320159a",
           "reason": "Tạo thông báo"
+        },
+        {
+          "from": "active",
+          "to": "archived",
+          "at": "2026-11-11T16:47:38.566611+07:00",
+          "by": "SYSTEM_AUTO_EXEC",
+          "reason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ"
         }
-      ]
+      ],
+      "statusChangedBy": "SYSTEM_AUTO_EXEC",
+      "archivedAt": "2026-11-11T16:47:38.566611+07:00",
+      "archivedBy": "SYSTEM_AUTO_EXEC",
+      "finalProgress": {
+        "notificationId": "ann-20261110204508",
+        "isFrozen": true,
+        "frozenAt": "2026-11-11T16:47:38+07:00",
+        "reason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ",
+        "raisedEth": "5.0000",
+        "raisedWei": "0",
+        "contributingWalletsCount": 5,
+        "classSize": 5,
+        "headcountPercent": 100,
+        "hasFinancialTarget": false,
+        "targetAmountEth": null,
+        "financialPercent": null,
+        "totalTransactionsCount": 0,
+        "allocatedTxHashes": []
+      }
     }
   ],
-  "active": {
-    "id": "ann-20261110204508",
-    "title": "Kêu gọi nộp Quỹ Lớp K57",
-    "targetAmountEth": "1",
-    "deadline": "23:59 ngày 11/11/2026",
-    "purpose": "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
-    "classSize": 5,
-    "autoCloseOnTarget": false,
-    "status": "active",
-    "createdAt": "2026-11-10T20:45:08.830058+07:00",
-    "createdBy": "0x78567a377559f0cb30173f93869326a82320159a",
-    "updatedAt": "2026-11-10T20:45:08.830058+07:00",
-    "updatedBy": "0x78567a377559f0cb30173f93869326a82320159a",
-    "endedAt": null,
-    "endReason": null,
-    "deadlineTimestamp": 1794416340.0,
-    "expiresAtTimestamp": 1794416340,
-    "expiresAt": "2026-11-11T23:59:00+07:00",
-    "targetAmountWei": "1000000000000000000",
-    "statusHistory": [
-      {
-        "from": null,
-        "to": "active",
-        "at": "2026-11-10T20:45:08.830058+07:00",
-        "by": "0x78567a377559f0cb30173f93869326a82320159a",
-        "reason": "Tạo thông báo"
-      }
-    ]
-  },
-  "history": [],
   "auditLog": [
     {
       "eventId": "evt-000001",
@@ -111,11 +135,27 @@
       "previousRecordHash": "0000000000000000000000000000000000000000000000000000000000000000",
       "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
       "recordSha256": "936fa41d27f801f2b2297439e4b8bcf3d5d779cda1a0e6317795b9709e5320b4"
+    },
+    {
+      "eventId": "evt-000002",
+      "type": "ARCHIVED",
+      "notificationId": "ann-20261110204508",
+      "statusAfter": "archived",
+      "actor": "SYSTEM_AUTO_EXEC",
+      "at": "2026-11-11T16:47:38.566611+07:00",
+      "notificationSnapshotSha256": "24f3d2e2edd34e8a1df3c1c3d1248418735ae25cba64b5cfa097d9017a225a9b",
+      "details": {
+        "reason": "Đã hoàn thành: 100% sinh viên trong lớp (5/5 ví) đã nộp đủ quỹ"
+      },
+      "seq": 2,
+      "previousRecordHash": "936fa41d27f801f2b2297439e4b8bcf3d5d779cda1a0e6317795b9709e5320b4",
+      "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
+      "recordSha256": "238f9d278c21882dbd9272ee175283266a34141ca253b1474ae18f72375ddecf"
     }
   ],
   "auditMeta": {
     "hashSpecVersion": "v4.4-sha256-chain-ready-v1",
-    "tailHash": "936fa41d27f801f2b2297439e4b8bcf3d5d779cda1a0e6317795b9709e5320b4",
-    "length": 1
+    "tailHash": "238f9d278c21882dbd9272ee175283266a34141ca253b1474ae18f72375ddecf",
+    "length": 2
   }
 }

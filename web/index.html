@@ -5143,6 +5143,7 @@
 
             <!-- KHUNG Ô CHI TIẾT (HIỂN THỊ CHÍNH XÁC FORM THAO TÁC ĐƯỢC CHỌN) -->
             <div class="role-detail-container" id="roleDetailContainer" style="display: block;">
+              <div id="modalStatusBanner" style="display:none; margin-bottom:14px;"></div>
 
               <!-- ======================================================== -->
               <!-- Ô 1: GIAO DIỆN SINH VIÊN (STUDENT)                       -->
@@ -7243,6 +7244,36 @@
   <!-- JAVASCRIPT LOGIC                                             -->
   <!-- ============================================================ -->
   <script>
+    // Global Runtime Error Handlers (Requirement 5)
+    window.addEventListener("error", function (event) {
+      if (!event || !event.message) return;
+      const msg = event.message.toString();
+      if (msg.includes("ResizeObserver") || msg.includes("Extension") || msg.includes("chrome-extension")) {
+        return;
+      }
+      console.error("Toàn cục ghi nhận lỗi Runtime:", event.error || event.message);
+      if (typeof showToast === "function") {
+        showToast(`⚠️ Lỗi giao diện: ${msg.slice(0, 80)}`, "warning");
+      }
+    });
+
+    window.addEventListener("unhandledrejection", function (event) {
+      if (!event || !event.reason) return;
+      const reason = event.reason;
+      const reasonMsg = (reason && (reason.message || reason.toString())) || "";
+      if (reason.code === 4001 || reasonMsg.includes("user rejected") || reasonMsg.includes("ACTION_REJECTED")) {
+        console.warn("Người dùng đã hủy thao tác trên MetaMask:", reasonMsg);
+        if (typeof showToast === "function") {
+          showToast("Đã hủy thao tác trên ví MetaMask", "info");
+        }
+        return;
+      }
+      console.error("Toàn cục ghi nhận Promise bị từ chối:", reason);
+      if (typeof showToast === "function") {
+        showToast(`⚠️ Lỗi xử lý: ${reasonMsg.slice(0, 80)}`, "warning");
+      }
+    });
+
     // --- 1. CONFIGURATION ---
     const CONFIG = {
       chainId: 11155111,
@@ -10362,103 +10393,15 @@
     }
 
     function selectRoleView(role) {
-      const ws = document.getElementById("dapp-workspace");
-      if (ws) ws.style.display = "block";
-      const pStudent = document.getElementById("panelStudent");
-      const pBCS = document.getElementById("panelBCS");
-      const pAdvisor = document.getElementById("panelAdvisor");
-      const pHistory = document.getElementById("panelHistory");
-
-      const btnStudent = document.getElementById("btnRoleStudent");
-      const btnBCS = document.getElementById("btnRoleBCS");
-      const btnAdvisor = document.getElementById("btnRoleAdvisor");
-      const btnHistory = document.getElementById("btnRoleHistory");
-
-      const container = document.getElementById("roleDetailContainer");
-      const hint = document.getElementById("roleDetailHint");
-
-      // Nếu bấm lại vào chính nút đang mở -> toggle thu gọn
-      if (currentDetailRole === role) {
-        closeRoleDetail();
-        return;
+      if (typeof openActionModal === "function") {
+        openActionModal(role);
       }
-
-      currentDetailRole = role;
-
-      // Reset active buttons
-      [btnStudent, btnBCS, btnAdvisor, btnHistory].forEach(b => {
-        if (b) b.classList.remove("active");
-      });
-
-      // Hide all panels initially
-      [pStudent, pBCS, pAdvisor, pHistory].forEach(p => {
-        if (p) p.style.display = "none";
-      });
-
-      if (container) container.style.display = "block";
-
-      if (role === "student") {
-        if (btnStudent) btnStudent.classList.add("active");
-        if (pStudent) pStudent.style.display = "flex";
-        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Sinh Viên</strong> (Bấm lại nút để thu gọn)</span>';
-      } else if (role === "bcs") {
-        if (btnBCS) btnBCS.classList.add("active");
-        if (pBCS) pBCS.style.display = "flex";
-        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Ban Cán Sự</strong> (Bấm lại nút để thu gọn)</span>';
-      } else if (role === "advisor") {
-        if (btnAdvisor) btnAdvisor.classList.add("active");
-        if (pAdvisor) pAdvisor.style.display = "flex";
-        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Cố Vấn Học Tập</strong> (Bấm lại nút để thu gọn)</span>';
-        if (typeof renderAdvisorStudentMonitorTable === "function") {
-          renderAdvisorStudentMonitorTable();
-        }
-      } else if (role === "history") {
-        if (btnHistory) btnHistory.classList.add("active");
-        if (pHistory) {
-          pHistory.style.display = "flex";
-          renderFlowLedgerTable(allFlowItems);
-        }
-        if (hint) hint.innerHTML = '<span>Đang mở <strong>Ô Chi Tiết: Lịch Sử Dòng Tiền & Toàn Bộ Flow</strong> (Bấm lại nút để thu gọn)</span>';
-
-        // Nếu có hợp đồng mà dữ liệu chưa tải, tự động tải lại
-        if (contract && allFlowItems.length === 0) {
-          refreshContractData();
-        }
-      }
-
-      // Đảm bảo các khối chức năng bên trong panel tuân thủ vai trò đã xác minh (không thể vượt quyền bằng cách đổi tab)
-      syncRolePermissionsUI(window.currentVerifiedRole || "none");
-
-      // Smooth scroll into detail box if needed
-      container.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
     function closeRoleDetail() {
-      currentDetailRole = null;
-      const pStudent = document.getElementById("panelStudent");
-      const pBCS = document.getElementById("panelBCS");
-      const pAdvisor = document.getElementById("panelAdvisor");
-      const pHistory = document.getElementById("panelHistory");
-
-      const btnStudent = document.getElementById("btnRoleStudent");
-      const btnBCS = document.getElementById("btnRoleBCS");
-      const btnAdvisor = document.getElementById("btnRoleAdvisor");
-      const btnHistory = document.getElementById("btnRoleHistory");
-
-      const container = document.getElementById("roleDetailContainer");
-      const hint = document.getElementById("roleDetailHint");
-
-      [btnStudent, btnBCS, btnAdvisor, btnHistory].forEach(b => {
-        if (b) b.classList.remove("active");
-      });
-
-      [pStudent, pBCS, pAdvisor, pHistory].forEach(p => {
-        if (p) p.style.display = "none";
-      });
-
-      if (container) container.style.display = "none";
-
-      if (hint) hint.innerHTML = '💡 Bấm vào một trong 4 nút trên để mở ô chi tiết và theo dõi dòng tiền.';
+      if (typeof closeActionModal === "function") {
+        closeActionModal();
+      }
     }
 
     // Hàm tương thích ngược cho các lời gọi cũ
@@ -10905,8 +10848,8 @@
           if (!provider) {
             provider = new ethers.JsonRpcProvider("https://ethereum-sepolia-rpc.publicnode.com");
           }
-          contract = new ethers.Contract(CONFIG.contractAddress, CONTRACT_ABI, provider);
-          await refreshContractData();
+          contract = wrapContractWithRpcCache(new ethers.Contract(CONFIG.contractAddress, CONTRACT_ABI, provider));
+          await refreshContractData({ force: true });
         } catch (e) {
           console.warn("Lỗi làm mới dữ liệu công khai sau khi ngắt ví:", e);
         }
@@ -12667,6 +12610,123 @@
       logToTerminal(`[Khôi phục] Đã đặt lại địa chỉ hợp đồng về mặc định của dự án: ${ CONFIG.defaultContractAddress } `);
     }
 
+    // RPC Cache Wrapper for view/read functions on Contract instance (Requirement 3)
+    function wrapContractWithRpcCache(rawContract) {
+      if (!rawContract) return rawContract;
+      const cache = new Map();
+      const inFlight = new Map();
+      const TTL_MS = 10000; // 10s TTL for on-chain view reads
+
+      const handler = {
+        get(target, prop, receiver) {
+          if (prop === "__rpcCache") return cache;
+          if (prop === "__clearRpcCache") {
+            return () => {
+              cache.clear();
+              inFlight.clear();
+            };
+          }
+          const orig = Reflect.get(target, prop, receiver);
+          if (prop === "connect") {
+            return function (signer) {
+              const connected = orig.apply(target, [signer]);
+              return wrapContractWithRpcCache(connected);
+            };
+          }
+          if (typeof prop === "string" && typeof orig === "function") {
+            let isView = false;
+            try {
+              const frag = target.interface?.getFunction(prop);
+              if (frag && (frag.constant || frag.stateMutability === "view" || frag.stateMutability === "pure")) {
+                isView = true;
+              }
+            } catch (_) {}
+
+            if (isView) {
+              return function (...args) {
+                let key;
+                try {
+                  key = prop + ":" + JSON.stringify(args, (k, v) => typeof v === "bigint" ? v.toString() : v);
+                } catch (_) {
+                  return orig.apply(this, args);
+                }
+
+                const now = Date.now();
+                if (cache.has(key)) {
+                  const entry = cache.get(key);
+                  if (now < entry.expiresAt) {
+                    return Promise.resolve(entry.value);
+                  } else {
+                    cache.delete(key);
+                  }
+                }
+
+                if (inFlight.has(key)) {
+                  return inFlight.get(key);
+                }
+
+                const promise = orig.apply(this, args).then(result => {
+                  cache.set(key, { value: result, expiresAt: Date.now() + TTL_MS });
+                  inFlight.delete(key);
+                  return result;
+                }).catch(err => {
+                  inFlight.delete(key);
+                  throw err;
+                });
+
+                inFlight.set(key, promise);
+                return promise;
+              };
+            } else {
+              // Non-view function (State-changing write transaction)
+              return function (...args) {
+                window.__txInFlight = (window.__txInFlight || 0) + 1;
+                try {
+                  const res = orig.apply(this, args);
+                  if (res && typeof res.then === "function") {
+                    return res.then(async (tx) => {
+                      if (tx && typeof tx.wait === "function") {
+                        const origWait = tx.wait.bind(tx);
+                        tx.wait = async function (...wArgs) {
+                          try {
+                            const receipt = await origWait(...wArgs);
+                            if (typeof invalidateRpcCache === "function") invalidateRpcCache();
+                            return receipt;
+                          } finally {
+                            window.__txInFlight = Math.max(0, (window.__txInFlight || 1) - 1);
+                            if (typeof flushDeferredRefresh === "function") flushDeferredRefresh();
+                          }
+                        };
+                        return tx;
+                      } else {
+                        if (typeof invalidateRpcCache === "function") invalidateRpcCache();
+                        window.__txInFlight = Math.max(0, (window.__txInFlight || 1) - 1);
+                        if (typeof flushDeferredRefresh === "function") flushDeferredRefresh();
+                        return tx;
+                      }
+                    }).catch(err => {
+                      window.__txInFlight = Math.max(0, (window.__txInFlight || 1) - 1);
+                      if (typeof flushDeferredRefresh === "function") flushDeferredRefresh();
+                      throw err;
+                    });
+                  } else {
+                    window.__txInFlight = Math.max(0, (window.__txInFlight || 1) - 1);
+                    return res;
+                  }
+                } catch (err) {
+                  window.__txInFlight = Math.max(0, (window.__txInFlight || 1) - 1);
+                  throw err;
+                }
+              };
+            }
+          }
+          return orig;
+        }
+      };
+
+      return new Proxy(rawContract, handler);
+    }
+
     // --- 8. CONTRACT INSTANCE & ON-CHAIN DATA ---
     async function initContractInstance() {
       const address = CONFIG.contractAddress;
@@ -12691,7 +12751,7 @@
         }
 
         cleanupContractAutoSync();
-        contract = new ethers.Contract(address, CONTRACT_ABI, signer || provider);
+        contract = wrapContractWithRpcCache(new ethers.Contract(address, CONTRACT_ABI, signer || provider));
         invalidateRosterContribCache();
         await refreshContractData();
         await renderRosterTable();
@@ -12733,12 +12793,14 @@
         window._contractFundListener = async (student, amount, event) => {
           console.log("⚡ [Sự kiện on-chain] FundDeposited:", student, amount);
           logToTerminal(`[Sự kiện on-chain] Ví ${shortenAddress(student)} vừa nộp ${formatEth(amount)} ETH vào Quỹ!`);
-          await refreshContractData();
+          invalidateRpcCache();
+          await refreshContractData({ auto: true });
         };
         window._contractCollectionListener = async (id, student, amount, totalPaid, paidCount, event) => {
           console.log("⚡ [Sự kiện on-chain] CollectionDeposited:", id, student, amount, paidCount);
           logToTerminal(`[Sự kiện on-chain] Đợt thu #${id} nhận ${formatEth(amount)} ETH từ ${shortenAddress(student)}. Tiến độ: ${paidCount}`);
-          await refreshContractData();
+          invalidateRpcCache();
+          await refreshContractData({ auto: true });
         };
 
         try {
@@ -12749,11 +12811,12 @@
         }
       }
 
-      // 2. Polling mỗi 15 giây khi tab đang active (document.visibilityState === 'visible')
+      // 2. Polling mỗi 15 giây khi tab đang active (document.visibilityState === 'visible').
+      //    Bị hoãn tự động nếu modal đang mở hoặc đang có giao dịch (xem refreshContractData).
       window._autoRefreshInterval = setInterval(async () => {
         if (document.visibilityState === "visible" && contract && !isRefreshingContractData) {
           console.log("⏱️ [Chu kỳ 15s] Tự động cập nhật dữ liệu on-chain Sepolia...");
-          await refreshContractData();
+          await refreshContractData({ auto: true });
         }
       }, 15000);
     }
@@ -12761,7 +12824,7 @@
     document.addEventListener("visibilitychange", async () => {
       if (document.visibilityState === "visible" && contract && !isRefreshingContractData) {
         console.log("👁️ Tab được active lại, đồng bộ ngay dữ liệu on-chain...");
-        await refreshContractData();
+        await refreshContractData({ auto: true });
       }
     });
 
@@ -12786,7 +12849,7 @@
         if (typeof syncAnnouncementFromServer === "function") {
           await syncAnnouncementFromServer().catch(() => {});
         }
-        await refreshContractData();
+        await refreshContractData({ force: true });
         if (typeof renderPendingActions === "function") {
           await renderPendingActions();
         }
@@ -12806,26 +12869,32 @@
 
     let isRefreshingContractData = false;
 
-    async function refreshContractData() {
-      if (!contract || isRefreshingContractData) return;
-      isRefreshingContractData = true;
+    // Thân đồng bộ on-chain. KHÔNG gọi trực tiếp: dùng refreshContractData() (bộ điều phối bên dưới)
+    // để có chia sẻ lời gọi đang chạy, giới hạn tần suất, timeout và tự dựng lại giao diện modal.
+    async function _refreshContractDataImpl() {
+      if (!contract) return;
+      window.__lastRefreshError = null;
       try {
         logToTerminal("[Dữ liệu] Đang đồng bộ trạng thái on-chain từ Sepolia...");
 
-        // 1. Read global metrics
-        const classFund = await contract.classFundBalance();
-        const adminFee = await contract.adminFeePool();
-        const spendCount = await contract.spendRequestCount();
-        const refundCount = await contract.refundRequestCount();
-        const activeBCS = await contract.activeBCSCount();
-        const advisorAddr = await contract.advisor();
+        // 1. Đọc số liệu toàn cục SONG SONG (trước đây gọi tuần tự: 6 vòng RPC nối đuôi nhau)
+        const [classFund, adminFee, spendCount, refundCount, activeBCS, advisorAddr, resSpend0, resRefund0] = await Promise.all([
+          contract.classFundBalance(),
+          contract.adminFeePool(),
+          contract.spendRequestCount(),
+          contract.refundRequestCount(),
+          contract.activeBCSCount(),
+          contract.advisor(),
+          contract.reservedSpendAmount().catch(() => 0n),
+          contract.reservedRefundAmount().catch(() => 0n)
+        ]);
 
         // Lấy số dư Khả dụng (Net 99%) và Đang giữ chỗ chuẩn xác từ Smart Contract (Khả dụng = Quỹ lớp hiện có - Đang giữ chỗ)
         let availableFund = 0n;
         let totalReserved = 0n;
         try {
-          const resSpend = await contract.reservedSpendAmount().catch(() => 0n);
-          const resRefund = await contract.reservedRefundAmount().catch(() => 0n);
+          const resSpend = resSpend0;
+          const resRefund = resRefund0;
           totalReserved = (resSpend || 0n) + (resRefund || 0n);
           if (typeof contract.getAvailableClassFund === "function") {
             availableFund = await contract.getAvailableClassFund();
@@ -12900,48 +12969,135 @@
             logToTerminal(`[Cảnh báo] Địa chỉ ví ${ shortenAddress(userAddress) } chưa thuộc danh bạ sinh viên K57.Chế độ khách vãng lai.`);
           }
 
-          // 3. User personal contribution
-          const myContrib = await contract.studentContributions(userAddress);
-          const myPending = await contract.pendingStudentRefundAmount(userAddress);
-          const myAvail = await contract.getStudentAvailableContribution(userAddress);
+          // 3. User personal contribution (đọc song song)
+          const [myContrib, myPending, myAvail, myMaxRefund] = await Promise.all([
+            contract.studentContributions(userAddress),
+            contract.pendingStudentRefundAmount(userAddress),
+            contract.getStudentAvailableContribution(userAddress),
+            contract.getStudentMaxRefund(userAddress).catch(() => 0n)
+          ]);
 
           document.getElementById("myTotalContribution").textContent = formatEth(myContrib) + " ETH";
           document.getElementById("myPendingRefund").textContent = formatEth(myPending) + " ETH";
           document.getElementById("myAvailableRefund").textContent = formatEth(myAvail) + " ETH";
-          let myMaxRefund = 0n;
-          try {
-            myMaxRefund = await contract.getStudentMaxRefund(userAddress);
-          } catch (_) {}
           const elMax = document.getElementById("myMaxNetRefund");
           if (elMax) elMax.textContent = formatEth(myMaxRefund) + " ETH";
         }
 
-        await checkRosterHashMatch();
-        await loadOnchainCollectionData();
-
-        // 4. Load Requests Data & Cash Flow Ledger
-        await loadSpendRequests(Number(spendCount), Number(activeBCS));
-        await loadRefundRequests(Number(refundCount), Number(activeBCS));
-        await loadCashFlowLedger(Number(spendCount), Number(refundCount), Number(activeBCS), classFund, adminFee);
-        await syncDepositorsData(classFund, adminFee);
+        // 4. Các khối độc lập nhau: tải SONG SONG; lỗi ở một khối không làm hỏng các khối còn lại
+        const safeStep = (name, fn) => Promise.resolve().then(fn).catch(err => {
+          console.warn(`[Đồng bộ] Bước "${name}" lỗi:`, err);
+          window.__lastRefreshError = window.__lastRefreshError || err;
+          logToTerminal(`[Lỗi đồng bộ: ${name}] ${err.shortMessage || err.message}`);
+        });
+        await Promise.all([
+          safeStep("roster-hash", () => checkRosterHashMatch()),
+          safeStep("collection", () => loadOnchainCollectionData()),
+          safeStep("spend-requests", () => loadSpendRequests(Number(spendCount), Number(activeBCS))),
+          safeStep("refund-requests", () => loadRefundRequests(Number(refundCount), Number(activeBCS))),
+          safeStep("cash-flow", () => loadCashFlowLedger(Number(spendCount), Number(refundCount), Number(activeBCS), classFund, adminFee)),
+          safeStep("depositors", () => syncDepositorsData(classFund, adminFee))
+        ]);
         invalidateRosterContribCache();
         // SINGLE SOURCE OF TRUTH: Cập nhật biến cache đối soát đợt thu on-chain theo batch Promise.all
-        await getPaidWalletsForActiveCollection(null, null, true);
-        await renderRosterTable();
-        await renderAdvisorStudentMonitorTable();
-        await updatePersonalStatusBox();
-        if (typeof renderAnnouncementUI === "function") {
-          await renderAnnouncementUI();
-        }
-        if (typeof renderPendingActions === "function") {
-          await renderPendingActions();
-        }
+        await safeStep("paid-wallets", () => getPaidWalletsForActiveCollection(null, null, true));
+        await Promise.all([
+          safeStep("roster-table", () => renderRosterTable()),
+          safeStep("advisor-monitor", () => renderAdvisorStudentMonitorTable()),
+          safeStep("personal-status", () => updatePersonalStatusBox()),
+          safeStep("announcement", () => (typeof renderAnnouncementUI === "function") ? renderAnnouncementUI() : null),
+          safeStep("pending-actions", () => (typeof renderPendingActions === "function") ? renderPendingActions() : null)
+        ]);
 
         logToTerminal("[Dữ liệu] Hoàn tất đồng bộ dữ liệu hợp đồng và toàn bộ flow dòng tiền.");
       } catch (err) {
+        window.__lastRefreshError = err;
+        console.warn("[Đồng bộ] Lỗi đọc hợp đồng:", err);
         logToTerminal(`[Lỗi đọc hợp đồng] ${ err.shortMessage || err.message } `);
-      } finally {
+      }
+    }
+
+    // =====================================================================
+    // BỘ ĐIỀU PHỐI ĐỒNG BỘ ON-CHAIN
+    //  - Chia sẻ lời gọi đang chạy (không chạy chồng, không "bỏ qua im lặng").
+    //  - {auto:true} (polling / sự kiện / tab active): KHÔNG chạy khi modal đang mở hoặc đang có giao dịch,
+    //    chỉ đánh dấu hoãn và chạy bù khi modal đóng / giao dịch xong.
+    //  - Giới hạn tần suất cho lời gọi tự động, timeout cứng để cờ không bao giờ kẹt.
+    //  - Sau mỗi lần đồng bộ: dựng lại đúng khung nhìn của modal đang mở.
+    // =====================================================================
+    const REFRESH_AUTO_MIN_GAP_MS = 5000;
+    const REFRESH_HARD_TIMEOUT_MS = 60000;
+    let __refreshPromise = null;
+    let __refreshEpoch = 0;          // tăng khi cache RPC bị xóa (sau giao dịch / sự kiện)
+    let __refreshStartEpoch = 0;
+    let __lastRefreshOk = 0;
+    window.__refreshDeferred = false;
+    window.__txInFlight = 0;
+    window.__lastRefreshError = null;
+
+    function isModalOpen() {
+      const ws = document.getElementById("dapp-workspace");
+      return !!ws && ws.style.display !== "none" && ws.classList.contains("show");
+    }
+
+    function invalidateRpcCache() {
+      __refreshEpoch++;
+      try { if (contract && contract.__rpcCache) contract.__rpcCache.clear(); } catch (_) {}
+    }
+    window.__invalidateRpcCache = invalidateRpcCache;
+
+    async function refreshContractData(opts) {
+      opts = (opts && typeof opts === "object" && !(opts instanceof Event)) ? opts : {};
+      if (!contract) return;
+
+      if (opts.auto) {
+        if (isModalOpen() || window.__txInFlight > 0) { window.__refreshDeferred = true; return; }
+        if (Date.now() - __lastRefreshOk < REFRESH_AUTO_MIN_GAP_MS) return;
+      }
+      if (opts.force) invalidateRpcCache();
+
+      if (__refreshPromise) {
+        // Nếu cache đã bị xóa kể từ khi lần chạy hiện tại bắt đầu (vd. vừa có giao dịch) thì phải chạy lại sau khi nó xong.
+        if (!opts.auto && __refreshEpoch !== __refreshStartEpoch) {
+          const prev = __refreshPromise;
+          return prev.then(() => refreshContractData({}), () => refreshContractData({}));
+        }
+        return __refreshPromise;
+      }
+
+      window.__refreshDeferred = false;
+      __refreshStartEpoch = __refreshEpoch;
+      isRefreshingContractData = true;
+      const t0 = performance.now();
+      const dbg = window.__ktsDebug === true || localStorage.getItem("ktsDebug") === "1";
+      if (dbg) console.time("refreshContractData");
+      const run = (async () => {
+        await Promise.race([
+          _refreshContractDataImpl(),
+          new Promise((_, rej) => setTimeout(() => rej(new Error("Quá thời gian chờ RPC Sepolia (60 giây).")), REFRESH_HARD_TIMEOUT_MS))
+        ]);
+      })();
+      __refreshPromise = run.then(() => {
+        if (!window.__lastRefreshError) __lastRefreshOk = Date.now();
+      }, (err) => {
+        window.__lastRefreshError = err;
+        console.warn("[Đồng bộ] Thất bại:", err);
+      }).finally(() => {
+        __refreshPromise = null;
         isRefreshingContractData = false;
+        const ms = Math.round(performance.now() - t0);
+        (window.__perf = window.__perf || {}).refreshContractData = (window.__perf.refreshContractData || []).concat({ ms, at: Date.now(), error: !!window.__lastRefreshError }).slice(-30);
+        if (dbg) console.timeEnd("refreshContractData");
+        if (typeof onModalDataSettled === "function") onModalDataSettled();
+      });
+      return __refreshPromise;
+    }
+
+    // Chạy bù lần đồng bộ bị hoãn khi modal đóng / giao dịch xong
+    function flushDeferredRefresh() {
+      if (window.__refreshDeferred && !isModalOpen() && window.__txInFlight === 0) {
+        window.__refreshDeferred = false;
+        refreshContractData({ auto: true });
       }
     }
 
@@ -14541,31 +14697,20 @@
     }
 
     function getActiveNotifications() {
-      if (classActiveNotifications && classActiveNotifications.length > 0) {
+      if (Array.isArray(classActiveNotifications)) {
         return classActiveNotifications;
       }
       try {
         const cached = localStorage.getItem("kts_class_active_notifications");
-        if (cached) {
+        if (cached !== null) {
           const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             classActiveNotifications = parsed;
             return parsed;
           }
         }
       } catch (e) { }
-      return [
-        {
-          id: "ann-20261110204508",
-          title: "Kêu gọi nộp Quỹ Lớp K57",
-          targetAmountEth: "1",
-          deadline: "23:59 ngày 11/11/2026",
-          purpose: "Kinh phí phục vụ hoạt động học tập và phong trào lớp K57",
-          classSize: 5,
-          autoCloseOnTarget: false,
-          status: "active"
-        }
-      ];
+      return [];
     }
 
     function getAnnouncementData() {
@@ -14833,9 +14978,13 @@
         const isExpired = (!isFullyCompleted && a.deadlineTimestamp && (Date.now() / 1000) > Number(a.deadlineTimestamp)) || a.status === 'expired';
 
         // TỰ ĐỘNG ĐÓNG ĐỢT THU KHI 100% SĨ SỐ ĐÃ NỘP XONG
+        const __closedOrAttempted = window.__autoCloseAttempted || new Set();
+        window.__autoCloseAttempted = __closedOrAttempted;
+
         if (isFullyCompleted) {
           const autoReason = `Đã hoàn thành: 100% sinh viên trong lớp (${walletsCount}/${classSz} ví) đã nộp đủ quỹ`;
-          if (!a._autoCloseTriggered) {
+          if (!__closedOrAttempted.has(a.id) && !a._autoCloseTriggered && a.status === 'active') {
+            __closedOrAttempted.add(a.id);
             a._autoCloseTriggered = true;
             logToTerminal(`[Tự động đóng đợt thu] 🎉 Đợt thu "${a.title}" đã đạt 100% sĩ số (${walletsCount}/${classSz} ví). Tự động chốt sổ và chuyển vào Lịch sử thông báo.`);
 
@@ -14869,7 +15018,7 @@
             }
             saveAnnouncementHistory(classAnnouncementHistory);
 
-            // 2. Gửi request đồng bộ đến Backend để lưu vĩnh viễn vào file JSON & audit trail
+            // 2. Gửi request đồng bộ đến Backend để lưu vĩnh viễn vào file JSON
             const headers = { "Content-Type": "application/json" };
             if (typeof userSessionToken !== "undefined" && userSessionToken) {
               headers["Authorization"] = `Bearer ${userSessionToken}`;
@@ -14885,14 +15034,13 @@
                 classSize: classSz,
                 raisedEth: finalEth
               })
-            }).then(() => {
-              if (typeof syncAnnouncementFromServer === "function") syncAnnouncementFromServer();
+            }).then(resp => {
+              if (resp.ok) {
+                if (typeof syncAnnouncementFromServer === "function") syncAnnouncementFromServer();
+              } else {
+                console.warn(`[Tự động đóng] Máy chủ phản hồi mã ${resp.status}`);
+              }
             }).catch(e => console.warn("Lỗi đồng bộ tự động đóng đợt thu:", e));
-
-            // Gọi render lại để dọn banner ngay lập tức
-            setTimeout(() => {
-              if (typeof renderAnnouncementUI === "function") renderAnnouncementUI();
-            }, 50);
           }
           // Đã hoàn thành 100% -> Chuyển vào lịch sử, không hiển thị trên banner đợt thu đang mở
           return;
@@ -16592,8 +16740,16 @@
         progressText: `${depCount}/${classSize} bạn đã nộp (${percent}%)`
       };
 
+      const bcsMembers = (Array.isArray(classRoster) ? classRoster : [])
+        .filter(s => s && (s.isBCS || s.role === "bcs"))
+        .map(s => ({
+          name: s.name,
+          roleTitle: s.roleTitle || "Ban cán sự lớp K57",
+          address: s.wallet
+        }));
+
       // 5. BẢO MẬT & QUYỀN RIÊNG TƯ CHATBOT:
-      // Chatbot công khai chỉ nhận dữ liệu tổng hợp. TUYỆT ĐỐI không gửi danh bạ Họ tên/MSSV hoặc mapping cá nhân
+      // Chatbot công khai chỉ nhận dữ liệu tổng hợp. TUYỆT ĐỐI không gửi danh bạ Họ tên/MSSV sinh viên thường
       return {
         isContractConnected: isConnected,
         contractAddress: CONFIG.contractAddress || "Chưa kết nối",
@@ -16606,22 +16762,26 @@
         depositorsCount: depData.count,
         totalDepositedEth: depData.totalEth,
         announcement: annSnapshot,
+        bcsMembers: bcsMembers,
         roster: [],
         spendRequests: Array.from(spendMap.values()),
         refundRequests: Array.from(refundMap.values())
       };
     }
 
-    async function handleUserSend() {
+    async function handleUserSend(retryQuestion) {
       const input = document.getElementById("aiUserInput");
-      if (!input) return;
-      const question = input.value.trim();
+      const question = (typeof retryQuestion === "string" ? retryQuestion : (input ? input.value : "")).trim();
       if (!question) return;
 
-      appendAIMessage("user", escapeHtml(question));
-      input.value = "";
+      if (!retryQuestion) {
+        appendAIMessage("user", escapeHtml(question));
+        if (input) input.value = "";
+      }
 
       const typing = showTypingIndicator();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 35000); // 35s timeout
 
       try {
         const onchainData = await getOnchainSnapshot();
@@ -16631,15 +16791,29 @@
           body: JSON.stringify({
             question: question,
             onchain_data: onchainData
-          })
+          }),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
         removeTypingIndicator();
 
         if (!resp.ok) {
           const errData = await resp.json().catch(() => ({}));
-          const errMsg = errData.error || `Lỗi máy chủ (${resp.status})`;
-          appendAIMessage("bot", `⚠️ <strong>Lỗi:</strong> ${escapeHtml(errMsg)}<br><small style="color:var(--text-muted); display:inline-block; margin-top:4px;">💡 Hãy khởi động Backend: <code>python backend/server.py</code> và cấu hình <code>GEMINI_API_KEY</code> trong <code>.env</code>.</small>`);
+          let errMsg = errData.error;
+          if (!errMsg) {
+            if (resp.status === 404) errMsg = "Không tìm thấy endpoint /api/chat trên Backend";
+            else if (resp.status === 403) errMsg = "Từ chối truy cập từ Backend";
+            else if (resp.status === 500) errMsg = "Lỗi xử lý nội bộ tại Backend AI hoặc Gemini API";
+            else errMsg = `Lỗi máy chủ HTTP ${resp.status}`;
+          }
+          appendAIMessage("bot", `
+            <div class="ai-error-box" style="background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:10px 12px; margin-top:4px;">
+              <div style="color:#b91c1c; font-weight:600; font-size:0.9rem;">⚠️ Lỗi máy chủ (${resp.status}):</div>
+              <div style="color:#475569; font-size:0.85rem; margin-top:2px;">${escapeHtml(errMsg)}</div>
+              <button type="button" class="btn btn-sm btn-outline" style="margin-top:8px; font-size:0.8rem; padding:3px 10px; background:#fff; border-color:#fda4af; color:#b91c1c;" onclick="handleUserSend('${escapeHtml(question.replace(/'/g, "\\'"))}')">🔄 Thử lại</button>
+            </div>
+          `);
           return;
         }
 
@@ -16647,11 +16821,33 @@
         if (data.success && data.reply) {
           appendAIMessage("bot", formatAIReply(data.reply));
         } else {
-          appendAIMessage("bot", `⚠️ <strong>Lỗi:</strong> ${escapeHtml(data.error || "Không có phản hồi từ AI.")}`);
+          appendAIMessage("bot", `
+            <div class="ai-error-box" style="background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:10px 12px; margin-top:4px;">
+              <div style="color:#b91c1c; font-weight:600; font-size:0.9rem;">⚠️ Không nhận được câu trả lời từ AI:</div>
+              <div style="color:#475569; font-size:0.85rem; margin-top:2px;">${escapeHtml(data.error || "Phản hồi rỗng")}</div>
+              <button type="button" class="btn btn-sm btn-outline" style="margin-top:8px; font-size:0.8rem; padding:3px 10px; background:#fff; border-color:#fda4af; color:#b91c1c;" onclick="handleUserSend('${escapeHtml(question.replace(/'/g, "\\'"))}')">🔄 Thử lại</button>
+            </div>
+          `);
         }
       } catch (err) {
+        clearTimeout(timeoutId);
         removeTypingIndicator();
-        appendAIMessage("bot", `⚠️ <strong>Không thể kết nối đến Backend AI:</strong><br>${escapeHtml(err.message)}<br><br><span style="font-size:0.8rem; color:var(--text-muted);">💡 Vui lòng mở terminal và khởi chạy máy chủ:<br><code style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:600;">python backend/server.py</code></span>`);
+        let errDesc = err.message || "";
+        if (err.name === "AbortError") {
+          errDesc = "Quá thời gian chờ phản hồi (> 35 giây) từ máy chủ hoặc Google Gemini.";
+        } else if (errDesc.includes("Failed to fetch") || errDesc.includes("NetworkError")) {
+          errDesc = `Không thể kết nối đến Backend tại <code>${AI_BACKEND_URL}</code>. Máy chủ chưa được khởi động hoặc bị chặn bởi cấu hình mạng / CORS.`;
+        }
+        appendAIMessage("bot", `
+          <div class="ai-error-box" style="background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:10px 12px; margin-top:4px;">
+            <div style="color:#b91c1c; font-weight:600; font-size:0.9rem;">⚠️ Không thể kết nối đến Backend AI:</div>
+            <div style="color:#475569; font-size:0.85rem; margin:4px 0;">${errDesc}</div>
+            <div style="margin-top:6px; font-size:0.78rem; color:#64748b;">
+              💡 Lệnh khởi chạy backend: <code>python backend/server.py</code>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline" style="margin-top:8px; font-size:0.8rem; padding:3px 10px; background:#fff; border-color:#fda4af; color:#b91c1c;" onclick="handleUserSend('${escapeHtml(question.replace(/'/g, "\\'"))}')">🔄 Thử lại</button>
+          </div>
+        `);
       }
     }
 
@@ -17626,9 +17822,84 @@
     // FOCUSED ACTION MODAL CONTROLLER (MoMo-Style Direct Action Interface)
     // =========================================================================
 
+    let __modalWatchdogTimer = null;
+    let __currentActionModal = null;
+
+    function showModalSyncIndicator(msg = "Đang đồng bộ dữ liệu từ Ethereum Sepolia...") {
+      const banner = document.getElementById("modalStatusBanner");
+      if (!banner) return;
+      banner.className = "modal-sync-indicator";
+      banner.innerHTML = `<span class="mini-spinner"></span><span>${msg}</span>`;
+      banner.style.display = "flex";
+    }
+
+    function hideModalSyncIndicator() {
+      const banner = document.getElementById("modalStatusBanner");
+      if (!banner) return;
+      if (banner.classList.contains("modal-sync-indicator")) {
+        banner.style.display = "none";
+        banner.innerHTML = "";
+      }
+    }
+
+    function showModalErrorBanner(errorMsg, onRetry) {
+      const banner = document.getElementById("modalStatusBanner");
+      if (!banner) return;
+      banner.className = "modal-error-banner";
+      banner.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">⚠️</span>
+          <div>
+            <strong style="display:block;">Không thể tải dữ liệu từ Smart Contract</strong>
+            <span style="font-size:0.85rem; color:#b91c1c;">${errorMsg || 'Kết nối RPC Sepolia phản hồi chậm (> 10 giây).'}</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline" style="background:#fff; border-color:#ef4444; color:#b91c1c; font-weight:600; white-space:nowrap;" id="btnModalRetrySync">
+          🔄 Thử lại
+        </button>
+      `;
+      banner.style.display = "flex";
+      const retryBtn = document.getElementById("btnModalRetrySync");
+      if (retryBtn) {
+        retryBtn.onclick = () => {
+          showModalSyncIndicator("Đang thử lại kết nối RPC Sepolia...");
+          if (typeof onRetry === "function") {
+            onRetry();
+          } else {
+            refreshContractData({ force: true }).then(() => {
+              hideModalSyncIndicator();
+            }).catch(err => {
+              showModalErrorBanner(err.shortMessage || err.message);
+            });
+          }
+        };
+      }
+    }
+
+    function onModalDataSettled() {
+      if (__modalWatchdogTimer) {
+        clearTimeout(__modalWatchdogTimer);
+        __modalWatchdogTimer = null;
+      }
+      if (!isModalOpen()) return;
+      if (window.__lastRefreshError) {
+        showModalErrorBanner(window.__lastRefreshError.shortMessage || window.__lastRefreshError.message);
+      } else {
+        hideModalSyncIndicator();
+      }
+    }
+
     function openActionModal(action) {
       if (typeof closeAllNavDropdowns === "function") closeAllNavDropdowns();
       if (typeof closeAllMobileSheets === "function") closeAllMobileSheets();
+
+      // Nếu là tra cứu nhân sự BCS, mở modal chuyên dụng
+      if (action === "bcs-personnel" || action === "members") {
+        if (typeof openBcsPersonnelModal === "function") {
+          openBcsPersonnelModal();
+          return;
+        }
+      }
 
       const ws = document.getElementById("dapp-workspace");
       const modalBox = document.getElementById("workspaceModalBox");
@@ -17638,9 +17909,10 @@
 
       if (!ws) return;
 
-      const verifiedRole = window.currentVerifiedRole || "none";
+      window.__currentActionModal = action;
+      currentDetailRole = action;
 
-      // First sync role permissions to set basic access & notices
+      const verifiedRole = window.currentVerifiedRole || "none";
       syncRolePermissionsUI(verifiedRole);
 
       const pStudent = document.getElementById("panelStudent");
@@ -17650,13 +17922,19 @@
 
       const secDeposit = document.getElementById("sectionDepositForm");
       const secRefund = document.getElementById("sectionRefundForm");
+      const secStudentCol = document.getElementById("sectionStudentOnchainCollection");
       const secSpendCreate = document.getElementById("sectionBcsCreateSpend");
       const secBcsCol = document.getElementById("sectionBcsManageCollection");
       const secAdvBcs = document.getElementById("sectionAdvisorManageBcs");
       const secAdvFee = document.getElementById("sectionAdvisorWithdrawFee");
       const secAdvMon = document.getElementById("sectionAdvisorStudentMonitor");
 
-      // Hide all panels initially
+      const bcsSpendTable = document.getElementById("bcsSpendTableBody");
+      const bcsRefundTable = document.getElementById("bcsRefundTableBody");
+      const wrapSpend = bcsSpendTable ? bcsSpendTable.closest(".data-table-container") : null;
+      const wrapRefund = bcsRefundTable ? bcsRefundTable.closest(".data-table-container") : null;
+
+      // Ẩn tất cả các panel trước khi bật panel tương ứng
       [pStudent, pBCS, pAdvisor, pHistory].forEach(p => {
         if (p) p.style.display = 'none';
       });
@@ -17664,51 +17942,75 @@
       const roleDetailContainer = document.getElementById("roleDetailContainer");
       if (roleDetailContainer) roleDetailContainer.style.display = "block";
 
+      // Cập nhật trạng thái active của các nút role
+      const btnMap = {
+        student: document.getElementById("btnRoleStudent"),
+        bcs: document.getElementById("btnRoleBCS"),
+        advisor: document.getElementById("btnRoleAdvisor"),
+        history: document.getElementById("btnRoleHistory")
+      };
+      Object.values(btnMap).forEach(b => { if (b) b.classList.remove("active"); });
+
+      // Định tuyến chi tiết từng hành động
       if (action === "deposit") {
+        if (btnMap.student) btnMap.student.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "700px";
         if (iconEl) iconEl.textContent = "⚡";
         if (titleEl) titleEl.textContent = "Nạp Quỹ Lớp K57";
         if (subEl) subEl.textContent = "Ethereum Sepolia • Net 99% ngân sách lớp, 1% quỹ vận hành";
         if (pStudent) pStudent.style.display = 'block';
-        if (secRefund) secRefund.style.display = "none";
-        const secStudentCol = document.getElementById("sectionStudentOnchainCollection");
-        if (secStudentCol) secStudentCol.style.display = "none";
         if (secDeposit) secDeposit.style.display = "block";
+        if (secRefund) secRefund.style.display = "none";
+        if (secStudentCol) secStudentCol.style.display = "none";
         const inp = document.getElementById("inputDepositAmount");
         if (inp) setTimeout(() => inp.focus(), 150);
       } else if (action === "refund") {
+        if (btnMap.student) btnMap.student.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "760px";
         if (iconEl) iconEl.textContent = "💸";
         if (titleEl) titleEl.textContent = "Yêu Cầu Hoàn Tiền";
         if (subEl) subEl.textContent = "Hạn mức tối đa 99% số tiền ròng bạn đã đóng góp vào Quỹ";
         if (pStudent) pStudent.style.display = 'block';
         if (secDeposit) secDeposit.style.display = "none";
-        const secStudentCol = document.getElementById("sectionStudentOnchainCollection");
-        if (secStudentCol) secStudentCol.style.display = "none";
         if (secRefund) secRefund.style.display = "block";
+        if (secStudentCol) secStudentCol.style.display = "none";
         const inp = document.getElementById("inputRefundAmount");
         if (inp) setTimeout(() => inp.focus(), 150);
+      } else if (action === "collection" || action === "student-collection") {
+        if (btnMap.student) btnMap.student.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "760px";
+        if (iconEl) iconEl.textContent = "🎯";
+        if (titleEl) titleEl.textContent = "Đóng Góp Theo Đợt Thu";
+        if (subEl) subEl.textContent = "Nộp quỹ trực tiếp cho đợt thu học kỳ Quỹ Lớp K57";
+        if (pStudent) pStudent.style.display = 'block';
+        if (secDeposit) secDeposit.style.display = "none";
+        if (secRefund) secRefund.style.display = "none";
+        if (secStudentCol) secStudentCol.style.display = "block";
+      } else if (action === "student") {
+        if (btnMap.student) btnMap.student.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "780px";
+        if (iconEl) iconEl.textContent = "🎓";
+        if (titleEl) titleEl.textContent = "Bảng Thao Tác Sinh Viên";
+        if (subEl) subEl.textContent = "Nạp quỹ, yêu cầu hoàn tiền và theo dõi tiến độ đợt thu";
+        if (pStudent) pStudent.style.display = 'block';
+        if (secDeposit) secDeposit.style.display = "block";
+        if (secRefund) secRefund.style.display = "block";
+        if (secStudentCol) secStudentCol.style.display = "block";
       } else if (action === "spend") {
+        if (btnMap.bcs) btnMap.bcs.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "840px";
         if (iconEl) iconEl.textContent = "📝";
         if (titleEl) titleEl.textContent = "Tạo Đề Xuất Chi Tiêu Lớp";
         if (subEl) subEl.textContent = "Dành riêng cho Ban cán sự • Cần tối thiểu 51% biểu quyết tán thành trong 7 ngày";
         if (pBCS) pBCS.style.display = 'block';
-        if (secBcsCol) secBcsCol.style.display = "none";
-        const bcsSpendTable = document.getElementById("bcsSpendTableBody");
-        if (bcsSpendTable) {
-          const wrap = bcsSpendTable.closest(".data-table-container");
-          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "none";
-        }
-        const bcsRefundTable = document.getElementById("bcsRefundTableBody");
-        if (bcsRefundTable) {
-          const wrap = bcsRefundTable.closest(".data-table-container");
-          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "none";
-        }
         if (secSpendCreate) secSpendCreate.style.display = "block";
+        if (secBcsCol) secBcsCol.style.display = "none";
+        if (wrapSpend && wrapSpend.parentElement) wrapSpend.parentElement.style.display = "none";
+        if (wrapRefund && wrapRefund.parentElement) wrapRefund.parentElement.style.display = "none";
         const inp = document.getElementById("inputSpendRecipient");
         if (inp) setTimeout(() => inp.focus(), 150);
       } else if (action === "vote" || action === "disburse") {
+        if (btnMap.bcs) btnMap.bcs.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "1140px";
         if (iconEl) iconEl.textContent = "⚖️";
         if (titleEl) titleEl.textContent = "Biểu Quyết & Giải Ngân (BCS)";
@@ -17716,17 +18018,78 @@
         if (pBCS) pBCS.style.display = 'block';
         if (secSpendCreate) secSpendCreate.style.display = "none";
         if (secBcsCol) secBcsCol.style.display = "none";
-        const bcsSpendTable = document.getElementById("bcsSpendTableBody");
-        if (bcsSpendTable) {
-          const wrap = bcsSpendTable.closest(".data-table-container");
-          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "block";
+        if (wrapSpend && wrapSpend.parentElement) wrapSpend.parentElement.style.display = "block";
+        if (wrapRefund && wrapRefund.parentElement) wrapRefund.parentElement.style.display = "block";
+      } else if (action === "manage-collection" || action === "bcs-collection") {
+        if (btnMap.bcs) btnMap.bcs.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "820px";
+        if (iconEl) iconEl.textContent = "📢";
+        if (titleEl) titleEl.textContent = "Quản Lý Đợt Thu Quỹ (BCS)";
+        if (subEl) subEl.textContent = "Mở hoặc đóng đợt thu học kỳ on-chain";
+        if (pBCS) pBCS.style.display = 'block';
+        if (secSpendCreate) secSpendCreate.style.display = "none";
+        if (secBcsCol) secBcsCol.style.display = "block";
+        if (wrapSpend && wrapSpend.parentElement) wrapSpend.parentElement.style.display = "none";
+        if (wrapRefund && wrapRefund.parentElement) wrapRefund.parentElement.style.display = "none";
+      } else if (action === "bcs") {
+        if (btnMap.bcs) btnMap.bcs.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "1140px";
+        if (iconEl) iconEl.textContent = "👥";
+        if (titleEl) titleEl.textContent = "Bảng Thao Tác Ban Cán Sự";
+        if (subEl) subEl.textContent = "Tạo đề xuất chi, biểu quyết, duyệt hoàn tiền và quản lý đợt thu";
+        if (pBCS) pBCS.style.display = 'block';
+        if (secSpendCreate) secSpendCreate.style.display = "block";
+        if (secBcsCol) secBcsCol.style.display = "block";
+        if (wrapSpend && wrapSpend.parentElement) wrapSpend.parentElement.style.display = "block";
+        if (wrapRefund && wrapRefund.parentElement) wrapRefund.parentElement.style.display = "block";
+      } else if (action === "manage-bcs" || action === "bcs-manage") {
+        if (btnMap.advisor) btnMap.advisor.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "800px";
+        if (iconEl) iconEl.textContent = "🛡️";
+        if (titleEl) titleEl.textContent = "Quản Lý Ban Cán Sự (Cố Vấn)";
+        if (subEl) subEl.textContent = "Bổ nhiệm hoặc bãi nhiệm thành viên Ban cán sự lớp K57";
+        if (pAdvisor) pAdvisor.style.display = 'block';
+        if (secAdvBcs) secAdvBcs.style.display = "block";
+        if (secAdvFee) secAdvFee.style.display = "none";
+        if (secAdvMon) secAdvMon.style.display = "none";
+      } else if (action === "withdraw-fee") {
+        if (btnMap.advisor) btnMap.advisor.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "760px";
+        if (iconEl) iconEl.textContent = "💰";
+        if (titleEl) titleEl.textContent = "Rút Quỹ Vận Hành 1% (Cố Vấn)";
+        if (subEl) subEl.textContent = "Thu hồi adminFeePool để bù đắp chi phí gas giao dịch";
+        if (pAdvisor) pAdvisor.style.display = 'block';
+        if (secAdvBcs) secAdvBcs.style.display = "none";
+        if (secAdvFee) secAdvFee.style.display = "block";
+        if (secAdvMon) secAdvMon.style.display = "none";
+      } else if (action === "advisor-monitor" || action === "student-monitor") {
+        if (btnMap.advisor) btnMap.advisor.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "1100px";
+        if (iconEl) iconEl.textContent = "📊";
+        if (titleEl) titleEl.textContent = "Theo Dõi Đóng Góp Toàn Lớp";
+        if (subEl) subEl.textContent = "Giám sát tiến độ đóng góp và đối soát danh bạ sinh viên";
+        if (pAdvisor) pAdvisor.style.display = 'block';
+        if (secAdvBcs) secAdvBcs.style.display = "none";
+        if (secAdvFee) secAdvFee.style.display = "none";
+        if (secAdvMon) secAdvMon.style.display = "block";
+        if (typeof renderAdvisorStudentMonitorTable === "function") {
+          renderAdvisorStudentMonitorTable();
         }
-        const bcsRefundTable = document.getElementById("bcsRefundTableBody");
-        if (bcsRefundTable) {
-          const wrap = bcsRefundTable.closest(".data-table-container");
-          if (wrap && wrap.parentElement) wrap.parentElement.style.display = "block";
+      } else if (action === "advisor") {
+        if (btnMap.advisor) btnMap.advisor.classList.add("active");
+        if (modalBox) modalBox.style.maxWidth = "1100px";
+        if (iconEl) iconEl.textContent = "🛡️";
+        if (titleEl) titleEl.textContent = "Bảng Thao Tác Cố Vấn Học Tập";
+        if (subEl) subEl.textContent = "Quản lý nhân sự BCS, giám sát dòng tiền và điều phối phí vận hành";
+        if (pAdvisor) pAdvisor.style.display = 'block';
+        if (secAdvBcs) secAdvBcs.style.display = "block";
+        if (secAdvFee) secAdvFee.style.display = "block";
+        if (secAdvMon) secAdvMon.style.display = "block";
+        if (typeof renderAdvisorStudentMonitorTable === "function") {
+          renderAdvisorStudentMonitorTable();
         }
       } else if (action === "ledger" || action === "history") {
+        if (btnMap.history) btnMap.history.classList.add("active");
         if (modalBox) modalBox.style.maxWidth = "1180px";
         if (iconEl) iconEl.textContent = "📊";
         if (titleEl) titleEl.textContent = "Sổ Nhật Ký Dòng Tiền On-Chain";
@@ -17737,36 +18100,66 @@
             renderFlowLedgerTable(allFlowItems);
           }
         }
-      } else if (action === "manage-bcs" || action === "bcs-manage") {
-        if (modalBox) modalBox.style.maxWidth = "800px";
-        if (iconEl) iconEl.textContent = "🛡️";
-        if (titleEl) titleEl.textContent = "Quản Lý Ban Cán Sự (Cố Vấn)";
-        if (subEl) subEl.textContent = "Bổ nhiệm hoặc bãi nhiệm thành viên Ban cán sự lớp K57";
-        if (pAdvisor) pAdvisor.style.display = 'block';
-        if (secAdvFee) secAdvFee.style.display = "none";
-        if (secAdvMon) secAdvMon.style.display = "none";
-        if (secAdvBcs) secAdvBcs.style.display = "block";
-      } else if (action === "withdraw-fee") {
-        if (modalBox) modalBox.style.maxWidth = "760px";
-        if (iconEl) iconEl.textContent = "💰";
-        if (titleEl) titleEl.textContent = "Rút Quỹ Vận Hành 1% (Cố Vấn)";
-        if (subEl) subEl.textContent = "Thu hồi adminFeePool để bù đắp chi phí gas giao dịch";
-        if (pAdvisor) pAdvisor.style.display = 'block';
-        if (secAdvBcs) secAdvBcs.style.display = "none";
-        if (secAdvMon) secAdvMon.style.display = "none";
-        if (secAdvFee) secAdvFee.style.display = "block";
+        if (contract && allFlowItems.length === 0) {
+          refreshContractData();
+        }
       }
 
-      // Open Modal Overlay
+      // CAM KẾT KHÔNG BAO GIỜ ĐỂ MODAL TRẮNG:
+      // Nếu không có panel nào được bật, mặc định bật panelStudent
+      const allPanels = [pStudent, pBCS, pAdvisor, pHistory];
+      const hasVisible = allPanels.some(p => p && p.style.display !== 'none');
+      if (!hasVisible) {
+        if (pStudent) {
+          pStudent.style.display = 'block';
+          if (secDeposit) secDeposit.style.display = 'block';
+        }
+        if (iconEl) iconEl.textContent = "⚡";
+        if (titleEl) titleEl.textContent = "Nạp Quỹ Lớp K57";
+        if (subEl) subEl.textContent = "Ethereum Sepolia • Net 99% ngân sách lớp, 1% quỹ vận hành";
+      }
+
+      // Quản lý trạng thái tải & cơ chế watchdog 10 giây
+      if (isRefreshingContractData) {
+        showModalSyncIndicator();
+      } else if (window.__lastRefreshError) {
+        showModalErrorBanner(window.__lastRefreshError.shortMessage || window.__lastRefreshError.message);
+      } else {
+        hideModalSyncIndicator();
+      }
+
+      if (__modalWatchdogTimer) clearTimeout(__modalWatchdogTimer);
+      __modalWatchdogTimer = setTimeout(() => {
+        if (isModalOpen() && (isRefreshingContractData || window.__lastRefreshError)) {
+          showModalErrorBanner(
+            window.__lastRefreshError ? (window.__lastRefreshError.shortMessage || window.__lastRefreshError.message) : "Kết nối RPC Sepolia phản hồi chậm hơn 10 giây."
+          );
+        }
+      }, 10000);
+
+      // Mở modal overlay
       ws.classList.add("modal-overlay", "show");
       ws.style.display = "flex";
     }
 
     function closeActionModal() {
+      currentDetailRole = null;
+      window.__currentActionModal = null;
+      if (__modalWatchdogTimer) {
+        clearTimeout(__modalWatchdogTimer);
+        __modalWatchdogTimer = null;
+      }
       const ws = document.getElementById("dapp-workspace");
       if (ws) {
         ws.classList.remove("show");
         ws.style.display = "none";
+      }
+      hideModalSyncIndicator();
+      const banner = document.getElementById("modalStatusBanner");
+      if (banner) banner.style.display = "none";
+
+      if (typeof flushDeferredRefresh === "function") {
+        flushDeferredRefresh();
       }
     }
 
