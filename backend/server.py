@@ -178,7 +178,7 @@ except ImportError:
     )
 
 HOST = "0.0.0.0"
-PORT = 8000
+PORT = int(os.environ.get("PORT", 8000))
 
 DEFAULT_ANNOUNCEMENT_FILE = (Path(__file__).parent / "announcements.json").resolve()
 DEFAULT_ROSTER_FILE = (Path(__file__).parent / "class_roster.json").resolve()
@@ -243,6 +243,13 @@ DEV_ALLOWED_ORIGINS = {
     "http://127.0.0.1:5173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+}
+
+DEV_ALLOWED_ORIGINS |= {"https://kts-class-fund-k57.netlify.app"}
+DEV_ALLOWED_ORIGINS |= {
+    o.strip().rstrip("/")
+    for o in os.environ.get("ALLOWED_ORIGINS", "").split(",")
+    if o.strip()
 }
 
 # Cho phép "null" (file://) CHỈ KHI đang ở chế độ development
@@ -1870,7 +1877,7 @@ class AIChatRequestHandler(BaseHTTPRequestHandler):
             notif_status = notif_rec.get("status", "none") if notif_rec else "none"
             ended_at_ts = None
             if notif_rec and notif_rec.get("endedAt"):
-                from backend.accounting_engine import parse_deadline_to_vn_timestamp
+                
                 # Parse endedAt thành timestamp
                 try:
                     import datetime
