@@ -15524,7 +15524,7 @@
             }).catch(e => console.warn("Lỗi đồng bộ tự động đóng đợt thu:", e));
           }
           // Đã hoàn thành 100% -> Chuyển vào lịch sử, không hiển thị trên banner đợt thu đang mở
-          return;
+          if (!a.isOnchainOnly) return;
         }
 
         html += `
