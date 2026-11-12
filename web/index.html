@@ -15372,6 +15372,28 @@
       } catch (e) { }
     }
 
+    function getEffectiveActiveList() {
+      const list = getActiveNotifications();
+      if (list && list.length > 0) return list;
+
+      const c = window.currentActiveCollectionData;
+      if (c && c.id && currentActiveCollectionId) {
+        return [{
+          id: `onchain-${c.id}`,
+          title: `Đợt thu on-chain #${c.id}`,
+          purpose: c.purpose,
+          targetAmountEth: ethers.formatEther(c.targetWei),
+          deadline: new Date(c.deadline * 1000).toLocaleString("vi-VN"),
+          deadlineTimestamp: c.deadline,
+          classSize: c.expectedPayers,
+          status: "onchain",   // khác 'active' để không kích hoạt auto-close gửi lên backend
+          isOnchainOnly: true,
+          progress: {}
+        }];
+      }
+      return [];
+    }
+
     function renderMultipleProgressCards(activeList) {
       const container = document.getElementById("activeProgressCardsContainer");
       if (!container) return;
@@ -15585,7 +15607,7 @@
     }
 
     async function renderAnnouncementUI() {
-      const activeList = getActiveNotifications();
+      const activeList = getEffectiveActiveList();
       // SINGLE SOURCE OF TRUTH: Đồng bộ kết quả đối soát đợt thu trước khi render UI
       await getPaidWalletsForActiveCollection();
       // Đồng bộ trước trạng thái cá nhân để cập nhật nút nộp nếu đã nộp
@@ -15927,6 +15949,11 @@
     async function closeActiveAnnouncement(targetId) {
       if (!userAddress || (!isBcsMember && !isAdvisor)) {
         alert("⚠️ Truy cập bị từ chối: Chỉ tài khoản Ban cán sự mới có quyền kết thúc đợt thu!");
+        return;
+      }
+
+      if (typeof targetId === "string" && targetId.startsWith("onchain-")) {
+        await doCloseOnchainCollection();
         return;
       }
 
