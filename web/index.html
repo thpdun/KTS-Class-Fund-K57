@@ -13494,7 +13494,12 @@
           const yesVotes = Number(req[6]);
           const status = Number(req[8]);
 
-          const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+          let base = activeBcsCount;
+          try {
+            const full = await targetContract.spendRequests(i);
+            base = Number(full[9]) || activeBcsCount;
+          } catch (_) { }
+          const pct = base > 0 ? ((yesVotes / base) * 100).toFixed(0) : 0;
           const statusBadge = getStatusBadge(status);
 
           let voteActionHtml = "";
@@ -13857,7 +13862,12 @@
             const yesVotes = Number(req[5]);
             const status = Number(req[7]);
 
-            const pct = activeBcsCount > 0 ? ((yesVotes / activeBcsCount) * 100).toFixed(0) : 0;
+            let base = activeBcsCount;
+            try {
+              const full = await targetContract.refundRequests(i);
+              base = Number(full[8]) || activeBcsCount;
+            } catch (_) { }
+            const pct = base > 0 ? ((yesVotes / base) * 100).toFixed(0) : 0;
             const viewerRole = window.currentVerifiedRole || "none";
             const isPrivileged = (viewerRole === "bcs" || viewerRole === "advisor" || window.isBcsMember || isBcsMember || window.isAdvisor || isAdvisor);
             const currentEffectiveUser = window.userAddress || userAddress;
