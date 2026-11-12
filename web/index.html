@@ -12440,15 +12440,35 @@
       }
     }
 
-    async function openAdvisorStudentDetail(mssv) {
-      if (!classRoster || classRoster.length === 0) {
-        alert("Chưa có dữ liệu danh bạ sinh viên. Vui lòng kết nối ví và ký xác thực.");
-        return;
-      }
-      const student = classRoster.find(s => s.mssv && s.mssv.toLowerCase().trim() === mssv.toLowerCase().trim());
-      if (!student) {
-        alert("Không tìm thấy thông tin sinh viên có MSSV: " + mssv);
-        return;
+    async function openAdvisorStudentDetail(mssv, studentOverride) {
+      const role = window.currentVerifiedRole;
+      const canViewAll = (role === "advisor" || role === "bcs");
+      let student = null;
+
+      if (canViewAll) {
+        // Cố vấn & Ban cán sự: tra danh bạ theo MSSV
+        if (studentOverride) {
+          student = studentOverride;
+        } else {
+          if (!classRoster || classRoster.length === 0) {
+            alert("Chưa có dữ liệu danh bạ sinh viên. Vui lòng kết nối ví và ký xác thực.");
+            return;
+          }
+          student = classRoster.find(s => s.mssv && s.mssv.toLowerCase().trim() === String(mssv).toLowerCase().trim());
+          if (!student) {
+            alert("Không tìm thấy thông tin sinh viên có MSSV: " + mssv);
+            return;
+          }
+        }
+      } else {
+        // Sinh viên thường: chỉ được xem ví của chính mình
+        const ownWallet = (userAddress || "").toLowerCase();
+        const reqWallet = ((studentOverride && studentOverride.wallet) || "").toLowerCase();
+        if (!ownWallet || reqWallet !== ownWallet) {
+          alert("Bạn chỉ được xem lịch sử giao dịch của chính mình.");
+          return;
+        }
+        student = studentOverride;
       }
 
       const modal = document.getElementById("advisorStudentDetailModal");
@@ -12682,6 +12702,27 @@
         modal.classList.remove("open");
         modal.classList.remove("show");
       }
+    }
+
+    async function openMyTransactionHistory() {
+      if (!userAddress) {
+        alert("Vui lòng kết nối ví MetaMask trước.");
+        return;
+      }
+      const role = window.currentVerifiedRole;
+      if (role !== "student" && role !== "bcs") {
+        alert("Chức năng này dành cho sinh viên và Ban cán sự.");
+        return;
+      }
+      const me = lookupStudent(userAddress) || {};
+      const mine = {
+        name: me.name || "Tài khoản của tôi",
+        mssv: me.mssv || "--",
+        wallet: userAddress,
+        role: role === "bcs" ? "bcs" : "student",
+        roleTitle: me.roleTitle || (role === "bcs" ? "Ban cán sự" : "Sinh viên")
+      };
+      await openAdvisorStudentDetail(mine.mssv, mine);
     }
 
     async function saveRosterEntry() {
